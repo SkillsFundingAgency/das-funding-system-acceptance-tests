@@ -10,7 +10,6 @@
     <PackageReference Include="AutoFixture" Version="4.17.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="SFA.DAS.Funding.ApprenticeshipEarnings.Types" Version="0.1.5-prerelease-39" />
-    <PackageReference Include="SFA.DAS.NServiceBus" Version="17.0.13" />
     <PackageReference Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
     <PackageReference Include="SpecFlow.NUnit" Version="3.9.40" />
     <PackageReference Include="nunit" Version="3.13.2" />

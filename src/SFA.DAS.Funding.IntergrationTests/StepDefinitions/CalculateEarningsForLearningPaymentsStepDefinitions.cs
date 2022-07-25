@@ -1,6 +1,4 @@
-using AutoFixture;
 using SFA.DAS.Apprenticeships.Events;
-using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
 using SFA.DAS.Funding.IntegrationTests.Helpers;
 using SFA.DAS.Funding.IntegrationTests.Infrastructure.Events;
 using SFA.DAS.Funding.IntegrationTests.Infrastructure.MessageBus;
@@ -19,7 +17,7 @@ namespace SFA.DAS.Funding.IntegrationTests.StepDefinitions
             _context = context;
         }
 
-        [Given(@"An apprenticeship is created with (.*), (.*)(.*), (.*)(.*)")]
+        [Given(@"An apprenticeship is created with (.*), (.*), (.*)")]
         public async Task GivenAnApprenticeshipIsCreatedWith(decimal agreedPrice, DateTime actualStartDate, DateTime plannedEndDate)
         {
             _apprenticeshipCreatedEvent = new Fixture().Build<ApprenticeshipCreatedEvent>()
@@ -31,12 +29,13 @@ namespace SFA.DAS.Funding.IntegrationTests.StepDefinitions
             await _context.Get<TestMessageBus>().Publish(_apprenticeshipCreatedEvent);
         }
 
-        [Then(@"Earnings results are published with calculated (.*), (.*), (.*), R(.*), (.*)")]
-        public async Task ThenEarningsResultsArePublishedWithCalculated(decimal adjustedAgreedPrice, decimal learningAmount, int numberOfInstalments, string firstDeliveryPeriod, string firstCalendarPeriod)
+        [Then(@"Earnings results are published with calculated (.*), (.*), (.*), R(.*)-(.*), (.*)/(.*)")]
+        public async Task ThenEarningsResultsArePublishedWithCalculated(decimal adjustedAgreedPrice, decimal learningAmount, int numberOfInstalments, short firstDeliveryPeriod, short firstDeliveryAcademicYear, short firstCalendarPeriodMonth, short firstCalendarPeriodYear)
         {
             await WaitHelper.WaitForIt(() => EarningsGeneratedEventHandler.ReceivedEvents.Any(), "Failed to find published event");
 
             _earnings = EarningsGeneratedEventHandler.ReceivedEvents.First();
+            _earnings.FundingPeriods.Should().HaveAdjustedAgreedPriceOf(adjustedAgreedPrice);
 
             var firstFundingPeriod = _earnings.FundingPeriods.First();
             firstFundingPeriod.AgreedPrice.Should().Be(adjustedAgreedPrice);
