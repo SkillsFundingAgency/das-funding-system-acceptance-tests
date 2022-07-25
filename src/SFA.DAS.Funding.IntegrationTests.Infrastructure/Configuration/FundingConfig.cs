@@ -2,10 +2,10 @@
 {
     public class FundingConfig
     {
-        public string NServiceBusConnectionString { get; set; } = "UseLearningEndpoint=true";
-       // public string NServiceBusConnectionString { get; set; } = "das-at-shared-ns.servicebus.windows.net";
-        public string LearningTransportStorageDirectory { get; set; } = "C:\\temp\\LearningTransport";
-        public string FunctionsBaseUrl { get; set; }
-        public string FunctionsAuthenticationCode { get; set; }
+        public string NServiceBusConnectionString { get; set; } = "<not set>";
+        public string NServiceBusLicense { get; set; } = "<not set>";
+        public string LearningTransportStorageDirectory { get; set; } = "<not set>";
+        public string FunctionsBaseUrl { get; set; } = "<not set>";
+        public string FunctionsAuthenticationCode { get; set; } = "<not set>";
     }
 }

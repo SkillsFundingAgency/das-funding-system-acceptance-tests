@@ -1,4 +1,3 @@
-using NServiceBus;
 using SFA.DAS.Funding.IntegrationTests.Helpers;
 using SFA.DAS.Funding.IntegrationTests.Infrastructure.Events;
 using SFA.DAS.Funding.IntegrationTests.Infrastructure.MessageBus;
