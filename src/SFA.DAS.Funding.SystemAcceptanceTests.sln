@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.Funding.SystemAcceptanceTests", "Tests\SFA.DAS.Funding.SystemAcceptanceTests.csproj", "{1137D5EB-4E0C-40A2-8F94-9475B0F2DAA0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure", "Infrastructure\SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.csproj", "{644C419D-8807-4E12-9161-96BA57D2842F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1137D5EB-4E0C-40A2-8F94-9475B0F2DAA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1137D5EB-4E0C-40A2-8F94-9475B0F2DAA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1137D5EB-4E0C-40A2-8F94-9475B0F2DAA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1137D5EB-4E0C-40A2-8F94-9475B0F2DAA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{644C419D-8807-4E12-9161-96BA57D2842F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{644C419D-8807-4E12-9161-96BA57D2842F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{644C419D-8807-4E12-9161-96BA57D2842F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{644C419D-8807-4E12-9161-96BA57D2842F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {85351582-A099-4A1E-8343-AFD09658E409}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,10 @@
+﻿{
+  "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+  "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+  //"NServiceBusConnectionString": "at-shared-ns.servicebus.windows.net",
+  "NServiceBusConnectionString": "UseLearningEndpoint",
+  "NServiceBusLicense": "",
+  "LearningTransportStorageDirectory": "C:\\temp\\LearningTransport",
+  "ApprenticeshipEarningsDatabase": "Data Source=.;Database=SFA.DAS.Funding.ApprenticeshipEarnings.Database;Integrated Security = true;Trusted_Connection=True;Pooling=False;Connect Timeout=30;MultipleActiveResultSets=True",
+  "DbConnectionString": "Data Source=.;Database=SFA.DAS.Funding.ApprenticeshipEarnings.Database;Integrated Security = true;Trusted_Connection=True;Pooling=False;Connect Timeout=30;MultipleActiveResultSets=True"
+}
