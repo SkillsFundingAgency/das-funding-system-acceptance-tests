@@ -37,9 +37,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _earnings.FundingPeriods.Should().HaveAdjustedAgreedPriceOf(adjustedAgreedPrice);
 
             var firstFundingPeriod = _earnings.FundingPeriods.First();
+            firstFundingPeriod.DeliveryPeriods.Should().HaveCount(numberOfInstalments);
             firstFundingPeriod.AgreedPrice.Should().Be(adjustedAgreedPrice);
             firstFundingPeriod.DeliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(learningAmount));
-            firstFundingPeriod.DeliveryPeriods.Should().HaveCount(numberOfInstalments);
 
             // TODO verify periods
         }

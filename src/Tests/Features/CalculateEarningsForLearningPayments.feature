@@ -2,7 +2,7 @@
 
 Scenario Outline: Earnings Generation
 	Given An apprenticeship is created with <AgreedPrice>, <ActualStartDate>, <PlannedEndDate>
-	Then Earnings results are published with calculated <AdjustedAgreedPrice>, <LearningAmount>, <NumberOfInstalments>, <FirstDeliveryPeriod>, <FirstCalendarPeriod>
+	Then Earnings results are published with calculated <AgreedPrice>, <LearningAmount>, <NumberOfInstalments>, <FirstDeliveryPeriod>, <FirstCalendarPeriod>
 	And correct Uln, EmployerId, ProviderId, TransferSenderEmployerId, StartDate, TrainingCode, EmployerType information
 
 Examples: 

@@ -113,7 +113,7 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.Given(string.Format("An apprenticeship is created with {0}, {1}, {2}", agreedPrice, actualStartDate, plannedEndDate), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 5
- testRunner.Then(string.Format("Earnings results are published with calculated {0}, {1}, {2}, {3}, {4}", adjustedAgreedPrice, learningAmount, numberOfInstalments, firstDeliveryPeriod, firstCalendarPeriod), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then(string.Format("Earnings results are published with calculated {0}, {1}, {2}, {3}, {4}", agreedPrice, learningAmount, numberOfInstalments, firstDeliveryPeriod, firstCalendarPeriod), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
 #line 6
  testRunner.And("correct Uln, EmployerId, ProviderId, TransferSenderEmployerId, StartDate, Trainin" +
