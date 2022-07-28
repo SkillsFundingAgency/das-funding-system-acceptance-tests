@@ -7,4 +7,4 @@ Scenario Outline: Earnings Generation
 
 Examples: 
 | AgreedPrice | ActualStartDate | PlannedEndDate | AdjustedAgreedPrice | LearningAmount | NumberOfInstalments | FirstDeliveryPeriod | FirstCalendarPeriod |
-| 12000       | 2021-12-01      | 2022-12-01     | 9600                | 800            | 12                  | R05-2122            | 12/2021             |
+| 12000       | 2021-12-01      | 2022-11-30     | 9600                | 800            | 12                  | R05-2122            | 12/2021             |

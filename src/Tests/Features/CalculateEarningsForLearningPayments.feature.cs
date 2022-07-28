@@ -75,7 +75,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Earnings Generation")]
-        [NUnit.Framework.TestCaseAttribute("12000", "2021-12-01", "2022-12-01", "9600", "800", "12", "R05-2122", "12/2021", null)]
+        [NUnit.Framework.TestCaseAttribute("12000", "2021-12-01", "2022-11-30", "9600", "800", "12", "R05-2122", "12/2021", null)]
         public virtual void EarningsGeneration(string agreedPrice, string actualStartDate, string plannedEndDate, string adjustedAgreedPrice, string learningAmount, string numberOfInstalments, string firstDeliveryPeriod, string firstCalendarPeriod, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
