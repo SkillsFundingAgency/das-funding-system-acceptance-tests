@@ -15,12 +15,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
 
         public async Task Start(FundingConfig config)
         {
-            var endpointConfiguration = new EndpointConfiguration(QueueNames.EarningsGenerated)
+            var endpointConfiguration = new EndpointConfiguration(QueueNames.ApprenticeshipLearners)
                     .UseMessageConventions()
                     .UseNewtonsoftJsonSerializer()
                 ;
 
-            if (string.IsNullOrEmpty(config.LearningTransportStorageDirectory))
+            if (config.LearningTransportStorageDirectory == "<not set>")
             {
                 endpointConfiguration
                     .UseAzureServiceBusTransport(config.NServiceBusConnectionString, rs => rs.AddRouting());
@@ -33,7 +33,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
                     .StorageDirectory(config.LearningTransportStorageDirectory);
                 endpointConfiguration.UseLearningTransport(rs => rs.AddRouting());
             }
-            
+
             _endpointInstance = await Endpoint.Start(endpointConfiguration)
                 .ConfigureAwait(false);
 

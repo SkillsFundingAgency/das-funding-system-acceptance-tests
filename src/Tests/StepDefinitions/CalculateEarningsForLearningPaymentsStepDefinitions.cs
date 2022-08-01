@@ -27,7 +27,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 .With(_ => _.PlannedEndDate, plannedEndDate)
                 .Create();
 
-            await _context.Get<TestMessageBus>().Publish(_apprenticeshipCreatedEvent);
+            try
+            {
+                await _context.Get<TestMessageBus>().Publish(_apprenticeshipCreatedEvent);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Assert.Fail(e.Message);
+            }
         }
 
         [Then(@"Earnings results are published with calculated (.*), (.*), (.*), R(.*)-(.*), (.*)/(.*)")]
