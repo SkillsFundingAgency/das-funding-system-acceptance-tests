@@ -1,6 +1,4 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure;
-using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
 {

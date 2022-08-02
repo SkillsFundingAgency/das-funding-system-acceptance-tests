@@ -15,7 +15,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
 
         public async Task Start(FundingConfig config)
         {
-            var endpointConfiguration = new EndpointConfiguration(QueueNames.ApprenticeshipLearners)
+            var endpointConfiguration = new EndpointConfiguration(QueueNames.ApprenticeshipCreated)
                     .UseMessageConventions()
                     .UseNewtonsoftJsonSerializer()
                 ;
