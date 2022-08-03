@@ -9,7 +9,7 @@ public static class RoutingSettingsExtensions
 {
     public static void AddRouting(this RoutingSettings settings)
     {
-        settings.RouteToEndpoint(typeof(ApprenticeshipCreatedEvent), QueueNames.ApprenticeshipCreated);
-        settings.RouteToEndpoint(typeof(EarningsGeneratedEvent), QueueNames.EarningsGenerated);
+       // settings.RouteToEndpoint(typeof(ApprenticeshipCreatedEvent), QueueNames.ApprenticeshipCreated);
+       // settings.RouteToEndpoint(typeof(EarningsGeneratedEvent), QueueNames.EarningsGenerated);
     }
 }

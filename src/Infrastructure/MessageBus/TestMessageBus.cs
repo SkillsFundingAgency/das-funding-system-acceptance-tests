@@ -20,7 +20,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
                     .UseNewtonsoftJsonSerializer()
                 ;
 
-            if (config.LearningTransportStorageDirectory == "<not set>")
+            if (!config.NServiceBusConnectionString.Contains("Learning"))
             {
                 endpointConfiguration
                     .UseAzureServiceBusTransport(config.NServiceBusConnectionString, rs => rs.AddRouting());
