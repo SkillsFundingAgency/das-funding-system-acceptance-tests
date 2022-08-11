@@ -19,7 +19,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
 
         private static void PrintConfig(FundingConfig config)
         {
-            Console.WriteLine($"[CONFIG] NServiceBusConnectionString:{config.NServiceBusConnectionString}");
+            Console.WriteLine($"[CONFIG] SharedServiceBusFqdn:{config.SharedServiceBusFqdn}");
             Console.WriteLine($"[CONFIG] NServiceBusLicense:{config.NServiceBusLicense}");
             Console.WriteLine($"[CONFIG] LearningTransportStorageDirectory:{config.LearningTransportStorageDirectory}");
         }

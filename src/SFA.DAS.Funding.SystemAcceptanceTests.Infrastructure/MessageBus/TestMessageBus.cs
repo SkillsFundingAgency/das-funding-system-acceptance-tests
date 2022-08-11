@@ -20,10 +20,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
                     .UseNewtonsoftJsonSerializer()
                 ;
 
-            if (!config.NServiceBusConnectionString.Contains("Learning"))
+            if (!config.SharedServiceBusFqdn.Contains("Learning"))
             {
                 endpointConfiguration
-                    .UseAzureServiceBusTransport(config.NServiceBusConnectionString, rs => rs.AddRouting());
+                    .UseAzureServiceBusTransport(config.SharedServiceBusFqdn, rs => rs.AddRouting());
             }
             else
             {
