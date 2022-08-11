@@ -24,7 +24,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Infrastructure\SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.csproj" />
+    <Folder Include="Drivers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure\SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
