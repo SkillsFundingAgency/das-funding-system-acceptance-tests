@@ -19,9 +19,9 @@ public class FundingPeriodAssertions : GenericCollectionAssertions<FundingPeriod
         {
             Execute.Assertion
                 .Given(() => subjArray[i])
-                .ForCondition(v => v.AgreedPrice == targetValue)
+                .ForCondition(v => v.AgreedPrice*0.80m == targetValue)
                 .FailWith(
-                    $"Expected value {subjArray[i].AgreedPrice}] in Period[{i}] should be {targetValue}");
+                    $"Expected value {subjArray[i].AgreedPrice} in Period[{i+1}] should be {targetValue}");
         }
 
         return new AndConstraint<GenericCollectionAssertions<FundingPeriod>>(this);
