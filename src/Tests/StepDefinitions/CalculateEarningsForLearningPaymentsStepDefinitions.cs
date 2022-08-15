@@ -47,10 +47,15 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         _context.Get<FundingPeriod>().DeliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(installmentAmount));
     }
 
-    [Then(@"an earning must be recorded for each month from the start date to the planned end date")]
-    public void VerifyTheEarningsAreRecordedForEachMonthForTheWholeDuration()
+    [Then(@"Earnings generated for each month starting from the first delivery period R(.*)-(.*) and first calendar period (.*)/(.*)")]
+    public void VerifyTheEarningsAreRecordedForEachMonthForTheWholeDuration(short firstDeliveryPeriodMonth, short firstDeliveryPeriodYear, short firstCalendarPeriodMonth, short firstCalendarPeriodYear)
     {
-        _context.Get<FundingPeriod>().DeliveryPeriods.ShouldHaveCorrectFundingPeriods(1,1,1);
+        var deliveryPeriods = _context.Get<FundingPeriod>().DeliveryPeriods;
+
+        int numberOfInstallments = deliveryPeriods.Count;
+
+        deliveryPeriods.ShouldHaveCorrectFundingPeriods(numberOfInstallments, firstDeliveryPeriodMonth, firstDeliveryPeriodYear);
+        deliveryPeriods.ShouldHaveCorrectFundingCalendarMonths(numberOfInstallments, firstCalendarPeriodMonth, firstCalendarPeriodYear);
     }
 
     //The following 2 methods are for the next set of tickets
@@ -67,7 +72,7 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         return new DateTime(01, month, year);
     }
 
-    private decimal CalculateOnProgramPaymentBasedOnAgreedPriceAndFundingBand(decimal agreed_price)
+    private decimal CalculateOnProgramPaymentBasedOnAgreedPriceAndFundingBand(decimal agreed_price, decimal fundingband_value)
     {
         return agreed_price * 0.80m;
     }

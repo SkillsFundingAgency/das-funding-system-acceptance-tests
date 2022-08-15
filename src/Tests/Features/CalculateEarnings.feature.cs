@@ -20,8 +20,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [NUnit.Framework.TestFixtureAttribute()]
-    [NUnit.Framework.DescriptionAttribute("CalculateEarnings")]
-    public partial class CalculateEarningsFeature
+    [NUnit.Framework.DescriptionAttribute("Calculate earnings for an approved apprenticeship")]
+    public partial class CalculateEarningsForAnApprovedApprenticeshipFeature
     {
         
         private TechTalk.SpecFlow.ITestRunner testRunner;
@@ -35,8 +35,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "CalculateEarnings", "As a Training provider\r\nI want monthly on-program earnings to be calculated \r\nSo " +
-                    "we they feed into payments calculation I get paid", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Calculate earnings for an approved apprenticeship", "As a Training provider\r\nI want monthly on-program earnings to be calculated \r\nSo " +
+                    "they feed into payments calculation I get paid", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -77,8 +77,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Earnings Generation for an approved apprenticeship")]
         [NUnit.Framework.CategoryAttribute("regression")]
-        [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15,000", "12,000", "12", "1000", null)]
-        public virtual void EarningsGenerationForAnApprovedApprenticeship(string start_Date, string planned_End_Date, string agreed_Price, string adjusted_Price, string planned_Number_Of_Months, string instalment_Amount, string[] exampleTags)
+        [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15,000", "12,000", "12", "1000", "R01-2223", "08/2022", null)]
+        public virtual void EarningsGenerationForAnApprovedApprenticeship(string start_Date, string planned_End_Date, string agreed_Price, string adjusted_Price, string planned_Number_Of_Months, string instalment_Amount, string first_Delivery_Period, string first_Calendar_Period, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "regression"};
@@ -94,6 +94,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
             argumentsOfScenario.Add("adjusted_price", adjusted_Price);
             argumentsOfScenario.Add("planned_number_of_months", planned_Number_Of_Months);
             argumentsOfScenario.Add("instalment_amount", instalment_Amount);
+            argumentsOfScenario.Add("first_delivery_period", first_Delivery_Period);
+            argumentsOfScenario.Add("first_calendar_period", first_Calendar_Period);
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Earnings Generation for an approved apprenticeship", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 8
 this.ScenarioInitialize(scenarioInfo);
@@ -133,6 +135,10 @@ this.ScenarioInitialize(scenarioInfo);
 #line 13
  testRunner.And(string.Format("the instalment amount must be calculated by dividing the total on-program amount " +
                             "equally into the number of planned months {0}", instalment_Amount), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 14
+ testRunner.And(string.Format("Earnings generated for each month starting from the first delivery period {0} and" +
+                            " first calendar period {1}", first_Delivery_Period, first_Calendar_Period), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();

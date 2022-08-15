@@ -38,6 +38,7 @@
             _funding = _earnings.FundingPeriods.First();
 
             _context.Set(_earnings);
+            _context.Set(_funding);
         }
     }
 }
