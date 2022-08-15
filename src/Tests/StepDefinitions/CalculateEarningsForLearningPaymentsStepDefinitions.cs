@@ -1,3 +1,4 @@
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using System.Globalization;
 
@@ -16,28 +17,43 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     }
 
     [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), and an agreed price of £(.*)")]
-    public void GivenAnApprenticeshipIsCreatedWith(String start_date, String planned_end_date, String agreed_price)
+    public void AnApprenticeshipIsCreatedWith(DateTime start_date, DateTime planned_end_date, decimal agreed_price)
     {
-        //_messageHelper.CreateAnApprenticeshipMessage(start_date, planned_end_date, agreed_price);
+        _messageHelper.CreateAnApprenticeshipMessage(start_date, planned_end_date, agreed_price);
     }
 
     [When(@"the apprenticeship commitment is approved")]
-    public async Task ApprenticeshipCommitmentIsApproved()
+    public async Task TheApprenticeshipCommitmentIsApproved()
     {
         await _messageHelper.PublishAnApprenticeshipApprovedMessage();
         await _messageHelper.ReadEarningsGeneratedMessage();
     }
 
-    public void verification1()
+    [Then(@"the total on-program payment amount must be calculated as 80% of the agreed price £(.*)")]
+    public void TheTotalOnProgramPaymentAmountMustBeCalculatedAs80PercentOfTheAgreedPrice(decimal adjustedPrice)
     {
-        _context.Get<EarningsGeneratedEvent>().Should().Be("something");
+        _context.Get<EarningsGeneratedEvent>().FundingPeriods.Should().HaveAdjustedAgreedPriceOf(adjustedPrice);
     }
 
-    public void verification2()
+    [Then(@"the planned number of months must be the number of months from the start date to the planned end date (.*)")]
+    public void VerifyThePlannedDurationMonthsWithinTheEarningsGenerated(short numberOfInstallments)
     {
-
+        _context.Get<FundingPeriod>().DeliveryPeriods.Should().HaveCount(numberOfInstallments);
     }
 
+    [Then(@"the instalment amount must be calculated by dividing the total on-program amount equally into the number of planned months (.*)")]
+    public void VerifyInstallmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal installmentAmount)
+    {
+        _context.Get<FundingPeriod>().DeliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(installmentAmount));
+    }
+
+    [Then(@"an earning must be recorded for each month from the start date to the planned end date")]
+    public void VerifyTheEarningsAreRecordedForEachMonthForTheWholeDuration()
+    {
+        _context.Get<FundingPeriod>().DeliveryPeriods.ShouldHaveCorrectFundingPeriods(1,1,1);
+    }
+
+    //The following 2 methods are for the next set of tickets
     private DateTime ConvertToDateTimeFormat(String requiredDate)
     {
         int month = DateTime.ParseExact(requiredDate.Split('-')[0], "MMM", CultureInfo.CurrentCulture).Month;
@@ -49,5 +65,10 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
             _ => throw new Exception("Unsupported format"),
         };
         return new DateTime(01, month, year);
+    }
+
+    private decimal CalculateOnProgramPaymentBasedOnAgreedPriceAndFundingBand(decimal agreed_price)
+    {
+        return agreed_price * 0.80m;
     }
 }

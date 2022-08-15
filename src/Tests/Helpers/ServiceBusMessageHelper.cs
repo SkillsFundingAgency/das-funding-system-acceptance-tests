@@ -5,6 +5,7 @@
         private readonly ScenarioContext _context;
         private ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
         private EarningsGeneratedEvent _earnings;
+        private FundingPeriod _funding;
 
         public ServiceBusMessageHelper(ScenarioContext context)
         {
@@ -34,6 +35,7 @@
             await WaitHelper.WaitForIt(() => EarningsGeneratedEventHandler.ReceivedEvents.Where(x => x.ApprenticeshipKey == _apprenticeshipCreatedEvent.ApprenticeshipKey).Any(), "Failed to find published event");
 
             _earnings = EarningsGeneratedEventHandler.ReceivedEvents.First();
+            _funding = _earnings.FundingPeriods.First();
 
             _context.Set(_earnings);
         }
