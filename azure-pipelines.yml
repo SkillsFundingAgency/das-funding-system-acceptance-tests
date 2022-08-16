@@ -23,7 +23,7 @@ resources:
   - repository: das-platform-building-blocks
     type: github
     name: SkillsFundingAgency/das-platform-building-blocks
-    ref: DASD-9673-system-acceptance-tests-templates
+    ref: refs/tags/0.4.74
     endpoint: SkillsFundingAgency
   - repository: das-platform-automation
     type: github
