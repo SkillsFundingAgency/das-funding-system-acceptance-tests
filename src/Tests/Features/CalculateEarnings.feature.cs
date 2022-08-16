@@ -124,16 +124,68 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.When("the apprenticeship commitment is approved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 11
- testRunner.Then(string.Format("80% of the agreed price is calculated as total on-program payment which is divivd" +
-                            "ed equally into number of planned months {0}", instalment_Amount), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then(string.Format("80% of the agreed price is calculated as total on-program payment which is divide" +
+                            "d equally into number of planned months {0}", instalment_Amount), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
 #line 12
  testRunner.And(string.Format("the planned number of months must be the number of months from the start date to " +
                             "the planned end date {0}", planned_Number_Of_Months), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
+                TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Delivery Period",
+                            "Academic Year",
+                            "Calender Period"});
+                table1.AddRow(new string[] {
+                            "1",
+                            "2223",
+                            "August"});
+                table1.AddRow(new string[] {
+                            "2",
+                            "2223",
+                            "September"});
+                table1.AddRow(new string[] {
+                            "3",
+                            "2223",
+                            "October"});
+                table1.AddRow(new string[] {
+                            "4",
+                            "2223",
+                            "November"});
+                table1.AddRow(new string[] {
+                            "5",
+                            "2223",
+                            "December"});
+                table1.AddRow(new string[] {
+                            "6",
+                            "2223",
+                            "January"});
+                table1.AddRow(new string[] {
+                            "7",
+                            "2223",
+                            "February"});
+                table1.AddRow(new string[] {
+                            "8",
+                            "2223",
+                            "March"});
+                table1.AddRow(new string[] {
+                            "9",
+                            "2223",
+                            "April"});
+                table1.AddRow(new string[] {
+                            "10",
+                            "2223",
+                            "May"});
+                table1.AddRow(new string[] {
+                            "11",
+                            "2223",
+                            "June"});
+                table1.AddRow(new string[] {
+                            "12",
+                            "2223",
+                            "July"});
 #line 13
- testRunner.And(string.Format("Earnings generated for each month starting from the first delivery period {0} and" +
-                            " first calendar period {1}", first_Delivery_Period, first_Calendar_Period), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the delivery period for each instalment must be the delivery period from the coll" +
+                        "ection calendar with a matching calendar month/year", ((string)(null)), table1, "And ");
 #line hidden
             }
             this.ScenarioCleanup();

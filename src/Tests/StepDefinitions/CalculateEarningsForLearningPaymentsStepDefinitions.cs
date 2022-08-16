@@ -1,6 +1,4 @@
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
-using System.Globalization;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -29,26 +27,23 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         await _messageHelper.ReadEarningsGeneratedMessage();
     }
 
-    [Then(@"80% of the agreed price is calculated as total on-program payment which is divivded equally into number of planned months (.*)")]
-    public void VerifyInstallmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal installmentAmount)
+    [Then(@"80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months (.*)")]
+    public void VerifyInstalmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal instalmentAmount)
     {
-        _context.Get<FundingPeriod>().DeliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(installmentAmount));
+        _context.Get<FundingPeriod>().DeliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(instalmentAmount));
     }
 
     [Then(@"the planned number of months must be the number of months from the start date to the planned end date (.*)")]
-    public void VerifyThePlannedDurationMonthsWithinTheEarningsGenerated(short numberOfInstallments)
+    public void VerifyThePlannedDurationMonthsWithinTheEarningsGenerated(short numberOfInstalments)
     {
-        _context.Get<FundingPeriod>().DeliveryPeriods.Should().HaveCount(numberOfInstallments);
+        _context.Get<FundingPeriod>().DeliveryPeriods.Should().HaveCount(numberOfInstalments);
     }
 
-    [Then(@"Earnings generated for each month starting from the first delivery period (.*)-(.*) and first calendar period (.*)/(.*)")]
-    public void VerifyTheEarningsAreRecordedForEachMonthForTheWholeDuration(short firstDeliveryPeriodMonth, short firstDeliveryPeriodYear, short firstCalendarPeriodMonth, short firstCalendarPeriodYear)
+    [Then(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
+    public void ThenTheDeliveryPeriodForEachInstalmentMustBeTheDeliveryPeriodFromTheCollectionCalendarWithAMatchingCalendarMonthYear(Table table)
     {
         var deliveryPeriods = _context.Get<FundingPeriod>().DeliveryPeriods;
 
-        int numberOfInstallments = deliveryPeriods.Count;
-
-        deliveryPeriods.ShouldHaveCorrectFundingPeriods(numberOfInstallments, firstDeliveryPeriodMonth, firstDeliveryPeriodYear);
-        deliveryPeriods.ShouldHaveCorrectFundingCalendarMonths(numberOfInstallments, firstCalendarPeriodMonth, firstCalendarPeriodYear);
+        deliveryPeriods.ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
     }
 }
