@@ -12,7 +12,7 @@
             _context = context;
         }
 
-        public void CreateAnApprenticeshipMessage(DateTime actualStartDate, DateTime plannedEndDate, decimal agreedPrice)
+        public void CreateApprenticeshipCreatedMessageWithCustomValues(DateTime actualStartDate, DateTime plannedEndDate, decimal agreedPrice)
         {
             var fixture = new Fixture();
             _apprenticeshipCreatedEvent = fixture.Build<ApprenticeshipCreatedEvent>()
@@ -25,7 +25,7 @@
             _context.Set(_apprenticeshipCreatedEvent);
         }
 
-        public async Task PublishAnApprenticeshipApprovedMessage()
+        public async Task PublishApprenticeshipApprovedMessage()
         {
             await _context.Get<TestMessageBus>().Publish(_apprenticeshipCreatedEvent);
         }

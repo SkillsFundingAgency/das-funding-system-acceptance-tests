@@ -17,22 +17,22 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     }
 
     [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), and an agreed price of £(.*)")]
-    public void AnApprenticeshipIsCreatedWith(DateTime start_date, DateTime planned_end_date, decimal agreed_price)
+    public void AnApprenticeshipIsCreatedWith(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice)
     {
-        _messageHelper.CreateAnApprenticeshipMessage(start_date, planned_end_date, agreed_price);
+        _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice);
     }
 
     [When(@"the apprenticeship commitment is approved")]
     public async Task TheApprenticeshipCommitmentIsApproved()
     {
-        await _messageHelper.PublishAnApprenticeshipApprovedMessage();
+        await _messageHelper.PublishApprenticeshipApprovedMessage();
         await _messageHelper.ReadEarningsGeneratedMessage();
     }
 
-    [Then(@"the total on-program payment amount must be calculated as 80% of the agreed price £(.*)")]
-    public void TheTotalOnProgramPaymentAmountMustBeCalculatedAs80PercentOfTheAgreedPrice(decimal adjustedPrice)
+    [Then(@"80% of the agreed price is calculated as total on-program payment which is divivded equally into number of planned months (.*)")]
+    public void VerifyInstallmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal installmentAmount)
     {
-        _context.Get<EarningsGeneratedEvent>().FundingPeriods.Should().HaveAdjustedAgreedPriceOf(adjustedPrice);
+        _context.Get<FundingPeriod>().DeliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(installmentAmount));
     }
 
     [Then(@"the planned number of months must be the number of months from the start date to the planned end date (.*)")]
@@ -41,13 +41,7 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         _context.Get<FundingPeriod>().DeliveryPeriods.Should().HaveCount(numberOfInstallments);
     }
 
-    [Then(@"the instalment amount must be calculated by dividing the total on-program amount equally into the number of planned months (.*)")]
-    public void VerifyInstallmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal installmentAmount)
-    {
-        _context.Get<FundingPeriod>().DeliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(installmentAmount));
-    }
-
-    [Then(@"Earnings generated for each month starting from the first delivery period R(.*)-(.*) and first calendar period (.*)/(.*)")]
+    [Then(@"Earnings generated for each month starting from the first delivery period (.*)-(.*) and first calendar period (.*)/(.*)")]
     public void VerifyTheEarningsAreRecordedForEachMonthForTheWholeDuration(short firstDeliveryPeriodMonth, short firstDeliveryPeriodYear, short firstCalendarPeriodMonth, short firstCalendarPeriodYear)
     {
         var deliveryPeriods = _context.Get<FundingPeriod>().DeliveryPeriods;
@@ -56,24 +50,5 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
 
         deliveryPeriods.ShouldHaveCorrectFundingPeriods(numberOfInstallments, firstDeliveryPeriodMonth, firstDeliveryPeriodYear);
         deliveryPeriods.ShouldHaveCorrectFundingCalendarMonths(numberOfInstallments, firstCalendarPeriodMonth, firstCalendarPeriodYear);
-    }
-
-    //The following 2 methods are for the next set of tickets
-    private DateTime ConvertToDateTimeFormat(String requiredDate)
-    {
-        int month = DateTime.ParseExact(requiredDate.Split('-')[0], "MMM", CultureInfo.CurrentCulture).Month;
-        String yearPart = requiredDate.Split('-')[1];
-        var year = yearPart switch
-        {
-            "CurrentYear" => DateTime.Now.Year,
-            "NextYear" => DateTime.Now.Year + 1,
-            _ => throw new Exception("Unsupported format"),
-        };
-        return new DateTime(01, month, year);
-    }
-
-    private decimal CalculateOnProgramPaymentBasedOnAgreedPriceAndFundingBand(decimal agreed_price, decimal fundingband_value)
-    {
-        return agreed_price * 0.80m;
     }
 }
