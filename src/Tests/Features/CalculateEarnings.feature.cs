@@ -134,7 +134,7 @@ this.ScenarioInitialize(scenarioInfo);
                 TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                             "Delivery Period",
                             "Academic Year",
-                            "Calender Period"});
+                            "Calendar Period"});
                 table1.AddRow(new string[] {
                             "1",
                             "2223",
