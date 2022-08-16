@@ -27,6 +27,7 @@ jobs:
         - task: DotNetCoreCLI@2
           env:
             NServiceBusLicense: $(NServiceBusLicense)
+            AppRegistrationClientSecret: $(AppRegistrationClientSecret)
           inputs:
             command: 'test'
             projects: |
