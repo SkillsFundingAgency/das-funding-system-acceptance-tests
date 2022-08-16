@@ -77,8 +77,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Earnings Generation for an approved apprenticeship")]
         [NUnit.Framework.CategoryAttribute("regression")]
-        [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15,000", "12,000", "12", "1000", "R01-2223", "08/2022", null)]
-        public virtual void EarningsGenerationForAnApprovedApprenticeship(string start_Date, string planned_End_Date, string agreed_Price, string adjusted_Price, string planned_Number_Of_Months, string instalment_Amount, string first_Delivery_Period, string first_Calendar_Period, string[] exampleTags)
+        [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15,000", "12", "1000", "01-2223", "08/2022", null)]
+        public virtual void EarningsGenerationForAnApprovedApprenticeship(string start_Date, string planned_End_Date, string agreed_Price, string planned_Number_Of_Months, string instalment_Amount, string first_Delivery_Period, string first_Calendar_Period, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "regression"};
@@ -91,7 +91,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
             argumentsOfScenario.Add("start_date", start_Date);
             argumentsOfScenario.Add("planned_end_date", planned_End_Date);
             argumentsOfScenario.Add("agreed_price", agreed_Price);
-            argumentsOfScenario.Add("adjusted_price", adjusted_Price);
             argumentsOfScenario.Add("planned_number_of_months", planned_Number_Of_Months);
             argumentsOfScenario.Add("instalment_amount", instalment_Amount);
             argumentsOfScenario.Add("first_delivery_period", first_Delivery_Period);
@@ -125,18 +124,14 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.When("the apprenticeship commitment is approved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 11
- testRunner.Then(string.Format("the total on-program payment amount must be calculated as 80% of the agreed price" +
-                            " £{0}", adjusted_Price), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then(string.Format("80% of the agreed price is calculated as total on-program payment which is divivd" +
+                            "ed equally into number of planned months {0}", instalment_Amount), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
 #line 12
  testRunner.And(string.Format("the planned number of months must be the number of months from the start date to " +
                             "the planned end date {0}", planned_Number_Of_Months), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 13
- testRunner.And(string.Format("the instalment amount must be calculated by dividing the total on-program amount " +
-                            "equally into the number of planned months {0}", instalment_Amount), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-#line 14
  testRunner.And(string.Format("Earnings generated for each month starting from the first delivery period {0} and" +
                             " first calendar period {1}", first_Delivery_Period, first_Calendar_Period), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
