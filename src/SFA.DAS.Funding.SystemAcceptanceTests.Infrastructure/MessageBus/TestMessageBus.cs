@@ -1,4 +1,8 @@
-﻿using NServiceBus;
+﻿using Azure.Core;
+using Azure.Identity;
+using Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.Azure;
+using NServiceBus;
 using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Events;
@@ -20,10 +24,23 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
                     .UseNewtonsoftJsonSerializer()
                 ;
 
-            if (!config.SharedServiceBusFqdn.Contains("Learning"))
+            if (NotUsingLearningTransport(config))
             {
-                endpointConfiguration
-                    .UseAzureServiceBusTransport(config.SharedServiceBusFqdn, rs => rs.AddRouting());
+                var tenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID");
+                Console.WriteLine("AZURE_TENANT_ID: " + tenantId); // TODO: DELETE
+
+                var clientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
+                Console.WriteLine("AZURE_CLIENT_ID: " + clientId); // TODO: DELETE
+
+                var clientSecret = Environment.GetEnvironmentVariable("AZURE_CLIENT_SECRET");
+                Console.WriteLine("AZURE_CLIENT_SECRET: " + clientSecret); // TODO: DELETE
+
+                var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
+                TokenCredential credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+                transport.CustomTokenCredential(credential);
+                transport.ConnectionString(config.SharedServiceBusFqdn);
+                transport.Transactions(TransportTransactionMode.ReceiveOnly);
+                transport.SubscriptionRuleNamingConvention(RuleNameShortener.Shorten);
             }
             else
             {
@@ -38,6 +55,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
                 .ConfigureAwait(false);
 
             IsRunning = true;
+        }
+
+        private static bool NotUsingLearningTransport(FundingConfig config)
+        {
+            return !config.SharedServiceBusFqdn.Contains("Learning");
         }
 
         public async Task Stop()
