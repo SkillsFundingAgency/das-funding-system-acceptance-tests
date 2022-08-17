@@ -43,6 +43,7 @@ stages:
   displayName: Deploy to AT
   condition: and(succeeded(), eq(variables.Deploy, 'true'))
   variables:
+  - group: DevTest Management Resources
   - group: AT DevTest Shared Resources
   - group: AT das-funding-system-acceptance-tests
   jobs:
