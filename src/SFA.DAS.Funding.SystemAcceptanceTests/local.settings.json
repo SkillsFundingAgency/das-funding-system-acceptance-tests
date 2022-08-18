@@ -1,6 +1,4 @@
 ﻿{
-  "SharedServiceBusFqdn": "das-at-shared-ns.servicebus.windows.net",
-  // "NServiceBusConnectionString": "at",
-  "NServiceBusLicense": "",
-  "LearningTransportStorageDirectory": "C:\\git\\das\\das-funding-apprenticeship-earnings\\src\\.learningtransport"
+  "SharedServiceBusFqdn": "UseLearningTransport",
+  "LearningTransportStorageDirectory": "C:\\{path-to}\\das-funding-apprenticeship-earnings\\src\\.learningtransport"
 }
