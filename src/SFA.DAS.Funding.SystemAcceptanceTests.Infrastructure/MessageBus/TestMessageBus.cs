@@ -35,12 +35,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
                 var clientSecret = Environment.GetEnvironmentVariable("AZURE_CLIENT_SECRET");
                 Console.WriteLine("AZURE_CLIENT_SECRET: " + clientSecret); // TODO: DELETE
 
-                var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-                TokenCredential credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
-                transport.CustomTokenCredential(credential);
-                transport.ConnectionString(config.SharedServiceBusFqdn);
-                transport.Transactions(TransportTransactionMode.ReceiveOnly);
-                transport.SubscriptionRuleNamingConvention(RuleNameShortener.Shorten);
+                endpointConfiguration
+                    .UseAzureServiceBusTransport(config.SharedServiceBusFqdn);
             }
             else
             {
