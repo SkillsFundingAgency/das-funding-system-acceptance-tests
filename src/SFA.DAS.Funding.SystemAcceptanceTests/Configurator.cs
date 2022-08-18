@@ -20,6 +20,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
             return new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("local.settings.json", optional: true)
                 .Build();
         }
 
