@@ -48,7 +48,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
                     .UseTransport<LearningTransport>()
                     .Transactions(TransportTransactionMode.ReceiveOnly)
                     .StorageDirectory(config.LearningTransportStorageDirectory);
-                endpointConfiguration.UseLearningTransport(rs => rs.AddRouting());
+                endpointConfiguration.UseLearningTransport();
             }
 
             _endpointInstance = await Endpoint.Start(endpointConfiguration)
