@@ -4,7 +4,7 @@ parameters:
   ServiceConnection:
 
 jobs:
-- deployment: DeployWebApp
+- deployment: RunAcceptanceTests
   pool:
     vmImage: 'ubuntu-latest'
   environment: ${{ parameters.Environment }}
