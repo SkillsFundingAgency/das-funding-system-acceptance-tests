@@ -1,6 +1,4 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.AzureDurableFunctions;
-using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using Helper = SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Helper;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
 {
@@ -13,8 +11,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
             var config = Configurator.GetConfiguration();
             PrintConfig(config); // TODO: DELETE!!!
             context.Set(config);
-            context.Set(new FundingOrchestrationHelper(config));
-            context.Set(new Helper(context));
         }
 
         private static void PrintConfig(FundingConfig config)

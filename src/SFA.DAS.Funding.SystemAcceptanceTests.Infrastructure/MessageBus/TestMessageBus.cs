@@ -1,11 +1,6 @@
-﻿using Azure.Core;
-using Azure.Identity;
-using Azure.Messaging.ServiceBus;
-using Microsoft.Extensions.Azure;
-using NServiceBus;
+﻿using NServiceBus;
 using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Events;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
@@ -26,15 +21,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
 
             if (NotUsingLearningTransport(config))
             {
-                var tenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID");
-                Console.WriteLine("AZURE_TENANT_ID: " + tenantId); // TODO: DELETE
-
-                var clientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
-                Console.WriteLine("AZURE_CLIENT_ID: " + clientId); // TODO: DELETE
-
-                var clientSecret = Environment.GetEnvironmentVariable("AZURE_CLIENT_SECRET");
-                Console.WriteLine("AZURE_CLIENT_SECRET: " + clientSecret); // TODO: DELETE
-
                 endpointConfiguration
                     .UseAzureServiceBusTransport(config.SharedServiceBusFqdn);
             }
