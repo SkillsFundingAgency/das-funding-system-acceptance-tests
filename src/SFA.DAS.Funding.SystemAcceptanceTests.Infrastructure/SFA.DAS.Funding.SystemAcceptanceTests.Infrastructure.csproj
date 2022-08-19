@@ -12,6 +12,7 @@
     <PackageReference Include="SFA.DAS.Funding.ApprenticeshipEarnings.Types" Version="0.1.5-prerelease-90" />
     <PackageReference Include="SFA.DAS.NServiceBus" Version="17.0.13" />
     <PackageReference Include="SpecFlow" Version="3.9.40" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
   </ItemGroup>
 
 </Project>
