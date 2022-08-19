@@ -20,6 +20,12 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice);
     }
 
+    [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of £(.*) and a funding band max as £(.*)")]
+    public void AnApprenticeshipIsCreatedWith(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, decimal fundingBandMax)
+    {
+        _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, fundingBandMax);
+    }
+
     [When(@"the apprenticeship commitment is approved")]
     public async Task TheApprenticeshipCommitmentIsApproved()
     {
@@ -27,6 +33,7 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         await _messageHelper.ReadEarningsGeneratedMessage();
     }
 
+    [Then(@"80% of the lowest value between agreed price and funding band price is divided equally into number of planned months (.*)")]
     [Then(@"80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months (.*)")]
     public void VerifyInstalmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal instalmentAmount)
     {
