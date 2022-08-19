@@ -19,6 +19,21 @@
                 .With(_ => _.ActualStartDate, actualStartDate)
                 .With(_ => _.PlannedEndDate, plannedEndDate)
                 .With(_ => _.AgreedPrice, agreedPrice)
+                .With(_ => _.FundingBandMaximum, agreedPrice)
+                .With(_ => _.Uln, fixture.Create<long>().ToString)
+                .Create();
+
+            _context.Set(_apprenticeshipCreatedEvent);
+        }
+
+        public void CreateApprenticeshipCreatedMessageWithCustomValues(DateTime actualStartDate, DateTime plannedEndDate, decimal agreedPrice, decimal fundingBandMax)
+        {
+            var fixture = new Fixture();
+            _apprenticeshipCreatedEvent = fixture.Build<ApprenticeshipCreatedEvent>()
+                .With(_ => _.ActualStartDate, actualStartDate)
+                .With(_ => _.PlannedEndDate, plannedEndDate)
+                .With(_ => _.AgreedPrice, agreedPrice)
+                .With(_ => _.FundingBandMaximum, fundingBandMax)
                 .With(_ => _.Uln, fixture.Create<long>().ToString)
                 .Create();
 
