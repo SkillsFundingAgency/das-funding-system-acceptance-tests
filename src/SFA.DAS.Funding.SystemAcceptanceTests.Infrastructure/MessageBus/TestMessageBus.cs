@@ -1,7 +1,6 @@
 ﻿using NServiceBus;
 using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Events;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
@@ -20,10 +19,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
                     .UseNewtonsoftJsonSerializer()
                 ;
 
-            if (!config.NServiceBusConnectionString.Contains("Learning"))
+            if (NotUsingLearningTransport(config))
             {
                 endpointConfiguration
-                    .UseAzureServiceBusTransport(config.NServiceBusConnectionString, rs => rs.AddRouting());
+                    .UseAzureServiceBusTransport(config.SharedServiceBusFqdn);
             }
             else
             {
@@ -31,13 +30,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
                     .UseTransport<LearningTransport>()
                     .Transactions(TransportTransactionMode.ReceiveOnly)
                     .StorageDirectory(config.LearningTransportStorageDirectory);
-                endpointConfiguration.UseLearningTransport(rs => rs.AddRouting());
+                endpointConfiguration.UseLearningTransport();
             }
 
             _endpointInstance = await Endpoint.Start(endpointConfiguration)
                 .ConfigureAwait(false);
 
             IsRunning = true;
+        }
+
+        private static bool NotUsingLearningTransport(FundingConfig config)
+        {
+            return !config.SharedServiceBusFqdn.Contains("Learning");
         }
 
         public async Task Stop()

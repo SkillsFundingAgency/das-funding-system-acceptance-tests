@@ -1,0 +1,39 @@
+parameters:
+  Environment:
+  SolutionBaseName:
+  ServiceConnection:
+
+jobs:
+- deployment: RunAcceptanceTests
+  pool:
+    vmImage: 'ubuntu-latest'
+  environment: ${{ parameters.Environment }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - checkout: self
+        - checkout: das-platform-automation
+        - template: azure-pipelines-templates/deploy/step/wait-azure-devops-deployment.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            EnvironmentId: $(Environment.Id)
+            PipelineName: $(Build.DefinitionName)
+            RunId: $(Build.BuildId)
+        - template: azure-pipelines-templates/deploy/step/sql-whitelist-ip.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            SQLServerName: $(SharedSQLServerName)
+        - task: DotNetCoreCLI@2
+          env:
+            NServiceBusLicense: $(NServiceBusLicense)
+            AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+          inputs:
+            command: 'test'
+            projects: |
+              **/${{ parameters.SolutionBaseName }}.csproj
+        - template: azure-pipelines-templates/deploy/step/sql-remove-ip.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            SQLServerName: $(SharedSQLServerName)
+            IPAddress: $(IPAddress)

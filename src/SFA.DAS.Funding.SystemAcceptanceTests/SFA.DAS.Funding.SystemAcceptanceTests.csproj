@@ -21,10 +21,12 @@
     <PackageReference Include="nunit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
     <PackageReference Include="FluentAssertions" Version="6.2.0" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Infrastructure\SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.csproj" />
+    <ProjectReference Include="..\SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure\SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

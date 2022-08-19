@@ -5,15 +5,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
 {
     public static class Configurator
     {
-        private static IConfigurationRoot GetIConfigurationRoot()
-        {
-            return new ConfigurationBuilder()
-                .AddEnvironmentVariables()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("local.settings.json", optional: true)
-                .Build();
-        }
-
         public static FundingConfig GetConfiguration()
         {
             var configuration = new FundingConfig();
@@ -23,6 +14,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
             iConfig.Bind(configuration);
 
             return configuration;
+        }
+        private static IConfigurationRoot GetIConfigurationRoot()
+        {
+            return new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("local.settings.json", optional: true)
+                .Build();
         }
 
     }
