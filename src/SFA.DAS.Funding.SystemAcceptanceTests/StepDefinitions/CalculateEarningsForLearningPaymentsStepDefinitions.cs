@@ -8,6 +8,7 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
 {
     private readonly ScenarioContext _context;
     private ServiceBusMessageHelper _messageHelper;
+    private ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
     private EarningsGeneratedEvent _earnings;
     private FundingPeriod _fundingPeriod;
 
@@ -20,24 +21,24 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), and an agreed price of £(.*)")]
     public void AnApprenticeshipIsCreatedWith(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice)
     {
-        var apprenticeshipEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice);
-        _context.Set(apprenticeshipEvent);
+        _apprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice);
+        _context.Set(_apprenticeshipCreatedEvent);
     }
 
     [When(@"the agreed price is below the funding band maximum (.*) for the selected course")]
     [When(@"the agreed price is above the funding band maximum (.*) for the selected course")]
     public void SetFundingBandMaxValue(Decimal fundingBandMax)
     {
-        var apprenticeshipEvent = _context.Get<ApprenticeshipCreatedEvent>();
-        _messageHelper.UpdateApprenticeshipCreatedMessageWithFundingBandMaximumValue(apprenticeshipEvent, fundingBandMax);
+        _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
+        _messageHelper.UpdateApprenticeshipCreatedMessageWithFundingBandMaximumValue(_apprenticeshipCreatedEvent, fundingBandMax);
     }
 
     [When(@"the apprenticeship commitment is approved")]
     public async Task TheApprenticeshipCommitmentIsApproved()
     {
-        var apprenticeshipEvent = _context.Get<ApprenticeshipCreatedEvent>();
-        await _messageHelper.PublishApprenticeshipApprovedMessage(apprenticeshipEvent);
-        _earnings = _messageHelper.ReadEarningsGeneratedMessage(apprenticeshipEvent);
+        _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
+        await _messageHelper.PublishApprenticeshipApprovedMessage(_apprenticeshipCreatedEvent);
+        _earnings = _messageHelper.ReadEarningsGeneratedMessage(_apprenticeshipCreatedEvent);
         _fundingPeriod = _earnings.FundingPeriods.First();
         
         _context.Set(_earnings);
