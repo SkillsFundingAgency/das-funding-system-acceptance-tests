@@ -1,11 +1,11 @@
-﻿Feature: Calculate earnings for an approved apprenticeship
+﻿Feature: Calculate on-program earnings for an approved apprenticeship
 
 As a Training provider
 I want monthly on-program earnings to be calculated 
 So they feed into payments calculation I get paid
 
 @regression
-Scenario: Earnings Generation for an approved apprenticeship
+Scenario: On-program earnings generation for an approved apprenticeship
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, and an agreed price of £<agreed_price>
 	When the apprenticeship commitment is approved
 	Then 80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months <instalment_amount> 
