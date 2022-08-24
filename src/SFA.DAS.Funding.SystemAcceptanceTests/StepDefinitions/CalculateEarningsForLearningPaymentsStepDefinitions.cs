@@ -25,6 +25,14 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         _context.Set(_apprenticeshipCreatedEvent);
     }
 
+    [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*) and funding band max of (.*)")]
+    public void GivenAnApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndFundingBandMaxOf(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, decimal fundingBandMax)
+    {
+        AnApprenticeshipIsCreatedWith(startDate, plannedEndDate, agreedPrice);
+        SetFundingBandMaxValue(fundingBandMax);
+    }
+
+
     [When(@"the agreed price is below the funding band maximum (.*) for the selected course")]
     [When(@"the agreed price is above the funding band maximum (.*) for the selected course")]
     public void SetFundingBandMaxValue(Decimal fundingBandMax)
@@ -40,10 +48,11 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         await _messageHelper.PublishApprenticeshipApprovedMessage(_apprenticeshipCreatedEvent);
         _earnings = _messageHelper.ReadEarningsGeneratedMessage(_apprenticeshipCreatedEvent);
         _fundingPeriod = _earnings.FundingPeriods.First();
-        
+
         _context.Set(_earnings);
         _context.Set(_fundingPeriod);
     }
+
 
     [Then(@"80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months (.*)")]
     [Then(@"Agreed price is used to calculate the on-program earnings which is divided equally into number of planned months (.*)")]
@@ -65,5 +74,12 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         var deliveryPeriods = _context.Get<FundingPeriod>().DeliveryPeriods;
 
         deliveryPeriods.ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
+    }
+
+
+    [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]
+    public void VerifyCompletionAmountIsCalculatedCorrectly(decimal completionAmount)
+    {
+        _fundingPeriod.AgreedPrice.Should().Be(completionAmount);
     }
 }
