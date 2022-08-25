@@ -78,6 +78,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         [NUnit.Framework.DescriptionAttribute("On program completion payment amount")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15,000", "20,000", "3000", null)]
+        [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15,000", "12,000", "2400", null)]
         public virtual void OnProgramCompletionPaymentAmount(string start_Date, string planned_End_Date, string agreed_Price, string funding_Band_Max, string completion_Amount, string[] exampleTags)
         {
             string[] @__tags = new string[] {
