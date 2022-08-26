@@ -12,17 +12,17 @@ variables:
 - name: BuildPlatform
   value: any cpu
 - group: RELEASE Management Resources
+- group: RELEASE das-funding-system-acceptance-tests
 - name: Deploy
   value: $[or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'PullRequest'))]
-
-
+  
 resources:
   repositories:
   - repository: self
   - repository: das-platform-building-blocks
     type: github
     name: SkillsFundingAgency/das-platform-building-blocks
-    ref: refs/tags/0.4.74
+    ref: refs/tags/1.0.4
     endpoint: SkillsFundingAgency
   - repository: das-platform-automation
     type: github
