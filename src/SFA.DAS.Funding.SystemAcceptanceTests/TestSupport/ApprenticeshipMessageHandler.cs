@@ -2,11 +2,11 @@
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 {
-    internal class ServiceBusMessageHelper
+    internal class ApprenticeshipMessageHandler
     {
         private readonly ScenarioContext _context;
 
-        public ServiceBusMessageHelper(ScenarioContext context)
+        public ApprenticeshipMessageHandler(ScenarioContext context)
         {
             _context = context;
         }
