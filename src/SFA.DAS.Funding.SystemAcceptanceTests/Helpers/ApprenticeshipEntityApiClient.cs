@@ -15,7 +15,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             _earnings = _context.Get<EarningsGeneratedEvent>();
         }
 
-        protected override string ApiBaseUrl => $"https://das-{_config.EnvironmentName}-funappern-fa.azurewebsites.net";
+        protected override string ApiBaseUrl => _config.ApprenticeshipEntityApi_BaseUrl;
 
         protected override string ApiName => $"runtime/webhooks/durabletask/entities/ApprenticeshipEntity/{_earnings.ApprenticeshipKey}?code={_config.EarningsFunctionKey}";
     }
