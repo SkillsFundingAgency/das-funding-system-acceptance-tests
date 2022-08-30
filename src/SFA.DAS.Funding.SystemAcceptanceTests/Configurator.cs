@@ -20,7 +20,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
             return new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("local.settings.json", optional: true)
+                .AddJsonFile("appsettings.ProjectConfig.json", optional: true)
+                .AddUserSecrets("FundingTestExecutionSecrets")
                 .Build();
         }
 
