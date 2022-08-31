@@ -18,10 +18,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             return new ConfigurationBuilder()
-                .AddEnvironmentVariables()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.ProjectConfig.json", optional: true)
                 .AddUserSecrets("FundingTestExecutionSecrets")
+                .AddEnvironmentVariables()
                 .Build();
         }
 

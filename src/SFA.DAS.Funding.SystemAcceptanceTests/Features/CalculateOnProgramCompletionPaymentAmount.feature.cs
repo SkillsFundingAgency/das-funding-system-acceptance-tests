@@ -26,7 +26,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         
         private TechTalk.SpecFlow.ITestRunner testRunner;
         
-        private static string[] featureTags = ((string[])(null));
+        private string[] _featureTags = ((string[])(null));
         
 #line 1 "CalculateOnProgramCompletionPaymentAmount.feature"
 #line hidden
@@ -36,7 +36,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Calculate on-program completion amount for an approved apprenticeship", "As a Training provider\r\nI want the completion earnings (Forecast) \r\nSo that they " +
-                    "feed into payment calculations and I get paid", ProgrammingLanguage.CSharp, featureTags);
+                    "feed into payment calculations and I get paid", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -48,28 +48,28 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         }
         
         [NUnit.Framework.SetUpAttribute()]
-        public void TestInitialize()
+        public virtual void TestInitialize()
         {
         }
         
         [NUnit.Framework.TearDownAttribute()]
-        public void TestTearDown()
+        public virtual void TestTearDown()
         {
             testRunner.OnScenarioEnd();
         }
         
-        public void ScenarioInitialize(TechTalk.SpecFlow.ScenarioInfo scenarioInfo)
+        public virtual void ScenarioInitialize(TechTalk.SpecFlow.ScenarioInfo scenarioInfo)
         {
             testRunner.OnScenarioInitialize(scenarioInfo);
             testRunner.ScenarioContext.ScenarioContainer.RegisterInstanceAs<NUnit.Framework.TestContext>(NUnit.Framework.TestContext.CurrentContext);
         }
         
-        public void ScenarioStart()
+        public virtual void ScenarioStart()
         {
             testRunner.OnScenarioStart();
         }
         
-        public void ScenarioCleanup()
+        public virtual void ScenarioCleanup()
         {
             testRunner.CollectScenarioErrors();
         }
@@ -79,7 +79,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15,000", "20,000", "3000", null)]
         [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15,000", "12,000", "2400", null)]
-        public void OnProgramCompletionPaymentAmount(string start_Date, string planned_End_Date, string agreed_Price, string funding_Band_Max, string completion_Amount, string[] exampleTags)
+        public virtual void OnProgramCompletionPaymentAmount(string start_Date, string planned_End_Date, string agreed_Price, string funding_Band_Max, string completion_Amount, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "regression"};
@@ -94,11 +94,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
             argumentsOfScenario.Add("agreed_price", agreed_Price);
             argumentsOfScenario.Add("funding_band_max", funding_Band_Max);
             argumentsOfScenario.Add("completion_amount", completion_Amount);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("On program completion payment amount", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("On program completion payment amount", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 8
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
             {
                 testRunner.SkipScenario();
             }
