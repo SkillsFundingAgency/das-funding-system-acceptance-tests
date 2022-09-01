@@ -2,93 +2,93 @@ using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Models;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
-
-[Binding]
-public class CalculateEarningsForLearningPaymentsStepDefinitions
+namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
-    private readonly ScenarioContext _context;
-    private ApprenticeshipMessageHandler _messageHelper;
-    private ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
-    private EarningsGeneratedEvent _earnings;
-    private FundingPeriod _fundingPeriod;
-
-    public CalculateEarningsForLearningPaymentsStepDefinitions(ScenarioContext context)
+    [Binding]
+    public class CalculateEarningsForLearningPaymentsStepDefinitions
     {
-        _context = context;
-        _messageHelper = new ApprenticeshipMessageHandler(_context);
-    }
+        private readonly ScenarioContext _context;
+        private readonly ApprenticeshipMessageHandler _messageHelper;
+        private ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
+        private EarningsGeneratedEvent _earnings;
+        private FundingPeriod _fundingPeriod;
 
-    [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), and an agreed price of £(.*)")]
-    public void AnApprenticeshipIsCreatedWith(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice)
-    {
-        _apprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice);
-        _context.Set(_apprenticeshipCreatedEvent);
-    }
+        public CalculateEarningsForLearningPaymentsStepDefinitions(ScenarioContext context)
+        {
+            _context = context;
+            _messageHelper = new ApprenticeshipMessageHandler(_context);
+        }
 
-    [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*) and funding band max of (.*)")]
-    public void GivenAnApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndFundingBandMaxOf(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, decimal fundingBandMax)
-    {
-        AnApprenticeshipIsCreatedWith(startDate, plannedEndDate, agreedPrice);
-        SetFundingBandMaxValue(fundingBandMax);
-    }
+        [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), and an agreed price of Â£(.*)")]
+        public void AnApprenticeshipIsCreatedWith(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice)
+        {
+            _apprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice);
+            _context.Set(_apprenticeshipCreatedEvent);
+        }
 
-
-    [When(@"the agreed price is below the funding band maximum (.*) for the selected course")]
-    [When(@"the agreed price is above the funding band maximum (.*) for the selected course")]
-    public void SetFundingBandMaxValue(Decimal fundingBandMax)
-    {
-        _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
-        _messageHelper.UpdateApprenticeshipCreatedMessageWithFundingBandMaximumValue(_apprenticeshipCreatedEvent, fundingBandMax);
-    }
-
-    [When(@"the apprenticeship commitment is approved")]
-    public async Task TheApprenticeshipCommitmentIsApproved()
-    {
-        _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
-        await _messageHelper.PublishApprenticeshipApprovedMessage(_apprenticeshipCreatedEvent);
-        _earnings = _messageHelper.ReadEarningsGeneratedMessage(_apprenticeshipCreatedEvent);
-        _fundingPeriod = _earnings.FundingPeriods.First();
-
-        _context.Set(_earnings);
-        _context.Set(_fundingPeriod);
-    }
+        [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*) and funding band max of (.*)")]
+        public void GivenAnApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndFundingBandMaxOf(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, decimal fundingBandMax)
+        {
+            AnApprenticeshipIsCreatedWith(startDate, plannedEndDate, agreedPrice);
+            SetFundingBandMaxValue(fundingBandMax);
+        }
 
 
-    [Then(@"80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months (.*)")]
-    [Then(@"Agreed price is used to calculate the on-program earnings which is divided equally into number of planned months (.*)")]
-    [Then(@"Funding band maximum price is used to calculate the on-program earnings which is divided equally into number of planned months (.*)")]
-    public void VerifyInstalmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal instalmentAmount)
-    {
-        _context.Get<FundingPeriod>().DeliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(instalmentAmount));
-    }
+        [When(@"the agreed price is below the funding band maximum (.*) for the selected course")]
+        [When(@"the agreed price is above the funding band maximum (.*) for the selected course")]
+        public void SetFundingBandMaxValue(decimal fundingBandMax)
+        {
+            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
+            _messageHelper.UpdateApprenticeshipCreatedMessageWithFundingBandMaximumValue(_apprenticeshipCreatedEvent, fundingBandMax);
+        }
 
-    [Then(@"the planned number of months must be the number of months from the start date to the planned end date (.*)")]
-    public void VerifyThePlannedDurationMonthsWithinTheEarningsGenerated(short numberOfInstalments)
-    {
-        _context.Get<FundingPeriod>().DeliveryPeriods.Should().HaveCount(numberOfInstalments);
-    }
+        [When(@"the apprenticeship commitment is approved")]
+        public async Task TheApprenticeshipCommitmentIsApproved()
+        {
+            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
+            await _messageHelper.PublishApprenticeshipApprovedMessage(_apprenticeshipCreatedEvent);
+            _earnings = _messageHelper.ReadEarningsGeneratedMessage(_apprenticeshipCreatedEvent);
+            _fundingPeriod = _earnings.FundingPeriods.First();
 
-    [Then(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
-    public void ThenTheDeliveryPeriodForEachInstalmentMustBeTheDeliveryPeriodFromTheCollectionCalendarWithAMatchingCalendarMonthYear(Table table)
-    {
-        var deliveryPeriods = _context.Get<FundingPeriod>().DeliveryPeriods;
-
-        deliveryPeriods.ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
-    }
+            _context.Set(_earnings);
+            _context.Set(_fundingPeriod);
+        }
 
 
-    [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]
-    public void VerifyCompletionAmountIsCalculatedCorrectly(decimal completionAmount)
-    {
-        var apiClient = new ApprenticeshipEntityApiClient(_context);
+        [Then(@"80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months (.*)")]
+        [Then(@"Agreed price is used to calculate the on-program earnings which is divided equally into number of planned months (.*)")]
+        [Then(@"Funding band maximum price is used to calculate the on-program earnings which is divided equally into number of planned months (.*)")]
+        public void VerifyInstalmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal instalmentAmount)
+        {
+            _context.Get<FundingPeriod>().DeliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(instalmentAmount));
+        }
 
-        var response = apiClient.Execute();
+        [Then(@"the planned number of months must be the number of months from the start date to the planned end date (.*)")]
+        public void VerifyThePlannedDurationMonthsWithinTheEarningsGenerated(short numberOfInstalments)
+        {
+            _context.Get<FundingPeriod>().DeliveryPeriods.Should().HaveCount(numberOfInstalments);
+        }
 
-        var jsonString = response.Result.Content.ReadAsStringAsync();
+        [Then(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
+        public void ThenTheDeliveryPeriodForEachInstalmentMustBeTheDeliveryPeriodFromTheCollectionCalendarWithAMatchingCalendarMonthYear(Table table)
+        {
+            var deliveryPeriods = _context.Get<FundingPeriod>().DeliveryPeriods;
 
-        var apprenticeshipEntity = JsonConvert.DeserializeObject<ApprenticeshipEntityModel>(jsonString.Result);
+            deliveryPeriods.ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
+        }
 
-        Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model?.EarningsProfile?.CompletionPayment);
+        [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]
+        public void VerifyCompletionAmountIsCalculatedCorrectly(decimal completionAmount)
+        {
+            var apiClient = new ApprenticeshipEntityApiClient(_context);
+
+            var response = apiClient.Execute();
+
+            var jsonString = response.Result.Content.ReadAsStringAsync();
+
+            var apprenticeshipEntity = JsonConvert.DeserializeObject<ApprenticeshipEntityModel>(jsonString.Result);
+
+            Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model.EarningsProfile.CompletionPayment);
+        }
     }
 }

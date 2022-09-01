@@ -33,7 +33,7 @@ jobs:
           env:
             NServiceBusLicense: $(NServiceBusLicense)
             AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
-            FundingApprenticeshipEarningsFunctionAppSystemKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
+            EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
           inputs:
             command: 'test'
             projects: |

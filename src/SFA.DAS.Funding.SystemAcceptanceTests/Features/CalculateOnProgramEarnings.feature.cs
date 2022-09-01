@@ -26,7 +26,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         
         private TechTalk.SpecFlow.ITestRunner testRunner;
         
-        private static string[] featureTags = ((string[])(null));
+        private string[] _featureTags = ((string[])(null));
         
 #line 1 "CalculateOnProgramEarnings.feature"
 #line hidden
@@ -36,7 +36,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Calculate on-program earnings for an approved apprenticeship", "As a Training provider\r\nI want monthly on-program earnings to be calculated \r\nSo " +
-                    "they feed into payments calculation I get paid", ProgrammingLanguage.CSharp, featureTags);
+                    "they feed into payments calculation I get paid", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -48,28 +48,28 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         }
         
         [NUnit.Framework.SetUpAttribute()]
-        public void TestInitialize()
+        public virtual void TestInitialize()
         {
         }
         
         [NUnit.Framework.TearDownAttribute()]
-        public void TestTearDown()
+        public virtual void TestTearDown()
         {
             testRunner.OnScenarioEnd();
         }
         
-        public void ScenarioInitialize(TechTalk.SpecFlow.ScenarioInfo scenarioInfo)
+        public virtual void ScenarioInitialize(TechTalk.SpecFlow.ScenarioInfo scenarioInfo)
         {
             testRunner.OnScenarioInitialize(scenarioInfo);
             testRunner.ScenarioContext.ScenarioContainer.RegisterInstanceAs<NUnit.Framework.TestContext>(NUnit.Framework.TestContext.CurrentContext);
         }
         
-        public void ScenarioStart()
+        public virtual void ScenarioStart()
         {
             testRunner.OnScenarioStart();
         }
         
-        public void ScenarioCleanup()
+        public virtual void ScenarioCleanup()
         {
             testRunner.CollectScenarioErrors();
         }
@@ -78,7 +78,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         [NUnit.Framework.DescriptionAttribute("On-program earnings generation for an approved apprenticeship")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15,000", "12", "1000", "01-2223", "08/2022", null)]
-        public void On_ProgramEarningsGenerationForAnApprovedApprenticeship(string start_Date, string planned_End_Date, string agreed_Price, string planned_Number_Of_Months, string instalment_Amount, string first_Delivery_Period, string first_Calendar_Period, string[] exampleTags)
+        public virtual void On_ProgramEarningsGenerationForAnApprovedApprenticeship(string start_Date, string planned_End_Date, string agreed_Price, string planned_Number_Of_Months, string instalment_Amount, string first_Delivery_Period, string first_Calendar_Period, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "regression"};
@@ -95,11 +95,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
             argumentsOfScenario.Add("instalment_amount", instalment_Amount);
             argumentsOfScenario.Add("first_delivery_period", first_Delivery_Period);
             argumentsOfScenario.Add("first_calendar_period", first_Calendar_Period);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("On-program earnings generation for an approved apprenticeship", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("On-program earnings generation for an approved apprenticeship", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 8
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
             {
                 testRunner.SkipScenario();
             }
