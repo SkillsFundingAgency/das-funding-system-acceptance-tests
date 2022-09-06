@@ -20,27 +20,27 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _messageHelper = new ApprenticeshipMessageHandler(_context);
         }
 
-        [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), and an agreed price of £(.*)")]
-        public void AnApprenticeshipIsCreatedWith(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice)
+        [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
+        public void GivenAnApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, string trainingCode)
         {
-            _apprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, "10024");
+            _apprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
             _context.Set(_apprenticeshipCreatedEvent);
         }
 
-        [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*) and funding band max of (.*)")]
-        public void GivenAnApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndFundingBandMaxOf(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, decimal fundingBandMax)
-        {
-            AnApprenticeshipIsCreatedWith(startDate, plannedEndDate, agreedPrice);
-            SetFundingBandMaxValue(fundingBandMax);
-        }
 
-
-        [When(@"the agreed price is below the funding band maximum (.*) for the selected course")]
-        [When(@"the agreed price is above the funding band maximum (.*) for the selected course")]
-        public void SetFundingBandMaxValue(decimal fundingBandMax)
+        [When(@"the agreed price is (below|above) the funding band maximum (.*) for the selected course")]
+        public void VerifyFundingBandMaxValue(string condition, decimal fundingBandMax)
         {
-            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
-            _messageHelper.UpdateApprenticeshipCreatedMessageWithFundingBandMaximumValue(_apprenticeshipCreatedEvent, fundingBandMax);
+            //Assert.AreEqual(_earnings.FundingPeriods, fundingBandMax, "Unexpected FundingBandMax value found");
+
+            if (condition == "below")
+            {
+                Assert.Less(_apprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _earnings.ApprenticeshipKey);
+            }
+            else
+            {
+                Assert.Greater(_apprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _earnings.ApprenticeshipKey);
+            }
         }
 
         [When(@"the apprenticeship commitment is approved")]

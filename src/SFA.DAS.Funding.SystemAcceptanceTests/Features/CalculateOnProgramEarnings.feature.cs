@@ -77,8 +77,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("On-program earnings generation for an approved apprenticeship")]
         [NUnit.Framework.CategoryAttribute("regression")]
-        [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15,000", "12", "1000", "01-2223", "08/2022", null)]
-        public void On_ProgramEarningsGenerationForAnApprovedApprenticeship(string start_Date, string planned_End_Date, string agreed_Price, string planned_Number_Of_Months, string instalment_Amount, string first_Delivery_Period, string first_Calendar_Period, string[] exampleTags)
+        [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15,000", "614", "12", "1000", "01-2223", "08/2022", null)]
+        public void On_ProgramEarningsGenerationForAnApprovedApprenticeship(string start_Date, string planned_End_Date, string agreed_Price, string training_Code, string planned_Number_Of_Months, string instalment_Amount, string first_Delivery_Period, string first_Calendar_Period, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "regression"};
@@ -91,6 +91,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
             argumentsOfScenario.Add("start_date", start_Date);
             argumentsOfScenario.Add("planned_end_date", planned_End_Date);
             argumentsOfScenario.Add("agreed_price", agreed_Price);
+            argumentsOfScenario.Add("training_code", training_Code);
             argumentsOfScenario.Add("planned_number_of_months", planned_Number_Of_Months);
             argumentsOfScenario.Add("instalment_amount", instalment_Amount);
             argumentsOfScenario.Add("first_delivery_period", first_Delivery_Period);
@@ -107,8 +108,8 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 9
- testRunner.Given(string.Format("an apprenticeship has a start date of {0}, a planned end date of {1}, and an agre" +
-                            "ed price of £{2}", start_Date, planned_End_Date, agreed_Price), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given(string.Format("an apprenticeship has a start date of {0}, a planned end date of {1}, an agreed p" +
+                            "rice of {2}, and a training code {3}", start_Date, planned_End_Date, agreed_Price, training_Code), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 10
  testRunner.When("the apprenticeship commitment is approved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");

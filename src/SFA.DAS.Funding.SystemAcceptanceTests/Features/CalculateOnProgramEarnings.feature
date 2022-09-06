@@ -6,7 +6,7 @@ So they feed into payments calculation I get paid
 
 @regression
 Scenario: On-program earnings generation for an approved apprenticeship
-	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, and an agreed price of £<agreed_price>
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	When the apprenticeship commitment is approved
 	Then 80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months <instalment_amount> 
 	And the planned number of months must be the number of months from the start date to the planned end date <planned_number_of_months>
@@ -27,5 +27,5 @@ Scenario: On-program earnings generation for an approved apprenticeship
 
 
 	Examples:
-	| start_date | planned_end_date | agreed_price | planned_number_of_months | instalment_amount |	first_delivery_period	| first_calendar_period |
-	| 2022-08-01 | 2023-07-31       | 15,000       | 12                       | 1000              |	01-2223					| 08/2022               |
+	| start_date | planned_end_date | agreed_price | training_code | planned_number_of_months | instalment_amount | first_delivery_period | first_calendar_period |
+	| 2022-08-01 | 2023-07-31       | 15,000       | 614           | 12                       | 1000              | 01-2223               | 08/2022               |
