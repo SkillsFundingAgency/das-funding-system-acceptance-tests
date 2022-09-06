@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using SFA.DAS.CommitmentsV2.Messages.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Models;
 
@@ -22,7 +23,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), and an agreed price of £(.*)")]
         public void AnApprenticeshipIsCreatedWith(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice)
         {
-            _apprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice);
+            _apprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, "10024");
             _context.Set(_apprenticeshipCreatedEvent);
         }
 
