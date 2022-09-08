@@ -34,8 +34,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 
         public EarningsGeneratedEvent ReadEarningsGeneratedMessage(ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
         {
-            // return EarningsGeneratedEventHandler.ReceivedEvents.Where(x => x.FundingPeriods.First().Uln == apprenticeshipCreatedEvent.Uln).First();
-            return new EarningsGeneratedEvent ();
+            return EarningsGeneratedEventHandler.ReceivedEvents.Where(x => x.FundingPeriods.Any(y => y.Uln.ToString() == apprenticeshipCreatedEvent.Uln)).First();
         }
 
 
