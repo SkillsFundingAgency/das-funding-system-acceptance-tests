@@ -40,7 +40,12 @@ I want the funding band maximum to be applied
 So we don’t overpay for apprenticeship funding
 
 *** This feature is dependant on FundingBandMax value for the training code used *** 
-*** Please do not change it without the consent of the team's testers ***", ProgrammingLanguage.CSharp, featureTags);
+*** Please do not change it without the consent of the team's testers ***
+
+
+| Training Code | Earliest Start Date		| Latest End Date		  | Proposed Max Funding |
+| 6				| 2014-11-12 00:00:00.000	| 2019-03-03 00:00:00.000 | 27000                |
+| 6				| 2019-03-04 00:00:00.000	| NULL					  | 2600                 |", ProgrammingLanguage.CSharp, featureTags);
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -79,10 +84,10 @@ So we don’t overpay for apprenticeship funding
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("On program earnings generation when funding band max is more than agreed price")]
+        [NUnit.Framework.DescriptionAttribute("On program earnings generation when agreed price is below funding band max")]
         [NUnit.Framework.CategoryAttribute("regression")]
-        [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15000", "614", "27000", "1000", null)]
-        public void OnProgramEarningsGenerationWhenFundingBandMaxIsMoreThanAgreedPrice(string start_Date, string planned_End_Date, string agreed_Price, string training_Code, string funding_Band_Max, string instalment_Amount, string[] exampleTags)
+        [NUnit.Framework.TestCaseAttribute("2018-08-01", "2023-07-31", "26100", "6", "1740", null)]
+        public void OnProgramEarningsGenerationWhenAgreedPriceIsBelowFundingBandMax(string start_Date, string planned_End_Date, string agreed_Price, string training_Code, string instalment_Amount, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "regression"};
@@ -96,10 +101,9 @@ So we don’t overpay for apprenticeship funding
             argumentsOfScenario.Add("planned_end_date", planned_End_Date);
             argumentsOfScenario.Add("agreed_price", agreed_Price);
             argumentsOfScenario.Add("training_code", training_Code);
-            argumentsOfScenario.Add("funding_band_max", funding_Band_Max);
             argumentsOfScenario.Add("instalment_amount", instalment_Amount);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("On program earnings generation when funding band max is more than agreed price", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 11
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("On program earnings generation when agreed price is below funding band max", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 16
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -109,17 +113,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 12
+#line 17
  testRunner.Given(string.Format("an apprenticeship has a start date of {0}, a planned end date of {1}, an agreed p" +
                             "rice of {2}, and a training code {3}", start_Date, planned_End_Date, agreed_Price, training_Code), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 13
+#line 18
  testRunner.When("the apprenticeship commitment is approved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 14
- testRunner.And(string.Format("the agreed price is below the funding band maximum {0} for the selected course", funding_Band_Max), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 19
+ testRunner.And("the agreed price is below the funding band maximum for the selected course", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 15
+#line 20
  testRunner.Then(string.Format("Agreed price is used to calculate the on-program earnings which is divided equall" +
                             "y into number of planned months {0}", instalment_Amount), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -128,10 +132,10 @@ this.ScenarioInitialize(scenarioInfo);
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("On-program earnings generation when funding band max is less than agreed price")]
+        [NUnit.Framework.DescriptionAttribute("On program earnings generation when agreed price is above funding band max")]
         [NUnit.Framework.CategoryAttribute("regression")]
-        [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15000", "177", "9000", "600", null)]
-        public void On_ProgramEarningsGenerationWhenFundingBandMaxIsLessThanAgreedPrice(string start_Date, string planned_End_Date, string agreed_Price, string training_Code, string funding_Band_Max, string instalment_Amount, string[] exampleTags)
+        [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "30000", "6", "1733.3333333333333333333333333", null)]
+        public void OnProgramEarningsGenerationWhenAgreedPriceIsAboveFundingBandMax(string start_Date, string planned_End_Date, string agreed_Price, string training_Code, string instalment_Amount, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "regression"};
@@ -145,10 +149,9 @@ this.ScenarioInitialize(scenarioInfo);
             argumentsOfScenario.Add("planned_end_date", planned_End_Date);
             argumentsOfScenario.Add("agreed_price", agreed_Price);
             argumentsOfScenario.Add("training_code", training_Code);
-            argumentsOfScenario.Add("funding_band_max", funding_Band_Max);
             argumentsOfScenario.Add("instalment_amount", instalment_Amount);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("On-program earnings generation when funding band max is less than agreed price", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 22
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("On program earnings generation when agreed price is above funding band max", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 27
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -158,17 +161,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 23
+#line 28
  testRunner.Given(string.Format("an apprenticeship has a start date of {0}, a planned end date of {1}, an agreed p" +
                             "rice of {2}, and a training code {3}", start_Date, planned_End_Date, agreed_Price, training_Code), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 24
+#line 29
  testRunner.When("the apprenticeship commitment is approved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 25
- testRunner.And(string.Format("the agreed price is above the funding band maximum {0} for the selected course", funding_Band_Max), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 30
+ testRunner.And("the agreed price is above the funding band maximum for the selected course", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 26
+#line 31
  testRunner.Then(string.Format("Funding band maximum price is used to calculate the on-program earnings which is " +
                             "divided equally into number of planned months {0}", instalment_Amount), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

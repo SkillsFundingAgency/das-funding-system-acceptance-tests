@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
-using SFA.DAS.CommitmentsV2.Messages.Events;
+using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
+using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Models;
 
@@ -10,7 +11,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     {
         private readonly ScenarioContext _context;
         private readonly ApprenticeshipMessageHandler _messageHelper;
-        private ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
+        private CommitmentsMessages.ApprenticeshipCreatedEvent _commitmentsApprenticeshipCreatedEvent;
+        private ApprenticeshipsMessages.ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
         private EarningsGeneratedEvent _earnings;
         private FundingPeriod _fundingPeriod;
 
@@ -23,32 +25,26 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
         public void GivenAnApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, string trainingCode)
         {
-            _apprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
-            _context.Set(_apprenticeshipCreatedEvent);
+            _commitmentsApprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
+            _context.Set(_commitmentsApprenticeshipCreatedEvent);
         }
 
 
-        [When(@"the agreed price is (below|above) the funding band maximum (.*) for the selected course")]
-        public void VerifyFundingBandMaxValue(string condition, decimal fundingBandMax)
+        [When(@"the agreed price is (below|above) the funding band maximum for the selected course")]
+        public void VerifyFundingBandMaxValue(string condition)
         {
-            //Assert.AreEqual(_earnings.FundingPeriods, fundingBandMax, "Unexpected FundingBandMax value found");
+            _apprenticeshipCreatedEvent = _messageHelper.ReadApprenticeshipTypesMessage(_commitmentsApprenticeshipCreatedEvent);
 
-            if (condition == "below")
-            {
-                Assert.Less(_apprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _earnings.ApprenticeshipKey);
-            }
-            else
-            {
-                Assert.Greater(_apprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _earnings.ApprenticeshipKey);
-            }
+            if (condition == "below") Assert.Less(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.FundingBandMaximum);
+            else Assert.Greater(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.FundingBandMaximum);
         }
 
         [When(@"the apprenticeship commitment is approved")]
         public async Task TheApprenticeshipCommitmentIsApproved()
         {
-            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
-            await _messageHelper.PublishApprenticeshipApprovedMessage(_apprenticeshipCreatedEvent);
-            _earnings = _messageHelper.ReadEarningsGeneratedMessage(_apprenticeshipCreatedEvent);
+            _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+            await _messageHelper.PublishApprenticeshipApprovedMessage(_commitmentsApprenticeshipCreatedEvent);
+            _earnings = _messageHelper.ReadEarningsGeneratedMessage(_commitmentsApprenticeshipCreatedEvent);
             _fundingPeriod = _earnings.FundingPeriods.First();
 
             _context.Set(_earnings);

@@ -80,11 +80,11 @@ So that they feed into payment calculations and I get paid
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("On program completion payment amount")]
+        [NUnit.Framework.DescriptionAttribute("Calculate the on program completion payment amount")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15000", "614", "3000", null)]
         [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15000", "177", "1800", null)]
-        public void OnProgramCompletionPaymentAmount(string start_Date, string planned_End_Date, string agreed_Price, string training_Code, string completion_Amount, string[] exampleTags)
+        public void CalculateTheOnProgramCompletionPaymentAmount(string start_Date, string planned_End_Date, string agreed_Price, string training_Code, string completion_Amount, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "regression"};
@@ -99,7 +99,7 @@ So that they feed into payment calculations and I get paid
             argumentsOfScenario.Add("agreed_price", agreed_Price);
             argumentsOfScenario.Add("training_code", training_Code);
             argumentsOfScenario.Add("completion_amount", completion_Amount);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("On program completion payment amount", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Calculate the on program completion payment amount", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 12
 this.ScenarioInitialize(scenarioInfo);
 #line hidden

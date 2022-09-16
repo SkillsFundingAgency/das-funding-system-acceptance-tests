@@ -9,7 +9,7 @@ So that they feed into payment calculations and I get paid
 *** Please do not change it without the consent of the team's testers ***
 
 @regression
-Scenario: On program completion payment amount
+Scenario: Calculate the on program completion payment amount
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	When the apprenticeship commitment is approved
 	Then the total completion amount <completion_amount> should be calculated as 20% of the adjusted price
