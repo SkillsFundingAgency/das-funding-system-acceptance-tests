@@ -86,7 +86,7 @@ So we don’t overpay for apprenticeship funding
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("On program earnings generation when agreed price is below funding band max")]
         [NUnit.Framework.CategoryAttribute("regression")]
-        [NUnit.Framework.TestCaseAttribute("2018-08-01", "2023-07-31", "26100", "6", "1740", null)]
+        [NUnit.Framework.TestCaseAttribute("2018-08-01", "2019-07-31", "26100", "6", "1740", null)]
         public void OnProgramEarningsGenerationWhenAgreedPriceIsBelowFundingBandMax(string start_Date, string planned_End_Date, string agreed_Price, string training_Code, string instalment_Amount, string[] exampleTags)
         {
             string[] @__tags = new string[] {

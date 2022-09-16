@@ -21,7 +21,7 @@ Scenario: On program earnings generation when agreed price is below funding band
 	
 Examples:
 	| start_date | planned_end_date | agreed_price | training_code | instalment_amount |
-	| 2018-08-01 | 2023-07-31       | 26100        | 6             | 1740              |
+	| 2018-08-01 | 2019-07-31       | 26100        | 6             | 1740              |
 
 @regression
 Scenario Outline: On program earnings generation when agreed price is above funding band max
