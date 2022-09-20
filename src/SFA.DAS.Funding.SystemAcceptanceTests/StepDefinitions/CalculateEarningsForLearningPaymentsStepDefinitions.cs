@@ -1,4 +1,6 @@
 using Newtonsoft.Json;
+using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
+using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Models;
 
@@ -9,7 +11,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     {
         private readonly ScenarioContext _context;
         private readonly ApprenticeshipMessageHandler _messageHelper;
-        private ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
+        private CommitmentsMessages.ApprenticeshipCreatedEvent _commitmentsApprenticeshipCreatedEvent;
+        private ApprenticeshipsMessages.ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
         private EarningsGeneratedEvent _earnings;
         private FundingPeriod _fundingPeriod;
 
@@ -19,35 +22,29 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _messageHelper = new ApprenticeshipMessageHandler(_context);
         }
 
-        [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), and an agreed price of £(.*)")]
-        public void AnApprenticeshipIsCreatedWith(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice)
+        [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
+        public void GivenAnApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, string trainingCode)
         {
-            _apprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice);
-            _context.Set(_apprenticeshipCreatedEvent);
-        }
-
-        [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*) and funding band max of (.*)")]
-        public void GivenAnApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndFundingBandMaxOf(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, decimal fundingBandMax)
-        {
-            AnApprenticeshipIsCreatedWith(startDate, plannedEndDate, agreedPrice);
-            SetFundingBandMaxValue(fundingBandMax);
+            _commitmentsApprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
+            _context.Set(_commitmentsApprenticeshipCreatedEvent);
         }
 
 
-        [When(@"the agreed price is below the funding band maximum (.*) for the selected course")]
-        [When(@"the agreed price is above the funding band maximum (.*) for the selected course")]
-        public void SetFundingBandMaxValue(decimal fundingBandMax)
+        [When(@"the agreed price is (below|above) the funding band maximum for the selected course")]
+        public void VerifyFundingBandMaxValue(string condition)
         {
-            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
-            _messageHelper.UpdateApprenticeshipCreatedMessageWithFundingBandMaximumValue(_apprenticeshipCreatedEvent, fundingBandMax);
+            _apprenticeshipCreatedEvent = _messageHelper.ReadApprenticeshipTypesMessage(_commitmentsApprenticeshipCreatedEvent).Result;
+
+            if (condition == "below") Assert.Less(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.FundingBandMaximum);
+            else Assert.Greater(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.FundingBandMaximum);
         }
 
         [When(@"the apprenticeship commitment is approved")]
         public async Task TheApprenticeshipCommitmentIsApproved()
         {
-            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
-            await _messageHelper.PublishApprenticeshipApprovedMessage(_apprenticeshipCreatedEvent);
-            _earnings = _messageHelper.ReadEarningsGeneratedMessage(_apprenticeshipCreatedEvent);
+            _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+            await _messageHelper.PublishApprenticeshipApprovedMessage(_commitmentsApprenticeshipCreatedEvent);
+            _earnings = _messageHelper.ReadEarningsGeneratedMessage(_commitmentsApprenticeshipCreatedEvent);
             _fundingPeriod = _earnings.FundingPeriods.First();
 
             _context.Set(_earnings);
