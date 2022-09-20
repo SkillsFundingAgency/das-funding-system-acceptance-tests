@@ -134,7 +134,7 @@ this.ScenarioInitialize(scenarioInfo);
         [NUnit.Framework.DescriptionAttribute("On program earnings generation when agreed price is above funding band max")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "30000", "6", "1733.3333333333333333333333333", null)]
-        [NUnit.Framework.TestCaseAttribute("2018-08-01", "2019-07-31", "30000", "-1", "1800", null)]
+        [NUnit.Framework.TestCaseAttribute("2018-08-01", "2019-07-31", "30000", "6", "1800", null)]
         public void OnProgramEarningsGenerationWhenAgreedPriceIsAboveFundingBandMax(string start_Date, string planned_End_Date, string agreed_Price, string training_Code, string instalment_Amount, string[] exampleTags)
         {
             string[] @__tags = new string[] {

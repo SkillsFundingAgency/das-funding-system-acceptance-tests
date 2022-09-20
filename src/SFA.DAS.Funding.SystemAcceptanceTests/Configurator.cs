@@ -7,12 +7,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
     {
 
         private readonly static string? EnvironmentName;
+        private readonly static bool IsVstsExecution;
         private readonly static IConfigurationRoot _hostingConfig;
 
         static Configurator()
         {
             _hostingConfig = InitializeHostingConfig();
             EnvironmentName = GetEnvironmentName();
+            IsVstsExecution = TestsExecutionInVsts();
         }
 
         private static IConfigurationRoot InitializeHostingConfig() => ConfigurationBuilder()
@@ -23,7 +25,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
         private static IConfigurationBuilder ConfigurationBuilder() => new ConfigurationBuilder()
                .SetBasePath(Directory.GetCurrentDirectory());
 
-        private static string? GetEnvironmentName() => GetHostingConfigSection("EnvironmentName");
+        private static bool TestsExecutionInVsts() => !string.IsNullOrEmpty(GetAgentMachineName());
+
+        private static string? GetAgentMachineName() => GetHostingConfigSection("ResourceEnvironmentName");
+
+        private static string? GetEnvironmentName() => IsVstsExecution ? GetHostingConfigSection("ResourceEnvironmentName") :  GetHostingConfigSection("EnvironmentName");
         private static string? GetHostingConfigSection(string name) => _hostingConfig.GetSection(name)?.Value;
 
         public static FundingConfig GetConfiguration()
