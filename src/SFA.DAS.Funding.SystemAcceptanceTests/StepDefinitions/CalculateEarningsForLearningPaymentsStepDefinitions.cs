@@ -33,7 +33,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the agreed price is (below|above) the funding band maximum for the selected course")]
         public void VerifyFundingBandMaxValue(string condition)
         {
-            _apprenticeshipCreatedEvent = _messageHelper.ReadApprenticeshipTypesMessage(_commitmentsApprenticeshipCreatedEvent);
+            _apprenticeshipCreatedEvent = _messageHelper.ReadApprenticeshipTypesMessage(_commitmentsApprenticeshipCreatedEvent).Result;
 
             if (condition == "below") Assert.Less(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.FundingBandMaximum);
             else Assert.Greater(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.FundingBandMaximum);

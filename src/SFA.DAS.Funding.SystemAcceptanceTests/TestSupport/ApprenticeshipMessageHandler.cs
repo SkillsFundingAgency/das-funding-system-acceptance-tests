@@ -30,7 +30,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
         {
             await _context.Get<TestMessageBus>().Publish(apprenticeshipCreatedEvent);
 
-            await WaitHelper.WaitForIt(() => EarningsGeneratedEventHandler.ReceivedEvents.Where(x => x.FundingPeriods.Any (y => y.Uln.ToString() == apprenticeshipCreatedEvent.Uln)).Any(), "Failed to find published event");
+            await WaitHelper.WaitForIt(() => EarningsGeneratedEventHandler.ReceivedEvents.Where(x => x.FundingPeriods.Any (y => y.Uln.ToString() == apprenticeshipCreatedEvent.Uln)).Any(), "Failed to find published event in Earnings");
         }
 
         public EarningsGeneratedEvent ReadEarningsGeneratedMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
@@ -38,8 +38,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             return EarningsGeneratedEventHandler.ReceivedEvents.Where(x => x.FundingPeriods.Any(y => y.Uln.ToString() == apprenticeshipCreatedEvent.Uln)).First();
         }
 
-        public APR.ApprenticeshipCreatedEvent ReadApprenticeshipTypesMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
+        public async Task<APR.ApprenticeshipCreatedEvent>  ReadApprenticeshipTypesMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
         {
+            await WaitHelper.WaitForIt(() => ApprenticeshipCreatedEventHandler.ReceivedEvents.Where(x => x.Uln == apprenticeshipCreatedEvent.Uln).Any(), "Failed to find published event in apprenticeships");
             return ApprenticeshipCreatedEventHandler.ReceivedEvents.Where(x => x.Uln == apprenticeshipCreatedEvent.Uln).First();
         }
 
