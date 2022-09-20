@@ -34,7 +34,6 @@ jobs:
             NServiceBusLicense: $(NServiceBusLicense)
             AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
             EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
-            EnvironmentName: $(ResourceEnvironmentName)
           inputs:
             command: 'test'
             projects: |
