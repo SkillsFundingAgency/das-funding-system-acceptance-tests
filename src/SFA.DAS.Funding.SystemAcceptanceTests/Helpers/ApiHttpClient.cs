@@ -1,5 +1,5 @@
 ﻿
-namespace SFA.DAS.Funding.SystemAcceptanceTests
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 {
     public abstract class ApiHttpClient
     { 

@@ -1,9 +1,8 @@
 ﻿
 using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
 using APR = SFA.DAS.Apprenticeships.Types;
-using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
+namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
     internal class ApprenticeshipMessageHandler
     {
@@ -40,10 +39,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 
         public async Task<APR.ApprenticeshipCreatedEvent>  ReadApprenticeshipTypesMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
         {
-            await WaitHelper.WaitForIt(() => ApprenticeshipCreatedEventHandler.ReceivedEvents.Where(x => x.Uln == apprenticeshipCreatedEvent.Uln).Any(), "Failed to find published event in apprenticeships");
-            return ApprenticeshipCreatedEventHandler.ReceivedEvents.Where(x => x.Uln == apprenticeshipCreatedEvent.Uln).First();
+            await WaitHelper.WaitForIt(() => ApprenticeshipsTypesEventHandler.ReceivedEvents.Where(x => x.Uln == apprenticeshipCreatedEvent.Uln).Any(), "Failed to find published event in apprenticeships");
+            return ApprenticeshipsTypesEventHandler.ReceivedEvents.Where(x => x.Uln == apprenticeshipCreatedEvent.Uln).First();
         }
 
-
+        internal async Task<CMT.ApprenticeshipCreatedEvent> ReadCommitmentsEventHandler(string uln)
+        {
+            await WaitHelper.WaitForIt(() => CommitmentsEventHandler.ReceivedEvents.Where(x => x.Uln == uln).Any(), "Failed to find published event in apprenticeships");
+            return CommitmentsEventHandler.ReceivedEvents.Where(x => x.Uln == uln).First();
+        }
     }
 }
