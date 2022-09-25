@@ -45,12 +45,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
             await _messageHelper.PublishApprenticeshipApprovedMessage(_commitmentsApprenticeshipCreatedEvent);
 
-            _apprenticeshipCreatedEvent = _messageHelper.ReadApprenticeshipTypesMessage(_commitmentsApprenticeshipCreatedEvent).Result;
-
-            _earnings = _messageHelper.ReadEarningsGeneratedMessage(_commitmentsApprenticeshipCreatedEvent);
+            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
+            _earnings = _context.Get<EarningsGeneratedEvent>();
             _fundingPeriod = _earnings.FundingPeriods.First();
 
-            _context.Set(_earnings);
             _context.Set(_fundingPeriod);
         }
 
@@ -94,6 +92,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the leaners age (.*) at the start of the course and funding line type (.*) must be calculated")]
         public void ValidateAgeAndFundingLineTypeCalculated(int age, string fundingLineType)
         {
+            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
             Assert.AreEqual(_apprenticeshipCreatedEvent.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {_apprenticeshipCreatedEvent.AgeAtStartOfApprenticeship}");
             
             var deliveryPeriods = _context.Get<FundingPeriod>().DeliveryPeriods;
