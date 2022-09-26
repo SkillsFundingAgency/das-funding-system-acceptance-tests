@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
-using SFA.DAS.Funding.SystemAcceptanceTests.Models;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -29,12 +29,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _context.Set(_commitmentsApprenticeshipCreatedEvent);
         }
 
+        [Given(@"the apprenticeship learner has a date of birth (.*)")]
+        public void AddDateOfBirthToCommitmentsApprenticeshipCreatedEvent(DateTime dob) => _commitmentsApprenticeshipCreatedEvent.DateOfBirth = dob;
 
         [When(@"the agreed price is (below|above) the funding band maximum for the selected course")]
         public void VerifyFundingBandMaxValue(string condition)
         {
-            _apprenticeshipCreatedEvent = _messageHelper.ReadApprenticeshipTypesMessage(_commitmentsApprenticeshipCreatedEvent).Result;
-
             if (condition == "below") Assert.Less(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.FundingBandMaximum);
             else Assert.Greater(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.FundingBandMaximum);
         }
@@ -44,10 +44,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
             await _messageHelper.PublishApprenticeshipApprovedMessage(_commitmentsApprenticeshipCreatedEvent);
-            _earnings = _messageHelper.ReadEarningsGeneratedMessage(_commitmentsApprenticeshipCreatedEvent);
+
+            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
+            _earnings = _context.Get<EarningsGeneratedEvent>();
             _fundingPeriod = _earnings.FundingPeriods.First();
 
-            _context.Set(_earnings);
             _context.Set(_fundingPeriod);
         }
 
@@ -86,6 +87,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var apprenticeshipEntity = JsonConvert.DeserializeObject<ApprenticeshipEntityModel>(jsonString.Result);
 
             Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model.EarningsProfile.CompletionPayment);
+        }
+
+        [Then(@"the leaners age (.*) at the start of the course and funding line type (.*) must be calculated")]
+        public void ValidateAgeAndFundingLineTypeCalculated(int age, string fundingLineType)
+        {
+            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
+            Assert.AreEqual(_apprenticeshipCreatedEvent.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {_apprenticeshipCreatedEvent.AgeAtStartOfApprenticeship}");
+            
+            var deliveryPeriods = _context.Get<FundingPeriod>().DeliveryPeriods;
+            deliveryPeriods.ShouldHaveCorrectFundingLineType(fundingLineType);
         }
     }
 }

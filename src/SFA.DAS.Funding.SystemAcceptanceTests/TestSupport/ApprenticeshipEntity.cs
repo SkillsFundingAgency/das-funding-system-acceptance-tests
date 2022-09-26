@@ -1,5 +1,5 @@
 ﻿
-namespace SFA.DAS.Funding.SystemAcceptanceTests.Models
+namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
     
     public class ApprenticeshipEntityModel
