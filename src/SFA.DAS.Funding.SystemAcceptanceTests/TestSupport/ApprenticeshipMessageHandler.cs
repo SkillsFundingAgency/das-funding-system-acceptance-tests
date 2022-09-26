@@ -23,7 +23,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 .With(_ => _.PriceEpisodes, new PriceEpisodeHelper().CreateSinglePriceEpisodeUsingStartDate(actualStartDate, agreedPrice))
                 .With(_ => _.Uln, fixture.Create<long>().ToString)
                 .With(_ => _.TrainingCode, trainingCode)
+                .With(_ => _.DateOfBirth, DateTime.Now.AddYears((-18)))
                 .Create();
+        }
+        
+        public CMT.ApprenticeshipCreatedEvent UpdateApprenticeshipCreatedMessageWithDoB(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent, DateTime dob)
+        {
+            apprenticeshipCreatedEvent.DateOfBirth = dob;
+            return apprenticeshipCreatedEvent;
         }
 
         public async Task PublishApprenticeshipApprovedMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)

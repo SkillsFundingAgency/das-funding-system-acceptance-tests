@@ -30,8 +30,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Given(@"the apprenticeship learner has a date of birth (.*)")]
-        public void AddDateOfBirthToCommitmentsApprenticeshipCreatedEvent(DateTime dob) => _commitmentsApprenticeshipCreatedEvent.DateOfBirth = dob;
+        public void AddDateOfBirthToCommitmentsApprenticeshipCreatedEvent(DateTime dob)
+        {
+            _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+            
+            _messageHelper.UpdateApprenticeshipCreatedMessageWithDoB(_commitmentsApprenticeshipCreatedEvent, dob);
 
+        }
+        
         [When(@"the agreed price is (below|above) the funding band maximum for the selected course")]
         public void VerifyFundingBandMaxValue(string condition)
         {
