@@ -67,20 +67,5 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 return false;
             }, "Failed to find published event in Earnings");
         }
-
-        // public EarningsGeneratedEvent ReadEarningsGeneratedMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
-        // {
-        //     return EarningsGeneratedEventHandler.ReceivedEvents.Where(x => x.FundingPeriods.Any(y => y.Uln.ToString() == apprenticeshipCreatedEvent.Uln)).First();
-        // }
-        //
-        // public APR.ApprenticeshipCreatedEvent  ReadApprenticeshipTypesMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
-        // {
-        //     return ApprenticeshipsTypesEventHandler.ReceivedEvents.Where(x => x.Uln == apprenticeshipCreatedEvent.Uln).First();
-        // }
-        //
-        // internal CMT.ApprenticeshipCreatedEvent ReadCommitmentsEventHandler(string uln)
-        // {
-        //     return CommitmentsEventHandler.ReceivedEvents.Where(x => x.Uln == uln).First();
-        // }
     }
 }
