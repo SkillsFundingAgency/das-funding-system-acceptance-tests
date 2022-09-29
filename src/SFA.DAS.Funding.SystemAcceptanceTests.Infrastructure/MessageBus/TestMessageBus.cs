@@ -1,5 +1,4 @@
 ﻿using NServiceBus;
-using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
@@ -14,7 +13,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
 
         public async Task Start(FundingConfig config)
         {
-            var endpointConfiguration = new EndpointConfiguration(QueueNames.ApprenticeshipCreated)
+            var endpointConfiguration = new EndpointConfiguration("sfa.das.funding.sandbox")
                     .UseMessageConventions()
                     .UseNewtonsoftJsonSerializer()
                 ;
