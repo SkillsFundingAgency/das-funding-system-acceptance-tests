@@ -49,11 +49,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
             IsRunning = false;
         }
 
-        //public Task Publish(object message)
-        //{
-        //    return _endpointInstance.Publish(message);
-        //}
-
         public Task Send(object message)
         {
             var options = new SendOptions();
