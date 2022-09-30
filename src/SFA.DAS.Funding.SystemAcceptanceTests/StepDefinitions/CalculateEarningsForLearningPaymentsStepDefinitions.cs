@@ -48,10 +48,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the apprenticeship commitment is approved")]
         public async Task TheApprenticeshipCommitmentIsApproved()
         {
-            _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+            //_commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
             await _messageHelper.PublishApprenticeshipApprovedMessage(_commitmentsApprenticeshipCreatedEvent);
 
-            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
+            //_apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
             _earnings = _context.Get<EarningsGeneratedEvent>();
             _fundingPeriod = _earnings.FundingPeriods.First();
 
