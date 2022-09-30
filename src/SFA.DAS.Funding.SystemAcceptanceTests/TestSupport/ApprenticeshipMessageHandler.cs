@@ -35,7 +35,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
         public async Task PublishApprenticeshipApprovedMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
         {
-            await _context.Get<TestMessageBus>().Publish(apprenticeshipCreatedEvent);
+            await _context.Get<TestMessageBus>().Send(apprenticeshipCreatedEvent);
             
             await WaitHelper.WaitForIt(() =>
             {

@@ -49,14 +49,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
             IsRunning = false;
         }
 
-        public Task Publish(object message)
-        {
-            return _endpointInstance.Publish(message);
-        }
+        //public Task Publish(object message)
+        //{
+        //    return _endpointInstance.Publish(message);
+        //}
 
         public Task Send(object message)
         {
-            return _endpointInstance.Send(message);
+            var options = new SendOptions();
+            options.DoNotEnforceBestPractices();
+            options.SetDestination("SFA.DAS.Apprenticeships.Appr.ApprenticeshipCreated");
+            return _endpointInstance.Send(message, options);
         }
 
     }
