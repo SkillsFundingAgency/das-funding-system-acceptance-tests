@@ -7,4 +7,6 @@ public class FundingConfig
     public string LearningTransportStorageDirectory { get; set; } = "<not set>";
     public string ApprenticeshipEntityApi_BaseUrl { get; set; } = "<not set>";
     public string EarningsFunctionKey { get; set; } = "<not set>";
+    public string ApprovalsEventHandlersQueue { get; set; } = "<not set>";
+    public string TestQueue { get; set; } = "<not set>";
 }

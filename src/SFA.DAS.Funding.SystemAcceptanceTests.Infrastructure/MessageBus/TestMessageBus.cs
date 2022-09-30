@@ -10,10 +10,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
     {
         private IEndpointInstance _endpointInstance;
         public bool IsRunning { get; private set; }
+        public FundingConfig _config { get; set; }
 
         public async Task Start(FundingConfig config)
         {
-            var endpointConfiguration = new EndpointConfiguration("sfa.das.funding.sandbox")
+            _config = config;
+            var endpointConfiguration = new EndpointConfiguration(config.TestQueue)
                     .UseMessageConventions()
                     .UseNewtonsoftJsonSerializer()
                 ;
@@ -53,7 +55,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
         {
             var options = new SendOptions();
             options.DoNotEnforceBestPractices();
-            options.SetDestination("SFA.DAS.Apprenticeships.Appr.ApprenticeshipCreated");
+            options.SetDestination(_config.ApprovalsEventHandlersQueue);
             return _endpointInstance.Send(message, options);
         }
 
