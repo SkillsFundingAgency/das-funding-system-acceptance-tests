@@ -58,6 +58,5 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
             options.SetDestination(_config.ApprovalsEventHandlersQueue);
             return _endpointInstance.Send(message, options);
         }
-
     }
 }
