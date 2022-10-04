@@ -1,5 +1,4 @@
 ﻿using NServiceBus;
-using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
@@ -11,10 +10,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
     {
         private IEndpointInstance _endpointInstance;
         public bool IsRunning { get; private set; }
+        public FundingConfig _config { get; set; }
 
         public async Task Start(FundingConfig config)
         {
-            var endpointConfiguration = new EndpointConfiguration(QueueNames.ApprenticeshipCreated)
+            _config = config;
+            var endpointConfiguration = new EndpointConfiguration(config.FundingSystemAcceptanceTestQueue)
                     .UseMessageConventions()
                     .UseNewtonsoftJsonSerializer()
                 ;
@@ -50,15 +51,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
             IsRunning = false;
         }
 
-        public Task Publish(object message)
-        {
-            return _endpointInstance.Publish(message);
-        }
-
         public Task Send(object message)
         {
-            return _endpointInstance.Send(message);
+            var options = new SendOptions();
+            options.DoNotEnforceBestPractices();
+            options.SetDestination(_config.ApprovalsEventHandlersQueue);
+            return _endpointInstance.Send(message, options);
         }
-
     }
 }

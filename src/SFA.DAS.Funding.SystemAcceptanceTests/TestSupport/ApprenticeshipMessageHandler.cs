@@ -35,20 +35,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
         public async Task PublishApprenticeshipApprovedMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
         {
-            await _context.Get<TestMessageBus>().Publish(apprenticeshipCreatedEvent);
-            
-            await WaitHelper.WaitForIt(() =>
-            {
-                CMT.ApprenticeshipCreatedEvent? commitmentEvent = 
-                    CommitmentsEventHandler.ReceivedEvents.FirstOrDefault(x => x.Uln == apprenticeshipCreatedEvent.Uln);
-                if (commitmentEvent != null)
-                {
-                    _context.Set(commitmentEvent);
-                    return true;
-                }
-                return false;
-            },"Failed to find published event in Commitments");
-            
+            await _context.Get<TestMessageBus>().Send(apprenticeshipCreatedEvent);
+
             await WaitHelper.WaitForIt(() =>
             {
                 APR.ApprenticeshipCreatedEvent? apprenticeshipEvent =
@@ -60,7 +48,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 }
                 return false;
             }, "Failed to find published event in apprenticeships");
-            
+
             await WaitHelper.WaitForIt(() =>
             {
                 EarningsGeneratedEvent? earningsEvent = 
