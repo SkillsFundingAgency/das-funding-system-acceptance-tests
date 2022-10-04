@@ -3,6 +3,7 @@ using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using System.Net;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -87,6 +88,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var apiClient = new ApprenticeshipEntityApiClient(_context);
 
             var response = apiClient.Execute();
+            var result = response.Result;
+
+            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode,
+                $"Request to ApprenticeshipEntityAPI failed with Response code - {result.StatusCode} & responce body - ${result.Content}");
+
 
             var jsonString = response.Result.Content.ReadAsStringAsync();
 
