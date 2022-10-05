@@ -89,9 +89,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var response = apiClient.Execute();
             var result = response.Result;
+            var request = result.RequestMessage.RequestUri.ToString();
+            var tailoredRequestString = request.Remove(request.Length-50);
 
             Assert.AreEqual(HttpStatusCode.OK, result.StatusCode,
-                $"Request to ApprenticeshipEntityAPI failed with Response code - {result.StatusCode} & responce body - ${result.Content}");
+                $"Request to ApprenticeshipEntityAPI failed with Response code - {result.StatusCode}" +
+                $"& responce body - {result.Content.ReadAsStringAsync()}" +
+                $"& request - {tailoredRequestString}");
 
 
             var jsonString = response.Result.Content.ReadAsStringAsync();
