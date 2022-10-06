@@ -27,7 +27,7 @@ resources:
   - repository: das-platform-automation
     type: github
     name: SkillsFundingAgency/das-platform-automation
-    ref: refs/tags/5.1.0
+    ref: refs/heads/Alterations_to_AppServiceWhitelist_scripts
     endpoint: SkillsFundingAgency
 
 stages:
