@@ -22,12 +22,12 @@ resources:
   - repository: das-platform-building-blocks
     type: github
     name: SkillsFundingAgency/das-platform-building-blocks
-    ref: refs/heads/Add_appservice-whitelist-ip_and_remove
+    ref: refs/tags/2.0.3
     endpoint: SkillsFundingAgency
   - repository: das-platform-automation
     type: github
     name: SkillsFundingAgency/das-platform-automation
-    ref: refs/heads/Alterations_to_AppServiceWhitelist_scripts
+    ref: refs/tags/5.1.2
     endpoint: SkillsFundingAgency
 
 stages:
