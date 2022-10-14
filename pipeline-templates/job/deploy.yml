@@ -20,6 +20,11 @@ jobs:
             EnvironmentId: $(Environment.Id)
             PipelineName: $(Build.DefinitionName)
             RunId: $(Build.BuildId)
+        - template: azure-pipelines-templates/deploy/step/appservice-whitelist-ip.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            ResourceName: $(FundingApprenticeshipEarningsFunctionAppName)
+            RuleName: "FundingAcceptanceTests"
         - template: azure-pipelines-templates/deploy/step/function-app-get-system-key.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
@@ -43,3 +48,7 @@ jobs:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             AppRegistrationObjectId: $(AppRegistrationObjectId)
             AppRegistrationClientSecretId: $(AppRegistrationTemporaryClientSecretId)
+        - template: azure-pipelines-templates/deploy/step/appservice-remove-ip.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            ResourceName: $(FundingApprenticeshipEarningsFunctionAppName)
