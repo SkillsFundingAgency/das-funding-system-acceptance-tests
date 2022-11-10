@@ -1,18 +1,22 @@
-﻿
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using System.Net;
+using static RestAssuredNet.RestAssuredNet;
+
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 {
-    public abstract class ApiHttpClient
+    public abstract class ApiClient
     { 
         protected abstract string ApiBaseUrl { get; }
-        protected abstract string ApiName { get; }
-
-        public async Task<HttpResponseMessage> Execute()
+        protected abstract string endpointWithParameters { get; }
+        public ApprenticeshipEntityModel GetApprenticeshipEntityModel()
         {
-            var httpClient = new HttpClient();
+            ApprenticeshipEntityModel apprenticeshipEntityModel = (ApprenticeshipEntityModel)Given()
+                .When()
+                .Get(ApiBaseUrl + endpointWithParameters)
+                .AssertThat().StatusCode(HttpStatusCode.OK)
+                .As(typeof(ApprenticeshipEntityModel));
 
-            httpClient.BaseAddress = new Uri(ApiBaseUrl);
-
-            return await httpClient.GetAsync(ApiName);
+            return apprenticeshipEntityModel;
         }
     }
 }
