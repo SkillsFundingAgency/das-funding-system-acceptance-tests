@@ -4,7 +4,6 @@ using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using System.Net;
-using RestAssuredNet;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -83,13 +82,25 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             deliveryPeriods.ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
         }
 
-        [Test]
         [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]
         public void VerifyCompletionAmountIsCalculatedCorrectly(decimal completionAmount)
         {
             var apiClient = new ApprenticeshipEntityApiClient(_context);
 
-            var apprenticeshipEntity = apiClient.GetApprenticeshipEntityModel();
+            var response = apiClient.Execute();
+            var result = response.Result;
+            var request = result.RequestMessage.RequestUri.ToString();
+            var tailoredRequestString = request.Remove(request.Length-50);
+
+            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode,
+                $"Request to ApprenticeshipEntityAPI failed with Response code - {result.StatusCode}" +
+                $"& responce body - {result.Content.ReadAsStringAsync()}" +
+                $"& request - {tailoredRequestString}");
+
+
+            var jsonString = response.Result.Content.ReadAsStringAsync();
+
+            var apprenticeshipEntity = JsonConvert.DeserializeObject<ApprenticeshipEntityModel>(jsonString.Result);
 
             Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model.EarningsProfile.CompletionPayment);
         }
