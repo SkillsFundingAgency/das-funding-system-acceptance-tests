@@ -83,7 +83,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             deliveryPeriods.ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
         }
 
-        [Test]
         [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]
         public void VerifyCompletionAmountIsCalculatedCorrectly(decimal completionAmount)
         {
