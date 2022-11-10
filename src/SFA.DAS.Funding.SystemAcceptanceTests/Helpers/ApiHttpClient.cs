@@ -8,16 +8,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
     { 
         protected abstract string ApiBaseUrl { get; }
         protected abstract string endpointWithParameters { get; }
-
-        public async Task<HttpResponseMessage> Execute()
-        {
-            var httpClient = new HttpClient();
-
-            httpClient.BaseAddress = new Uri(ApiBaseUrl);
-
-            return await httpClient.GetAsync(endpointWithParameters);
-        }
-
         public ApprenticeshipEntityModel GetApprenticeshipEntityModel()
         {
             ApprenticeshipEntityModel apprenticeshipEntityModel = (ApprenticeshipEntityModel)Given()
