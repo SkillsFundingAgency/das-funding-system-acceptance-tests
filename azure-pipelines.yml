@@ -97,6 +97,7 @@ stages:
   variables:
   - group: DevTest Management Resources
   - group: DEMO DevTest Shared Resources
+  - group: DEMO Automation Suite Variables
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
