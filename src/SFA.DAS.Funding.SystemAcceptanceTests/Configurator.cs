@@ -40,7 +40,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
 
             iConfig.Bind(configuration);
 
-            configuration.FundingSystemAcceptanceTestQueue = "SFA.DAS.Funding.SystemAcceptanceTests";
+            configuration.FundingSystemAcceptanceTestQueue = "SFA.DAS.Apprenticeships.Appr.ApprenticeshipCreated";
 
             return configuration;
         }
