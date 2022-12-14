@@ -1,6 +1,7 @@
 ﻿
 using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
 using APR = SFA.DAS.Apprenticeships.Types;
+using AutoFixture;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
@@ -18,12 +19,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         {
             var fixture = new Fixture();
              return fixture.Build<CMT.ApprenticeshipCreatedEvent>()
-                .With(_ => _.StartDate, actualStartDate)
+                .With(_ => _.StartDate, new DateTime(actualStartDate.Year,actualStartDate.Month, 1))
+                .With(_ => _.ActualStartDate, actualStartDate)
                 .With(_ => _.EndDate, plannedEndDate)
                 .With(_ => _.PriceEpisodes, new PriceEpisodeHelper().CreateSinglePriceEpisodeUsingStartDate(actualStartDate, agreedPrice))
                 .With(_ => _.Uln, fixture.Create<long>().ToString)
                 .With(_ => _.TrainingCode, trainingCode)
                 .With(_ => _.DateOfBirth, DateTime.Now.AddYears((-18)))
+                .With(_ => _.IsOnFlexiPaymentPilot, true)
                 .Create();
         }
         
