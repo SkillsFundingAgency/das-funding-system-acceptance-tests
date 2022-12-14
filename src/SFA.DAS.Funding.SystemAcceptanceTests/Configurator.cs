@@ -40,8 +40,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
 
             iConfig.Bind(configuration);
 
-            configuration.FundingSystemAcceptanceTestQueue = "SFA.DAS.Funding.SystemAcceptanceTests";
-
             return configuration;
         }
         private static IConfigurationRoot GetIConfigurationRoot()
