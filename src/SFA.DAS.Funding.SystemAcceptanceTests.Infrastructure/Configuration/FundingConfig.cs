@@ -8,5 +8,5 @@ public class FundingConfig
     public string ApprenticeshipEntityApi_BaseUrl { get; set; } = "<not set>";
     public string EarningsFunctionKey { get; set; } = "<not set>";
     public string ApprovalsEventHandlersQueue { get; set; } = "<not set>";
-    public string FundingSystemAcceptanceTestQueue { get; set; } = "<not set>";
+    public string FundingSystemAcceptanceTestQueue { get; set; } = "SFA.DAS.Funding.SystemAcceptanceTests";
 }
