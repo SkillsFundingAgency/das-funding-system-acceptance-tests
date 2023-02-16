@@ -16,8 +16,8 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
     <PackageReference Include="RestAssured.Net" Version="1.0.0" />
-    <PackageReference Include="SFA.DAS.Apprenticeships.Types" Version="1.0.3" />
-	<PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="9.0.2" />
+    <PackageReference Include="SFA.DAS.Apprenticeships.Types" Version="1.1.4-prerelease-17" />
+	<PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="100.0.1" />
     <PackageReference Include="SFA.DAS.Funding.ApprenticeshipEarnings.Types" Version="1.0.6" />
     <PackageReference Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
     <PackageReference Include="SpecFlow.NUnit" Version="3.9.74" />

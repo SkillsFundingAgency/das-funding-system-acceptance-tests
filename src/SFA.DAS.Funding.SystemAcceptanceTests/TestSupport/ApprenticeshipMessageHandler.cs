@@ -23,13 +23,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 .With(_ => _.ActualStartDate, actualStartDate)
                 .With(_ => _.EndDate, plannedEndDate)
                 .With(_ => _.PriceEpisodes, new PriceEpisodeHelper().CreateSinglePriceEpisodeUsingStartDate(actualStartDate, agreedPrice))
-                .With(_ => _.Uln, fixture.Create<long>().ToString)
+                .With(_ => _.Uln, GenerateRandomUln())
                 .With(_ => _.TrainingCode, trainingCode)
                 .With(_ => _.DateOfBirth, DateTime.Now.AddYears((-18)))
                 .With(_ => _.IsOnFlexiPaymentPilot, true)
                 .Create();
         }
-        
+
+        public static int GenerateRandomNumberBetweenTwoValues(int min, int max) => new Random().Next(min, max);
+
+        private string GenerateRandomUln()=> GenerateRandomNumberBetweenTwoValues(10, 99).ToString() + DateTime.Now.ToString("ssffffff");
+
+
         public CMT.ApprenticeshipCreatedEvent UpdateApprenticeshipCreatedMessageWithDoB(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent, DateTime dob)
         {
             apprenticeshipCreatedEvent.DateOfBirth = dob;

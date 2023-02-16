@@ -11,7 +11,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
     {
         public Guid ApprenticeshipKey { get; set; }
         public long ApprovalsApprenticeshipId { get; set; }
-        public int Uln { get;set; }
+        public string Uln { get;set; }
         public EarningsProfile EarningsProfile { get; set; }
         public double FundingBandMaximum { get; set; }
     }
