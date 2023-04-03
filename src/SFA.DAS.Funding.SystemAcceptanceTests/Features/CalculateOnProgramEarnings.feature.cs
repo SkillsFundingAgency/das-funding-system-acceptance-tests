@@ -77,7 +77,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Features
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("On-program earnings generation for an approved apprenticeship")]
         [NUnit.Framework.CategoryAttribute("regression")]
-        [NUnit.Framework.TestCaseAttribute("2022-08-01", "2023-07-31", "15,000", "614", "12", "1000", "01-2223", "08/2022", null)]
+        [NUnit.Framework.TestCaseAttribute("2022-08-01", "2024-02-15", "15,000", "614", "18", "666.67", "01-2223", "08/2022", null)]
         public void On_ProgramEarningsGenerationForAnApprovedApprenticeship(string start_Date, string planned_End_Date, string agreed_Price, string training_Code, string planned_Number_Of_Months, string instalment_Amount, string first_Delivery_Period, string first_Calendar_Period, string[] exampleTags)
         {
             string[] @__tags = new string[] {
@@ -174,6 +174,30 @@ this.ScenarioInitialize(scenarioInfo);
                             "12",
                             "2223",
                             "July"});
+                table1.AddRow(new string[] {
+                            "1",
+                            "2324",
+                            "August"});
+                table1.AddRow(new string[] {
+                            "2",
+                            "2324",
+                            "September"});
+                table1.AddRow(new string[] {
+                            "3",
+                            "2324",
+                            "October"});
+                table1.AddRow(new string[] {
+                            "4",
+                            "2324",
+                            "November"});
+                table1.AddRow(new string[] {
+                            "5",
+                            "2324",
+                            "December"});
+                table1.AddRow(new string[] {
+                            "6",
+                            "2324",
+                            "January"});
 #line 13
  testRunner.And("the delivery period for each instalment must be the delivery period from the coll" +
                         "ection calendar with a matching calendar month/year", ((string)(null)), table1, "And ");
