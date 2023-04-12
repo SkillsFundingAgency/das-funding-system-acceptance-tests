@@ -1,4 +1,6 @@
-﻿using NServiceBus;
+﻿using Microsoft.Azure.ServiceBus.Management;
+using Microsoft.Extensions.Logging;
+using NServiceBus;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
@@ -24,6 +26,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
             {
                 endpointConfiguration
                     .UseAzureServiceBusTransport(config.SharedServiceBusFqdn);
+
+                await EnsureQueue(config.SharedServiceBusFqdn, config.FundingSystemAcceptanceTestQueue);
             }
             else
             {
@@ -38,6 +42,22 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
                 .ConfigureAwait(false);
 
             IsRunning = true;
+        }
+
+        private async Task EnsureQueue(string connectionString, string queuePath)
+        {
+            var manageClient = new ManagementClient(connectionString);
+
+            if (await manageClient.QueueExistsAsync(queuePath))
+                return;
+
+            var queueDescription = new QueueDescription(queuePath)
+            {
+                Path = queuePath,
+                DefaultMessageTimeToLive = TimeSpan.FromHours(4) //test messages only, no need to live beyond a generous 4 hours, will keep queues from filling up
+            };
+
+            await manageClient.CreateQueueAsync(queueDescription);
         }
 
         private static bool NotUsingLearningTransport(FundingConfig config)

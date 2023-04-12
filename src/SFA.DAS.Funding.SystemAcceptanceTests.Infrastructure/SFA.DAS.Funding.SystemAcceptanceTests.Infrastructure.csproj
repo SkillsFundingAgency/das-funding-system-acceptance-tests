@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="5.2.0" />
     <PackageReference Include="NServiceBus" Version="7.7.4" />
     <PackageReference Include="SFA.DAS.Apprenticeships.Types" Version="1.1.4" />
 	  <PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="100.0.6" />
