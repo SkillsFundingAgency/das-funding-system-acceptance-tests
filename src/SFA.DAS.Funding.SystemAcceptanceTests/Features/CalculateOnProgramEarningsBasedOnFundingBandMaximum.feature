@@ -30,6 +30,6 @@ Scenario Outline: On program earnings generation when agreed price is above fund
 	Then Funding band maximum price is used to calculate the on-program earnings which is divided equally into number of planned months <instalment_amount>
 
 Examples:
-	| start_date | planned_end_date | agreed_price | training_code | instalment_amount              |
-	| 2022-08-01 | 2023-07-31       | 30000        | 6             | 1733.3333333333333333333333333 |
-	| 2018-08-01 | 2019-07-31       | 30000        | 6             | 1800                           |
+	| start_date | planned_end_date | agreed_price | training_code | instalment_amount |
+	| 2022-08-01 | 2023-07-31       | 30000        | 6             | 1733.33333        |
+	| 2018-08-01 | 2019-07-31       | 30000        | 6             | 1800              |

@@ -33,10 +33,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Then(@"the Unfunded Payments for every earning is created in the following month")]
-        public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table)
-        {
-            _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedPayments());
-        }
+        public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedPayments());
+
 
 
     }
