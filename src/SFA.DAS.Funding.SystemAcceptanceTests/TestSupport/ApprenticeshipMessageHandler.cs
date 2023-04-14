@@ -1,5 +1,4 @@
-﻿
-using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
+﻿using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
 using APR = SFA.DAS.Apprenticeships.Types;
 using AutoFixture;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
@@ -75,22 +74,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             _context.Set("Uln", apprenticeshipCreatedEvent.Uln);
             _context.Set("ApprenticeshipId", apprenticeshipCreatedEvent.ApprenticeshipId.ToString());
             _context.Set("ApprenticeshipKey", _context.Get<EarningsGeneratedEvent>().ApprenticeshipKey.ToString());
-        }
 
-        public async Task GetPaymentsGeneratedEvent(Guid apprenticeshipKey)
-        {
-            await WaitHelper.WaitForIt(() =>
-            {
-                PaymentsGeneratedEvent? paymentsEvent =
-                    PaymentsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x => x.ApprenticeshipKey == apprenticeshipKey);
-
-                if (paymentsEvent != null)
-                {
-                    _context.Set(paymentsEvent);
-                    return true;
-                }
-                return false;
-            }, "Failed to find published event in Payments");
         }
     }
 }

@@ -9,6 +9,13 @@ public static class TableExtensions
             .ToList();
     }
 
+    public static List<(short AcademicPeriod, byte DeliveryPeriod, decimal Amount, short PaymentYear, byte PaymentPeriod)> ToExpectedPayments(this Table table)
+    {
+        return table.Rows.Select(row =>
+                (Convert.ToInt16(row[0]), Period[row[1]], Convert.ToDecimal(row[2]), Convert.ToInt16(row[3]), Period[row[4]]))
+            .ToList();
+    }
+
     public static Dictionary<string, byte> Months = new()
     {
         { "January", 1 },
@@ -23,5 +30,21 @@ public static class TableExtensions
         { "October", 10 },
         { "November", 11 },
         { "December", 12 }
+    };
+
+    public static Dictionary<string, byte> Period = new()
+    {
+        { "January", 6 },
+        { "February", 7 },
+        { "March", 8 },
+        { "April", 9 },
+        { "May", 10 },
+        { "June", 11 },
+        { "July", 12 },
+        { "August", 1 },
+        { "September", 2 },
+        { "October", 3 },
+        { "November", 4 },
+        { "December", 5 }
     };
 }

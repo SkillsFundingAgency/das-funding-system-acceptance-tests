@@ -1,10 +1,7 @@
-using Newtonsoft.Json;
 using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using System.Net;
-using RestAssuredNet;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -47,6 +44,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             else Assert.Greater(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.FundingBandMaximum);
         }
 
+        [Given(@"the apprenticeship commitment is approved")]
         [When(@"the apprenticeship commitment is approved")]
         public async Task TheApprenticeshipCommitmentIsApproved()
         {
@@ -75,6 +73,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _context.Get<FundingPeriod>().DeliveryPeriods.Should().HaveCount(numberOfInstalments);
         }
 
+        [Given(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
         [Then(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
         public void ThenTheDeliveryPeriodForEachInstalmentMustBeTheDeliveryPeriodFromTheCollectionCalendarWithAMatchingCalendarMonthYear(Table table)
         {
