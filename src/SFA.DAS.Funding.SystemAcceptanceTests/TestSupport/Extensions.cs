@@ -37,5 +37,16 @@ public static class Extensions
             expected[i].PaymentPeriod.Should().Be(actual[i].PaymentPeriod, $"Expected PaymentPeriod #{i+1} to be {expected[i].PaymentPeriod} but found {actual[i].PaymentPeriod}");
         }
     }
-    
+
+    public static void ShouldHaveCorrectPaymentsGeneratedIncludingRollup(this List<Payment> actual, List<(byte DeliveryPeriod, byte PaymentPeriod, decimal Amount)> expected)
+    {
+        actual.Count.Should().Be(expected.Count);
+
+        for (var i = 0; i < expected.Count; i++)
+        {
+            expected[i].DeliveryPeriod.Should().Be(actual[i].DeliveryPeriod, $"Expected DeliveryPeriod #{i + 1} to be {expected[i].DeliveryPeriod} but found {actual[i].DeliveryPeriod}");
+            expected[i].Amount.Should().Be(actual[i].Amount, $"Expected Amount #{i + 1} to be {expected[i].Amount} but found {actual[i].Amount}");
+            expected[i].PaymentPeriod.Should().Be(actual[i].PaymentPeriod, $"Expected PaymentPeriod #{i + 1} to be {expected[i].PaymentPeriod} but found {actual[i].PaymentPeriod}");
+        }
+    }
 }

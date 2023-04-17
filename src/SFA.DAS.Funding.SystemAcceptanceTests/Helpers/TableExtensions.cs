@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using System.Text.RegularExpressions;
+
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 
 public static class TableExtensions
 {
@@ -9,11 +11,25 @@ public static class TableExtensions
             .ToList();
     }
 
-    public static List<(short AcademicPeriod, byte DeliveryPeriod, decimal Amount, short PaymentYear, byte PaymentPeriod)> ToExpectedPayments(this Table table)
+    public static List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short PaymentYear, byte PaymentPeriod)> ToExpectedPayments(this Table table)
     {
         return table.Rows.Select(row =>
                 (Convert.ToInt16(row[0]), Period[row[1]], Convert.ToDecimal(row[2]), Convert.ToInt16(row[3]), Period[row[4]]))
             .ToList();
+    }
+
+    public static List<(byte DeliveryPeriod, byte PaymentPeriod, decimal Amount)> ToExpectedRollupPayments(this Table table)
+    {
+        return table.Rows.Select(row =>
+                (Period[CalculatePeriod(row[0])], Period[CalculatePeriod(row[1])], Convert.ToDecimal(row[2])))
+            .ToList();
+    }
+
+    private static string CalculatePeriod(string text)
+    {
+        var numberOfMonthsToAdd = new string(text.Where(c => !char.IsLetter(c)).ToArray());
+
+        return DateTime.Now.AddMonths(Convert.ToInt16(numberOfMonthsToAdd)).ToString("MMMM");
     }
 
     public static Dictionary<string, byte> Months = new()

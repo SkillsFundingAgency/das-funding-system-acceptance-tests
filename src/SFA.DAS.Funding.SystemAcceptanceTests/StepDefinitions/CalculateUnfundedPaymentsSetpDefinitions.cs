@@ -35,6 +35,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the Unfunded Payments for every earning is created in the following month")]
         public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedPayments());
 
+        [Then(@"Unfunded Payments for the appreticeship including rollup payments are calculated as below")]
+        public void ThenUnfundedPaymentsForTheAppreticeshipIncludingRollupPaymentsAreCalculatedAsBelow(Table table)
+        {
+            _payments.ShouldHaveCorrectPaymentsGeneratedIncludingRollup(table.ToExpectedRollupPayments());
+        }
+
+
+
+
 
 
     }
