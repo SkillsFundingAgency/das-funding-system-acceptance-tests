@@ -24,7 +24,7 @@ public static class Extensions
         }
     }
 
-    public static void ShouldHaveCorrectPaymentsGenerated(this List<Payment> actual, List<(short AcadmicYear, byte DeliveryPeriod, decimal Amount, short PaymentYear, byte PaymentPeriod)> expected)
+    public static void ShouldHaveCorrectPaymentsGenerated(this List<Payment> actual, List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short PaymentYear, byte PaymentPeriod)> expected)
     {
         actual.Count.Should().Be(expected.Count);
 
