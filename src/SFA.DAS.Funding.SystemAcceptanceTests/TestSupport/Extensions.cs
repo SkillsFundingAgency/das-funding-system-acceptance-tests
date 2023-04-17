@@ -1,3 +1,5 @@
+using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 public static class Extensions
@@ -21,4 +23,19 @@ public static class Extensions
            expected.Should().Be(actual[i].FundingLineType, $"Expected funding line type #{i} to be {expected} but found {actual[i].FundingLineType}");
         }
     }
+
+    public static void ShouldHaveCorrectPaymentsGenerated(this List<Payment> actual, List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short PaymentYear, byte PaymentPeriod)> expected)
+    {
+        actual.Count.Should().Be(expected.Count);
+
+        for (var i = 0; i < expected.Count; i++)
+        {
+            expected[i].AcademicYear.Should().Be(actual[i].AcademicYear, $"Expected AcadmicYear #{i+1} to be {expected[i].AcademicYear} but found {actual[i].AcademicYear}");
+            expected[i].DeliveryPeriod.Should().Be(actual[i].DeliveryPeriod, $"Expected DeliveryPeriod #{i+1} to be {expected[i].DeliveryPeriod} but found {actual[i].DeliveryPeriod}");
+            expected[i].Amount.Should().Be(actual[i].Amount, $"Expected Amount #{i+1} to be {expected[i].Amount} but found {actual[i].Amount}");
+            expected[i].PaymentYear.Should().Be(actual[i].PaymentYear, $"Expected PaymentYear #{i+1} to be {expected[i].PaymentYear} but found {actual[i].PaymentYear}");
+            expected[i].PaymentPeriod.Should().Be(actual[i].PaymentPeriod, $"Expected PaymentPeriod #{i+1} to be {expected[i].PaymentPeriod} but found {actual[i].PaymentPeriod}");
+        }
+    }
+    
 }
