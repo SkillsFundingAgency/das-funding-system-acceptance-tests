@@ -30,7 +30,7 @@ public static class Extensions
 
         for (var i = 0; i < expected.Count; i++)
         {
-            expected[i].AcadmicYear.Should().Be(actual[i].AcademicYear, $"Expected AcadmicYear #{i+1} to be {expected[i].AcadmicYear} but found {actual[i].AcademicYear}");
+            expected[i].AcademicYear.Should().Be(actual[i].AcademicYear, $"Expected AcadmicYear #{i+1} to be {expected[i].AcademicYear} but found {actual[i].AcademicYear}");
             expected[i].DeliveryPeriod.Should().Be(actual[i].DeliveryPeriod, $"Expected DeliveryPeriod #{i+1} to be {expected[i].DeliveryPeriod} but found {actual[i].DeliveryPeriod}");
             expected[i].Amount.Should().Be(actual[i].Amount, $"Expected Amount #{i+1} to be {expected[i].Amount} but found {actual[i].Amount}");
             expected[i].PaymentYear.Should().Be(actual[i].PaymentYear, $"Expected PaymentYear #{i+1} to be {expected[i].PaymentYear} but found {actual[i].PaymentYear}");
