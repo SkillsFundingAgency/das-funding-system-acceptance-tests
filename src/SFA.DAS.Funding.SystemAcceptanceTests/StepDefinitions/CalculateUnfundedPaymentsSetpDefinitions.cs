@@ -2,11 +2,6 @@
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -36,15 +31,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedPayments());
 
         [Then(@"Unfunded Payments for the appreticeship including rollup payments are calculated as below")]
-        public void ThenUnfundedPaymentsForTheAppreticeshipIncludingRollupPaymentsAreCalculatedAsBelow(Table table)
-        {
-            _payments.ShouldHaveCorrectPaymentsGeneratedIncludingRollup(table.ToExpectedRollupPayments());
-        }
-
-
-
-
-
-
+        public void ThenUnfundedPaymentsForTheAppreticeshipIncludingRollupPaymentsAreCalculatedAsBelow(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedRollupPayments());
     }
 }

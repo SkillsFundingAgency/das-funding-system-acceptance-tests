@@ -6,14 +6,14 @@ when there are earnings in the past that have not yet been paid
 So that I can ensure we can bring the provider’s payments up to date (i.e. make ‘rollup’ payments)
 
 @regression
-Scenario: Rollup Payment profile for single learner - start declared retrospectively
+Scenario: Rollup Payment profile for single learner - Training start date declared 2 months retrospectively
 	Given an apprenticeship with start date over 2 months ago and duration of 12 months and an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
 	When the Unfunded Payments for the remainder of the apprenticeship are determined
 	Then Unfunded Payments for the appreticeship including rollup payments are calculated as below
 		| DeliveryPeriod | PaymentPeriod   | Amount |
 		| CurrentMonth-2 | CurrentMonth+1  | 1000   |
-		| CurrentMonth1  | CurrentMonth+1  | 1000   |
+		| CurrentMonth-1 | CurrentMonth+1  | 1000   |
 		| CurrentMonth+0 | CurrentMonth+1  | 1000   |
 		| CurrentMonth+1 | CurrentMonth+2  | 1000   |
 		| CurrentMonth+2 | CurrentMonth+3  | 1000   |

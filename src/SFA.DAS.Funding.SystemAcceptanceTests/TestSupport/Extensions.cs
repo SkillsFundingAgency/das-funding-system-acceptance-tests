@@ -30,23 +30,11 @@ public static class Extensions
 
         for (var i = 0; i < expected.Count; i++)
         {
-            expected[i].AcademicYear.Should().Be(actual[i].AcademicYear, $"Expected AcadmicYear #{i+1} to be {expected[i].AcademicYear} but found {actual[i].AcademicYear}");
-            expected[i].DeliveryPeriod.Should().Be(actual[i].DeliveryPeriod, $"Expected DeliveryPeriod #{i+1} to be {expected[i].DeliveryPeriod} but found {actual[i].DeliveryPeriod}");
-            expected[i].Amount.Should().Be(actual[i].Amount, $"Expected Amount #{i+1} to be {expected[i].Amount} but found {actual[i].Amount}");
-            expected[i].PaymentYear.Should().Be(actual[i].PaymentYear, $"Expected PaymentYear #{i+1} to be {expected[i].PaymentYear} but found {actual[i].PaymentYear}");
-            expected[i].PaymentPeriod.Should().Be(actual[i].PaymentPeriod, $"Expected PaymentPeriod #{i+1} to be {expected[i].PaymentPeriod} but found {actual[i].PaymentPeriod}");
-        }
-    }
-
-    public static void ShouldHaveCorrectPaymentsGeneratedIncludingRollup(this List<Payment> actual, List<(byte DeliveryPeriod, byte PaymentPeriod, decimal Amount)> expected)
-    {
-        actual.Count.Should().Be(expected.Count);
-
-        for (var i = 0; i < expected.Count; i++)
-        {
-            expected[i].DeliveryPeriod.Should().Be(actual[i].DeliveryPeriod, $"Expected DeliveryPeriod #{i + 1} to be {expected[i].DeliveryPeriod} but found {actual[i].DeliveryPeriod}");
-            expected[i].Amount.Should().Be(actual[i].Amount, $"Expected Amount #{i + 1} to be {expected[i].Amount} but found {actual[i].Amount}");
-            expected[i].PaymentPeriod.Should().Be(actual[i].PaymentPeriod, $"Expected PaymentPeriod #{i + 1} to be {expected[i].PaymentPeriod} but found {actual[i].PaymentPeriod}");
+            actual[i].AcademicYear.Should().Be(expected[i].AcademicYear, $"Expected AcadmicYear #{i+1} to be {expected[i].AcademicYear} but found {actual[i].AcademicYear}");
+            actual[i].DeliveryPeriod.Should().Be(expected[i].DeliveryPeriod, $"Expected DeliveryPeriod #{i+1} to be {expected[i].DeliveryPeriod} but found {actual[i].DeliveryPeriod}");
+            actual[i].Amount.Should().Be(expected[i].Amount, $"Expected Amount #{i+1} to be {expected[i].Amount} but found {actual[i].Amount}");
+            actual[i].PaymentYear.Should().Be(expected[i].PaymentYear, $"Expected PaymentYear #{i+1} to be {expected[i].PaymentYear} but found {actual[i].PaymentYear}");
+            actual[i].PaymentPeriod.Should().Be(expected[i].PaymentPeriod, $"Expected PaymentPeriod #{i+1} to be {expected[i].PaymentPeriod} but found {actual[i].PaymentPeriod}");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel.Design;
+using System.Text.RegularExpressions;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 
@@ -18,11 +19,11 @@ public static class TableExtensions
             .ToList();
     }
 
-    public static List<(byte DeliveryPeriod, byte PaymentPeriod, decimal Amount)> ToExpectedRollupPayments(this Table table)
+    public static List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short PaymentYear, byte PaymentPeriod)> ToExpectedRollupPayments(this Table table)
     {
         return table.Rows.Select(row =>
-                (Period[CalculatePeriod(row[0])], Period[CalculatePeriod(row[1])], Convert.ToDecimal(row[2])))
-            .ToList();
+                (Convert.ToInt16(CalculateAcademicYear(row[0])), Period[CalculatePeriod(row[0])], Convert.ToDecimal(row[2]),
+                Convert.ToInt16(CalculateAcademicYear(row[1])), Period[CalculatePeriod(row[1])])).ToList();
     }
 
     private static string CalculatePeriod(string text)
@@ -30,6 +31,17 @@ public static class TableExtensions
         var numberOfMonthsToAdd = new string(text.Where(c => !char.IsLetter(c)).ToArray());
 
         return DateTime.Now.AddMonths(Convert.ToInt16(numberOfMonthsToAdd)).ToString("MMMM");
+    }
+
+    private static string CalculateAcademicYear(string text)
+    {
+        var numberOfMonthsToAdd = new string(text.Where(c => !char.IsLetter(c)).ToArray());
+
+        var month = DateTime.Now.AddMonths(Convert.ToInt16(numberOfMonthsToAdd)).Month;
+        var Year = DateTime.Now.AddMonths(Convert.ToInt16(numberOfMonthsToAdd)).Year;
+
+        if (month < 8) return $"{(Year - 1) % 100:00}{Year % 100:00}";
+        else return $"{Year % 100:00}{(Year + 1) % 100:00}";
     }
 
     public static Dictionary<string, byte> Months = new()
