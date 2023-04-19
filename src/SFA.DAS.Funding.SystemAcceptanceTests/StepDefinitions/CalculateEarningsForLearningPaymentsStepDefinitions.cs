@@ -2,6 +2,7 @@ using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using FluentAssertions.Extensions;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -27,6 +28,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _commitmentsApprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
             _context.Set(_commitmentsApprenticeshipCreatedEvent);
         }
+
+        [Given(@"an apprenticeship with start date over (.*) months ago and duration of (.*) months and an agreed price of (.*), and a training code (.*)")]
+        public void ApprenticeshipWithStartDateOverMonthsAgoAndDurationOfMonthsAndAnAgreedPriceOfAndATrainingCode(int monthsSinceStart, int duration, decimal agreedPrice, string trainingCode)
+        {
+            DateTime today = DateTime.Today;
+            var startDate = new DateTime(today.Year, today.Month, 1).AddMonths(-monthsSinceStart);
+            var plannedEndDate = startDate.AddMonths(duration).AddDays(-1);
+
+            _commitmentsApprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
+            _context.Set(_commitmentsApprenticeshipCreatedEvent);
+        }
+
 
         [Given(@"the apprenticeship learner has a date of birth (.*)")]
         public void AddDateOfBirthToCommitmentsApprenticeshipCreatedEvent(DateTime dob)
