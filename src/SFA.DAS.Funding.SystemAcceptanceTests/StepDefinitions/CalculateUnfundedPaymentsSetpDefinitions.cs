@@ -32,5 +32,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
         [Then(@"Unfunded Payments for the appreticeship including rollup payments are calculated as below")]
         public void ThenUnfundedPaymentsForTheAppreticeshipIncludingRollupPaymentsAreCalculatedAsBelow(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedRollupPayments());
+
+        [Then(@"the newly calculated Unfunded Payments are marked as not sent to payments BAU")]
+        public void ThenTheNewlyCalculatedUnfundedPaymentsAreMarkedAsNotSentToPaymentsBAU()
+        {
+            var apiClient = new PaymentsEntityApiClient(_context);
+
+            var paymentsEntity = apiClient.GetPaymentsEntityModel();
+
+            for (int i = 0; i < paymentsEntity.Model.Payments.Length; i++)
+            {
+                Assert.IsFalse(paymentsEntity.Model.Payments[i].SentForPayment);
+            }          
+        }
     }
 }

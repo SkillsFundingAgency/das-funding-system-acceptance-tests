@@ -98,9 +98,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]
         public void VerifyCompletionAmountIsCalculatedCorrectly(decimal completionAmount)
         {
-            var apiClient = new ApprenticeshipEntityApiClient(_context);
+            var apiClient = new EarningsEntityApiClient(_context);
 
-            var apprenticeshipEntity = apiClient.GetApprenticeshipEntityModel();
+            var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
 
             Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model.EarningsProfile.CompletionPayment);
         }
