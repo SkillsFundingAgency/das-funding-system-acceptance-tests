@@ -40,7 +40,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var payments = apiClient.GetPaymentsEntityModel().Model.Payments;
 
-            for (int i = 0; i < payments.Length; i++) Assert.IsFalse(payments[i].SentForPayment);         
+            Assert.IsTrue(payments.All(x => x.SentForPayment == false)); 
         }
     }
 }
