@@ -38,12 +38,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var apiClient = new PaymentsEntityApiClient(_context);
 
-            var paymentsEntity = apiClient.GetPaymentsEntityModel();
+            var payments = apiClient.GetPaymentsEntityModel().Model.Payments;
 
-            for (int i = 0; i < paymentsEntity.Model.Payments.Length; i++)
-            {
-                Assert.IsFalse(paymentsEntity.Model.Payments[i].SentForPayment);
-            }          
+            for (int i = 0; i < payments.Length; i++) Assert.IsFalse(payments[i].SentForPayment);         
         }
     }
 }
