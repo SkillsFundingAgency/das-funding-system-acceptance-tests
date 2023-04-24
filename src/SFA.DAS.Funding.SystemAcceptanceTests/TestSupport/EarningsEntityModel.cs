@@ -2,7 +2,7 @@
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
     
-    public class ApprenticeshipEntityModel
+    public class EarningsEntityModel
     {
         public Model Model { get; set; }
     }

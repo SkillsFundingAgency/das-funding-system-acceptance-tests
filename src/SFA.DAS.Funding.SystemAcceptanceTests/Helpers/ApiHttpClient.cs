@@ -8,15 +8,26 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
     { 
         protected abstract string ApiBaseUrl { get; }
         protected abstract string endpointWithParameters { get; }
-        public ApprenticeshipEntityModel GetApprenticeshipEntityModel()
+        public EarningsEntityModel GetEarningsEntityModel()
         {
-            ApprenticeshipEntityModel apprenticeshipEntityModel = (ApprenticeshipEntityModel)Given()
+            EarningsEntityModel earningsEntityModel = (EarningsEntityModel)Given()
                 .When()
                 .Get(ApiBaseUrl + endpointWithParameters)
                 .AssertThat().StatusCode(HttpStatusCode.OK)
-                .As(typeof(ApprenticeshipEntityModel));
+                .As(typeof(EarningsEntityModel));
 
-            return apprenticeshipEntityModel;
+            return earningsEntityModel;
+        }
+
+        public PaymentsEntityModel GetPaymentsEntityModel()
+        {
+            PaymentsEntityModel paymentsEntityModel = (PaymentsEntityModel)Given()
+                .When()
+                .Get(ApiBaseUrl + endpointWithParameters)
+                .AssertThat().StatusCode(HttpStatusCode.OK)
+                .As(typeof(PaymentsEntityModel));
+
+            return paymentsEntityModel;
         }
     }
 }

@@ -93,6 +93,7 @@ Scenario: Unfunded Payment profile for single learner - Different Academic Years
 		| 2425         | April          | 533.33333 | 2425        | May           |
 		| 2425         | May            | 533.33333 | 2425        | June          |
 		| 2425         | June           | 533.33333 | 2425        | July          |
+	And the newly calculated Unfunded Payments are marked as not sent to payments BAU
 
 Examples:
 	| start_date | planned_end_date | agreed_price | training_code |

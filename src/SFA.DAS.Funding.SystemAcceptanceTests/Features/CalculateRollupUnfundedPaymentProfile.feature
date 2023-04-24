@@ -24,6 +24,7 @@ Scenario: Rollup Payment profile for single learner - Training start date declar
 		| CurrentMonth+7 | CurrentMonth+8  | 1000   |
 		| CurrentMonth+8 | CurrentMonth+9  | 1000   |
 		| CurrentMonth+9 | CurrentMonth+10 | 1000   |
+	And the newly calculated Unfunded Payments are marked as not sent to payments BAU
 
 Examples:
 	| agreed_price | training_code |
