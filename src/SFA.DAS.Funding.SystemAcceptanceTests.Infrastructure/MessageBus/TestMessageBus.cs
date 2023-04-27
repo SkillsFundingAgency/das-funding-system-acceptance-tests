@@ -1,4 +1,5 @@
 ﻿using NServiceBus;
+using SFA.DAS.CommitmentsV2.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
@@ -51,11 +52,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
             IsRunning = false;
         }
 
-        public Task Send(object message)
+        public Task SendApprenticeshipApprovedMessage(object message) => Send(message, _config.ApprovalsEventHandlersQueue);
+        public Task SendReleasePaymentsMessage(object message) => Send(message, _config.ReleasePaymentsEventHandlersQueue);
+
+        public Task Send(object message, string queueName) 
         {
             var options = new SendOptions();
             options.DoNotEnforceBestPractices();
-            options.SetDestination(_config.ApprovalsEventHandlersQueue);
+            options.SetDestination(queueName);
             return _endpointInstance.Send(message, options);
         }
     }

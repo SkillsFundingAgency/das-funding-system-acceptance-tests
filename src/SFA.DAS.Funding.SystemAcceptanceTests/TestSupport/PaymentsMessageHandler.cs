@@ -1,4 +1,6 @@
-﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+﻿using SFA.DAS.Apprenticeships.Types;
+using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+using System.Linq;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
@@ -25,6 +27,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 }
                 return false;
             }, "Failed to find published event in Payments");
+        }
+
+        public async Task PublishReleasePaymentsCommand(ReleasePaymentsCommand releasePaymentsCommand)
+        {
+            await _context.Get<TestMessageBus>().SendReleasePaymentsMessage(releasePaymentsCommand);
         }
     }
 }

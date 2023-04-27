@@ -11,4 +11,5 @@ public class FundingConfig
     public string PaymentsFunctionKey { get; set; } = "<not set>";
     public string ApprovalsEventHandlersQueue { get; set; } = "<not set>";
     public string FundingSystemAcceptanceTestQueue { get; set; } = "<not set>";
+    public string ReleasePaymentsEventHandlersQueue { get; set; } = "<not set>";
 }
