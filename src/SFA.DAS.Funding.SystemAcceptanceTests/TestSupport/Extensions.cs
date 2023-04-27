@@ -24,7 +24,7 @@ public static class Extensions
         }
     }
 
-    public static void ShouldHaveCorrectPaymentsGenerated(this List<Payment> actual, List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short PaymentYear, byte PaymentPeriod)> expected)
+    public static void ShouldHaveCorrectPaymentsGenerated(this List<Payment> actual, List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short CollectionYear, byte CollectionPeriod)> expected)
     {
         actual.Count.Should().Be(expected.Count);
 
@@ -33,8 +33,8 @@ public static class Extensions
             actual[i].AcademicYear.Should().Be(expected[i].AcademicYear, $"Expected AcadmicYear #{i+1} to be {expected[i].AcademicYear} but found {actual[i].AcademicYear}");
             actual[i].DeliveryPeriod.Should().Be(expected[i].DeliveryPeriod, $"Expected DeliveryPeriod #{i+1} to be {expected[i].DeliveryPeriod} but found {actual[i].DeliveryPeriod}");
             actual[i].Amount.Should().Be(expected[i].Amount, $"Expected Amount #{i+1} to be {expected[i].Amount} but found {actual[i].Amount}");
-            actual[i].PaymentYear.Should().Be(expected[i].PaymentYear, $"Expected PaymentYear #{i+1} to be {expected[i].PaymentYear} but found {actual[i].PaymentYear}");
-            actual[i].PaymentPeriod.Should().Be(expected[i].PaymentPeriod, $"Expected PaymentPeriod #{i+1} to be {expected[i].PaymentPeriod} but found {actual[i].PaymentPeriod}");
+            actual[i].CollectionYear.Should().Be(expected[i].CollectionYear, $"Expected CollectionYear #{i+1} to be {expected[i].CollectionYear} but found {actual[i].CollectionYear}");
+            actual[i].CollectionPeriod.Should().Be(expected[i].CollectionPeriod, $"Expected CollectionPeriod #{i+1} to be {expected[i].CollectionPeriod} but found {actual[i].CollectionPeriod}");
         }
     }
 }
