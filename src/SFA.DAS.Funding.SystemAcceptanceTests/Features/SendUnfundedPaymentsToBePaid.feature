@@ -16,4 +16,5 @@ Background:
 Scenario: Send unfunded payments for the collection Period sepecified 
 	Given the user wants to process payments for the current collection Period 
 	When the scheduler triggers Unfunded Payment processing
-	Then the unpaid unfunded payments for the specified Collection Month are sent to be paid 
+	Then all the unpaid unfunded payments for the specified Collection Month are sent to be paid 
+	And the amount of 1000 is sent to be paid for the current apprenticeship

@@ -13,7 +13,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private List<Payment> _payments;
         private readonly PaymentsMessageHandler _paymentsMessageHelper;
         private ReleasePaymentsCommand _releasePaymentsCommand;
-
+        private List<FinalisedOnProgammeLearningPaymentEvent> _finalisedPaymentsList;
+        private FinalisedOnProgammeLearningPaymentEvent _finalisedPayment;
 
         public CalculateUnfundedPaymentsSetpDefinitions(ScenarioContext context)
         {
@@ -58,20 +59,26 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
         }
 
-        [Then(@"the unpaid unfunded payments for the specified Collection Month are sent to be paid")]
+        [Then(@"all the unpaid unfunded payments for the specified Collection Month are sent to be paid")]
         public async Task UnpaidUnfundedPaymentsForTheSpecifiedCollectionMonthAreSentToBePaid()
         {
             await WaitHelper.WaitForIt(() =>
             {
-                var finalisedPaymentEvent =
+                _finalisedPaymentsList =
                     FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.ToList<FinalisedOnProgammeLearningPaymentEvent>();
 
-                finalisedPaymentEvent.Where(x => x.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
+                if (_finalisedPaymentsList.Count == 0) return false;
 
-                if (finalisedPaymentEvent.Count == 0) return false;
-
-                return finalisedPaymentEvent.All(x => x.CollectionMonth == TableExtensions.Period[DateTime.Now.ToString("MMMM")]);
+                return _finalisedPaymentsList.All(x => x.CollectionMonth == TableExtensions.Period[DateTime.Now.ToString("MMMM")]);
             }, "Failed to find published Finalised On Programme Learning Payment event");
+        }
+
+        [Then(@"the amount of (.*) is sent to be paid for the current apprenticeship")]
+        public void AmountIsSentToBePaidForTheCurrentApprenticeship(decimal Amount)
+        {
+            _finalisedPayment = (FinalisedOnProgammeLearningPaymentEvent)_finalisedPaymentsList.Where(x => x.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
+
+            Assert.AreEqual(_finalisedPayment.Amount, Amount);
         }
 
     }
