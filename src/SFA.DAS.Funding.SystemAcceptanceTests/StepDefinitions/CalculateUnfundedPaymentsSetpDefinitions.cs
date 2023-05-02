@@ -50,7 +50,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public void UserWantsToProcessPaymentsForTheCurrentCollectionPeriod()
         {
             _releasePaymentsCommand = new ReleasePaymentsCommand();
-            _releasePaymentsCommand.CollectionMonth = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
+            _releasePaymentsCommand.CollectionMonth = TableExtensions.Period[DateTime.Now.AddMonths(1).ToString("MMMM")];
         }
 
         [When(@"the scheduler triggers Unfunded Payment processing")]
@@ -65,18 +65,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await WaitHelper.WaitForIt(() =>
             {
                 _finalisedPaymentsList =
-                    FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.ToList<FinalisedOnProgammeLearningPaymentEvent>();
+                    FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).ToList();
 
                 if (_finalisedPaymentsList.Count == 0) return false;
 
-                return _finalisedPaymentsList.All(x => x.CollectionMonth == TableExtensions.Period[DateTime.Now.ToString("MMMM")]);
+                return _finalisedPaymentsList.All(x => x.CollectionMonth == TableExtensions.Period[DateTime.Now.AddMonths(1).ToString("MMMM")]);
             }, "Failed to find published Finalised On Programme Learning Payment event");
         }
 
         [Then(@"the amount of (.*) is sent to be paid for the current apprenticeship")]
         public void AmountIsSentToBePaidForTheCurrentApprenticeship(decimal Amount)
         {
-            _finalisedPayment = (FinalisedOnProgammeLearningPaymentEvent)_finalisedPaymentsList.Where(x => x.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
+            _finalisedPayment = _finalisedPaymentsList.FirstOrDefault(x => x.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
+
+            Assert.That(_finalisedPayment != null, "FinalisedPayment should not be null.");
 
             Assert.AreEqual(_finalisedPayment.Amount, Amount);
         }
