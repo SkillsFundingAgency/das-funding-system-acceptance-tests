@@ -27,8 +27,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         public int AcademicYear { get; set; }
         public int DeliveryPeriod { get; set; }
         public double Amount { get; set; }
-        public int CollectionYear { get; set; }
-        public int CollectionPeriod { get; set; }
+        public int PaymentYear { get; set; }
+        public int PaymentPeriod { get; set; }
         public bool SentForPayment { get; set; }
     }
 }
