@@ -1,6 +1,4 @@
-﻿using SFA.DAS.Apprenticeships.Types;
-using SFA.DAS.Funding.ApprenticeshipPayments.Types;
-using System.Linq;
+﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {

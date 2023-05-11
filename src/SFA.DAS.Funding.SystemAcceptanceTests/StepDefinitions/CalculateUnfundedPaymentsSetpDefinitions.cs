@@ -1,8 +1,7 @@
-﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+﻿using SFA.DAS.Apprenticeships.Types;
+using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using ApprenticeshipCreatedEvent = SFA.DAS.Apprenticeships.Types.ApprenticeshipCreatedEvent;
-using System.Linq;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -47,7 +46,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var payments = apiClient.GetPaymentsEntityModel().Model.Payments;
 
-            Assert.IsTrue(payments.All(x => x.SentForPayment == false));
+            Assert.IsTrue(payments.All(x => !x.SentForPayment));
         }
 
         [Given(@"the user wants to process payments for the current collection Period")]

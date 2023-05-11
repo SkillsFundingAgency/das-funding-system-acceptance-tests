@@ -1,5 +1,4 @@
 ﻿using NServiceBus;
-using SFA.DAS.CommitmentsV2.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;

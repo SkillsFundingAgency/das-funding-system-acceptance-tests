@@ -13,6 +13,4 @@ public class FinalisedOnProgrammeLearningPaymentEventHandler: IHandleMessages<Fi
         ReceivedEvents.Add(message);
         return Task.CompletedTask;
     }
-
-    public void ClearEvent() => ReceivedEvents.Clear();
 }

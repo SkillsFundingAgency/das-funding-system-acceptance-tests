@@ -2,7 +2,6 @@ using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using FluentAssertions.Extensions;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
