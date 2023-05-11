@@ -1,5 +1,4 @@
-﻿
-namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
+﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
     
     public class EarningsEntityModel

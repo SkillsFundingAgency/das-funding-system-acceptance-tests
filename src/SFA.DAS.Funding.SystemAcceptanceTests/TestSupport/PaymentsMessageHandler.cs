@@ -26,5 +26,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 return false;
             }, "Failed to find published event in Payments");
         }
+
+        public async Task PublishReleasePaymentsCommand(ReleasePaymentsCommand releasePaymentsCommand)
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(5));
+            await _context.Get<TestMessageBus>().SendReleasePaymentsMessage(releasePaymentsCommand);
+        }
     }
 }

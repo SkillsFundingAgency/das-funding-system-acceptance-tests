@@ -12,14 +12,14 @@ public static class TableExtensions
             .ToList();
     }
 
-    public static List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short PaymentYear, byte PaymentPeriod)> ToExpectedPayments(this Table table)
+    public static List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short CollectionYear, byte CollectionPeriod)> ToExpectedPayments(this Table table)
     {
         return table.Rows.Select(row =>
                 (Convert.ToInt16(row[0]), Period[row[1]], Convert.ToDecimal(row[2]), Convert.ToInt16(row[3]), Period[row[4]]))
             .ToList();
     }
 
-    public static List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short PaymentYear, byte PaymentPeriod)> ToExpectedRollupPayments(this Table table)
+    public static List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short CollectionYear, byte CollectionPeriod)> ToExpectedRollupPayments(this Table table)
     {
         return table.Rows.Select(row =>
                 (Convert.ToInt16(CalculateAcademicYear(row[0])), Period[CalculatePeriod(row[0])], Convert.ToDecimal(row[2]),
@@ -33,7 +33,7 @@ public static class TableExtensions
         return DateTime.Now.AddMonths(Convert.ToInt16(numberOfMonthsToAdd)).ToString("MMMM");
     }
 
-    private static string CalculateAcademicYear(string text)
+    public static string CalculateAcademicYear(string text)
     {
         var numberOfMonthsToAdd = new string(text.Where(c => !char.IsLetter(c)).ToArray());
 
