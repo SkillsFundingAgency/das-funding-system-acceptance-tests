@@ -11,19 +11,19 @@ Scenario: Rollup Payment profile for single learner - Training start date declar
 	And the apprenticeship commitment is approved
 	When the Unfunded Payments for the remainder of the apprenticeship are determined
 	Then Unfunded Payments for the appreticeship including rollup payments are calculated as below
-		| DeliveryPeriod | PaymentPeriod   | Amount |
-		| CurrentMonth-2 | CurrentMonth+1  | 1000   |
-		| CurrentMonth-1 | CurrentMonth+1  | 1000   |
-		| CurrentMonth+0 | CurrentMonth+1  | 1000   |
-		| CurrentMonth+1 | CurrentMonth+2  | 1000   |
-		| CurrentMonth+2 | CurrentMonth+3  | 1000   |
-		| CurrentMonth+3 | CurrentMonth+4  | 1000   |
-		| CurrentMonth+4 | CurrentMonth+5  | 1000   |
-		| CurrentMonth+5 | CurrentMonth+6  | 1000   |
-		| CurrentMonth+6 | CurrentMonth+7  | 1000   |
-		| CurrentMonth+7 | CurrentMonth+8  | 1000   |
-		| CurrentMonth+8 | CurrentMonth+9  | 1000   |
-		| CurrentMonth+9 | CurrentMonth+10 | 1000   |
+		| DeliveryPeriod | PaymentPeriod  | Amount |
+		| CurrentMonth-2 | CurrentMonth+0 | 1000   |
+		| CurrentMonth-1 | CurrentMonth+0 | 1000   |
+		| CurrentMonth+0 | CurrentMonth+0 | 1000   |
+		| CurrentMonth+1 | CurrentMonth+1 | 1000   |
+		| CurrentMonth+2 | CurrentMonth+2 | 1000   |
+		| CurrentMonth+3 | CurrentMonth+3 | 1000   |
+		| CurrentMonth+4 | CurrentMonth+4 | 1000   |
+		| CurrentMonth+5 | CurrentMonth+5 | 1000   |
+		| CurrentMonth+6 | CurrentMonth+6 | 1000   |
+		| CurrentMonth+7 | CurrentMonth+7 | 1000   |
+		| CurrentMonth+8 | CurrentMonth+8 | 1000   |
+		| CurrentMonth+9 | CurrentMonth+9 | 1000   |
 	And the newly calculated Unfunded Payments are marked as not sent to payments BAU
 
 Examples:

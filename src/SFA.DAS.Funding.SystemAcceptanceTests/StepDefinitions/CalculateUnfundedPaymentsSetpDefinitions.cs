@@ -21,7 +21,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             _context = context;
             _paymentsMessageHelper = new PaymentsMessageHandler(context);
-            _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.AddMonths(1).ToString("MMMM")];
+            _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
         }
 
         [Given(@"the Unfunded Payments for the remainder of the apprenticeship are determined")]
@@ -53,7 +53,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public void UserWantsToProcessPaymentsForTheCurrentCollectionPeriod()
         {
             _releasePaymentsCommand = new ReleasePaymentsCommand();
-            _releasePaymentsCommand.CollectionMonth = _currentCollectionPeriod;
+            _releasePaymentsCommand.CollectionPeriod = _currentCollectionPeriod;
         }
 
         [When(@"the scheduler triggers Unfunded Payment processing")]
@@ -91,7 +91,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             Assert.Multiple(() =>
             {
                 Assert.IsTrue(_finalisedPaymentsList.All(x => x.Amount == Amount), "Incorrect Amount found in FinalisedOnProgrammeLearningPaymentEvent");
-                Assert.IsTrue(_finalisedPaymentsList.All(x => x.CollectionYear.ToString() == TableExtensions.CalculateAcademicYear("CurrentMonth+1")),
+                Assert.IsTrue(_finalisedPaymentsList.All(x => x.CollectionYear.ToString() == TableExtensions.CalculateAcademicYear("CurrentMonth+0")),
                     "Incorrect CollectionYear found in FinalisedOnProgrammeLearningPaymentEvent");
             });
         }
@@ -104,7 +104,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _paymentEntity = apiClient.GetPaymentsEntityModel().Model.Payments;
 
-            Assert.IsTrue(_paymentEntity.Where(p => p.PaymentPeriod == _currentCollectionPeriod).All(p => p.SentForPayment));
+            Assert.IsTrue(_paymentEntity.Where(p => p.CollectionPeriod == _currentCollectionPeriod).All(p => p.SentForPayment));
         }
 
         [Then(@"all payments for the following collection periods are marked as not sent to payments BAU")]
@@ -112,8 +112,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var currentAcadmicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+1"));
 
-            Assert.IsFalse(_paymentEntity.Where(p => (p.PaymentYear > currentAcadmicYear) ||
-                                          (p.PaymentYear == currentAcadmicYear && p.PaymentPeriod > _currentCollectionPeriod))
+            Assert.IsFalse(_paymentEntity.Where(p => (p.CollectionYear > currentAcadmicYear) ||
+                                          (p.CollectionYear == currentAcadmicYear && p.CollectionPeriod > _currentCollectionPeriod))
                                           .All(p => p.SentForPayment));
         }
 
