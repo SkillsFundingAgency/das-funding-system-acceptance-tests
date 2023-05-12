@@ -29,7 +29,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
         public async Task PublishReleasePaymentsCommand(ReleasePaymentsCommand releasePaymentsCommand)
         {
-            Thread.Sleep(TimeSpan.FromSeconds(5));
             await _context.Get<TestMessageBus>().SendReleasePaymentsMessage(releasePaymentsCommand);
         }
     }

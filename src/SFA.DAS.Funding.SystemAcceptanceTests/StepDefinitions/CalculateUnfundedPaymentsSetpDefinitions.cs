@@ -53,7 +53,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public void UserWantsToProcessPaymentsForTheCurrentCollectionPeriod()
         {
             _releasePaymentsCommand = new ReleasePaymentsCommand();
-            _releasePaymentsCommand.CollectionMonth = _currentCollectionPeriod;
+            _releasePaymentsCommand.CollectionPeriod = _currentCollectionPeriod;
         }
 
         [When(@"the scheduler triggers Unfunded Payment processing")]
