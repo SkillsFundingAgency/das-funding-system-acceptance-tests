@@ -35,3 +35,8 @@ Scenario: On-program earnings generation for an approved apprenticeship
 Examples:
 	| start_date | planned_end_date | agreed_price | training_code | planned_number_of_months | instalment_amount | first_delivery_period | first_calendar_period |
 	| 2022-08-01 | 2024-02-15       | 15,000       | 614           | 18                       | 666.66667            | 01-2223               | 08/2022               |
+
+
+@regression
+Scenario: release payments command get
+	Given fire command

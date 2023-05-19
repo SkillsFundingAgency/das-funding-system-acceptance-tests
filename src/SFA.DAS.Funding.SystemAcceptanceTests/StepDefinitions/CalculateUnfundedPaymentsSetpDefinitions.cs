@@ -56,6 +56,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _releasePaymentsCommand.CollectionPeriod = _currentCollectionPeriod;
         }
 
+        [Given(@"fire command")]
+        public async Task FireCommand()
+        {
+            _releasePaymentsCommand = new ReleasePaymentsCommand();
+            _releasePaymentsCommand.CollectionMonth = TableExtensions.Period[DateTime.Now.AddMonths(1).ToString("MMMM")];
+            await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
+        }
+
         [When(@"the scheduler triggers Unfunded Payment processing")]
         public async Task SchedulerTriggersUnfundedPaymentProcessing()
         {
