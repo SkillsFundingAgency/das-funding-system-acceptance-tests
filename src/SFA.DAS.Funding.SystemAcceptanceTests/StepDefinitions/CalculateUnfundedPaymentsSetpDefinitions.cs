@@ -33,8 +33,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _payments = _context.Get<PaymentsGeneratedEvent>().Payments;
         }
 
-        [Then(@"the Unfunded Payments for every earning is created in the following month")]
-        public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedPayments());
+        [Then(@"the Unfunded Payments for every earning is created")]
+        public void UnfundedPaymentsForEveryEarningIsCreated(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedPayments());
 
         [Then(@"Unfunded Payments for the appreticeship including rollup payments are calculated as below")]
         public void UnfundedPaymentsForTheAppreticeshipIncludingRollupPaymentsAreCalculated(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedRollupPayments());
@@ -60,7 +60,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task FireCommand()
         {
             _releasePaymentsCommand = new ReleasePaymentsCommand();
-            _releasePaymentsCommand.CollectionMonth = TableExtensions.Period[DateTime.Now.AddMonths(1).ToString("MMMM")];
+            _releasePaymentsCommand.CollectionPeriod = TableExtensions.Period[DateTime.Now.AddMonths(1).ToString("MMMM")];
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
         }
 
