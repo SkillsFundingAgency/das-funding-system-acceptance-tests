@@ -9,12 +9,13 @@
   <ItemGroup>
     <PackageReference Include="NServiceBus" Version="7.7.4" />
     <PackageReference Include="SFA.DAS.Apprenticeships.Types" Version="1.1.4" />
-	  <PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="100.0.6" />
+	<PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="100.0.6" />
     <PackageReference Include="SFA.DAS.Funding.ApprenticeshipEarnings.Types" Version="1.0.14" />
     <PackageReference Include="SFA.DAS.Funding.ApprenticeshipPayments.Types" Version="0.1.6-prerelease-7" />
     <PackageReference Include="SFA.DAS.NServiceBus" Version="17.0.13" />
     <PackageReference Include="SpecFlow" Version="3.9.40" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="7.0.1" />
+	<PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Messages" Version="0.0.14" />
   </ItemGroup>
 
 </Project>

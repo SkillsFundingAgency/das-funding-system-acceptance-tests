@@ -6,18 +6,17 @@ using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
     [Binding]
-    public class CalculateUnfundedPaymentsSetpDefinitions
+    public class CalculateUnfundedPaymentsStepDefinitions
     {
         private readonly ScenarioContext _context;
         private List<Payment> _payments;
         private readonly PaymentsMessageHandler _paymentsMessageHelper;
         private ReleasePaymentsCommand _releasePaymentsCommand;
         private List<FinalisedOnProgammeLearningPaymentEvent> _finalisedPaymentsList;
-        private FinalisedOnProgammeLearningPaymentEvent _finalisedPayment;
-        private Payments[] _paymentEntity;
+        private TestSupport.Payments[] _paymentEntity;
         private byte _currentCollectionPeriod;
 
-        public CalculateUnfundedPaymentsSetpDefinitions(ScenarioContext context)
+        public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context)
         {
             _context = context;
             _paymentsMessageHelper = new PaymentsMessageHandler(context);
@@ -33,7 +32,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _payments = _context.Get<PaymentsGeneratedEvent>().Payments;
         }
 
-        [Then(@"the Unfunded Payments for every earning is created in the following month")]
+        [Then(@"the Unfunded Payments for every earning is created")]
         public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedPayments());
 
         [Then(@"Unfunded Payments for the appreticeship including rollup payments are calculated as below")]
