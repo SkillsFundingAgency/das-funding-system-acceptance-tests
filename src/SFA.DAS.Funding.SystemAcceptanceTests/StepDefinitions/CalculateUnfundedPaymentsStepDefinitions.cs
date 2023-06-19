@@ -69,20 +69,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
         }
 
-
-        [When(@"the unpaid unfunded payments for the current Collection Month are sent to be paid")]
-        public async Task UnpaidUnfundedPaymentsForTheSpecifiedCollectionMonthAreSentToBePaid()
+        [When(@"the unpaid unfunded payments for the current Collection Month and (.*) rollup payments are sent to be paid")]
+        public async Task UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(int numberOfRollupPayments)
         {
             await WaitHelper.WaitForIt(() =>
             {
                 _finalisedPaymentsList =
                     FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).ToList();
 
-                if (_finalisedPaymentsList.Count != 3) return false;
+                if (_finalisedPaymentsList.Count != numberOfRollupPayments+1) return false;
 
                 return _finalisedPaymentsList.All(x => x.CollectionMonth == _currentCollectionPeriod);
             }, "Failed to find published Finalised On Programme Learning Payment event");
         }
+
 
         [Then(@"the amount of (.*) is sent to be paid for each payment in the curent Collection Month")]
         public void AmountIsSentToBePaidForEachPaymentInTheCurentCollectionMonth(decimal Amount)

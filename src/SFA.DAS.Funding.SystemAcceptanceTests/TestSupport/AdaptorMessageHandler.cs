@@ -1,10 +1,4 @@
-﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
-using SFA.DAS.Payments.RequiredPayments.Messages.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SFA.DAS.Payments.RequiredPayments.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
