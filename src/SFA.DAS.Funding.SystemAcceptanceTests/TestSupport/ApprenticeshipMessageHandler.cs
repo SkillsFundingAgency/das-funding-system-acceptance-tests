@@ -2,6 +2,7 @@
 using APR = SFA.DAS.Apprenticeships.Types;
 using AutoFixture;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
@@ -43,7 +44,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
         public async Task PublishApprenticeshipApprovedMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
         {
-            await _context.Get<TestMessageBus>().SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
+            await _context.Get<TestMessageBus>(TestMessageBusKeys.Das).SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
 
             await WaitHelper.WaitForIt(() =>
             {

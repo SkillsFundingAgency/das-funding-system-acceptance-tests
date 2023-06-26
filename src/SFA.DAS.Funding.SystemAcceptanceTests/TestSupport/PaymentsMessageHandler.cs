@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
@@ -29,7 +30,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
         public async Task PublishReleasePaymentsCommand(ReleasePaymentsCommand releasePaymentsCommand)
         {
-            await _context.Get<TestMessageBus>().SendReleasePaymentsMessage(releasePaymentsCommand);
+            await _context.Get<TestMessageBus>(TestMessageBusKeys.Das).SendReleasePaymentsMessage(releasePaymentsCommand);
         }
     }
 }
