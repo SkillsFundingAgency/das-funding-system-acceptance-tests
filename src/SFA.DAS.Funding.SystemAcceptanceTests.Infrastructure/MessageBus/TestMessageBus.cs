@@ -26,7 +26,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
             if (NotUsingLearningTransport(config))
             {
                 endpointConfiguration
-                    .UseAzureServiceBusTransport(connectionString);
+                    .UseAzureServiceBusTransport(connectionString, settings =>
+                    {
+                        foreach (var eventType in eventTypes)
+                        {
+                            settings.RouteToEndpoint(eventType, endpointName);
+                        }
+                    });
             }
             else
             {
