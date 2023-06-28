@@ -77,7 +77,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 _finalisedPaymentsList =
                     FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).ToList();
 
-                if (_finalisedPaymentsList.Count >= numberOfRollupPayments+1) return false;
+                if (_finalisedPaymentsList.Count != numberOfRollupPayments+1)
+                {
+                    Console.WriteLine("number of finalised payments events {0}", _finalisedPaymentsList.Count);
+                    return false;
+                }
 
                 return _finalisedPaymentsList.All(x => x.CollectionMonth == _currentCollectionPeriod);
             }, "Failed to find published Finalised On Programme Learning Payment event");
