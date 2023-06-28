@@ -75,7 +75,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await WaitHelper.WaitForIt(() =>
             {
                 _finalisedPaymentsList =
-                    FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).ToList();
+                    FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).Select(x => x.message).ToList();
 
                 if (_finalisedPaymentsList.Count != numberOfRollupPayments+1)
                 {
@@ -125,7 +125,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             await WaitHelper.WaitForUnexpected(() =>
             {
-                _finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).ToList();
+                _finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).Select(x => x.message).ToList();
 
                 return _finalisedPaymentsList.Count != 0;
             }, "Unexpected published Finalised On Programme Learning Payment events found");
