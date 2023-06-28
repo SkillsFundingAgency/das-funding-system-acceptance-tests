@@ -16,7 +16,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             await WaitHelper.WaitForIt(() =>
             {
                 CalculatedRequiredLevyAmount? calculatedRequiredLevyAmount =
-                    CalculatedRequiredLevyAmountEventHandler.ReceivedEvents.FirstOrDefault();//x => x.EventTime.DateTime.ToUniversalTime() >= DateTime.UtcNow.AddMinutes(-5));
+                    CalculatedRequiredLevyAmountEventHandler.ReceivedEvents.FirstOrDefault().message;//x => x.EventTime.DateTime.ToUniversalTime() >= DateTime.UtcNow.AddMinutes(-5));
 
                 if (calculatedRequiredLevyAmount != null)
                 {

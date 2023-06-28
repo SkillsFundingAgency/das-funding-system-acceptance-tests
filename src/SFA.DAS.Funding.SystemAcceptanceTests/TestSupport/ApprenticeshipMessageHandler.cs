@@ -49,7 +49,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             await WaitHelper.WaitForIt(() =>
             {
                 APR.ApprenticeshipCreatedEvent? apprenticeshipEvent =
-                    ApprenticeshipsTypesEventHandler.ReceivedEvents.FirstOrDefault(x => x.Uln == apprenticeshipCreatedEvent.Uln);
+                    ApprenticeshipsTypesEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.Uln == apprenticeshipCreatedEvent.Uln).message;
                 if (apprenticeshipEvent != null)
                 {
                     _context.Set(apprenticeshipEvent);
@@ -62,7 +62,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             {
                 EarningsGeneratedEvent? earningsEvent = 
                     EarningsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x =>
-                    x.FundingPeriods.Any(y => y.Uln.ToString() == apprenticeshipCreatedEvent.Uln));
+                    x.message.FundingPeriods.Any(y => y.Uln.ToString() == apprenticeshipCreatedEvent.Uln)).message;
                 if (earningsEvent != null)
                 {
                     _context.Set(earningsEvent);

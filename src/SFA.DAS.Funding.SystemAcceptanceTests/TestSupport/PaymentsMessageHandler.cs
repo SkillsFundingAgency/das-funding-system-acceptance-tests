@@ -17,7 +17,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             await WaitHelper.WaitForIt(() =>
             {
                 PaymentsGeneratedEvent? paymentsEvent =
-                    PaymentsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x => x.ApprenticeshipKey == apprenticeshipKey);
+                    PaymentsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.ApprenticeshipKey == apprenticeshipKey).message;
 
                 if (paymentsEvent != null)
                 {
