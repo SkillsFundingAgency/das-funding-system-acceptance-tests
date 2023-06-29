@@ -34,15 +34,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var calculatedRequiredLevyAmount = _context.Get<CalculatedRequiredLevyAmount>();
 
-            //var properties = calculatedRequiredLevyAmount.GetType().GetProperties();
-
-            ////for (int i = 0; i < properties.Length; i++)
-            ////{
-            ////    Console.WriteLine("{0}: {1}", properties[i].Name, properties[i].GetValue(calculatedRequiredLevyAmount));
-            ////}
-
-            PrintObjectProperties(calculatedRequiredLevyAmount);
-
             Assert.Multiple(() =>
             {
                 Assert.That(calculatedRequiredLevyAmount.Priority, Is.Zero);
@@ -66,28 +57,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 Assert.That(calculatedRequiredLevyAmount.LearningAim.ProgrammeType, Is.Zero);
                 Assert.That(calculatedRequiredLevyAmount.LearningAim.FrameworkCode, Is.Zero);
             });
-        }
-
-        public static void PrintObjectProperties(object obj)
-        {
-            Type type = obj.GetType();
-            PropertyInfo[] properties = type.GetProperties();
-
-            foreach (PropertyInfo property in properties)
-            {
-                string propertyName = property.Name;
-                object propertyValue = property.GetValue(obj);
-
-                if (property.PropertyType.Namespace.StartsWith("System"))
-                {
-                    Console.WriteLine("{0}: {1}", propertyName, propertyValue);
-                }
-                else
-                {
-                    Console.WriteLine("{0}:", propertyName);
-                    PrintObjectProperties(propertyValue);
-                }
-            }
         }
     }
 }
