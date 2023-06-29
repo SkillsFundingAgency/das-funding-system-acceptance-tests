@@ -11,19 +11,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
         private IEndpointInstance _endpointInstance;
         public bool IsRunning { get; private set; }
         public FundingConfig _config { get; set; }
-
-        public async Task Start(FundingConfig config)
+        
+        public async Task Start(FundingConfig config, string endpointName, string connectionString)
         {
             _config = config;
-            var endpointConfiguration = new EndpointConfiguration(config.FundingSystemAcceptanceTestQueue)
-                    .UseMessageConventions()
-                    .UseNewtonsoftJsonSerializer()
-                ;
+            var endpointConfiguration = new EndpointConfiguration(endpointName)
+                .UseMessageConventions()
+                .UseNewtonsoftJsonSerializer();
+
+            
 
             if (NotUsingLearningTransport(config))
             {
                 endpointConfiguration
-                    .UseAzureServiceBusTransport(config.SharedServiceBusFqdn);
+                    .UseAzureServiceBusTransport(connectionString);
             }
             else
             {

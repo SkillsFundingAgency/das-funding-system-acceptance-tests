@@ -12,4 +12,6 @@ public class FundingConfig
     public string ApprovalsEventHandlersQueue { get; set; } = "<not set>";
     public string FundingSystemAcceptanceTestQueue { get; set; } = "<not set>";
     public string ReleasePaymentsEventHandlersQueue { get; set; } = "<not set>";
+    public string Pv2ServiceBusFqdn { get; set; } = "<not set>";
+    public string Pv2FundingSourceQueue { get; set; } = "<not set>";
 }

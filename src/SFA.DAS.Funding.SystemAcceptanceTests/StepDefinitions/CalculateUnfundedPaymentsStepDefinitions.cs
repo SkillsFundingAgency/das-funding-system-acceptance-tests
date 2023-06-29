@@ -6,18 +6,17 @@ using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
     [Binding]
-    public class CalculateUnfundedPaymentsSetpDefinitions
+    public class CalculateUnfundedPaymentsStepDefinitions
     {
         private readonly ScenarioContext _context;
         private List<Payment> _payments;
         private readonly PaymentsMessageHandler _paymentsMessageHelper;
         private ReleasePaymentsCommand _releasePaymentsCommand;
         private List<FinalisedOnProgammeLearningPaymentEvent> _finalisedPaymentsList;
-        private FinalisedOnProgammeLearningPaymentEvent _finalisedPayment;
-        private Payments[] _paymentEntity;
+        private TestSupport.Payments[] _paymentEntity;
         private byte _currentCollectionPeriod;
 
-        public CalculateUnfundedPaymentsSetpDefinitions(ScenarioContext context)
+        public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context)
         {
             _context = context;
             _paymentsMessageHelper = new PaymentsMessageHandler(context);
@@ -33,7 +32,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _payments = _context.Get<PaymentsGeneratedEvent>().Payments;
         }
 
-        [Then(@"the Unfunded Payments for every earning is created in the following month")]
+        [Then(@"the Unfunded Payments for every earning is created")]
         public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedPayments());
 
         [Then(@"Unfunded Payments for the appreticeship including rollup payments are calculated as below")]
@@ -70,20 +69,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
         }
 
-
-        [When(@"the unpaid unfunded payments for the current Collection Month are sent to be paid")]
-        public async Task UnpaidUnfundedPaymentsForTheSpecifiedCollectionMonthAreSentToBePaid()
+        [When(@"the unpaid unfunded payments for the current Collection Month and (.*) rollup payments are sent to be paid")]
+        public async Task UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(int numberOfRollupPayments)
         {
             await WaitHelper.WaitForIt(() =>
             {
                 _finalisedPaymentsList =
-                    FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).ToList();
+                    FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).Select(x => x.message).ToList();
 
-                if (_finalisedPaymentsList.Count != 3) return false;
+                if (_finalisedPaymentsList.Count != numberOfRollupPayments + 1) return false;
 
                 return _finalisedPaymentsList.All(x => x.CollectionMonth == _currentCollectionPeriod);
             }, "Failed to find published Finalised On Programme Learning Payment event");
         }
+
 
         [Then(@"the amount of (.*) is sent to be paid for each payment in the curent Collection Month")]
         public void AmountIsSentToBePaidForEachPaymentInTheCurentCollectionMonth(decimal Amount)
@@ -122,7 +121,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             await WaitHelper.WaitForUnexpected(() =>
             {
-                _finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).ToList();
+                _finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).Select(x => x.message).ToList();
 
                 return _finalisedPaymentsList.Count != 0;
             }, "Unexpected published Finalised On Programme Learning Payment events found");

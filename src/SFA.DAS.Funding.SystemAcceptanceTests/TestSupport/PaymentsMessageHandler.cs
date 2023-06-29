@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
@@ -16,7 +17,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             await WaitHelper.WaitForIt(() =>
             {
                 PaymentsGeneratedEvent? paymentsEvent =
-                    PaymentsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x => x.ApprenticeshipKey == apprenticeshipKey);
+                    PaymentsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.ApprenticeshipKey == apprenticeshipKey).message;
 
                 if (paymentsEvent != null)
                 {
@@ -29,7 +30,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
         public async Task PublishReleasePaymentsCommand(ReleasePaymentsCommand releasePaymentsCommand)
         {
-            await _context.Get<TestMessageBus>().SendReleasePaymentsMessage(releasePaymentsCommand);
+            await _context.Get<TestMessageBus>(TestMessageBusKeys.Das).SendReleasePaymentsMessage(releasePaymentsCommand);
         }
     }
 }

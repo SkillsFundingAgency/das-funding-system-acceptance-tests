@@ -1,16 +1,5 @@
-﻿using NServiceBus;
-using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
-using System.Collections.Concurrent;
+﻿using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Events;
 
-public class EarningsGeneratedEventHandler : IHandleMessages<EarningsGeneratedEvent>
-{
-    public static ConcurrentBag<EarningsGeneratedEvent> ReceivedEvents { get; } = new();
-
-    public Task Handle(EarningsGeneratedEvent message, IMessageHandlerContext context)
-    {
-        ReceivedEvents.Add(message);
-        return Task.CompletedTask;
-    }
-}
+public class EarningsGeneratedEventHandler : MultipleEndpointSafeEventHandler<EarningsGeneratedEvent> { }

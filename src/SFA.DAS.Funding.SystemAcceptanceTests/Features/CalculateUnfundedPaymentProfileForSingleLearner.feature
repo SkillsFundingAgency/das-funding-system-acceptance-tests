@@ -9,7 +9,7 @@ Scenario: Unfunded Payment profile for single learner - Same Academic Year and b
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
 	When the Unfunded Payments for the remainder of the apprenticeship are determined
-	Then the Unfunded Payments for every earning is created in the following month
+	Then the Unfunded Payments for every earning is created
 		| AcademicYear | DeliveryPeriod | Amount | PaymentYear | PaymentPeriod |
 		| 2324         | August         | 1000   | 2324        | August        |
 		| 2324         | September      | 1000   | 2324        | September     |
@@ -34,7 +34,7 @@ Scenario: Unfunded Payment profile for single learner - Different Academic Years
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
 	When the Unfunded Payments for the remainder of the apprenticeship are determined
-	Then the Unfunded Payments for every earning is created in the following month
+	Then the Unfunded Payments for every earning is created
 		| AcademicYear | DeliveryPeriod | Amount | PaymentYear | PaymentPeriod |
 		| 2324         | January        | 500    | 2324        | January       |
 		| 2324         | February       | 500    | 2324        | February      |
@@ -73,7 +73,7 @@ Scenario: Unfunded Payment profile for single learner - Different Academic Years
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
 	When the Unfunded Payments for the remainder of the apprenticeship are determined
-	Then the Unfunded Payments for every earning is created in the following month
+	Then the Unfunded Payments for every earning is created
 		| AcademicYear | DeliveryPeriod | Amount    | PaymentYear | PaymentPeriod |
 		| 2324         | January        | 533.33333 | 2324        | January       |
 		| 2324         | February       | 533.33333 | 2324        | February      |

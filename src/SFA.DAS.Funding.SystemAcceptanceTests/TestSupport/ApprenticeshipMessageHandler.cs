@@ -2,6 +2,7 @@
 using APR = SFA.DAS.Apprenticeships.Types;
 using AutoFixture;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
@@ -43,12 +44,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
         public async Task PublishApprenticeshipApprovedMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
         {
-            await _context.Get<TestMessageBus>().SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
+            await _context.Get<TestMessageBus>(TestMessageBusKeys.Das).SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
 
             await WaitHelper.WaitForIt(() =>
             {
                 APR.ApprenticeshipCreatedEvent? apprenticeshipEvent =
-                    ApprenticeshipsTypesEventHandler.ReceivedEvents.FirstOrDefault(x => x.Uln == apprenticeshipCreatedEvent.Uln);
+                    ApprenticeshipsTypesEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.Uln == apprenticeshipCreatedEvent.Uln).message;
                 if (apprenticeshipEvent != null)
                 {
                     _context.Set(apprenticeshipEvent);
@@ -61,7 +62,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             {
                 EarningsGeneratedEvent? earningsEvent = 
                     EarningsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x =>
-                    x.FundingPeriods.Any(y => y.Uln.ToString() == apprenticeshipCreatedEvent.Uln));
+                    x.message.FundingPeriods.Any(y => y.Uln.ToString() == apprenticeshipCreatedEvent.Uln)).message;
                 if (earningsEvent != null)
                 {
                     _context.Set(earningsEvent);

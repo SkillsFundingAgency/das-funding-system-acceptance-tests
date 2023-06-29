@@ -1,16 +1,5 @@
-﻿using NServiceBus;
-using SFA.DAS.Funding.ApprenticeshipPayments.Types;
-using System.Collections.Concurrent;
+﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Events;
 
-public class PaymentsGeneratedEventHandler : IHandleMessages<PaymentsGeneratedEvent>
-{
-    public static ConcurrentBag<PaymentsGeneratedEvent> ReceivedEvents { get; } = new();
-
-    public Task Handle(PaymentsGeneratedEvent message, IMessageHandlerContext context)
-    {
-        ReceivedEvents.Add(message);
-        return Task.CompletedTask;
-    }
-}
+public class PaymentsGeneratedEventHandler : MultipleEndpointSafeEventHandler<PaymentsGeneratedEvent> { }
