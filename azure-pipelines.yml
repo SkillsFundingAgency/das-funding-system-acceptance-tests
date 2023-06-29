@@ -45,6 +45,7 @@ stages:
   - group: DevTest Management Resources
   - group: AT DevTest Shared Resources
   - group: AT Automation Suite Variables
+  - group: AT das-funding-system-acceptance-tests
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
@@ -58,6 +59,7 @@ stages:
   - group: DevTest Management Resources
   - group: TEST DevTest Shared Resources
   - group: TEST Automation Suite Variables
+  - group: TEST das-funding-system-acceptance-tests
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
@@ -71,6 +73,7 @@ stages:
   - group: DevTest Management Resources
   - group: TEST2 DevTest Shared Resources
   - group: TEST2 Automation Suite Variables
+  - group: TEST2 das-funding-system-acceptance-tests
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
@@ -84,6 +87,7 @@ stages:
   - group: PreProd Management Resources
   - group: PreProd Shared Resources
   - group: PreProd Automation Suite Variables
+  - group: PREPROD das-funding-system-acceptance-tests
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
@@ -98,6 +102,7 @@ stages:
   - group: DevTest Management Resources
   - group: DEMO DevTest Shared Resources
   - group: DEMO Automation Suite Variables
+  - group: DEMO das-funding-system-acceptance-tests
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
