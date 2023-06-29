@@ -1,10 +1,8 @@
 ﻿using NServiceBus;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using SFA.DAS.NServiceBus;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
-using System.Text.RegularExpressions;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
 {
@@ -14,25 +12,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
         public bool IsRunning { get; private set; }
         public FundingConfig _config { get; set; }
         
-        public async Task Start(FundingConfig config, string endpointName, string connectionString, Type[] eventTypes)
+        public async Task Start(FundingConfig config, string endpointName, string connectionString)
         {
             _config = config;
             var endpointConfiguration = new EndpointConfiguration(endpointName)
-                    .UseNewtonsoftJsonSerializer();
+                .UseMessageConventions()
+                .UseNewtonsoftJsonSerializer();
 
-            endpointConfiguration.Conventions().DefiningCommandsAs((Func<Type, bool>)(t => Regex.IsMatch(t.Name, "Command(V\\d+)?$") || typeof(Command).IsAssignableFrom(t)));
-            endpointConfiguration.Conventions().DefiningEventsAs((Func<Type, bool>)(eventTypes.Contains));
+            
 
             if (NotUsingLearningTransport(config))
             {
                 endpointConfiguration
-                    .UseAzureServiceBusTransport(connectionString, settings =>
-                    {
-                        foreach (var eventType in eventTypes)
-                        {
-                            settings.RouteToEndpoint(eventType, endpointName);
-                        }
-                    });
+                    .UseAzureServiceBusTransport(connectionString);
             }
             else
             {

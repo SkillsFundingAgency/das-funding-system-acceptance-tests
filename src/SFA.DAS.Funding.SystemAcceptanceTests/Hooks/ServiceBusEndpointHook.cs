@@ -11,11 +11,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
             var config = context.Get<FundingConfig>();
 
             var dasTestMessageBus = new TestMessageBus();
-            await dasTestMessageBus.Start(config, config.FundingSystemAcceptanceTestQueue, config.SharedServiceBusFqdn, TestMessageBusEventTypes.Das);
+            await dasTestMessageBus.Start(config, config.FundingSystemAcceptanceTestQueue, config.SharedServiceBusFqdn);
             context.Set(dasTestMessageBus, TestMessageBusKeys.Das);
 
             var pv2TestMessageBus = new TestMessageBus();
-            await pv2TestMessageBus.Start(config, config.Pv2FundingSourceQueue, config.Pv2ServiceBusFqdn, TestMessageBusEventTypes.Pv2);
+            await pv2TestMessageBus.Start(config, config.Pv2FundingSourceQueue, config.Pv2ServiceBusFqdn);
             context.Set(pv2TestMessageBus, TestMessageBusKeys.Pv2);
         }
 
