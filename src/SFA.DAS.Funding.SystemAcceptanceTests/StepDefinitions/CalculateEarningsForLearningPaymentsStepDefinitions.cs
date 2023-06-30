@@ -12,6 +12,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private readonly ApprenticeshipMessageHandler _messageHelper;
         private CommitmentsMessages.ApprenticeshipCreatedEvent _commitmentsApprenticeshipCreatedEvent;
         private ApprenticeshipsMessages.ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
+
         private EarningsGeneratedEvent _earnings;
         private FundingPeriod _fundingPeriod;
 
@@ -22,11 +23,24 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
-        public void GivenAnApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, string trainingCode)
+        public void ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, string trainingCode)
         {
             _commitmentsApprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
             _context.Set(_commitmentsApprenticeshipCreatedEvent);
         }
+
+        [Given(@"an apprenticeship has a start date in the current month with a duration of (.*) months")]
+        public void GivenAnApprenticeshipHasAStartDateInTheCurrentMonthWithADurationOfMonths(int duration)
+        {
+            var currentDate = DateTime.Today;
+            var startDate = new DateTime(currentDate.Year, currentDate.Month, 1);
+            
+            var futureDate = currentDate.AddMonths(duration-1);
+            var plannedEndDate = new DateTime(futureDate.Year, futureDate.Month, DateTime.DaysInMonth(futureDate.Year, futureDate.Month));
+
+            ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, 15000, "614");
+        }
+
 
         [Given(@"an apprenticeship with start date over (.*) months ago and duration of (.*) months and an agreed price of (.*), and a training code (.*)")]
         public void ApprenticeshipWithStartDateOverMonthsAgoAndDurationOfMonthsAndAnAgreedPriceOfAndATrainingCode(int monthsSinceStart, int duration, decimal agreedPrice, string trainingCode)
