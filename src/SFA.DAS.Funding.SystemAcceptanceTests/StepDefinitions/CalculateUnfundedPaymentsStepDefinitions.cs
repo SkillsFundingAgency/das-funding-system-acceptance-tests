@@ -2,6 +2,7 @@
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Payments.Messages.Core.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -79,6 +80,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
                 if (_finalisedPaymentsList.Count != numberOfRollupPayments + 1) return false;
 
+                _context.Set(_finalisedPaymentsList);
+
                 return _finalisedPaymentsList.All(x => x.CollectionMonth == _currentCollectionPeriod);
             }, "Failed to find published Finalised On Programme Learning Payment event");
         }
@@ -109,7 +112,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"all payments for the following collection periods are marked as not sent to payments BAU")]
         public void AllPaymentsForTheFollowingCollectionPeriodsAreAreMarkedAsNotSentToPaymentsBAU()
         {
-            var currentAcadmicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+1"));
+            var currentAcadmicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
 
             Assert.IsFalse(_paymentEntity.Where(p => (p.CollectionYear > currentAcadmicYear) ||
                                           (p.CollectionYear == currentAcadmicYear && p.CollectionPeriod > _currentCollectionPeriod))

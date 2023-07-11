@@ -61,8 +61,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             await WaitHelper.WaitForIt(() =>
             {
                 EarningsGeneratedEvent? earningsEvent = 
-                    EarningsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x =>
-                    x.message.FundingPeriods.Any(y => y.Uln.ToString() == apprenticeshipCreatedEvent.Uln)).message;
+                    EarningsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.Uln == apprenticeshipCreatedEvent.Uln).message;
                 if (earningsEvent != null)
                 {
                     _context.Set(earningsEvent);

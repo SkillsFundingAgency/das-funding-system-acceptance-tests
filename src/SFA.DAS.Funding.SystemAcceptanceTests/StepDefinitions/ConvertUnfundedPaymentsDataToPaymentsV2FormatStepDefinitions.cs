@@ -43,36 +43,36 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             {
                 Assert.Multiple(() =>
                 {
-                    Assert.That(calculatedRequiredLevyAmount.Priority, Is.Zero);
-                    Assert.That(calculatedRequiredLevyAmount.AgreementId, Is.Null);
-                    Assert.That(calculatedRequiredLevyAmount.AgreedOnDate, Is.Null);
-                    Assert.That(calculatedRequiredLevyAmount.OnProgrammeEarningType, Is.EqualTo(OnProgrammeEarningType.Learning));
-                    Assert.That(calculatedRequiredLevyAmount.TransactionType, Is.EqualTo(TransactionType.Learning));
-                    Assert.That(calculatedRequiredLevyAmount.ClawbackSourcePaymentEventId, Is.Null);
-                    Assert.That(calculatedRequiredLevyAmount.PriceEpisodeIdentifier, Is.Empty);
-                    Assert.That(calculatedRequiredLevyAmount.ContractType, Is.EqualTo(ContractType.Act1));
-                    Assert.That(calculatedRequiredLevyAmount.ActualEndDate, Is.Null);
-                    Assert.That(calculatedRequiredLevyAmount.CompletionStatus, Is.EqualTo(1));
-                    Assert.That(calculatedRequiredLevyAmount.CompletionAmount, Is.Zero);
-                    Assert.That(calculatedRequiredLevyAmount.ApprenticeshipPriceEpisodeId, Is.Null);
-                    Assert.That(calculatedRequiredLevyAmount.ReportingAimFundingLineType, Is.Empty);
-                    Assert.That(calculatedRequiredLevyAmount.LearningAimSequenceNumber, Is.Zero);
+                    Assert.That(calculatedRequiredLevyAmount.Priority, Is.Zero, "Incorrect Priority found");
+                    Assert.That(calculatedRequiredLevyAmount.AgreementId, Is.Null, "Incorrect AgreementId found");
+                    Assert.That(calculatedRequiredLevyAmount.AgreedOnDate, Is.Null, "Incorrect Agreed On Date found");
+                    Assert.That(calculatedRequiredLevyAmount.OnProgrammeEarningType, Is.EqualTo(OnProgrammeEarningType.Learning), "Incorrect OnProgramme Earning Type found");
+                    Assert.That(calculatedRequiredLevyAmount.TransactionType, Is.EqualTo(TransactionType.Learning), "Incorrect Transaction Type found");
+                    Assert.That(calculatedRequiredLevyAmount.ClawbackSourcePaymentEventId, Is.Null, "Incorrect Clawback Source PAyment Event Id found");
+                    Assert.That(calculatedRequiredLevyAmount.PriceEpisodeIdentifier, Is.Empty, "Incorrect Price Episode Identifier found");
+                    Assert.That(calculatedRequiredLevyAmount.ContractType, Is.EqualTo(ContractType.Act1), "Incorrect Contract Type found");
+                    Assert.That(calculatedRequiredLevyAmount.ActualEndDate, Is.Null, "Incorrect Actual End Date found");
+                    Assert.That(calculatedRequiredLevyAmount.CompletionStatus, Is.EqualTo(1), "Incorrect Completion Status found");
+                    Assert.That(calculatedRequiredLevyAmount.CompletionAmount, Is.Zero, "Incorrect Completion Amount found");
+                    Assert.That(calculatedRequiredLevyAmount.ApprenticeshipPriceEpisodeId, Is.Null, "Incorrect Apprenticeship Price Episode Id");
+                    Assert.That(calculatedRequiredLevyAmount.ReportingAimFundingLineType, Is.Empty, "Incorrect Reporting Aim Funding Line Type");
+                    Assert.That(calculatedRequiredLevyAmount.LearningAimSequenceNumber, Is.Zero, "Incorrect Learning Aim Sequence Number found");
                     //Assert.That(calculatedRequiredLevyAmount.EventTime.DateTime, Is.GreaterThanOrEqualTo(DateTime.Now.AddMinutes(-1)).And.LessThanOrEqualTo(DateTime.Now));
-                    Assert.That(calculatedRequiredLevyAmount.EventId, Is.Not.Null.And.TypeOf<Guid>());
-                    Assert.That(calculatedRequiredLevyAmount.Learner.ReferenceNumber, Is.Null);
-                    Assert.That(calculatedRequiredLevyAmount.LearningAim.Reference, Is.EqualTo("ZPROG001"));
-                    Assert.That(calculatedRequiredLevyAmount.LearningAim.ProgrammeType, Is.Zero);
-                    Assert.That(calculatedRequiredLevyAmount.LearningAim.FrameworkCode, Is.Zero);
-                    Assert.That(calculatedRequiredLevyAmount.AmountDue, Is.EqualTo(payment.Amount));
-                    Assert.That(calculatedRequiredLevyAmount.DeliveryPeriod, Is.EqualTo(payment.ApprenticeshipEarnings.DeliveryPeriod));
-                    Assert.That(calculatedRequiredLevyAmount.StartDate, Is.EqualTo(payment.Apprenticeship.StartDate));
-                    Assert.That(calculatedRequiredLevyAmount.PlannedEndDate, Is.EqualTo(payment.ActualEndDate));
-                    Assert.That(calculatedRequiredLevyAmount.LearningStartDate, Is.EqualTo(payment.Apprenticeship.StartDate));
-                    Assert.That(calculatedRequiredLevyAmount.Learner.Uln, Is.EqualTo(payment.ApprenticeshipEarnings.Uln));
+                    Assert.That(calculatedRequiredLevyAmount.EventId, Is.Not.Null.And.TypeOf<Guid>(), "Incorrect Event Id found");
+                    Assert.That(calculatedRequiredLevyAmount.Learner.ReferenceNumber, Is.Null, "Incorrect Learner - Reference Number found");
+                    Assert.That(calculatedRequiredLevyAmount.LearningAim.Reference, Is.EqualTo("ZPROG001"), "Incorrect - Learning Aim - Reference found");
+                    Assert.That(calculatedRequiredLevyAmount.LearningAim.ProgrammeType, Is.Zero, "Incorrect Learning Aim - Programme Type found");
+                    Assert.That(calculatedRequiredLevyAmount.LearningAim.FrameworkCode, Is.Zero, "Incorrect Learning Aim - Framework code found");
+                    Assert.That(calculatedRequiredLevyAmount.AmountDue, Is.EqualTo(payment.Amount), "Incorrect Amount Due found");
+                    Assert.That(calculatedRequiredLevyAmount.DeliveryPeriod, Is.EqualTo(payment.ApprenticeshipEarnings.DeliveryPeriod), "Incorrect Delivery Period found");
+                    Assert.That(calculatedRequiredLevyAmount.StartDate, Is.EqualTo(payment.Apprenticeship.StartDate), "Incorrect Start Date found");
+                    Assert.That(calculatedRequiredLevyAmount.PlannedEndDate, Is.EqualTo(payment.ActualEndDate), "Incorrect Planned End Date found");
+                    Assert.That(calculatedRequiredLevyAmount.LearningStartDate, Is.EqualTo(payment.Apprenticeship.StartDate), "Incorrect Learnings Start Date found");
+                    Assert.That(calculatedRequiredLevyAmount.Learner.Uln, Is.EqualTo(payment.ApprenticeshipEarnings.Uln), "Incorrect ULN found");
                     //  Assert.That(calculatedRequiredLevyAmount.LearningAim.FundingLineType, Is.Zero);
-                    Assert.That(calculatedRequiredLevyAmount.LearningAim.StartDate, Is.EqualTo(payment.Apprenticeship.StartDate));
-                    Assert.That(calculatedRequiredLevyAmount.CollectionPeriod.AcademicYear, Is.EqualTo(payment.CollectionYear));
-                    Assert.That(calculatedRequiredLevyAmount.CollectionPeriod.Period, Is.EqualTo(payment.CollectionMonth));
+                    Assert.That(calculatedRequiredLevyAmount.LearningAim.StartDate, Is.EqualTo(payment.Apprenticeship.StartDate), "Incorrect Learning Aim - Start Date found");
+                    Assert.That(calculatedRequiredLevyAmount.CollectionPeriod.AcademicYear, Is.EqualTo(payment.CollectionYear), "Incorrect Collection Period - Acadmic Year found");
+                    Assert.That(calculatedRequiredLevyAmount.CollectionPeriod.Period, Is.EqualTo(payment.CollectionMonth), "Incorrect Collection Period - Period found");
                 });
             }
         }
