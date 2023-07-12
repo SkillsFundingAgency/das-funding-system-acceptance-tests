@@ -5,6 +5,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
     internal class AdaptorMessageHandler
     {
         private readonly ScenarioContext _context;
+        private List<CalculatedRequiredLevyAmount> calculatedRequiredLevyAmountList;
 
         public AdaptorMessageHandler(ScenarioContext context)
         {
@@ -15,12 +16,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         {
             await WaitHelper.WaitForIt(() =>
             {
-                CalculatedRequiredLevyAmount? calculatedRequiredLevyAmount =
-                    CalculatedRequiredLevyAmountEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.Learner.Uln.ToString() == ULN).message;
+                calculatedRequiredLevyAmountList =
+                    CalculatedRequiredLevyAmountEventHandler.ReceivedEvents.Where(x => x.message.Learner.Uln.ToString() == ULN).Select(x => x.message).ToList();
 
-                if (calculatedRequiredLevyAmount != null)
+                if (calculatedRequiredLevyAmountList != null)
                 {
-                    _context.Set(calculatedRequiredLevyAmount);
+                    _context.Set(calculatedRequiredLevyAmountList);
                     return true;
                 }
                 return false;
