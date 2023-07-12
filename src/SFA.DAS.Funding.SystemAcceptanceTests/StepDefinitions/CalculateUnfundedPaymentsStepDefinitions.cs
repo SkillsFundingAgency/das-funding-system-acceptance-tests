@@ -82,7 +82,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
                 _context.Set(_finalisedPaymentsList);
 
-                return _finalisedPaymentsList.All(x => x.CollectionMonth == _currentCollectionPeriod);
+                return _finalisedPaymentsList.All(x => x.CollectionPeriod == _currentCollectionPeriod);
             }, "Failed to find published Finalised On Programme Learning Payment event");
         }
 
