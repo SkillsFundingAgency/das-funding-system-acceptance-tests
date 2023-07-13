@@ -5,7 +5,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
     internal class AdaptorMessageHandler
     {
         private readonly ScenarioContext _context;
-        private List<CalculatedRequiredLevyAmount> calculatedRequiredLevyAmountList;
 
         public AdaptorMessageHandler(ScenarioContext context)
         {
@@ -16,7 +15,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         {
             await WaitHelper.WaitForIt(() =>
             {
-                calculatedRequiredLevyAmountList =
+                var calculatedRequiredLevyAmountList =
                     CalculatedRequiredLevyAmountEventHandler.ReceivedEvents.Where(x => x.message.Learner.Uln.ToString() == ULN).Select(x => x.message).ToList();
 
                 if (calculatedRequiredLevyAmountList.Count != expectedCount) return false;
@@ -25,7 +24,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
                 return calculatedRequiredLevyAmountList.All(x=> x.Learner.Uln.ToString() == ULN);
    
-            }, $"Failed to find published 'Calculated Required Levy Amount' event in Payments. Expected Count: {expectedCount}, Actual Count: {calculatedRequiredLevyAmountList.Count}");
+            }, $"Failed to find published 'Calculated Required Levy Amount' event in Payments. Expected Count: {expectedCount}");
         }
     }
 }
