@@ -6,7 +6,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
     internal class PaymentsMessageHandler
     {
         private readonly ScenarioContext _context;
-        private const int SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth = 10;
+        private const int SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth = 30;
 
         public PaymentsMessageHandler(ScenarioContext context)
         {
