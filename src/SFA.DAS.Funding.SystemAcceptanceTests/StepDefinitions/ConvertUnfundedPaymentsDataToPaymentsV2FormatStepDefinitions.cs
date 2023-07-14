@@ -1,6 +1,4 @@
-﻿using Microsoft.Azure.Amqp.Framing;
-using NUnit.Framework.Internal;
-using SFA.DAS.Apprenticeships.Types;
+﻿using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -8,13 +6,7 @@ using SFA.DAS.Payments.Model.Core.Entities;
 using SFA.DAS.Payments.Model.Core.OnProgramme;
 using SFA.DAS.Payments.RequiredPayments.Messages.Events;
 using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using TechTalk.SpecFlow.CommonModels;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -49,7 +41,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             for (int i = 0; i < _calculatedRequiredLevyAmountList.Count; i++)
             {
                 Console.WriteLine("Printing CalculatedRequiredLevyAmount object an index {0}", i);
-                PrintObjectProperties(_calculatedRequiredLevyAmountList[i]);
+                PrintObject.PrintObjectProperties(_calculatedRequiredLevyAmountList[i]);
             }
             var apprenticeshipCreatedEvent = _context.Get<CMT.ApprenticeshipCreatedEvent>();
 
@@ -80,19 +72,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     Assert.That(_calculatedRequiredLevyAmountList[i].AmountDue, Is.EqualTo(_finalisedPaymentsList[i].Amount), "Incorrect Amount Due found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].DeliveryPeriod, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.DeliveryPeriod), "Incorrect Delivery Period found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].StartDate, Is.EqualTo(_finalisedPaymentsList[i].Apprenticeship.StartDate), "Incorrect Start Date found");
-                    Assert.That(_calculatedRequiredLevyAmountList[i].PlannedEndDate, Is.EqualTo(_finalisedPaymentsList[i].ActualEndDate), "Incorrect Planned End Date found");
+                    Assert.That(_calculatedRequiredLevyAmountList[i].PlannedEndDate, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.PlannedEndDate), "Incorrect Planned End Date found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningStartDate, Is.EqualTo(_finalisedPaymentsList[i].Apprenticeship.StartDate), "Incorrect Learnings Start Date found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].Learner.Uln, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.Uln), "Incorrect ULN found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.FundingLineType, Is.Null, "Incorrect Learning Aim - Funding Line Type found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.StartDate, Is.EqualTo(_finalisedPaymentsList[i].Apprenticeship.StartDate), "Incorrect Learning Aim - Start Date found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].CollectionPeriod.AcademicYear, Is.EqualTo(_finalisedPaymentsList[i].CollectionYear), "Incorrect Collection Period - Acadmic Year found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].CollectionPeriod.Period, Is.EqualTo(_finalisedPaymentsList[i].CollectionPeriod), "Incorrect Collection Period - Period found");
-
                     Assert.That(_calculatedRequiredLevyAmountList[i].IlrFileName, Is.Empty, "Incorrect Irl File Name found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].IlrSubmissionDateTime, Is.EqualTo(new DateTime(_currentAcademicYear.ToStartingCalendarYear(), 8, 1, 0, 0, 0, DateTimeKind.Utc)), "Incorrect Ilr Submission Date Time found");
-
                     Assert.That(_calculatedRequiredLevyAmountList[i].JobId, Is.EqualTo(-1), "Incorrect Job Id found");
-
                     Assert.That(_calculatedRequiredLevyAmountList[i].SfaContributionPercentage, Is.EqualTo(0.95), "Incorrect Sfa Contribution Percentage found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].EarningEventId, Is.TypeOf<Guid>(), "Incorrect Earnings Event Id found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].TransferSenderAccountId, Is.EqualTo(apprenticeshipCreatedEvent.AccountId), "Incorrect Transfer Sender Account Id found");
@@ -100,27 +89,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     Assert.That(_calculatedRequiredLevyAmountList[i].NumberOfInstalments, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.NumberOfInstalments), "Incorrect Number of Installments found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipId, Is.EqualTo(apprenticeshipCreatedEvent.ApprenticeshipId), "Incorrect Apprenticeship Id found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipEmployerType, Is.EqualTo(ApprenticeshipEmployerType.Levy), "Incorrect Apprenticeship Employer Type found");
-                    Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.StandardCode, Is.EqualTo(apprenticeshipCreatedEvent.TrainingCode), "Incorrect Learning Aim - Standard Code found");
+                    Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.StandardCode, Is.EqualTo(Convert.ToInt16(apprenticeshipCreatedEvent.TrainingCode)), "Incorrect Learning Aim - Standard Code found");
                 });
-            }
-        }
-        public static void PrintObjectProperties(object obj)
-        {
-            Type type = obj.GetType();
-            PropertyInfo[] properties = type.GetProperties();
-            foreach (PropertyInfo property in properties)
-            {
-                string propertyName = property.Name;
-                object propertyValue = property.GetValue(obj);
-                if (property.PropertyType.Namespace.StartsWith("System"))
-                {
-                    Console.WriteLine("{0}: {1}", propertyName, propertyValue);
-                }
-                else
-                {
-                    Console.WriteLine("{0}:", propertyName);
-                    PrintObjectProperties(propertyValue);
-                }
             }
         }
     }

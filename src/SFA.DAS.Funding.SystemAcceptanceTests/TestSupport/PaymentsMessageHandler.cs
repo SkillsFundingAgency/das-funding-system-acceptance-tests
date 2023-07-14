@@ -6,7 +6,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
     internal class PaymentsMessageHandler
     {
         private readonly ScenarioContext _context;
-        private const int SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth = 30;
 
         public PaymentsMessageHandler(ScenarioContext context)
         {
@@ -31,7 +30,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
         public async Task PublishReleasePaymentsCommand(ReleasePaymentsCommand releasePaymentsCommand)
         {
-            Thread.Sleep(TimeSpan.FromSeconds(SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth));
             await _context.Get<TestMessageBus>(TestMessageBusKeys.Das).SendReleasePaymentsMessage(releasePaymentsCommand);
         }
     }
