@@ -38,7 +38,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var futureDate = currentDate.AddMonths(duration-1);
             var plannedEndDate = new DateTime(futureDate.Year, futureDate.Month, DateTime.DaysInMonth(futureDate.Year, futureDate.Month));
 
-            ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, 15000, "614");
+            ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, 8000, "614");
         }
 
 
