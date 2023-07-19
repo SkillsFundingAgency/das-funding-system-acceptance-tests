@@ -115,10 +115,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"all payments for the following collection periods are marked as not sent to payments BAU")]
         public void AllPaymentsForTheFollowingCollectionPeriodsAreAreMarkedAsNotSentToPaymentsBAU()
         {
-            var currentAcadmicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
+            var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
 
-            Assert.IsFalse(_paymentEntity.Where(p => (p.CollectionYear > currentAcadmicYear) ||
-                                          (p.CollectionYear == currentAcadmicYear && p.CollectionPeriod > _currentCollectionPeriod))
+            Assert.IsFalse(_paymentEntity.Where(p => (p.CollectionYear > currentAcademicYear) ||
+                                          (p.CollectionYear == currentAcademicYear && p.CollectionPeriod > _currentCollectionPeriod))
                                           .All(p => p.SentForPayment));
         }
 

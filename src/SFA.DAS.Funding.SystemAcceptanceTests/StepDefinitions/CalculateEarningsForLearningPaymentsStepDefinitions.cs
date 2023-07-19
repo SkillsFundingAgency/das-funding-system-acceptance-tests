@@ -14,7 +14,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private ApprenticeshipsMessages.ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
 
         private EarningsGeneratedEvent _earnings;
-        private List<DeliveryPeriod> _fundingPeriods;
+        private List<DeliveryPeriod> _deliveryPeriods;
 
         public CalculateEarningsForLearningPaymentsStepDefinitions(ScenarioContext context)
         {
@@ -38,7 +38,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var futureDate = currentDate.AddMonths(duration-1);
             var plannedEndDate = new DateTime(futureDate.Year, futureDate.Month, DateTime.DaysInMonth(futureDate.Year, futureDate.Month));
 
-            ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, 8000, "614");
+            ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, 30000, "614");
         }
 
 
@@ -79,9 +79,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
             _earnings = _context.Get<EarningsGeneratedEvent>();
-            _fundingPeriods = _earnings.DeliveryPeriods;
+            _deliveryPeriods = _earnings.DeliveryPeriods;
 
-            _context.Set(_fundingPeriods);
+            _context.Set(_deliveryPeriods);
         }
 
 
@@ -90,20 +90,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"Funding band maximum price is used to calculate the on-program earnings which is divided equally into number of planned months (.*)")]
         public void VerifyInstalmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal instalmentAmount)
         {
-            _fundingPeriods.ForEach(dp => dp.LearningAmount.Should().Be(instalmentAmount));
+            _deliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(instalmentAmount));
         }
 
         [Then(@"the planned number of months must be the number of months from the start date to the planned end date (.*)")]
         public void VerifyThePlannedDurationMonthsWithinTheEarningsGenerated(short numberOfInstalments)
         {
-            _fundingPeriods.Should().HaveCount(numberOfInstalments);
+            _deliveryPeriods.Should().HaveCount(numberOfInstalments);
         }
 
         [Given(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
         [Then(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
         public void ThenTheDeliveryPeriodForEachInstalmentMustBeTheDeliveryPeriodFromTheCollectionCalendarWithAMatchingCalendarMonthYear(Table table)
         {
-            _fundingPeriods.ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
+            _deliveryPeriods.ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
         }
 
         [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]
@@ -122,7 +122,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
             Assert.AreEqual(_apprenticeshipCreatedEvent.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {_apprenticeshipCreatedEvent.AgeAtStartOfApprenticeship}");
             
-            _fundingPeriods.ShouldHaveCorrectFundingLineType(fundingLineType);
+            _deliveryPeriods.ShouldHaveCorrectFundingLineType(fundingLineType);
         }
     }
 }
