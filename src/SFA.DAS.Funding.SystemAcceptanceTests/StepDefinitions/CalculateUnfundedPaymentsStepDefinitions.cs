@@ -2,6 +2,7 @@
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Payments.Messages.Core.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -15,6 +16,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private List<FinalisedOnProgammeLearningPaymentEvent> _finalisedPaymentsList;
         private TestSupport.Payments[] _paymentEntity;
         private byte _currentCollectionPeriod;
+        private const int SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth = 30;
 
         public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context)
         {
@@ -58,12 +60,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the scheduler triggers Unfunded Payment processing")]
         public async Task SchedulerTriggersUnfundedPaymentProcessing()
         {
+            Thread.Sleep(TimeSpan.FromSeconds(SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth));
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
         }
 
         [When(@"the Release Payments command is published again")]
         public async Task WhenTheReleasePaymentsCommandIsPublishedAgain()
         {
+            Thread.Sleep(TimeSpan.FromSeconds(SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth));
             FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Clear();
 
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
@@ -79,7 +83,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
                 if (_finalisedPaymentsList.Count != numberOfRollupPayments + 1) return false;
 
-                return _finalisedPaymentsList.All(x => x.CollectionMonth == _currentCollectionPeriod);
+                _context.Set(_finalisedPaymentsList);
+
+                return _finalisedPaymentsList.All(x => x.CollectionPeriod == _currentCollectionPeriod);
             }, "Failed to find published Finalised On Programme Learning Payment event");
         }
 
@@ -109,10 +115,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"all payments for the following collection periods are marked as not sent to payments BAU")]
         public void AllPaymentsForTheFollowingCollectionPeriodsAreAreMarkedAsNotSentToPaymentsBAU()
         {
-            var currentAcadmicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+1"));
+            var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
 
-            Assert.IsFalse(_paymentEntity.Where(p => (p.CollectionYear > currentAcadmicYear) ||
-                                          (p.CollectionYear == currentAcadmicYear && p.CollectionPeriod > _currentCollectionPeriod))
+            Assert.IsFalse(_paymentEntity.Where(p => (p.CollectionYear > currentAcademicYear) ||
+                                          (p.CollectionYear == currentAcademicYear && p.CollectionPeriod > _currentCollectionPeriod))
                                           .All(p => p.SentForPayment));
         }
 

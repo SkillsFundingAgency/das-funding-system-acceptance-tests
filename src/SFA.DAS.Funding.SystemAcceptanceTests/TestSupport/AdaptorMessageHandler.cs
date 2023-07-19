@@ -11,20 +11,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             _context = context;
         }
 
-        public async Task ReceiveCalculatedRequiredLevyAmountEvent(string ULN)
+        public async Task ReceiveCalculatedRequiredLevyAmountEvent(string ULN, int expectedCount)
         {
             await WaitHelper.WaitForIt(() =>
             {
-                CalculatedRequiredLevyAmount? calculatedRequiredLevyAmount =
-                    CalculatedRequiredLevyAmountEventHandler.ReceivedEvents.FirstOrDefault().message;//x => x.EventTime.DateTime.ToUniversalTime() >= DateTime.UtcNow.AddMinutes(-5));
+                var calculatedRequiredLevyAmountList =
+                    CalculatedRequiredLevyAmountEventHandler.ReceivedEvents.Where(x => x.message.Learner.Uln.ToString() == ULN).Select(x => x.message).ToList();
 
-                if (calculatedRequiredLevyAmount != null)
-                {
-                    _context.Set(calculatedRequiredLevyAmount);
-                    return true;
-                }
-                return false;
-            }, "Failed to find published 'Calculated Required Levy Amount' event in Payments");
+                if (calculatedRequiredLevyAmountList.Count != expectedCount) return false;
+
+                _context.Set(calculatedRequiredLevyAmountList);
+
+                return calculatedRequiredLevyAmountList.All(x=> x.Learner.Uln.ToString() == ULN);
+   
+            }, $"Failed to find published 'Calculated Required Levy Amount' event in Payments. Expected Count: {expectedCount}");
         }
     }
 }

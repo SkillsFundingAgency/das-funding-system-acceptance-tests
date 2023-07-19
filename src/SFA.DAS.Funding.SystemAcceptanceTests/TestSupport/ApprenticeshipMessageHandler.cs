@@ -3,6 +3,7 @@ using APR = SFA.DAS.Apprenticeships.Types;
 using AutoFixture;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
+using SFA.DAS.CommitmentsV2.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
@@ -26,6 +27,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 .With(_ => _.PriceEpisodes, new PriceEpisodeHelper().CreateSinglePriceEpisodeUsingStartDate(actualStartDate, agreedPrice))
                 .With(_ => _.Uln, GenerateRandomUln())
                 .With(_ => _.TrainingCode, trainingCode)
+                .With(_ => _.ApprenticeshipEmployerTypeOnApproval, ApprenticeshipEmployerType.Levy)
+                .With(_ => _.TransferSenderId, (long?)null)
                 .With(_ => _.DateOfBirth, DateTime.Now.AddYears((-18)))
                 .With(_ => _.IsOnFlexiPaymentPilot, true)
                 .Create();
@@ -61,8 +64,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             await WaitHelper.WaitForIt(() =>
             {
                 EarningsGeneratedEvent? earningsEvent = 
-                    EarningsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x =>
-                    x.message.FundingPeriods.Any(y => y.Uln.ToString() == apprenticeshipCreatedEvent.Uln)).message;
+                    EarningsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.Uln == apprenticeshipCreatedEvent.Uln).message;
                 if (earningsEvent != null)
                 {
                     _context.Set(earningsEvent);
