@@ -11,7 +11,7 @@
     <PackageReference Include="SFA.DAS.Apprenticeships.Types" Version="1.1.4" />
 	<PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="100.0.17" />
     <PackageReference Include="SFA.DAS.Funding.ApprenticeshipEarnings.Types" Version="1.0.18-prerelease-7" />
-    <PackageReference Include="SFA.DAS.Funding.ApprenticeshipPayments.Types" Version="0.1.8-prerelease-92" />
+    <PackageReference Include="SFA.DAS.Funding.ApprenticeshipPayments.Types" Version="0.1.12-prerelease-6" />
     <PackageReference Include="SFA.DAS.NServiceBus" Version="17.0.13" />
     <PackageReference Include="SpecFlow" Version="3.9.40" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="7.0.1" />
