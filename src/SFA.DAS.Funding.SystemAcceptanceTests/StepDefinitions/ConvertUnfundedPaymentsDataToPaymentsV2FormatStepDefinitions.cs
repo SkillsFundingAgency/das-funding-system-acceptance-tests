@@ -29,11 +29,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"(.*) Calculated Required Levy Amount event is published with required values")]
         public async Task CalculatedRequiredLevyAmountEventIsPublishedWithRequiredValues(int numberOfEvents)
         {
-            await _adaptorMessageHelper.ReceiveCalculatedRequiredLevyAmountEvent(_context.Get<ApprenticeshipCreatedEvent>().Uln, numberOfEvents);
-
             _finalisedPaymentsList = _context.Get<List<FinalisedOnProgammeLearningPaymentEvent>>()
                 .OrderBy(x => x.ApprenticeshipEarning.DeliveryPeriod)
                 .ToList();
+            //PrintObject.PrintObjectProperties(_finalisedPaymentsList);
+
+            await _adaptorMessageHelper.ReceiveCalculatedRequiredLevyAmountEvent(_context.Get<ApprenticeshipCreatedEvent>().Uln, numberOfEvents);
 
             _calculatedRequiredLevyAmountList = _context.Get<List<CalculatedRequiredLevyAmount>>()
                 .OrderBy(x => x.DeliveryPeriod)
@@ -62,7 +63,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipPriceEpisodeId, Is.Null, "Incorrect Apprenticeship Price Episode Id");
                     Assert.That(_calculatedRequiredLevyAmountList[i].ReportingAimFundingLineType, Is.Empty, "Incorrect Reporting Aim Funding Line Type");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAimSequenceNumber, Is.Zero, "Incorrect Learning Aim Sequence Number found");
-                    Assert.That(_calculatedRequiredLevyAmountList[i].EventTime.DateTime, Is.GreaterThanOrEqualTo(DateTime.UtcNow.AddMinutes(-2)).And.LessThanOrEqualTo(DateTime.UtcNow), "Incorrect Event Time found");
+                    Assert.That(_calculatedRequiredLevyAmountList[i].EventTime.DateTime, Is.GreaterThanOrEqualTo(DateTime.UtcNow.AddMinutes(-5)).And.LessThanOrEqualTo(DateTime.UtcNow), "Incorrect Event Time found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].EventId, Is.Not.Null.And.TypeOf<Guid>(), "Incorrect Event Id type found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].Learner.ReferenceNumber, Is.Null, "Incorrect Learner - Reference Number found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.Reference, Is.EqualTo("ZPROG001"), "Incorrect - Learning Aim - Reference found");

@@ -64,6 +64,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
         }
 
+        [Given(@"fire command")]
+        public async Task FireCommand()
+        {
+            _releasePaymentsCommand = new ReleasePaymentsCommand();
+            _releasePaymentsCommand.CollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
+            await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
+        }
+
+
         [When(@"the Release Payments command is published again")]
         public async Task WhenTheReleasePaymentsCommandIsPublishedAgain()
         {
