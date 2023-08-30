@@ -65,7 +65,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAimSequenceNumber, Is.Zero, "Incorrect Learning Aim Sequence Number found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].EventTime.DateTime, Is.GreaterThanOrEqualTo(DateTime.UtcNow.AddMinutes(-5)).And.LessThanOrEqualTo(DateTime.UtcNow), "Incorrect Event Time found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].EventId, Is.Not.Null.And.TypeOf<Guid>(), "Incorrect Event Id type found");
-                    Assert.That(_calculatedRequiredLevyAmountList[i].Learner.ReferenceNumber, Is.Null, "Incorrect Learner - Reference Number found");
+                    Assert.That(_calculatedRequiredLevyAmountList[i].Learner.ReferenceNumber, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.Uln), "Incorrect Learner - Reference Number found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.Reference, Is.EqualTo("ZPROG001"), "Incorrect - Learning Aim - Reference found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.ProgrammeType, Is.Zero, "Incorrect Learning Aim - Programme Type found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.FrameworkCode, Is.Zero, "Incorrect Learning Aim - Framework code found");
