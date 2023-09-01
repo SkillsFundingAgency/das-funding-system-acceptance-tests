@@ -11,22 +11,22 @@ Scenario: Unfunded Payment profile for single learner - Same Academic Year and b
 	When the Unfunded Payments for the remainder of the apprenticeship are determined
 	Then the Unfunded Payments for every earning is created
 		| AcademicYear | DeliveryPeriod | Amount | PaymentYear | PaymentPeriod |
-		| 2324         | August         | 1000   | 2324        | August        |
-		| 2324         | September      | 1000   | 2324        | September     |
-		| 2324         | October        | 1000   | 2324        | October       |
-		| 2324         | November       | 1000   | 2324        | November      |
-		| 2324         | December       | 1000   | 2324        | December      |
-		| 2324         | January        | 1000   | 2324        | January       |
-		| 2324         | February       | 1000   | 2324        | February      |
-		| 2324         | March          | 1000   | 2324        | March         |
-		| 2324         | April          | 1000   | 2324        | April         |
-		| 2324         | May            | 1000   | 2324        | May           |
-		| 2324         | June           | 1000   | 2324        | June          |
-		| 2324         | July           | 1000   | 2324        | July          |
+		| 2425         | August         | 1000   | 2425        | August        |
+		| 2425         | September      | 1000   | 2425        | September     |
+		| 2425         | October        | 1000   | 2425        | October       |
+		| 2425         | November       | 1000   | 2425        | November      |
+		| 2425         | December       | 1000   | 2425        | December      |
+		| 2425         | January        | 1000   | 2425        | January       |
+		| 2425         | February       | 1000   | 2425        | February      |
+		| 2425         | March          | 1000   | 2425        | March         |
+		| 2425         | April          | 1000   | 2425        | April         |
+		| 2425         | May            | 1000   | 2425        | May           |
+		| 2425         | June           | 1000   | 2425        | June          |
+		| 2425         | July           | 1000   | 2425        | July          |
 
 Examples:
 	| start_date | planned_end_date | agreed_price | training_code |
-	| 2023-08-01 | 2024-07-31       | 15,000       | 614           |
+	| 2024-08-01 | 2025-07-31       | 15,000       | 614           |
 
 
 @regression

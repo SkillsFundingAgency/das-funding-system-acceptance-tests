@@ -32,7 +32,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _finalisedPaymentsList = _context.Get<List<FinalisedOnProgammeLearningPaymentEvent>>()
                 .OrderBy(x => x.ApprenticeshipEarning.DeliveryPeriod)
                 .ToList();
-            //PrintObject.PrintObjectProperties(_finalisedPaymentsList);
 
             await _adaptorMessageHelper.ReceiveCalculatedRequiredLevyAmountEvent(_context.Get<ApprenticeshipCreatedEvent>().Uln, numberOfEvents);
 
