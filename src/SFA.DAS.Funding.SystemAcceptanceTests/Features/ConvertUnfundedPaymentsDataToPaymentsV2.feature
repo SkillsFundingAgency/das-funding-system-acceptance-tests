@@ -23,3 +23,9 @@ Scenario: Set values required for payments v2 to make a payment - 3 payments for
 	When the scheduler triggers Unfunded Payment processing
 	And the unpaid unfunded payments for the current Collection Month and 2 rollup payments are sent to be paid
 	Then 3 Calculated Required Levy Amount event is published with required values
+
+
+@ignore
+@regression
+Scenario: release payments command get
+	Given fire command

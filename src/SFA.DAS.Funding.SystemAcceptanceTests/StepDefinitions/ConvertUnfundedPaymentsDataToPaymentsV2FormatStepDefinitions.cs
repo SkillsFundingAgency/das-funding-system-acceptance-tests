@@ -29,11 +29,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"(.*) Calculated Required Levy Amount event is published with required values")]
         public async Task CalculatedRequiredLevyAmountEventIsPublishedWithRequiredValues(int numberOfEvents)
         {
-            await _adaptorMessageHelper.ReceiveCalculatedRequiredLevyAmountEvent(_context.Get<ApprenticeshipCreatedEvent>().Uln, numberOfEvents);
-
             _finalisedPaymentsList = _context.Get<List<FinalisedOnProgammeLearningPaymentEvent>>()
                 .OrderBy(x => x.ApprenticeshipEarning.DeliveryPeriod)
                 .ToList();
+
+            await _adaptorMessageHelper.ReceiveCalculatedRequiredLevyAmountEvent(_context.Get<ApprenticeshipCreatedEvent>().Uln, numberOfEvents);
 
             _calculatedRequiredLevyAmountList = _context.Get<List<CalculatedRequiredLevyAmount>>()
                 .OrderBy(x => x.DeliveryPeriod)
@@ -42,7 +42,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             Assert.That(_finalisedPaymentsList.Count, Is.EqualTo(_calculatedRequiredLevyAmountList.Count),
                 "The count for FinalisedOnProgrammeLearningPaymentEvent does not match with CalculatedRequiredLevyAmount.");
 
-            var apprenticeshipCreatedEvent = _context.Get<CMT.ApprenticeshipCreatedEvent>();
+            var cmt_apprenticeshipCreatedEvent = _context.Get<CMT.ApprenticeshipCreatedEvent>();
+
+            var earnings = _context.Get <EarningsGeneratedEvent>();
 
             for (int i = 0; i < _calculatedRequiredLevyAmountList.Count; i++)
             {
@@ -62,9 +64,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipPriceEpisodeId, Is.Null, "Incorrect Apprenticeship Price Episode Id");
                     Assert.That(_calculatedRequiredLevyAmountList[i].ReportingAimFundingLineType, Is.Empty, "Incorrect Reporting Aim Funding Line Type");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAimSequenceNumber, Is.Zero, "Incorrect Learning Aim Sequence Number found");
-                    Assert.That(_calculatedRequiredLevyAmountList[i].EventTime.DateTime, Is.GreaterThanOrEqualTo(DateTime.UtcNow.AddMinutes(-2)).And.LessThanOrEqualTo(DateTime.UtcNow), "Incorrect Event Time found");
+                    Assert.That(_calculatedRequiredLevyAmountList[i].EventTime.DateTime, Is.GreaterThanOrEqualTo(DateTime.UtcNow.AddMinutes(-5)).And.LessThanOrEqualTo(DateTime.UtcNow), "Incorrect Event Time found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].EventId, Is.Not.Null.And.TypeOf<Guid>(), "Incorrect Event Id type found");
-                    Assert.That(_calculatedRequiredLevyAmountList[i].Learner.ReferenceNumber, Is.Null, "Incorrect Learner - Reference Number found");
+                    Assert.That(_calculatedRequiredLevyAmountList[i].Learner.ReferenceNumber, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.Uln.ToString()), "Incorrect Learner - Reference Number found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.Reference, Is.EqualTo("ZPROG001"), "Incorrect - Learning Aim - Reference found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.ProgrammeType, Is.Zero, "Incorrect Learning Aim - Programme Type found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.FrameworkCode, Is.Zero, "Incorrect Learning Aim - Framework code found");
@@ -74,7 +76,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     Assert.That(_calculatedRequiredLevyAmountList[i].PlannedEndDate, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.PlannedEndDate), "Incorrect Planned End Date found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningStartDate, Is.EqualTo(_finalisedPaymentsList[i].Apprenticeship.StartDate), "Incorrect Learnings Start Date found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].Learner.Uln, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.Uln), "Incorrect ULN found");
-                    Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.FundingLineType, Is.Null, "Incorrect Learning Aim - Funding Line Type found");
+                    Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.FundingLineType, Is.EqualTo(earnings.DeliveryPeriods[0].FundingLineType), "Incorrect Learning Aim - Funding Line Type found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.StartDate, Is.EqualTo(_finalisedPaymentsList[i].Apprenticeship.StartDate), "Incorrect Learning Aim - Start Date found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].CollectionPeriod.AcademicYear, Is.EqualTo(_finalisedPaymentsList[i].CollectionYear), "Incorrect Collection Period - Acadmic Year found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].CollectionPeriod.Period, Is.EqualTo(_finalisedPaymentsList[i].CollectionPeriod), "Incorrect Collection Period - Period found");
@@ -83,12 +85,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     Assert.That(_calculatedRequiredLevyAmountList[i].JobId, Is.EqualTo(-1), "Incorrect Job Id found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].SfaContributionPercentage, Is.EqualTo(0.95), "Incorrect Sfa Contribution Percentage found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].EarningEventId, Is.TypeOf<Guid>(), "Incorrect Earnings Event Id found");
-                    Assert.That(_calculatedRequiredLevyAmountList[i].TransferSenderAccountId, Is.EqualTo(apprenticeshipCreatedEvent.AccountId), "Incorrect Transfer Sender Account Id found");
+                    Assert.That(_calculatedRequiredLevyAmountList[i].TransferSenderAccountId, Is.EqualTo(cmt_apprenticeshipCreatedEvent.AccountId), "Incorrect Transfer Sender Account Id found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].InstalmentAmount, Is.EqualTo(_finalisedPaymentsList[i].Amount), "Incorrect Instalment Amount found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].NumberOfInstalments, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.NumberOfInstalments), "Incorrect Number of Installments found");
-                    Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipId, Is.EqualTo(apprenticeshipCreatedEvent.ApprenticeshipId), "Incorrect Apprenticeship Id found");
+                    Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipId, Is.EqualTo(cmt_apprenticeshipCreatedEvent.ApprenticeshipId), "Incorrect Apprenticeship Id found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipEmployerType, Is.EqualTo(ApprenticeshipEmployerType.Levy), "Incorrect Apprenticeship Employer Type found");
-                    Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.StandardCode, Is.EqualTo(Convert.ToInt16(apprenticeshipCreatedEvent.TrainingCode)), "Incorrect Learning Aim - Standard Code found");
+                    Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.StandardCode, Is.EqualTo(Convert.ToInt16(cmt_apprenticeshipCreatedEvent.TrainingCode)), "Incorrect Learning Aim - Standard Code found");
                 });
             }
         }

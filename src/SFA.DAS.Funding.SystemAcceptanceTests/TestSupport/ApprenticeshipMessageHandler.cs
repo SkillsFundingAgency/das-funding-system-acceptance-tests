@@ -28,6 +28,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 .With(_ => _.Uln, GenerateRandomUln())
                 .With(_ => _.TrainingCode, trainingCode)
                 .With(_ => _.ApprenticeshipEmployerTypeOnApproval, ApprenticeshipEmployerType.Levy)
+                .With(_ => _.AccountId, 3871)
                 .With(_ => _.TransferSenderId, (long?)null)
                 .With(_ => _.DateOfBirth, DateTime.Now.AddYears((-18)))
                 .With(_ => _.IsOnFlexiPaymentPilot, true)
