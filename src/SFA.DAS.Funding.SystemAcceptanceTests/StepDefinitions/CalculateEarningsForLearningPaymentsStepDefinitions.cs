@@ -33,12 +33,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public void GivenAnApprenticeshipHasAStartDateInTheCurrentMonthWithADurationOfMonths(int duration)
         {
             var currentDate = DateTime.Today;
-            var startDate = new DateTime(currentDate.Year-1, currentDate.Month, 1);
+            var startDate = new DateTime(currentDate.Year, currentDate.Month, 1);
             
-            var futureDate = startDate.AddMonths(duration);
-            var plannedEndDate = new DateTime(futureDate.Year, futureDate.Month, futureDate.Day);
+            var futureDate = currentDate.AddMonths(duration-1);
+            var plannedEndDate = new DateTime(futureDate.Year, futureDate.Month, DateTime.DaysInMonth(futureDate.Year, futureDate.Month));
 
-            ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, 5000, "196");
+            ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, 30000, "614");
         }
 
 
