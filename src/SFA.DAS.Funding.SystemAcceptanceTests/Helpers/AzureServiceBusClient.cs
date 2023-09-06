@@ -27,7 +27,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                     await _administrationClient.DeleteRuleAsync(topicName, subscriptionName, CreateRuleOptions.DefaultRuleName);
 
                     // Create filters
-                    var sqlExpression = "[NServiceBus.EnclosedMessageTypes] LIKE '%" + string.Join("%' OR [NServiceBus.EnclosedMessageTypes] LIKE '%", filterEventTypes);
+                    var sqlExpression = "[NServiceBus.EnclosedMessageTypes] LIKE '%" + string.Join("%' OR [NServiceBus.EnclosedMessageTypes] LIKE '%", filterEventTypes) + "%'";
                     await _administrationClient.CreateRuleAsync(topicName, subscriptionName, new CreateRuleOptions
                     {
                         Name = $"{new Guid()}",
