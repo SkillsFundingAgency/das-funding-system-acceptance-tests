@@ -42,11 +42,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             catch (ServiceBusException serviceBusException)
             {
                 // Do not fail if subscription filter already exists
-                if (serviceBusException.Reason != ServiceBusFailureReason.MessagingEntityAlreadyExists &&
-                    serviceBusException.Reason != ServiceBusFailureReason.MessagingEntityNotFound)
+                if (serviceBusException.Reason != ServiceBusFailureReason.MessagingEntityAlreadyExists)
                 {
                     Assert.Fail(
-                        $"Attempted to create filter rule with name {TopicSubscriptionFilterName} for {subscriptionName} for topic {topicName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}.");
+                        $"Attempted to create filter with name {TopicSubscriptionFilterName} for {subscriptionName} for topic {topicName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}.");
                 }
             }
         }
@@ -117,9 +116,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             }
             catch (ServiceBusException serviceBusException)
             {
-                Assert.Fail(serviceBusException.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists
-                    ? $"Attempted to delete subscription with name {subscriptionName} for topic {topicName} but does not exist. Time: {DateTime.Now:G}."
-                    : $"Attempted to delete subscription with name {subscriptionName} for topic {topicName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}.");
+                // Don't fail if subscription not found
+                if (serviceBusException.Reason != ServiceBusFailureReason.MessagingEntityNotFound)
+                {
+                    Assert.Fail($"Attempted to delete subscription with name {subscriptionName} for topic {topicName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}.");
+                }
             }
         }
 
@@ -131,9 +132,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             }
             catch (ServiceBusException serviceBusException)
             {
-                Assert.Fail(serviceBusException.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists
-                    ? $"Attempted to delete queue with name {queueName} but does not exist. Time: {DateTime.Now:G}."
-                    : $"Attempted to delete queue with name {queueName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}."); 
+                // Don't fail if queue not found
+                if (serviceBusException.Reason != ServiceBusFailureReason.MessagingEntityNotFound)
+                {
+                    Assert.Fail($"Attempted to delete queue with name {queueName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}.");
+                }
             }
         }
     }
