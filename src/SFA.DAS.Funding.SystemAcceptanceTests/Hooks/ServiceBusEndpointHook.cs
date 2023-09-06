@@ -11,13 +11,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
         {
             var config = Configurator.GetConfiguration();
             var queueName = config.FundingSystemAcceptanceTestQueue;
-            var sharedServiceBusFqdn = config.SharedServiceBusFqdn;
-            var topicEndpointName = config.SharedServiceBusTopicEndpoint;
-            var subscriptionName = config.FundingSystemAcceptanceTestSubscription;
-            var eventTypes = config.EventTypes.Split(", ").ToList(); 
-            var azureClient = new AzureServiceBusClient(sharedServiceBusFqdn);
+            var azureClient = new AzureServiceBusClient(config.SharedServiceBusFqdn);
             await azureClient.CreateQueueAsync(queueName);
-            await azureClient.CreateSubscriptionAsync(subscriptionName, topicEndpointName, queueName, eventTypes);
+            await azureClient.CreateSubscriptionWithFiltersAsync(
+                config.FundingSystemAcceptanceTestSubscription, 
+                config.SharedServiceBusTopicEndpoint, queueName, 
+                config.EventTypes.Split(", ").ToList());
         }
         
         [BeforeScenario(Order = 2)]
@@ -49,13 +48,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
         {
             var config = Configurator.GetConfiguration();
             var queueName = config.FundingSystemAcceptanceTestQueue;
-            var sharedServiceBusFqdn = config.SharedServiceBusFqdn;
-            var topicEndpointName = config.SharedServiceBusTopicEndpoint;
-            var subscriptionName = config.FundingSystemAcceptanceTestSubscription;
-            var eventTypes = config.EventTypes.Split(", ").ToList();
-            var azureClient = new AzureServiceBusClient(sharedServiceBusFqdn);
+            var azureClient = new AzureServiceBusClient(config.SharedServiceBusFqdn);
             await azureClient.DeleteQueueAsync(queueName);
-            await azureClient.DeleteSubscriptionAsync(subscriptionName, topicEndpointName, queueName);
+            await azureClient.DeleteSubscriptionAsync(config.FundingSystemAcceptanceTestSubscription, config.SharedServiceBusTopicEndpoint, queueName);
         }
     }
 }

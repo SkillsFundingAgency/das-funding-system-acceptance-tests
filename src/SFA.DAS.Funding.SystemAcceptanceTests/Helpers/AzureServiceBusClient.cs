@@ -1,4 +1,5 @@
 ﻿using Azure.Identity;
+using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
@@ -6,80 +7,133 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
     internal class AzureServiceBusClient
     {
         private readonly ServiceBusAdministrationClient _administrationClient;
+        private static string TopicSubscriptionFilterName => "AllEvents";
 
         public AzureServiceBusClient(string azureServiceBusNamespace)
         {
             _administrationClient = new ServiceBusAdministrationClient(azureServiceBusNamespace, new DefaultAzureCredential());
         }
 
-        internal async Task CreateSubscriptionAsync(string subscriptionName, string topicName, string destinationQueueName, List<string>? filterEventTypes = null)
+        internal async Task CreateSubscriptionWithFiltersAsync(string subscriptionName, string topicName,
+            string destinationQueueName, List<string>? filterEventTypes)
         {
-            var subscriptionExists = await _administrationClient.SubscriptionExistsAsync(topicName, subscriptionName);
-            if (!subscriptionExists)
+            await CreateSubscriptionAsync(subscriptionName, topicName, destinationQueueName);
+
+            if (filterEventTypes is { Count: > 0 })
             {
-                // Create subscription
-                var subscriptionsOptions = new CreateSubscriptionOptions(topicName, subscriptionName) { ForwardTo = destinationQueueName };
-                await _administrationClient.CreateSubscriptionAsync(subscriptionsOptions);
+                await DeleteDefaultRuleAsync(subscriptionName, topicName);
+                await CreateNewSqlFilter(subscriptionName, topicName, filterEventTypes);
+            }
+        }
 
-                if (filterEventTypes != null && filterEventTypes.Count > 0)
+        private async Task CreateNewSqlFilter(string subscriptionName, string topicName, List<string> filterEventTypes)
+        {
+            try
+            {
+                var sqlExpression = "[NServiceBus.EnclosedMessageTypes] LIKE '%" +
+                                    string.Join("%' OR [NServiceBus.EnclosedMessageTypes] LIKE '%",
+                                        filterEventTypes) + "%'";
+                await _administrationClient.CreateRuleAsync(topicName, subscriptionName, new CreateRuleOptions
                 {
-                    // Remove any default rules
-                    await _administrationClient.DeleteRuleAsync(topicName, subscriptionName, CreateRuleOptions.DefaultRuleName);
-
-                    // Create filters
-                    var sqlExpression = "[NServiceBus.EnclosedMessageTypes] LIKE '%" + string.Join("%' OR [NServiceBus.EnclosedMessageTypes] LIKE '%", filterEventTypes) + "%'";
-                    await _administrationClient.CreateRuleAsync(topicName, subscriptionName, new CreateRuleOptions
-                    {
-                        Name = $"{new Guid()}",
-                        Filter = new SqlRuleFilter(sqlExpression)});
+                    Name = TopicSubscriptionFilterName,
+                    Filter = new SqlRuleFilter(sqlExpression)
+                });
+            }
+            catch (ServiceBusException serviceBusException)
+            {
+                // Do not fail if subscription filter already exists
+                if (serviceBusException.Reason != ServiceBusFailureReason.MessagingEntityAlreadyExists &&
+                    serviceBusException.Reason != ServiceBusFailureReason.MessagingEntityNotFound)
+                {
+                    Assert.Fail(
+                        $"Attempted to create filter rule with name {TopicSubscriptionFilterName} for {subscriptionName} for topic {topicName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}.");
                 }
             }
-            else
+        }
+
+        private async Task DeleteDefaultRuleAsync(string subscriptionName, string topicName)
+        {
+            try
             {
-                Assert.Fail(
-                    $"Attempted to create subscription with name {subscriptionName} but already exists. Time: {DateTime.Now:G}.");
+                await _administrationClient.DeleteRuleAsync(topicName, subscriptionName,
+                    CreateRuleOptions.DefaultRuleName);
+            }
+            catch (ServiceBusException serviceBusException)
+            {
+                // Do not fail if default rule doesn't exist
+                if (serviceBusException.Reason != ServiceBusFailureReason.MessagingEntityNotFound)
+                {
+                    Assert.Fail(
+                        $"Attempted to delete the default filter rule on subscription {subscriptionName} for topic {topicName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}.");
+                }
+            }
+        }
+
+        private async Task CreateSubscriptionAsync(string subscriptionName, string topicName, string destinationQueueName)
+        {
+            try
+            {
+                var subscriptionsOptions = new CreateSubscriptionOptions(topicName, subscriptionName)
+                    { ForwardTo = destinationQueueName };
+                await _administrationClient.CreateSubscriptionAsync(subscriptionsOptions);
+            }
+            catch (ServiceBusException serviceBusException)
+            {
+                // Do not fail if subscription already exists
+                if (serviceBusException.Reason != ServiceBusFailureReason.MessagingEntityAlreadyExists)
+                {
+                    Assert.Fail(
+                        $"Attempted to create subscription with name {subscriptionName} for topic {topicName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}.");
+                }
             }
         }
 
         internal async Task CreateQueueAsync(string queueName)
         {
-            var queueExists = await _administrationClient.QueueExistsAsync(queueName);
-            if (!queueExists)
+            try
             {
-                await _administrationClient.CreateQueueAsync(new CreateQueueOptions(queueName)
-                {
-                    DefaultMessageTimeToLive = TimeSpan.FromHours(4) // Prevents queue from filling up if it doesn't get deleted successfully after test run
-                });
+                await _administrationClient.CreateQueueAsync(
+                    new CreateQueueOptions(queueName)
+                    {
+                        DefaultMessageTimeToLive =
+                            TimeSpan.FromHours(
+                                4) // Prevents queue from filling up if it doesn't get deleted successfully after test run
+                    });
             }
-            else
+            catch (ServiceBusException serviceBusException)
             {
-                Assert.Fail($"Attempted to create queue with name {queueName} but already exists. Time: {DateTime.Now:G}.");
+                // Don't fail if queue already exists
+                if (serviceBusException.Reason != ServiceBusFailureReason.MessagingEntityAlreadyExists)
+                {
+                    Assert.Fail($"Attempted to create queue with name {queueName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}.");
+                }
             }
         }
         internal async Task DeleteSubscriptionAsync(string subscriptionName, string topicName, string destinationQueueName)
         {
-            var subscriptionExists = await _administrationClient.SubscriptionExistsAsync(topicName, subscriptionName);
-            if (subscriptionExists)
+            try
             {
                 await _administrationClient.DeleteSubscriptionAsync(topicName, subscriptionName);
             }
-            else
+            catch (ServiceBusException serviceBusException)
             {
-                Assert.Fail(
-                    $"Attempted to delete subscription with name {subscriptionName} but does not exist. Time: {DateTime.Now:G}.");
+                Assert.Fail(serviceBusException.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists
+                    ? $"Attempted to delete subscription with name {subscriptionName} for topic {topicName} but does not exist. Time: {DateTime.Now:G}."
+                    : $"Attempted to delete subscription with name {subscriptionName} for topic {topicName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}.");
             }
         }
 
         internal async Task DeleteQueueAsync(string queueName)
         {
-            var queueExists = await _administrationClient.QueueExistsAsync(queueName);
-            if (queueExists)
+            try
             {
                 await _administrationClient.DeleteQueueAsync(queueName);
             }
-            else
+            catch (ServiceBusException serviceBusException)
             {
-                Assert.Fail($"Attempted to delete queue with name {queueName} but does not exist. Time: {DateTime.Now:G}.");
+                Assert.Fail(serviceBusException.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists
+                    ? $"Attempted to delete queue with name {queueName} but does not exist. Time: {DateTime.Now:G}."
+                    : $"Attempted to delete queue with name {queueName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}."); 
             }
         }
     }
