@@ -20,7 +20,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
         }
         
         [BeforeScenario(Order = 2)]
-        public async Task StartEndpoint(ScenarioContext context)
+        public static async Task StartEndpoint(ScenarioContext context)
         {
             var config = context.Get<FundingConfig>();
 
