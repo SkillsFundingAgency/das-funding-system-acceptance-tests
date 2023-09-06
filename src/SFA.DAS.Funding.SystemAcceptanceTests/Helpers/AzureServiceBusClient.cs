@@ -55,33 +55,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             {
                 Assert.Fail($"Attempted to create queue with name {queueName} but already exists. Time: {DateTime.Now:G}.");
             }
-
-            //var data = new object()
-            //{
-
-            //};
-            //var stringContent = data != null
-            //    ? new StringContent(JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json")
-            //    : null;
-            
-            //var apiVersion = _config.ApiVersion;
-            //var subscriptionId = _config.SubscriptionId;
-            //var resourceGroupName = _config.ServiceBusResourceGroupName;
-            //var resourceProviderNamespace = "Microsoft.ServiceBus";
-            //var parentResourcePath = "";
-            //var resourceType = "";
-            //var resourceName = "";
-
-            //var url =
-            //    $"https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{parentResourcePath}/{resourceType}/{resourceName}?api-version={apiVersion}";
-
-            //var requestMessage = new HttpRequestMessage(HttpMethod.Post, url);
-            //requestMessage.Content = stringContent;
-
-            //var response = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
-            //var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            //response.EnsureSuccessStatusCode();
         }
         internal async Task DeleteSubscriptionAsync(string subscriptionName, string topicName, string destinationQueueName)
         {
