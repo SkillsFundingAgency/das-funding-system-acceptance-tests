@@ -6,27 +6,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
     [Binding]
     public class ServiceBusEndpointHook
     {
-        private readonly string _queueName;
-        private readonly string _subscriptionName;
-        private readonly string _topicEndpointName;
-        private readonly string _sharedServiceBusFqdn;
-        private readonly List<string> _eventTypes;
-        public ServiceBusEndpointHook()
+        [BeforeTestRun]
+        public static async Task SetUpSubscription()
         {
             var config = Configurator.GetConfiguration();
-            _queueName = config.FundingSystemAcceptanceTestQueue;
-            _sharedServiceBusFqdn = config.SharedServiceBusFqdn;
-            _topicEndpointName = config.SharedServiceBusTopicEndpoint;
-            _subscriptionName = config.FundingSystemAcceptanceTestSubscription;
-            _eventTypes = config.EventTypes.Split(", ").ToList();
-        }
-
-        [BeforeTestRun]
-        public async Task SetUpSubscription()
-        {
-            var azureClient = new AzureServiceBusClient(_sharedServiceBusFqdn);
-            await azureClient.CreateQueueAsync(_queueName);
-            await azureClient.CreateSubscriptionAsync(_subscriptionName, _topicEndpointName, _queueName, _eventTypes);
+            var queueName = config.FundingSystemAcceptanceTestQueue;
+            var sharedServiceBusFqdn = config.SharedServiceBusFqdn;
+            var topicEndpointName = config.SharedServiceBusTopicEndpoint;
+            var subscriptionName = config.FundingSystemAcceptanceTestSubscription;
+            var eventTypes = config.EventTypes.Split(", ").ToList(); 
+            var azureClient = new AzureServiceBusClient(sharedServiceBusFqdn);
+            await azureClient.CreateQueueAsync(queueName);
+            await azureClient.CreateSubscriptionAsync(subscriptionName, topicEndpointName, queueName, eventTypes);
         }
         
         [BeforeScenario(Order = 2)]
@@ -54,11 +45,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
         }
 
         [AfterTestRun]
-        public async Task TearDownSubscription()
+        public static async Task TearDownSubscription()
         {
-            var azureClient = new AzureServiceBusClient(_sharedServiceBusFqdn);
-            await azureClient.DeleteQueueAsync(_queueName);
-            await azureClient.DeleteSubscriptionAsync(_subscriptionName, _topicEndpointName, _queueName);
+            var config = Configurator.GetConfiguration();
+            var queueName = config.FundingSystemAcceptanceTestQueue;
+            var sharedServiceBusFqdn = config.SharedServiceBusFqdn;
+            var topicEndpointName = config.SharedServiceBusTopicEndpoint;
+            var subscriptionName = config.FundingSystemAcceptanceTestSubscription;
+            var eventTypes = config.EventTypes.Split(", ").ToList();
+            var azureClient = new AzureServiceBusClient(sharedServiceBusFqdn);
+            await azureClient.DeleteQueueAsync(queueName);
+            await azureClient.DeleteSubscriptionAsync(subscriptionName, topicEndpointName, queueName);
         }
     }
 }
