@@ -34,7 +34,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
         }
 
         [AfterScenario(Order = 1)]
-        public void StopEndpoint(ScenarioContext context)
+        public static void StopEndpoint(ScenarioContext context)
         {
            var dasTestMessageBus = context.Get<TestMessageBus>(TestMessageBusKeys.Das);
            dasTestMessageBus?.Stop();
