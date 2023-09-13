@@ -15,5 +15,4 @@ public class FundingConfig
     public string ReleasePaymentsEventHandlersQueue { get; set; } = "<not set>";
     public string Pv2ServiceBusFqdn { get; set; } = "<not set>";
     public string Pv2FundingSourceQueue { get; set; } = "<not set>";
-    public string EventTypes { get; set; } = "<not set>";
 }

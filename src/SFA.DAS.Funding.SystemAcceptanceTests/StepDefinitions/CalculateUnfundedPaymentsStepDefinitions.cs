@@ -2,7 +2,6 @@
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using SFA.DAS.Payments.Messages.Core.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -16,7 +15,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private List<FinalisedOnProgammeLearningPaymentEvent> _finalisedPaymentsList;
         private TestSupport.Payments[] _paymentEntity;
         private byte _currentCollectionPeriod;
-        private const int SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth = 30;
 
         public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context)
         {
@@ -60,7 +58,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the scheduler triggers Unfunded Payment processing")]
         public async Task SchedulerTriggersUnfundedPaymentProcessing()
         {
-            Thread.Sleep(TimeSpan.FromSeconds(SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth));
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
         }
 
@@ -76,7 +73,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the Release Payments command is published again")]
         public async Task WhenTheReleasePaymentsCommandIsPublishedAgain()
         {
-            Thread.Sleep(TimeSpan.FromSeconds(SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth));
             FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Clear();
 
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);

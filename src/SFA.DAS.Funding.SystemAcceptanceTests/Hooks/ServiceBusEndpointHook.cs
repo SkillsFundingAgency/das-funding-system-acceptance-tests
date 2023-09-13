@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
@@ -16,7 +17,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
             await azureClient.CreateSubscriptionWithFiltersAsync(
                 config.FundingSystemAcceptanceTestSubscription, 
                 config.SharedServiceBusTopicEndpoint, queueName, 
-                config.EventTypes.Split(", ").ToList());
+                EventList.GetEventTypes());
         }
         
         [BeforeScenario(Order = 2)]

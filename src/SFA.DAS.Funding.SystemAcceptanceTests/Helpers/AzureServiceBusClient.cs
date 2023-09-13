@@ -15,7 +15,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
         }
 
         internal async Task CreateSubscriptionWithFiltersAsync(string subscriptionName, string topicName,
-            string destinationQueueName, List<string>? filterEventTypes)
+            string destinationQueueName, IList<string> filterEventTypes)
         {
             await CreateSubscriptionAsync(subscriptionName, topicName, destinationQueueName);
 
@@ -26,7 +26,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             }
         }
 
-        private async Task CreateNewSqlFilter(string subscriptionName, string topicName, List<string> filterEventTypes)
+        private async Task CreateNewSqlFilter(string subscriptionName, string topicName, IEnumerable<string> filterEventTypes)
         {
             try
             {
