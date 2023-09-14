@@ -24,12 +24,12 @@ jobs:
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(FundingApprenticeshipEarningsFunctionAppName)
-            RuleName: "FundingAcceptanceTests"
+            RuleName: "FundingAcceptanceTestsEarningsWhitelisting"
          - template: azure-pipelines-templates/deploy/step/appservice-whitelist-ip.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(FundingApprenticeshipPaymentsFunctionAppName)
-            RuleName: "FundingAcceptanceTests"
+            RuleName: "FundingAcceptanceTestsPaymentsWhitelisting"
         - template: azure-pipelines-templates/deploy/step/function-app-get-system-key.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
@@ -49,6 +49,7 @@ jobs:
             NServiceBusLicense: $(NServiceBusLicense)
             AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
             EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
+            PaymentsFunctionKey: $(FundingApprenticeshipPaymentsFunctionAppSystemKey)
           inputs:
             command: 'test'
             projects: |
