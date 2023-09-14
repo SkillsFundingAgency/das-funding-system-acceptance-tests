@@ -25,11 +25,21 @@ jobs:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(FundingApprenticeshipEarningsFunctionAppName)
             RuleName: "FundingAcceptanceTests"
+         - template: azure-pipelines-templates/deploy/step/appservice-whitelist-ip.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            ResourceName: $(FundingApprenticeshipPaymentsFunctionAppName)
+            RuleName: "FundingAcceptanceTests"
         - template: azure-pipelines-templates/deploy/step/function-app-get-system-key.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             FunctionAppName: $(FundingApprenticeshipEarningsFunctionAppName)
             OutputVariableName: FundingApprenticeshipEarningsFunctionAppSystemKey
+         - template: azure-pipelines-templates/deploy/step/function-app-get-system-key.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            FunctionAppName: $(FundingApprenticeshipPaymentsFunctionAppName)
+            OutputVariableName: FundingApprenticeshipPaymentsFunctionAppSystemKey
         - template: azure-pipelines-templates/deploy/step/app-reg-new-temp-client-secret.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
@@ -52,3 +62,7 @@ jobs:
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(FundingApprenticeshipEarningsFunctionAppName)
+        - template: azure-pipelines-templates/deploy/step/appservice-remove-ip.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            ResourceName: $(FundingApprenticeshipPaymentsFunctionAppName)
