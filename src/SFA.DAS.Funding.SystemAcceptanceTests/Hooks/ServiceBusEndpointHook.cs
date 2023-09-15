@@ -1,32 +1,28 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-
-namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
+﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
 {
     [Binding]
     public class ServiceBusEndpointHook
     {
-        [BeforeScenario(Order = 2)]
-        public static async Task StartEndpoint(ScenarioContext context)
+        [BeforeTestRun(Order = 1)]
+        public static void StartEndpoint()
         {
-            var config = context.Get<FundingConfig>();
+            var config = Configurator.GetConfiguration();
+            TestServiceBus.Config = config;
 
             var dasTestMessageBus = new TestMessageBus();
-            await dasTestMessageBus.Start(config, config.FundingSystemAcceptanceTestQueue, config.SharedServiceBusFqdn);
-            context.Set(dasTestMessageBus, TestMessageBusKeys.Das);
+            dasTestMessageBus.Start(config, config.FundingSystemAcceptanceTestQueue, config.SharedServiceBusFqdn).GetAwaiter().GetResult();
+            TestServiceBus.Das = dasTestMessageBus;
 
             var pv2TestMessageBus = new TestMessageBus();
-            await pv2TestMessageBus.Start(config, config.Pv2FundingSourceQueue, config.Pv2ServiceBusFqdn);
-            context.Set(pv2TestMessageBus, TestMessageBusKeys.Pv2);
+            pv2TestMessageBus.Start(config, config.Pv2FundingSourceQueue, config.Pv2ServiceBusFqdn).GetAwaiter().GetResult();
+            TestServiceBus.Pv2 = pv2TestMessageBus;
         }
 
-        [AfterScenario(Order = 1)]
-        public void StopEndpoint(ScenarioContext context)
+        [AfterTestRun(Order = 1)]
+        public static void StopEndpoint()
         {
-           var dasTestMessageBus = context.Get<TestMessageBus>(TestMessageBusKeys.Das);
-           dasTestMessageBus?.Stop();
-
-           var pv2TestMessageBus = context.Get<TestMessageBus>(TestMessageBusKeys.Pv2);
-           pv2TestMessageBus?.Stop();
+            TestServiceBus.Das?.Stop();
+            TestServiceBus.Pv2?.Stop();
         }
     }
 }
