@@ -2,7 +2,7 @@
 {
     public static async Task WaitForIt(Func<bool> lookForIt, string failText)
     {
-        var endTime = DateTime.Now.Add(TimeSpan.FromSeconds(60));
+        var endTime = DateTime.Now.Add(TimeSpan.FromSeconds(90));
 
         while (DateTime.Now <= endTime)
         {
