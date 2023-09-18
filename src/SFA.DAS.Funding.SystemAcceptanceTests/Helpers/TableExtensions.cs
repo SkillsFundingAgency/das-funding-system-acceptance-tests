@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.Design;
-using System.Text.RegularExpressions;
-
-namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 
 public static class TableExtensions
 {

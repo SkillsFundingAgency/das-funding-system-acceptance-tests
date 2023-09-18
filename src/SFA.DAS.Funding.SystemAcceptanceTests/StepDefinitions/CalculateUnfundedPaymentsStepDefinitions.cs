@@ -2,7 +2,6 @@
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using SFA.DAS.Payments.Messages.Core.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -15,8 +14,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private ReleasePaymentsCommand _releasePaymentsCommand;
         private List<FinalisedOnProgammeLearningPaymentEvent> _finalisedPaymentsList;
         private TestSupport.Payments[] _paymentEntity;
-        private byte _currentCollectionPeriod;
-        private const int SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth = 30;
+        private readonly byte _currentCollectionPeriod;
 
         public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context)
         {
@@ -37,8 +35,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the Unfunded Payments for every earning is created")]
         public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedPayments());
 
-        [Then(@"Unfunded Payments for the appreticeship including rollup payments are calculated as below")]
-        public void UnfundedPaymentsForTheAppreticeshipIncludingRollupPaymentsAreCalculated(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedRollupPayments());
+        [Then(@"Unfunded Payments for the apprenticeship including rollup payments are calculated as below")]
+        public void UnfundedPaymentsForTheApprenticeshipIncludingRollupPaymentsAreCalculated(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedRollupPayments());
 
         [Then(@"the newly calculated Unfunded Payments are marked as not sent to payments BAU")]
         public void NewlyCalculatedUnfundedPaymentsAreMarkedAsNotSentToPaymentsBAU()
@@ -60,7 +58,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the scheduler triggers Unfunded Payment processing")]
         public async Task SchedulerTriggersUnfundedPaymentProcessing()
         {
-            Thread.Sleep(TimeSpan.FromSeconds(SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth));
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
         }
 
@@ -76,7 +73,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the Release Payments command is published again")]
         public async Task WhenTheReleasePaymentsCommandIsPublishedAgain()
         {
-            Thread.Sleep(TimeSpan.FromSeconds(SecondToWaitBeforePublishingReleasePaymentsCommandToSimulateEndOfMonth));
             FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Clear();
 
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
