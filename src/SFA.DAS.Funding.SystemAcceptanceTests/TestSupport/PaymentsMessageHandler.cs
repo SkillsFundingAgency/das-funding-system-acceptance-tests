@@ -28,7 +28,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             }, "Failed to find published event in Payments");
         }
 
-        public async Task PublishReleasePaymentsCommand(ReleasePaymentsCommand releasePaymentsCommand)
+        public static async Task PublishReleasePaymentsCommand(ReleasePaymentsCommand releasePaymentsCommand)
         {
             await TestServiceBus.Das.SendReleasePaymentsMessage(releasePaymentsCommand);
         }
