@@ -1,6 +1,4 @@
-﻿using SFA.DAS.Payments.RequiredPayments.Messages.Events;
-
-namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
+﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
     internal class AdaptorMessageHandler
     {

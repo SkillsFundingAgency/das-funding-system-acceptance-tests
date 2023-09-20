@@ -10,7 +10,7 @@ Scenario: Rollup Payment profile for single learner - Training start date declar
 	Given an apprenticeship with start date over 2 months ago and duration of 12 months and an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
 	When the Unfunded Payments for the remainder of the apprenticeship are determined
-	Then Unfunded Payments for the appreticeship including rollup payments are calculated as below
+	Then Unfunded Payments for the apprenticeship including rollup payments are calculated as below
 		| DeliveryPeriod | PaymentPeriod  | Amount |
 		| CurrentMonth-2 | CurrentMonth+0 | 1000   |
 		| CurrentMonth-1 | CurrentMonth+0 | 1000   |

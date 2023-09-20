@@ -1,16 +1,13 @@
-﻿using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
-using APR = SFA.DAS.Apprenticeships.Types;
-using AutoFixture;
-using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+﻿using SFA.DAS.CommitmentsV2.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
-using SFA.DAS.CommitmentsV2.Types;
+using APR = SFA.DAS.Apprenticeships.Types;
+using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
     internal class ApprenticeshipMessageHandler
     {
         private readonly ScenarioContext _context;
-        
 
         public ApprenticeshipMessageHandler(ScenarioContext context)
         {
@@ -48,7 +45,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
         public async Task PublishApprenticeshipApprovedMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
         {
-            await _context.Get<TestMessageBus>(TestMessageBusKeys.Das).SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
+            await TestServiceBus.Das.SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
 
             await WaitHelper.WaitForIt(() =>
             {
