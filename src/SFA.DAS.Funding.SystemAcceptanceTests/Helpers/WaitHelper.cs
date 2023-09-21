@@ -16,7 +16,7 @@
 
     public static async Task WaitForUnexpected(Func<bool> findUnexpected, string failText)
     {
-        var endTime = DateTime.Now.Add(TimeSpan.FromSeconds(300));
+        var endTime = DateTime.Now.Add(TimeSpan.FromSeconds(90));
 
         while (DateTime.Now < endTime)
         {
