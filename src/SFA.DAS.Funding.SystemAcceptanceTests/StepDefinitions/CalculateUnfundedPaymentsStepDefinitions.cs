@@ -14,7 +14,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private ReleasePaymentsCommand _releasePaymentsCommand;
         private List<FinalisedOnProgammeLearningPaymentEvent> _finalisedPaymentsList;
         private TestSupport.Payments[] _paymentEntity;
-        private byte _currentCollectionPeriod;
+        private readonly byte _currentCollectionPeriod;
 
         public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context)
         {
@@ -35,8 +35,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the Unfunded Payments for every earning is created")]
         public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedPayments());
 
-        [Then(@"Unfunded Payments for the appreticeship including rollup payments are calculated as below")]
-        public void UnfundedPaymentsForTheAppreticeshipIncludingRollupPaymentsAreCalculated(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedRollupPayments());
+        [Then(@"Unfunded Payments for the apprenticeship including rollup payments are calculated as below")]
+        public void UnfundedPaymentsForTheApprenticeshipIncludingRollupPaymentsAreCalculated(Table table) => _payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedRollupPayments());
 
         [Then(@"the newly calculated Unfunded Payments are marked as not sent to payments BAU")]
         public void NewlyCalculatedUnfundedPaymentsAreMarkedAsNotSentToPaymentsBAU()
