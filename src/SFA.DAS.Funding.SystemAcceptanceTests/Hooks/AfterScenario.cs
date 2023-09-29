@@ -1,6 +1,4 @@
-﻿using TechTalk.SpecFlow;
-
-namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
+﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
 {
     [Binding]
     internal class AfterScenario
