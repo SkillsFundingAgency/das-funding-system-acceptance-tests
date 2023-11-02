@@ -66,7 +66,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             ApprenticeshipEarningsRecalculatedEvent recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
 
-            Assert.AreEqual(1800, recalculatedEarningsEvent.DeliveryPeriods[11]);
+            Assert.AreEqual(1800, recalculatedEarningsEvent.DeliveryPeriods[11].LearningAmount);
 
         }
 
