@@ -1,22 +1,20 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
-using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
-using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
-using FluentAssertions.Extensions;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
     [Binding]
-    public  class RecalculateEarningsAfterApprovalOfPriceChangeRequestStepDefinitions
+    public class RecalculateEarningsAfterApprovalOfPriceChangeRequestStepDefinitions
     {
         private readonly ScenarioContext _context;
         private readonly CalculateEarningsForLearningPaymentsStepDefinitions _calculateEarningsStepDefinitions;
         private PriceChangeMessageHandler _priceChangeMessageHandler;
         private PriceChangeApprovedEvent _priceChangeApprovedEvent;
-        private CommitmentsMessages.ApprenticeshipCreatedEvent _commitmentsApprenticeshipCreatedEvent;
-        private ApprenticeshipsMessages.ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
-        private EarningsGeneratedEvent _earnings;
-        private List<DeliveryPeriod> _deliveryPeriods;
+        private EarningsEntityModel _earningsApprenticeshipEntity;
+        private DateTime _priceChangeEffectiveFrom;
+        private DateTime _priceChangeApprovedDate;
+        private decimal _newTrainingPrice;
+        private decimal _newAssessmentPrice;
 
         public RecalculateEarningsAfterApprovalOfPriceChangeRequestStepDefinitions(ScenarioContext context)
         {
@@ -25,56 +23,82 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _priceChangeMessageHandler = new PriceChangeMessageHandler(_context);
         }
 
-        [Given(@"earnings have been calculated for an apprenticeship in the pilot")]
-        public async Task GivenEarningsHaveBeenCalculatedForAnApprenticeshipInThePilot()
+        [Given(@"earnings have been calculated for an apprenticeship with (.*), (.*), (.*), and (.*)")]
+        public async Task GivenEarningsHaveBeenCalculatedForAnApprenticeshipWithAnd(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, string trainingCode)
         {
-            DateTime startDate = new DateTime(2022, 8, 15);
-            DateTime plannedEndDate = new DateTime(2023, 8, 15);
             _calculateEarningsStepDefinitions.ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, 22500, "614");
 
             await _calculateEarningsStepDefinitions.TheApprenticeshipCommitmentIsApproved();
         }
+
 
         [Given(@"the total price is below or at the funding band maximum")]
         public void GivenTheTotalPriceIsBelowOrAtTheFundingBandMaximum()
         {
         }
 
-        [Given(@"a price change request was sent before the end of R14 of the current academic year")]
-        public void GivenAPriceChangeRequestWasSentBeforeTheEndOfROfTheCurrentAcademicYearYearX()
+        [Given(@"a price change request was sent on (.*)")]
+        public void GivenAPriceChangeRequestWasSentOn(DateTime effectiveFromDate)
         {
-            DateTime effectiveFrom = new DateTime(2023, 1, 1);
-            DateTime approvedDate = new DateTime(2023, 10, 15);
-            _priceChangeApprovedEvent = _priceChangeMessageHandler.CreatePriceChangeApprovedMessageWithCustomValues(25000, 2000, effectiveFrom, approvedDate);
+            _priceChangeEffectiveFrom = effectiveFromDate;
         }
 
-        [Given(@"the price change request is for a new total price up to or at the funding band maximum")]
-        public void GivenThePriceChangeRequestIsForANewTotalPriceUpToOrAtTheFundingBandMaximum()
+        [Given(@"the price change request has an approval date of (.*) with a new total (.*)")]
+        public void GivenThePriceChangeRequestHasAnApprovalDateOfWithANewTotal(DateTime approvedDate, decimal newTotalPrice)
         {
+            _priceChangeApprovedDate = approvedDate;
+            _newTrainingPrice = newTotalPrice * 0.8m;
+            _newAssessmentPrice = newTotalPrice * 0.2m;
         }
 
-        [When(@"the change is approved by the other party before the end of year X")]
-        public async Task WhenTheChangeIsApprovedByTheOtherPartyBeforeTheEndOfYearX()
+        [When(@"the price change is approved")]
+        public async Task WhenThePriceChangeIsApproved()
         {
+            _priceChangeApprovedEvent = _priceChangeMessageHandler.CreatePriceChangeApprovedMessageWithCustomValues(_newTrainingPrice, _newAssessmentPrice, _priceChangeEffectiveFrom, _priceChangeApprovedDate);
+
             await _priceChangeMessageHandler.PublishPriceChangeApprovedEvent(_priceChangeApprovedEvent);
         }
 
-        [Then(@"the earnings are recalculated based on the new price")]
-        public async Task ThenTheEarningsAreRecalculatedBasedOnTheNewPrice()
+        [Then(@"the earnings are recalculated based on the new instalment amount of (.*) from (.*) and (.*)")]
+        public async Task ThenTheEarningsAreRecalculatedBasedOnTheNewInstalmentAmountOfFromAnd(decimal newInstalmentAmount, int deliveryPeriod, int academicYear)
         {
             await _priceChangeMessageHandler.ReceiveEarningsRecalculatedEvent(_priceChangeApprovedEvent.ApprenticeshipKey);
 
             ApprenticeshipEarningsRecalculatedEvent recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
 
-            Assert.AreEqual(1800, recalculatedEarningsEvent.DeliveryPeriods[11].LearningAmount);
-
+            recalculatedEarningsEvent.DeliveryPeriods.Where(Dp => Dp.AcademicYear >=  academicYear && Dp.Period >= deliveryPeriod).All(p => p.LearningAmount.Should().Equals(newInstalmentAmount));
         }
 
-        [Then(@"the history of old and new earnings is maintained")]
-        public void ThenTheHistoryOfOldAndNewEarningsIsMaintained()
+
+        [Then(@"earnings prior to (.*) and (.*) are frozen with (.*)")]
+        public void ThenEarningsPriorToAndAreFrozenWith(int delivery_period, int academicYear, double oldInstalmentAmount)
         {
+            var earningsApiClient = new EarningsEntityApiClient(_context);
+
+            _earningsApprenticeshipEntity = earningsApiClient.GetEarningsEntityModel();
+
+            var new_Earnings_Profile = _earningsApprenticeshipEntity.Model.EarningsProfile.Instalments;
+
+            for (int i = 0; i < delivery_period-1; i++)
+            {
+                if (new_Earnings_Profile[i].AcademicYear <= academicYear)
+                {
+                    Assert.AreEqual(oldInstalmentAmount, new_Earnings_Profile[i].Amount, $"Earning prior to DeliveryPeriod {delivery_period} " +
+                        $" are not frozen. Expected Amount for Delivery Period: {new_Earnings_Profile[i].DeliveryPeriod} and AcademicYear: " +
+                        $" {new_Earnings_Profile[i].AcademicYear} to be {oldInstalmentAmount} but was {new_Earnings_Profile[i].Amount}");
+                }
+            }
+        }   
+
+        [Then(@"the history of old and new earnings is maintained with (.*) from instalment period (.*)")]
+        public void ThenTheHistoryOfOldAndNewEarningsIsMaintainedWithFromInstalmentPeriod(double old_instalment_amount, int delivery_period)
+        {
+            var historical_instalments = _earningsApprenticeshipEntity.Model.EarningsProfileHistory[0].Record.Instalments;
+
+            foreach (var instalment in historical_instalments)
+            {
+                Assert.AreEqual(old_instalment_amount, instalment.Amount, $"Expected historical earnings for period {instalment.DeliveryPeriod} to be {old_instalment_amount}, but was {instalment.Amount}");
+            }
         }
-
-
     }
 }
