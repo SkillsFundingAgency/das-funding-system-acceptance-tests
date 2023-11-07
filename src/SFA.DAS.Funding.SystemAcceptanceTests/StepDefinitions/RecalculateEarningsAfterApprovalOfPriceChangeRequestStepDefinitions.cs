@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Payments.Messages.Core.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -24,7 +25,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Given(@"earnings have been calculated for an apprenticeship with (.*), (.*), (.*), and (.*)")]
-        public async Task GivenEarningsHaveBeenCalculatedForAnApprenticeshipWithAnd(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, string trainingCode)
+        public async Task EarningsHaveBeenCalculatedForAnApprenticeshipWithAnd(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, string trainingCode)
         {
             _calculateEarningsStepDefinitions.ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, agreedPrice, trainingCode);
 
@@ -33,18 +34,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
 
         [Given(@"the total price is above or below or at the funding band maximum")]
-        public void GivenTheTotalPriceIsBelowOrAtTheFundingBandMaximum()
+        public void TotalPriceIsBelowOrAtTheFundingBandMaximum()
         {
         }
 
         [Given(@"a price change request was sent on (.*)")]
-        public void GivenAPriceChangeRequestWasSentOn(DateTime effectiveFromDate)
+        public void PriceChangeRequestWasSentOn(DateTime effectiveFromDate)
         {
             _priceChangeEffectiveFrom = effectiveFromDate;
         }
 
         [Given(@"the price change request has an approval date of (.*) with a new total (.*)")]
-        public void GivenThePriceChangeRequestHasAnApprovalDateOfWithANewTotal(DateTime approvedDate, decimal newTotalPrice)
+        public void PriceChangeRequestHasAnApprovalDateOfWithANewTotal(DateTime approvedDate, decimal newTotalPrice)
         {
             _priceChangeApprovedDate = approvedDate;
             _newTrainingPrice = newTotalPrice * 0.8m;
@@ -52,7 +53,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [When(@"the price change is approved")]
-        public async Task WhenThePriceChangeIsApproved()
+        public async Task PriceChangeIsApproved()
         {
             _priceChangeApprovedEvent = _priceChangeMessageHandler.CreatePriceChangeApprovedMessageWithCustomValues(_newTrainingPrice, _newAssessmentPrice, _priceChangeEffectiveFrom, _priceChangeApprovedDate);
 
@@ -60,7 +61,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Then(@"the earnings are recalculated based on the new instalment amount of (.*) from (.*) and (.*)")]
-        public async Task ThenTheEarningsAreRecalculatedBasedOnTheNewInstalmentAmountOfFromAnd(decimal newInstalmentAmount, int deliveryPeriod, int academicYear)
+        public async Task EarningsAreRecalculatedBasedOnTheNewInstalmentAmountOfFromAnd(decimal newInstalmentAmount, int deliveryPeriod, int academicYear)
         {
             await _priceChangeMessageHandler.ReceiveEarningsRecalculatedEvent(_priceChangeApprovedEvent.ApprenticeshipKey);
 
@@ -71,7 +72,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
 
         [Then(@"earnings prior to (.*) and (.*) are frozen with (.*)")]
-        public void ThenEarningsPriorToAndAreFrozenWith(int delivery_period, int academicYear, double oldInstalmentAmount)
+        public void EarningsPriorToAndAreFrozenWith(int delivery_period, int academicYear, double oldInstalmentAmount)
         {
             var earningsApiClient = new EarningsEntityApiClient(_context);
 
@@ -91,14 +92,22 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Then(@"the history of old earnings is maintained with (.*)")]
-        public void ThenTheHistoryOfOldAndNewEarningsIsMaintainedWithFromInstalmentPeriod(double old_instalment_amount)
+        public async Task HistoryOfOldEarningsIsMaintained(double old_instalment_amount)
         {
-            var historical_instalments = _earningsApprenticeshipEntity.Model.EarningsProfileHistory[0].Record.Instalments;
-
-            foreach (var instalment in historical_instalments)
+            await WaitHelper.WaitForIt(() =>
             {
-                Assert.AreEqual(old_instalment_amount, instalment.Amount, $"Expected historical earnings amount to be {old_instalment_amount}, but was {instalment.Amount}");
-            }
+                var historical_instalments = _earningsApprenticeshipEntity.Model.EarningsProfileHistory[0].Record.Instalments;
+
+                if (historical_instalments != null)
+                {
+                    foreach (var instalment in historical_instalments)
+                    {
+                        Assert.AreEqual(old_instalment_amount, instalment.Amount, $"Expected historical earnings amount to be {old_instalment_amount}, but was {instalment.Amount}");
+                    }
+                    return true;
+                }
+                return false;
+            }, "Failed to find installments in Earnings Profile History");
         }
     }
 }
