@@ -26,7 +26,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             .With(_ => _.AssessmentPrice, assessmentPrice)
             .With(_ => _.EffectiveFromDate, effectiveFromDate)
             .With(_ => _.ApprovedDate, approvedDate)
-            .With(_ => _.ApprovedBy, ApprovedBy.Employer)
             .With(_ => _.EmployerAccountId, _apprenticeshipCreatedEvent.EmployerAccountId)
             .With(_ => _.ProviderId, _apprenticeshipCreatedEvent.UKPRN)
             .Create();

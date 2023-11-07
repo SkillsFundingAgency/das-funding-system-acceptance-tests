@@ -26,13 +26,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Given(@"earnings have been calculated for an apprenticeship with (.*), (.*), (.*), and (.*)")]
         public async Task GivenEarningsHaveBeenCalculatedForAnApprenticeshipWithAnd(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, string trainingCode)
         {
-            _calculateEarningsStepDefinitions.ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, 22500, "614");
+            _calculateEarningsStepDefinitions.ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, agreedPrice, trainingCode);
 
             await _calculateEarningsStepDefinitions.TheApprenticeshipCommitmentIsApproved();
         }
 
 
-        [Given(@"the total price is below or at the funding band maximum")]
+        [Given(@"the total price is above or below or at the funding band maximum")]
         public void GivenTheTotalPriceIsBelowOrAtTheFundingBandMaximum()
         {
         }
@@ -66,7 +66,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             ApprenticeshipEarningsRecalculatedEvent recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
 
-            recalculatedEarningsEvent.DeliveryPeriods.Where(Dp => Dp.AcademicYear >=  academicYear && Dp.Period >= deliveryPeriod).All(p => p.LearningAmount.Should().Equals(newInstalmentAmount));
+            recalculatedEarningsEvent.DeliveryPeriods.Where(Dp => Dp.AcademicYear >= academicYear && Dp.Period >= deliveryPeriod).All(p => p.LearningAmount.Should().Equals(newInstalmentAmount));
         }
 
 
@@ -79,7 +79,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var new_Earnings_Profile = _earningsApprenticeshipEntity.Model.EarningsProfile.Instalments;
 
-            for (int i = 0; i < delivery_period-1; i++)
+            for (int i = 0; i < delivery_period - 1; i++)
             {
                 if (new_Earnings_Profile[i].AcademicYear <= academicYear)
                 {
@@ -88,16 +88,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                         $" {new_Earnings_Profile[i].AcademicYear} to be {oldInstalmentAmount} but was {new_Earnings_Profile[i].Amount}");
                 }
             }
-        }   
+        }
 
-        [Then(@"the history of old and new earnings is maintained with (.*) from instalment period (.*)")]
-        public void ThenTheHistoryOfOldAndNewEarningsIsMaintainedWithFromInstalmentPeriod(double old_instalment_amount, int delivery_period)
+        [Then(@"the history of old earnings is maintained with (.*)")]
+        public void ThenTheHistoryOfOldAndNewEarningsIsMaintainedWithFromInstalmentPeriod(double old_instalment_amount)
         {
             var historical_instalments = _earningsApprenticeshipEntity.Model.EarningsProfileHistory[0].Record.Instalments;
 
             foreach (var instalment in historical_instalments)
             {
-                Assert.AreEqual(old_instalment_amount, instalment.Amount, $"Expected historical earnings for period {instalment.DeliveryPeriod} to be {old_instalment_amount}, but was {instalment.Amount}");
+                Assert.AreEqual(old_instalment_amount, instalment.Amount, $"Expected historical earnings amount to be {old_instalment_amount}, but was {instalment.Amount}");
             }
         }
     }
