@@ -11,7 +11,8 @@ public static class EventList
             typeof(SFA.DAS.Funding.ApprenticeshipPayments.Types.FinalisedOnProgammeLearningPaymentEvent).FullName!,
             typeof(SFA.DAS.Funding.ApprenticeshipEarnings.Types.EarningsGeneratedEvent).FullName!,
             typeof(SFA.DAS.Apprenticeships.Types.ApprenticeshipCreatedEvent).FullName!,
-            typeof(SFA.DAS.Payments.RequiredPayments.Messages.Events.CalculatedRequiredLevyAmount).FullName!
+            typeof(SFA.DAS.Payments.RequiredPayments.Messages.Events.CalculatedRequiredLevyAmount).FullName!, 
+            typeof(SFA.DAS.Funding.ApprenticeshipEarnings.Types.ApprenticeshipEarningsRecalculatedEvent).FullName!
         };
 
         return events;
