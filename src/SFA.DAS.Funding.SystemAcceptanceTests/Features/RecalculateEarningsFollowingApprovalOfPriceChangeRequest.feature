@@ -14,10 +14,8 @@ Example 3: Price Rise in year 2 - New Price at Funding Band Max
 Example 4: Price Drop in year 2 - New Price below Funding Band Max
 Example 5: Price Rise in R13 of year 1 - New Price at Funding Band Max
 
-
-
 @regression
-Scenario: Price change approved in the year it was requested, below or at funding band max; recalc earnings
+Scenario: Price change approved in the year it was requested; recalc earnings
 	Given earnings have been calculated for an apprenticeship with <start_date>, <end_date>, <agreed_price>, and <training_code>
 	And the total price is above or below or at the funding band maximum
 	And a price change request was sent on <pc_from_date>

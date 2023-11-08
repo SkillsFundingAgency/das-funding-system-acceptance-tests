@@ -78,15 +78,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _earningsApprenticeshipEntity = earningsApiClient.GetEarningsEntityModel();
 
-            var new_Earnings_Profile = _earningsApprenticeshipEntity.Model.EarningsProfile.Instalments;
+            var newEarningsProfile = _earningsApprenticeshipEntity.Model.EarningsProfile.Instalments;
 
             for (int i = 0; i < delivery_period - 1; i++)
             {
-                if (new_Earnings_Profile[i].AcademicYear <= academicYear)
+                if (newEarningsProfile[i].AcademicYear <= academicYear)
                 {
-                    Assert.AreEqual(oldInstalmentAmount, new_Earnings_Profile[i].Amount, $"Earning prior to DeliveryPeriod {delivery_period} " +
-                        $" are not frozen. Expected Amount for Delivery Period: {new_Earnings_Profile[i].DeliveryPeriod} and AcademicYear: " +
-                        $" {new_Earnings_Profile[i].AcademicYear} to be {oldInstalmentAmount} but was {new_Earnings_Profile[i].Amount}");
+                    Assert.AreEqual(oldInstalmentAmount, newEarningsProfile[i].Amount, $"Earning prior to DeliveryPeriod {delivery_period} " +
+                        $" are not frozen. Expected Amount for Delivery Period: {newEarningsProfile[i].DeliveryPeriod} and AcademicYear: " +
+                        $" {newEarningsProfile[i].AcademicYear} to be {oldInstalmentAmount} but was {newEarningsProfile[i].Amount}");
                 }
             }
         }
@@ -96,11 +96,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             await WaitHelper.WaitForIt(() =>
             {
-                var historical_instalments = _earningsApprenticeshipEntity.Model.EarningsProfileHistory[0].Record.Instalments;
+                var historicalInstalments = _earningsApprenticeshipEntity.Model.EarningsProfileHistory[0].Record.Instalments;
 
-                if (historical_instalments != null)
+                if (historicalInstalments != null)
                 {
-                    foreach (var instalment in historical_instalments)
+                    foreach (var instalment in historicalInstalments)
                     {
                         Assert.AreEqual(old_instalment_amount, instalment.Amount, $"Expected historical earnings amount to be {old_instalment_amount}, but was {instalment.Amount}");
                     }
