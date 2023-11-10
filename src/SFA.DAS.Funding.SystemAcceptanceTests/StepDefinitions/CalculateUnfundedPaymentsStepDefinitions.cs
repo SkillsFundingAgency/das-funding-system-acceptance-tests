@@ -43,7 +43,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var apiClient = new PaymentsEntityApiClient(_context);
 
-            var payments = apiClient.GetPaymentsEntityModel().Model.Payments;
+            var payments = apiClient.GetPaymentsEntityModel().Result.Model.Payments;
 
             Assert.IsTrue(payments.All(x => !x.SentForPayment));
         }
@@ -112,7 +112,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var apiClient = new PaymentsEntityApiClient(_context);
 
-            _paymentEntity = apiClient.GetPaymentsEntityModel().Model.Payments;
+            _paymentEntity = apiClient.GetPaymentsEntityModel().Result.Model.Payments;
 
             Assert.IsTrue(_paymentEntity.Where(p => p.CollectionPeriod == _currentCollectionPeriod).All(p => p.SentForPayment));
         }
