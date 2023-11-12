@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using System;
+
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 
 public static class TableExtensions
 {
@@ -30,12 +32,14 @@ public static class TableExtensions
         return DateTime.Now.AddMonths(Convert.ToInt16(numberOfMonthsToAdd)).ToString("MMMM");
     }
 
-    public static string CalculateAcademicYear(string text)
+    public static string CalculateAcademicYear(string numberOfMonthsToAdd, DateTime date = default)
     {
-        var numberOfMonthsToAdd = new string(text.Where(c => !char.IsLetter(c)).ToArray());
+        var numberOfMonths = new string(numberOfMonthsToAdd.Where(c => !char.IsLetter(c)).ToArray());
 
-        var month = DateTime.Now.AddMonths(Convert.ToInt16(numberOfMonthsToAdd)).Month;
-        var Year = DateTime.Now.AddMonths(Convert.ToInt16(numberOfMonthsToAdd)).Year;
+        if (date == default) date = DateTime.Now;
+
+        var month = date.AddMonths(Convert.ToInt16(numberOfMonths)).Month;
+        var Year = date.AddMonths(Convert.ToInt16(numberOfMonths)).Year;
 
         if (month < 8) return $"{(Year - 1) % 100:00}{Year % 100:00}";
         else return $"{Year % 100:00}{(Year + 1) % 100:00}";

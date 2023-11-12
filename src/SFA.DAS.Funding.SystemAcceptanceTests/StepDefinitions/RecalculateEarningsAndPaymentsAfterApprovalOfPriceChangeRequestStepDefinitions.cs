@@ -81,9 +81,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the price change is approved")]
         public async Task PriceChangeIsApproved()
         {
+            // clear previous PaymentsGeneratedEvent before publishing PriceChangeApproved Event 
+            PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
+
             _priceChangeApprovedEvent = _priceChangeMessageHandler.CreatePriceChangeApprovedMessageWithCustomValues(_newTrainingPrice, _newAssessmentPrice, _priceChangeEffectiveFrom, _priceChangeApprovedDate);
 
             await _priceChangeMessageHandler.PublishPriceChangeApprovedEvent(_priceChangeApprovedEvent);
+
+            // Receive the update PaymentsGeneratedEvent
+            await _paymentsMessageHelper.ReceivePaymentsEvent(_priceChangeApprovedEvent.ApprenticeshipKey);
         }
 
         [Then(@"the earnings are recalculated based on the new instalment amount of (.*) from (.*) and (.*)")]
@@ -97,13 +103,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Then(@"for all the past census periods, where the payment has already been made, the amount is still same as previous earnings (.*) and are flagged as sent for payment")]
-        public async Task ThenForAllThePastCensusPeriodsWhereThePaymentHasAlreadyBeenMadeTheAmountIsStillSameAsPreviousEarningsAndAreFlaggedAsSentForPayment(double oldEarnings)
+        public void ThenForAllThePastCensusPeriodsWhereThePaymentHasAlreadyBeenMadeTheAmountIsStillSameAsPreviousEarningsAndAreFlaggedAsSentForPayment(double oldEarnings)
         {
-            // clear this before you publish the RecalculatedPayment Event 
-            PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
-
-            await _paymentsMessageHelper.ReceivePaymentsEvent(_priceChangeApprovedEvent.ApprenticeshipKey);
-
             _paymentsEventList = _context.Get<PaymentsGeneratedEvent>().Payments;
 
             // validate PaymentsGenerateEvent
@@ -118,7 +119,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var paymentsApiClient = new PaymentsEntityApiClient(_context);
 
-            _paymentsEntityArray = paymentsApiClient.GetPaymentsEntityModel().Result.Model.Payments;
+            _paymentsEntityArray = paymentsApiClient.GetPaymentsEntityModel().Model.Payments;
 
             for (int i = 0; i < _currentCollectionPeriod; i++)
             {
@@ -162,7 +163,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             for (int i = _currentCollectionPeriod * 2; i < _paymentsEntityArray.Length; i++)
             {
-                Assert.AreEqual(newEarnings, _paymentsEntityArray[i].Amount, $"Expected Amount to be {newEarnings} for payment record {i + 1} but was {_paymentsEntityArray[i + 1].Amount} in Durable Entity");
+                Assert.AreEqual(newEarnings, _paymentsEntityArray[i].Amount, $"Expected Amount to be {newEarnings} for payment record {i + 1} but was {_paymentsEntityArray[i].Amount} in Durable Entity");
                 Assert.IsFalse(_paymentsEntityArray[i].SentForPayment, $"Expected SentForPayment flag to be False for payment record {i + 1} in durable entity");
             }
         }
