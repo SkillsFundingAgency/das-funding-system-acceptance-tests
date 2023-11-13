@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.Funding.SystemAccep
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure", "SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure\SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.csproj", "{FA2D02ED-8188-4BBB-8A03-89245379487D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.Payments.RequiredPayments.Messages", "SFA.DAS.Payments.RequiredPayments.Messages\SFA.DAS.Payments.RequiredPayments.Messages.csproj", "{0A05667F-E6A7-4008-85F8-D4D8089838F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{FA2D02ED-8188-4BBB-8A03-89245379487D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA2D02ED-8188-4BBB-8A03-89245379487D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA2D02ED-8188-4BBB-8A03-89245379487D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A05667F-E6A7-4008-85F8-D4D8089838F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A05667F-E6A7-4008-85F8-D4D8089838F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A05667F-E6A7-4008-85F8-D4D8089838F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A05667F-E6A7-4008-85F8-D4D8089838F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -23,6 +23,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private List<Payment> _paymentsEventList;
         private TestSupport.Payments[] _paymentsEntityArray;
         private readonly byte _currentCollectionPeriod;
+        private decimal _newEarningsAmount;
+        private decimal _fundingBandMax;
+
+
 
         public RecalculateEarningsAndPaymentsAfterApprovalOfPriceChangeRequestStepDefinitions(ScenarioContext context)
         {
@@ -78,6 +82,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _newAssessmentPrice = newTotalPrice * 0.2m;
         }
 
+        [Given(@"funding band max (.*) is determined for the training code")]
+        public void GivenFundingBandMaxIsDeterminedForTheTrainingCode(decimal fundingBandMax)
+        {
+            _fundingBandMax = fundingBandMax;
+        }
+
+
         [When(@"the price change is approved")]
         public async Task PriceChangeIsApproved()
         {
@@ -128,15 +139,24 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             }
         }
 
-        [Then(@"for all the past census periods, new payments entries are created and marked as Not sent for payment in the durable entity with the difference (.*) between new and old earnings")]
-        public void NewPaymentsEntriesAreCreatedAndMarkedAsNotSentForPaymentInTheDurableEntityWithTheDifferenceBetweenNewAndOldEarnings(double difference)
+        [Then(@"for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new and old earnings")]
+        public void NewPaymentsEntriesAreCreatedAndMarkedAsNotSentForPaymentInTheDurableEntityWithTheDifferenceBetweenNewAndOldEarnings()
         {
+            var earningsGeneratedEvent = _context.Get<EarningsGeneratedEvent>();
+
+            var proposedNewTotalPrice = _newTrainingPrice + _newAssessmentPrice;
+
+            var apprenticeshipDurationInMonth = CalculateMonthsDifference(earningsGeneratedEvent.PlannedEndDate, earningsGeneratedEvent.StartDate);
+
+            _newEarningsAmount = CalculateNewEarnings(proposedNewTotalPrice, _fundingBandMax, apprenticeshipDurationInMonth);
+
+            var difference = _newEarningsAmount - earningsGeneratedEvent.DeliveryPeriods[0].LearningAmount;
 
             // Validate PaymentsGenerateEvent
 
             for (int i = _currentCollectionPeriod; i < _currentCollectionPeriod * 2; i++)
             {
-                Assert.AreEqual(difference, _paymentsEventList[i].Amount, $"Expected Amount for delivery period {i + 1} to be {difference} but was {_paymentsEventList[i].Amount} " +
+                Assert.AreEqual(difference, _paymentsEventList[i].Amount, $"Expected Amount for delivery period {_paymentsEventList[i].DeliveryPeriod} to be {difference} but was {_paymentsEventList[i].Amount} " +
                     $" in Payments Generated Event post CoP - Different between new and old payments");
             }
 
@@ -149,13 +169,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             }
         }
 
-        [Then(@"for all payments for future collection periods are equal to the new earnings (.*)")]
-        public void ThenForAllPaymentsForFutureCollectionPeriodsAreEqualToTheNewEarnings(double newEarnings)
+        [Then(@"for all payments for future collection periods are equal to the new earnings")]
+        public void ThenForAllPaymentsForFutureCollectionPeriodsAreEqualToTheNewEarnings()
         {
             // validate Payments Generated Event 
             for (int i = _currentCollectionPeriod * 2; i < _paymentsEventList.Count; i++)
             {
-                Assert.AreEqual(newEarnings, _paymentsEventList[i].Amount, $"Expected Amount for delivery period {i + 1} to be {newEarnings} but was {_paymentsEventList[i].Amount} " +
+                Assert.AreEqual(_newEarningsAmount, _paymentsEventList[i].Amount, $"Expected Amount for delivery period {_paymentsEventList[i].DeliveryPeriod} to be {_newEarningsAmount} but was {_paymentsEventList[i].Amount} " +
                     $" in Payments Generated Event post CoP - Future delivery periods");
             }
 
@@ -163,7 +183,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             for (int i = _currentCollectionPeriod * 2; i < _paymentsEntityArray.Length; i++)
             {
-                Assert.AreEqual(newEarnings, _paymentsEntityArray[i].Amount, $"Expected Amount to be {newEarnings} for payment record {i + 1} but was {_paymentsEntityArray[i].Amount} in Durable Entity");
+                Assert.AreEqual(_newEarningsAmount, _paymentsEntityArray[i].Amount, $"Expected Amount to be {_newEarningsAmount} for payment record {i + 1} but was {_paymentsEntityArray[i].Amount} in Durable Entity");
                 Assert.IsFalse(_paymentsEntityArray[i].SentForPayment, $"Expected SentForPayment flag to be False for payment record {i + 1} in durable entity");
             }
         }
@@ -205,6 +225,22 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 }
                 return false;
             }, "Failed to find installments in Earnings Profile History");
+        }
+
+        static int CalculateMonthsDifference(DateTime endDate, DateTime startDate)
+        {
+            int monthsDifference = (endDate.Year - startDate.Year) * 12 + endDate.Month - startDate.Month;
+
+            if (endDate.Day < startDate.Day) monthsDifference--;
+
+            return monthsDifference;
+        }
+
+        static decimal CalculateNewEarnings(decimal proposedNewTotalPrice, decimal fundingBandMax, int apprenticeshipDurationInMonth)
+        {
+            var priceToUse = proposedNewTotalPrice > fundingBandMax ? fundingBandMax : proposedNewTotalPrice;
+
+            return (priceToUse * 0.8m) / apprenticeshipDurationInMonth;
         }
     }
 }
