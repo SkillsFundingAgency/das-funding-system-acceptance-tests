@@ -3,6 +3,9 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Payments.Messages.Core.Events;
 using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+using SFA.DAS.CommitmentsV2.Messages.Events;
+using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -233,6 +236,26 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 return false;
             }, "Failed to find installments in Earnings Profile History");
         }
+
+        [Given(@"a price change event is approved")]
+        public async Task GivenAPriceChangeEventIsApproved(Table table)
+        {
+            var fixture = new Fixture();
+             
+            var priceChangeApprovedEvent = fixture.Build<PriceChangeApprovedEvent>()
+            .With(_ => _.ApprenticeshipKey, Guid.Parse(table.Rows[0]["apprenticeship_key"]))
+            .With(_ => _.ApprenticeshipId, long.Parse(table.Rows[0]["apprenticeship_id"]))
+            .With(_ => _.TrainingPrice, decimal.Parse(table.Rows[0]["training_price"]))
+            .With(_ => _.AssessmentPrice, decimal.Parse(table.Rows[0]["assessment_price"]))
+            .With(_ => _.EffectiveFromDate, DateTime.Parse(table.Rows[0]["effective_from_date"]))
+            .With(_ => _.ApprovedDate, DateTime.Parse(table.Rows[0]["approved_date"]))
+            .With(_ => _.EmployerAccountId, long.Parse(table.Rows[0]["employer_account_id"]))
+            .With(_ => _.ProviderId, long.Parse(table.Rows[0]["provider_id"]))
+            .Create();
+
+            await TestServiceBus.Das.SendPriceChangeApprovedMessage(priceChangeApprovedEvent);
+        }
+
 
         static int CalculateMonthsDifference(DateTime endDate, DateTime startDate)
         {
