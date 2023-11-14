@@ -6,14 +6,13 @@ As a Provider
 I want my payments to reflect approved changes to the original price
 So that I am paid the correct amount
 
-** Note that the training code used in the below examples have Funding Band Max value set as below: **
-** training_code 1 = 17,000 **
-** training_code 2 = 18,000 **
-
 Example 1: Price Rise in year 1 - New Price at Funding Band Max
+Example 2: Price Fall in year 1 - New Price below Funding Band Max
+Example 3: Price Rise in year 1 - New Price above Funding Band Max
+Example 4: Price Rise in year 2 - New price at Funding Band Max
 
 @regression
-Scenario: Price change approved in the year it was requested; recalc payments
+Scenario: Price change approved; recalc payments
 	Given payments have been paid for an apprenticeship with <start_date>, <end_date>, <agreed_price>, and <training_code>
 	And a price change request was sent on <pc_from_date>
 	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>
@@ -28,4 +27,5 @@ Examples:
 	| 2023-08-23 | 2025-08-23 | 15000        | 2             | 2023-08-29   | 18000           | 2024-06-10       | 18000            | 500               |
 	| 2023-08-23 | 2025-08-23 | 18000        | 2             | 2023-08-29   | 9000            | 2024-06-10       | 18000            | 600               |
 	| 2023-08-23 | 2025-04-25 | 15000        | 1             | 2023-08-23   | 18000           | 2024-06-10       | 17000            | 600               |
+	| 2022-08-22 | 2024-04-23 | 15000        | 2             | 2023-08-23   | 18000           | 2023-10-10       | 18000            | 600               |
 

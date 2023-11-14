@@ -23,6 +23,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private List<Payment> _paymentsEventList;
         private TestSupport.Payments[] _paymentsEntityArray;
         private readonly byte _currentCollectionPeriod;
+        private readonly string _currentCollectionYear;
         private decimal _newEarningsAmount;
         private decimal _fundingBandMax;
 
@@ -36,6 +37,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _calculateUnfundedPaymentsStepDefinitions = new CalculateUnfundedPaymentsStepDefinitions(context);
             _priceChangeMessageHandler = new PriceChangeMessageHandler(_context);
             _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
+            _currentCollectionYear = TableExtensions.CalculateAcademicYear("0");
         }
 
         [Given(@"earnings have been calculated for an apprenticeship with (.*), (.*), (.*), and (.*)")]
@@ -118,7 +120,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             _paymentsEventList = _context.Get<PaymentsGeneratedEvent>().Payments;
 
-            // validate PaymentsGenerateEvent
+            // validate PaymentsGenerateEvent - remove payments from previous academic years 
+
+            _paymentsEventList = _paymentsEventList.Where(x => x.AcademicYear >= Convert.ToInt16(_currentCollectionYear)).ToList();
 
             for (int i = 0; i < _currentCollectionPeriod; i++)
             {
@@ -126,15 +130,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     $" in Payments Generated Event post CoP - Payments already made");
             }
 
-            // Validate Payments Entity
+            // Validate Payments Entity - remove payments from previous academic years
 
             var paymentsApiClient = new PaymentsEntityApiClient(_context);
 
             _paymentsEntityArray = paymentsApiClient.GetPaymentsEntityModel().Model.Payments;
 
+            _paymentsEntityArray = _paymentsEntityArray.Where(x => x.AcademicYear >= Convert.ToInt16(_currentCollectionYear)).ToArray();
+
             for (int i = 0; i < _currentCollectionPeriod; i++)
             {
-                Assert.AreEqual(oldEarnings, _paymentsEntityArray[i].Amount, $"Expected Amount to be {oldEarnings} for payment record {i + 1} but was {_paymentsEntityArray[i + 1].Amount} in Durable Entity");
+                Assert.AreEqual(oldEarnings, _paymentsEntityArray[i].Amount, $"Expected Amount to be {oldEarnings} for payment record {i + 1} but was {_paymentsEntityArray[i].Amount} in Durable Entity");
                 Assert.IsTrue(_paymentsEntityArray[i].SentForPayment, $"Expected SentForPayment flag to be True for payment record {i + 1} in durable entity");
             }
         }
@@ -148,7 +154,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var apprenticeshipDurationInMonth = CalculateMonthsDifference(earningsGeneratedEvent.PlannedEndDate, earningsGeneratedEvent.StartDate);
 
-            _newEarningsAmount = CalculateNewEarnings(proposedNewTotalPrice, _fundingBandMax, apprenticeshipDurationInMonth);
+            _newEarningsAmount = CalculateNewEarnings(proposedNewTotalPrice, _fundingBandMax, apprenticeshipDurationInMonth, earningsGeneratedEvent.DeliveryPeriods[0].LearningAmount,
+                earningsGeneratedEvent.StartDate, _priceChangeEffectiveFrom);
 
             var difference = _newEarningsAmount - earningsGeneratedEvent.DeliveryPeriods[0].LearningAmount;
 
@@ -164,7 +171,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             for (int i = _currentCollectionPeriod; i < _currentCollectionPeriod*2; i++)
             {
-                Assert.AreEqual(difference, _paymentsEntityArray[i].Amount, $"Expected Amount to be {difference} for payment record {i + 1} but was {_paymentsEntityArray[i+1].Amount} in Durable Entity");
+                Assert.AreEqual(difference, _paymentsEntityArray[i].Amount, $"Expected Amount to be {difference} for payment record {i + 1} but was {_paymentsEntityArray[i].Amount} in Durable Entity");
                 Assert.IsFalse(_paymentsEntityArray[i].SentForPayment, $"Expected SentForPayment flag to be False for payment record {i + 1} in durable entity");
             }
         }
@@ -236,11 +243,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             return monthsDifference;
         }
 
-        static decimal CalculateNewEarnings(decimal proposedNewTotalPrice, decimal fundingBandMax, int apprenticeshipDurationInMonth)
+        static decimal CalculateNewEarnings(decimal proposedNewTotalPrice, decimal fundingBandMax, int apprenticeshipDurationInMonth, decimal oldEarnings, DateTime startDate, DateTime copStartDate)
         {
             var priceToUse = proposedNewTotalPrice > fundingBandMax ? fundingBandMax : proposedNewTotalPrice;
 
-            return (priceToUse * 0.8m) / apprenticeshipDurationInMonth;
+            var censusDatesPassedUpToCoPEffectiveFromDate = CalculateMonthsDifference(copStartDate, startDate);
+
+            var amountAlreadyPaid = censusDatesPassedUpToCoPEffectiveFromDate * oldEarnings;
+
+            return ((priceToUse * 0.8m) - amountAlreadyPaid) / (apprenticeshipDurationInMonth - censusDatesPassedUpToCoPEffectiveFromDate);
         }
     }
 }
