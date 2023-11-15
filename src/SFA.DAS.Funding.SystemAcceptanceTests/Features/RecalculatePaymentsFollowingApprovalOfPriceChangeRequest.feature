@@ -24,14 +24,14 @@ Scenario: Price change approved; recalc payments
 
 Examples:
 	| start_date | end_date   | agreed_price | training_code | pc_from_date | new_total_price | pc_approved_date | funding_band_max | previous_earnings |
-	| 2023-08-23 | 2025-08-23 | 15000        | 2             | 2023-08-29   | 18000           | 2024-06-10       | 18000            | 500               |
-	| 2023-08-24 | 2025-08-24 | 18000        | 2             | 2023-08-29   | 9000            | 2024-06-10       | 18000            | 600               |
-	| 2023-08-25 | 2025-04-25 | 15000        | 1             | 2023-08-23   | 18000           | 2024-06-10       | 17000            | 600               |
-	| 2022-08-26 | 2024-04-26 | 15000        | 2             | 2023-08-23   | 18000           | 2023-10-10       | 18000            | 600               |
+	| 2023-08-23 | 2025-08-23 | 15000        | 2             | 2023-08-25   | 18000           | 2024-06-10       | 18000            | 500               |
+	| 2023-08-24 | 2025-08-24 | 18000        | 2             | 2023-08-26   | 9000            | 2024-06-10       | 18000            | 600               |
+	| 2023-08-25 | 2025-04-25 | 15000        | 1             | 2023-08-27   | 18000           | 2024-06-10       | 17000            | 600               |
+	| 2022-08-26 | 2024-04-26 | 15000        | 2             | 2023-08-28   | 18000           | 2023-10-10       | 18000            | 600               |
 
-@ignore
+
 Scenario: Publish Price Change Approved Event
 	Given a price change event is approved
 		| apprenticeship_key                   | apprenticeship_id | training_price | assessment_price | effective_from_date | approved_date | employer_account_id | provider_id |
-		| 233d516c-9170-4697-986f-27a3f3c0b939 | 184               | 14000          | 2000             | 2023-10-23          | 2024-02-25    | 3871                | 92          |
+		| d11b7c14-c94f-4665-b9ba-a7c5c3b89d9d | 169               | 14000          | 2000             | 2023-10-23          | 2024-02-25    | 3871                | 197         |
 
