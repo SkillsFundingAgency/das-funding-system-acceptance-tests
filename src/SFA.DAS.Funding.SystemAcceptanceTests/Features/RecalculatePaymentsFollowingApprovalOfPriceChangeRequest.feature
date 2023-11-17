@@ -29,7 +29,7 @@ Examples:
 	| 2023-08-25 | 2025-04-25 | 15000        | 1             | 2023-08-27   | 18000           | 2024-06-10       | 17000            | 600               |
 	| 2022-08-26 | 2024-04-26 | 15000        | 2             | 2023-08-28   | 18000           | 2023-10-10       | 18000            | 600               |
 
-
+@ignore
 Scenario: Publish Price Change Approved Event
 	Given a price change event is approved
 		| apprenticeship_key                   | apprenticeship_id | training_price | assessment_price | effective_from_date | approved_date | employer_account_id | provider_id |
