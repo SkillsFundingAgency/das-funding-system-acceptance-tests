@@ -15,7 +15,7 @@ Example 4: Price Drop in year 2 - New Price below Funding Band Max
 Example 5: Price Rise in R13 of year 1 - New Price at Funding Band Max
 
 @regression
-Scenario: Price change approved in the year it was requested; recalc earnings
+Scenario: Price change approved; recalc earnings
 	Given earnings have been calculated for an apprenticeship with <start_date>, <end_date>, <agreed_price>, and <training_code>
 	And the total price is above or below or at the funding band maximum
 	And a price change request was sent on <pc_from_date>
@@ -27,10 +27,10 @@ Scenario: Price change approved in the year it was requested; recalc earnings
 Examples:
 	| start_date | end_date   | agreed_price | training_code | pc_from_date | new_total_price | pc_approved_date | new_inst_amount | academic_year | old_inst_amount | delivery_period |
 	| 2023-08-23 | 2025-04-23 | 15000        | 2             | 2023-08-29   | 18000           | 2024-06-10       | 720             | 2324          | 600             | 1               |
-	| 2023-08-23 | 2025-04-25 | 15000        | 1             | 2023-09-23   | 18000           | 2024-06-10       | 684.21          | 2324          | 600             | 2               |
-	| 2023-08-23 | 2025-04-23 | 15000        | 2             | 2024-12-01   | 18000           | 2025-03-10       | 1200            | 2425          | 600             | 5               |
-	| 2023-08-23 | 2025-04-23 | 15000        | 1             | 2024-08-01   | 8000            | 2025-03-10       | -100            | 2425          | 600             | 1               |
-	| 2023-08-23 | 2025-04-23 | 15000        | 2             | 2023-08-01   | 18000           | 2024-08-10       | 720             | 2324          | 600             | 1               |
+	| 2023-08-24 | 2025-04-24 | 15000        | 1             | 2023-09-23   | 18000           | 2024-06-10       | 684.21          | 2324          | 600             | 2               |
+	| 2023-08-25 | 2025-04-25 | 15000        | 2             | 2024-12-01   | 18000           | 2025-03-10       | 1200            | 2425          | 600             | 5               |
+	| 2023-08-26 | 2025-04-26 | 15000        | 1             | 2024-08-01   | 8000            | 2025-03-10       | -100            | 2425          | 600             | 1               |
+	| 2023-08-27 | 2025-04-27 | 15000        | 2             | 2023-08-25   | 18000           | 2024-08-10       | 720             | 2324          | 600             | 1               |
 
 
 

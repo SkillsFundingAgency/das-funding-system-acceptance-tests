@@ -15,12 +15,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private List<FinalisedOnProgammeLearningPaymentEvent> _finalisedPaymentsList;
         private TestSupport.Payments[] _paymentEntity;
         private readonly byte _currentCollectionPeriod;
+        private readonly string _currentCollectionYear;
 
         public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context)
         {
             _context = context;
             _paymentsMessageHelper = new PaymentsMessageHandler(context);
             _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
+            _currentCollectionYear = TableExtensions.CalculateAcademicYear("0");
         }
 
         [Given(@"the Unfunded Payments for the remainder of the apprenticeship are determined")]
@@ -53,6 +55,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             _releasePaymentsCommand = new ReleasePaymentsCommand();
             _releasePaymentsCommand.CollectionPeriod = _currentCollectionPeriod;
+            _releasePaymentsCommand.CollectionYear = Convert.ToInt16(_currentCollectionYear);
         }
 
         [When(@"the scheduler triggers Unfunded Payment processing")]
@@ -66,6 +69,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             _releasePaymentsCommand = new ReleasePaymentsCommand();
             _releasePaymentsCommand.CollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
+            _releasePaymentsCommand.CollectionYear = Convert.ToInt16(_currentCollectionYear);
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
         }
 
