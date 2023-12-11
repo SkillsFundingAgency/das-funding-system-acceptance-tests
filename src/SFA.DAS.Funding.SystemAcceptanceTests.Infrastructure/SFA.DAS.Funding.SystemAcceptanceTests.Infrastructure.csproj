@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="NServiceBus" Version="7.7.4" />
     <PackageReference Include="SFA.DAS.Apprenticeships.Types" Version="1.1.4" />
-	<PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="100.0.17" />
+	<PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="100.0.43" />
     <PackageReference Include="SFA.DAS.Funding.ApprenticeshipEarnings.Types" Version="1.0.20-prerelease-12" />
     <PackageReference Include="SFA.DAS.Funding.ApprenticeshipPayments.Types" Version="0.1.15-prerelease-26" />
     <PackageReference Include="SFA.DAS.NServiceBus" Version="17.0.13" />
