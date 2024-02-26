@@ -21,6 +21,12 @@ Scenario: Price change approved; recalc payments
 	Then for all the past census periods, where the payment has already been made, the amount is still same as previous earnings <previous_earnings> and are flagged as sent for payment
 	And for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new and old earnings
 	And for all payments for future collection periods are equal to the new earnings
+	# for the payments already made (previous delivery pariods) ensure that we are using the initial earnigs profile Id
+	
+
+    # when you fire Release Payments Commad, the following events are extremely slow. 
+	# pipelines test are failing.
+
 
 Examples:
 	| start_date | end_date   | agreed_price | training_code | pc_from_date | new_total_price | pc_approved_date | funding_band_max | previous_earnings |
