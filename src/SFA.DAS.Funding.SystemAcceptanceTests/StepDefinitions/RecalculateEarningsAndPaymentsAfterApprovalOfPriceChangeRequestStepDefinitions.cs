@@ -145,6 +145,27 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             }
         }
 
+        [Then(@"the AgreedPrice on the earnings entity is updated to (.*)")]
+        public void AgreedPriceOnTheEarningsEntityIsUpdated(decimal agreedPrice)
+        {
+            var apiClient = new EarningsEntityApiClient(_context);
+
+            var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
+
+            Assert.AreEqual(agreedPrice, apprenticeshipEntity.Model.AgreedPrice);
+        }
+
+        [Then(@"old earnings maintain their initial Profile Id and new earnings have a new profile id")]
+        public void OldEarningsMaintainTheirInitialProfileId()
+        {
+            var apiClient = new EarningsEntityApiClient(_context);
+
+            var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
+
+            apprenticeshipEntity.Model.EarningsProfileHistory.FirstOrDefault().Record.EarningsProfileId.Should()
+                .NotBe(apprenticeshipEntity.Model.EarningsProfile.EarningsProfileId);
+        }
+
         [Then(@"for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new and old earnings")]
         public void NewPaymentsEntriesAreCreatedAndMarkedAsNotSentForPaymentInTheDurableEntityWithTheDifferenceBetweenNewAndOldEarnings()
         {
