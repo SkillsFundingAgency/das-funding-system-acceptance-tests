@@ -14,6 +14,7 @@
         public EarningsProfile EarningsProfile { get; set; }
         public EarningsProfileHistory[] EarningsProfileHistory { get; set; }
         public double FundingBandMaximum { get; set; }
+        public double AgreedPrice { get; set; }
     }
 
     public class EarningsProfileHistory
@@ -26,6 +27,7 @@
         public double AdjustedPrice { get; set; }
         public Instalments[] Instalments { get; set; }
         public double CompletionPayment { get; set; }
+        public Guid EarningsProfileId { get; set; }
     }
 
     public class EarningsProfile
@@ -33,6 +35,7 @@
         public double AdjustedPrice { get; set; }
         public Instalments[] Instalments { get; set; }
         public double CompletionPayment { get; set; }
+        public Guid EarningsProfileId { get; set; }
     }
 
     public class Instalments
