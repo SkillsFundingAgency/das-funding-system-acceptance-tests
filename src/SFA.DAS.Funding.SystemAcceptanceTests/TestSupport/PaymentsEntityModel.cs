@@ -30,5 +30,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         public int CollectionYear { get; set; }
         public int CollectionPeriod { get; set; }
         public bool SentForPayment { get; set; }
+        public Guid EarningsProfileId { get; set; }
     }
 }
