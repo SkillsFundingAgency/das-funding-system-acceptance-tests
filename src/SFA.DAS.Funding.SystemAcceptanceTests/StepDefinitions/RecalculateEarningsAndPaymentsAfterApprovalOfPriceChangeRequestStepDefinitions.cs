@@ -47,21 +47,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _calculateEarningsStepDefinitions.ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, agreedPrice, trainingCode);
 
             await _calculateEarningsStepDefinitions.TheApprenticeshipCommitmentIsApproved();
-
-            var earningsApiClient = new EarningsEntityApiClient(_context);
-
-            await WaitHelper.WaitForIt(() =>
-            {
-                _earningsEntity = earningsApiClient.GetEarningsEntityModel();
-
-                if (_earningsEntity != null)
-                {
-                    return true;
-                }
-                return false;
-            }, "Failed to find Earnings Entity");
-
-            _initialEarningsProfileId = _earningsEntity.Model.EarningsProfile.EarningsProfileId;
         }
 
         [Given(@"payments have been paid for an apprenticeship with (.*), (.*), (.*), and (.*)")]
@@ -152,12 +137,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _paymentsEntityArray = paymentsApiClient.GetPaymentsEntityModel().Model.Payments;
 
+            _initialEarningsProfileId = _context.Get<Guid>("InitialEarningsProfileId");
+
             _paymentsEntityArray = _paymentsEntityArray.Where(x => x.AcademicYear >= Convert.ToInt16(_currentCollectionYear)).ToArray();
 
             for (int i = 0; i < _currentCollectionPeriod; i++)
             {
                 Assert.AreEqual(oldEarnings, _paymentsEntityArray[i].Amount, $"Expected Amount to be {oldEarnings} for payment record {i + 1} but was {_paymentsEntityArray[i].Amount} in Durable Entity");
                 Assert.IsTrue(_paymentsEntityArray[i].SentForPayment, $"Expected SentForPayment flag to be True for payment record {i + 1} in durable entity");
+                Assert.AreEqual(_initialEarningsProfileId, _paymentsEntityArray[i].EarningsProfileId, $"Unexpected EarningsProfileId found for a past census period");
             }
         }
 
@@ -177,6 +165,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var apiClient = new EarningsEntityApiClient(_context);
 
             var earningsEntity = apiClient.GetEarningsEntityModel();
+
+            _initialEarningsProfileId = _context.Get<Guid>("InitialEarningsProfileId");
 
             Assert.AreEqual(_initialEarningsProfileId, earningsEntity.Model.EarningsProfileHistory.FirstOrDefault().Record.EarningsProfileId, "Unexpected historical EarningsProfileId found");
 
