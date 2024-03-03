@@ -1,7 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using System;
-using System.Net;
-using static RestAssuredNet.RestAssuredNet;
+﻿using Newtonsoft.Json;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 {
@@ -9,26 +7,40 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
     {
         protected abstract string ApiBaseUrl { get; }
         protected abstract string endpointWithParameters { get; }
-        public EarningsEntityModel GetEarningsEntityModel()
+        public EarningsEntityModel? GetEarningsEntityModel()
         {
-            EarningsEntityModel earningsEntityModel = (EarningsEntityModel)Given()
-                .When()
-                .Get(ApiBaseUrl + endpointWithParameters)
-                .AssertThat().StatusCode(HttpStatusCode.OK)
-                .As(typeof(EarningsEntityModel));
+            string apiUrl = ApiBaseUrl + endpointWithParameters;
 
-            return earningsEntityModel;
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = client.GetAsync(apiUrl).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = response.Content.ReadAsStringAsync().Result;
+                    EarningsEntityModel earningsEntityModel = JsonConvert.DeserializeObject<EarningsEntityModel>(json);
+                    return earningsEntityModel;
+                }
+                else return null;
+            }
         }
 
-        public PaymentsEntityModel GetPaymentsEntityModel()
+        public PaymentsEntityModel? GetPaymentsEntityModel()
         {
-            PaymentsEntityModel paymentsEntityModel = (PaymentsEntityModel)Given()
-            .When()
-            .Get(ApiBaseUrl + endpointWithParameters)
-            .AssertThat().StatusCode(HttpStatusCode.OK)
-            .As(typeof(PaymentsEntityModel));
+            string apiUrl = ApiBaseUrl + endpointWithParameters;
 
-            return paymentsEntityModel;
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = client.GetAsync(apiUrl).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = response.Content.ReadAsStringAsync().Result;
+                    PaymentsEntityModel paymentsEntityModel = JsonConvert.DeserializeObject<PaymentsEntityModel>(json);
+                    return paymentsEntityModel;
+                }
+                else return null;
+            }
         }
     }
 }
