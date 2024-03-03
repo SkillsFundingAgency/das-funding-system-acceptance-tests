@@ -15,7 +15,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private readonly PaymentsMessageHandler _paymentsMessageHelper;
         private PriceChangeMessageHandler _priceChangeMessageHandler;
         private PriceChangeApprovedEvent _priceChangeApprovedEvent;
-        private EarningsEntityModel _earningsEntity;
+        private EarningsEntityModel? _earningsEntity;
         private DateTime _priceChangeEffectiveFrom;
         private DateTime _priceChangeApprovedDate;
         private decimal _newTrainingPrice;
@@ -48,11 +48,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await _calculateEarningsStepDefinitions.TheApprenticeshipCommitmentIsApproved();
 
-            var apiClient = new EarningsEntityApiClient(_context);
+            var earningsApiClient = new EarningsEntityApiClient(_context);
 
-            var earningsEntity = apiClient.GetEarningsEntityModel();
+            await WaitHelper.WaitForIt(() =>
+            {
+                _earningsEntity = earningsApiClient.GetEarningsEntityModel();
 
-            _initialEarningsProfileId = earningsEntity.Model.EarningsProfile.EarningsProfileId;
+                if (_earningsEntity != null)
+                {
+                    return true;
+                }
+                return false;
+            }, "Failed to find Earnings Entity");
+
+            _initialEarningsProfileId = _earningsEntity.Model.EarningsProfile.EarningsProfileId;
         }
 
         [Given(@"payments have been paid for an apprenticeship with (.*), (.*), (.*), and (.*)")]
