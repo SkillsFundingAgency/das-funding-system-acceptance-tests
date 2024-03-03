@@ -15,7 +15,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private readonly PaymentsMessageHandler _paymentsMessageHelper;
         private PriceChangeMessageHandler _priceChangeMessageHandler;
         private PriceChangeApprovedEvent _priceChangeApprovedEvent;
-        private EarningsEntityModel _earningsApprenticeshipEntity;
+        private EarningsEntityModel _earningsEntity;
         private DateTime _priceChangeEffectiveFrom;
         private DateTime _priceChangeApprovedDate;
         private decimal _newTrainingPrice;
@@ -26,6 +26,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private readonly string _currentCollectionYear;
         private decimal _newEarningsAmount;
         private decimal _fundingBandMax;
+        private Guid _initialEarningsProfileId;
 
 
 
@@ -46,6 +47,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _calculateEarningsStepDefinitions.ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, agreedPrice, trainingCode);
 
             await _calculateEarningsStepDefinitions.TheApprenticeshipCommitmentIsApproved();
+
+            var apiClient = new EarningsEntityApiClient(_context);
+
+            var earningsEntity = apiClient.GetEarningsEntityModel();
+
+            _initialEarningsProfileId = earningsEntity.Model.EarningsProfile.EarningsProfileId;
         }
 
         [Given(@"payments have been paid for an apprenticeship with (.*), (.*), (.*), and (.*)")]
@@ -160,10 +167,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var apiClient = new EarningsEntityApiClient(_context);
 
-            var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
+            var earningsEntity = apiClient.GetEarningsEntityModel();
 
-            apprenticeshipEntity.Model.EarningsProfileHistory.FirstOrDefault().Record.EarningsProfileId.Should()
-                .NotBe(apprenticeshipEntity.Model.EarningsProfile.EarningsProfileId);
+            Assert.AreEqual(_initialEarningsProfileId, earningsEntity.Model.EarningsProfileHistory.FirstOrDefault().Record.EarningsProfileId, "Unexpected historical EarningsProfileId found");
+
+            Assert.AreNotEqual(_initialEarningsProfileId, earningsEntity.Model.EarningsProfile.EarningsProfileId, "Historical EarningsProfileId and new EarningsProfileId are the same");
         }
 
         [Then(@"for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new and old earnings")]
@@ -221,9 +229,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var earningsApiClient = new EarningsEntityApiClient(_context);
 
-            _earningsApprenticeshipEntity = earningsApiClient.GetEarningsEntityModel();
+            _earningsEntity = earningsApiClient.GetEarningsEntityModel();
 
-            var newEarningsProfile = _earningsApprenticeshipEntity.Model.EarningsProfile.Instalments;
+            var newEarningsProfile = _earningsEntity.Model.EarningsProfile.Instalments;
 
             for (int i = 0; i < delivery_period - 1; i++)
             {
@@ -241,7 +249,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             await WaitHelper.WaitForIt(() =>
             {
-                var historicalInstalments = _earningsApprenticeshipEntity.Model.EarningsProfileHistory[0].Record.Instalments;
+                var historicalInstalments = _earningsEntity.Model.EarningsProfileHistory[0].Record.Instalments;
 
                 if (historicalInstalments != null)
                 {
