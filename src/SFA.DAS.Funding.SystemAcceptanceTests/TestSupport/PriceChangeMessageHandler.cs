@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
+using PriceChangeApprovedEvent = SFA.DAS.Apprenticeships.Types.PriceChangeApprovedEvent;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {

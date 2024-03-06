@@ -3,7 +3,7 @@
     
     public class EarningsEntityModel
     {
-        public Model Model { get; set; }
+        public Model? Model { get; set; }
     }
 
     public class Model
@@ -12,8 +12,9 @@
         public long ApprovalsApprenticeshipId { get; set; }
         public string Uln { get; set; }
         public EarningsProfile EarningsProfile { get; set; }
-        public EarningsProfileHistory[] EarningsProfileHistory { get; set; }
+        public EarningsProfileHistory[]? EarningsProfileHistory { get; set; } 
         public double FundingBandMaximum { get; set; }
+        public double AgreedPrice { get; set; }
     }
 
     public class EarningsProfileHistory
@@ -23,6 +24,7 @@
 
     public class Record
     {
+        public Guid EarningsProfileId { get; set; }
         public double AdjustedPrice { get; set; }
         public Instalments[] Instalments { get; set; }
         public double CompletionPayment { get; set; }
@@ -30,6 +32,7 @@
 
     public class EarningsProfile
     {
+        public Guid EarningsProfileId { get; set; }
         public double AdjustedPrice { get; set; }
         public Instalments[] Instalments { get; set; }
         public double CompletionPayment { get; set; }

@@ -22,6 +22,7 @@ Scenario: Price change approved; recalc payments
 	And for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new and old earnings
 	And for all payments for future collection periods are equal to the new earnings
 
+
 Examples:
 	| start_date | end_date   | agreed_price | training_code | pc_from_date | new_total_price | pc_approved_date | funding_band_max | previous_earnings |
 	| 2023-08-23 | 2025-08-23 | 15000        | 2             | 2023-08-25   | 18000           | 2024-06-10       | 18000            | 500               |

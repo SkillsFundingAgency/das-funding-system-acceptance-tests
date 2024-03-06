@@ -36,18 +36,6 @@ Scenario: Unfunded Payment profile for single learner - Different Academic Years
 	When the Unfunded Payments for the remainder of the apprenticeship are determined
 	Then the Unfunded Payments for every earning is created
 		| AcademicYear | DeliveryPeriod | Amount | PaymentYear | PaymentPeriod |
-		| 2324         | January        | 500    | 2324        | January       |
-		| 2324         | February       | 500    | 2324        | February      |
-		| 2324         | March          | 500    | 2324        | March         |
-		| 2324         | April          | 500    | 2324        | April         |
-		| 2324         | May            | 500    | 2324        | May           |
-		| 2324         | June           | 500    | 2324        | June          |
-		| 2324         | July           | 500    | 2324        | July          |
-		| 2425         | August         | 500    | 2425        | August        |
-		| 2425         | September      | 500    | 2425        | September     |
-		| 2425         | October        | 500    | 2425        | October       |
-		| 2425         | November       | 500    | 2425        | November      |
-		| 2425         | December       | 500    | 2425        | December      |
 		| 2425         | January        | 500    | 2425        | January       |
 		| 2425         | February       | 500    | 2425        | February      |
 		| 2425         | March          | 500    | 2425        | March         |
@@ -60,10 +48,22 @@ Scenario: Unfunded Payment profile for single learner - Different Academic Years
 		| 2526         | October        | 500    | 2526        | October       |
 		| 2526         | November       | 500    | 2526        | November      |
 		| 2526         | December       | 500    | 2526        | December      |
+		| 2526         | January        | 500    | 2526        | January       |
+		| 2526         | February       | 500    | 2526        | February      |
+		| 2526         | March          | 500    | 2526        | March         |
+		| 2526         | April          | 500    | 2526        | April         |
+		| 2526         | May            | 500    | 2526        | May           |
+		| 2526         | June           | 500    | 2526        | June          |
+		| 2526         | July           | 500    | 2526        | July          |
+		| 2627         | August         | 500    | 2627        | August        |
+		| 2627         | September      | 500    | 2627        | September     |
+		| 2627         | October        | 500    | 2627        | October       |
+		| 2627         | November       | 500    | 2627        | November      |
+		| 2627         | December       | 500    | 2627        | December      |
 
 Examples:
 	| start_date | planned_end_date | agreed_price | training_code |
-	| 2024-01-01 | 2025-12-31       | 15,000       | 614           |
+	| 2025-01-01 | 2026-12-31       | 15,000       | 614           |
 
 
 #Note that in the below test the training code used is '8' with funding band max as 12000
@@ -75,26 +75,26 @@ Scenario: Unfunded Payment profile for single learner - Different Academic Years
 	When the Unfunded Payments for the remainder of the apprenticeship are determined
 	Then the Unfunded Payments for every earning is created
 		| AcademicYear | DeliveryPeriod | Amount    | PaymentYear | PaymentPeriod |
-		| 2324         | January        | 533.33333 | 2324        | January       |
-		| 2324         | February       | 533.33333 | 2324        | February      |
-		| 2324         | March          | 533.33333 | 2324        | March         |
-		| 2324         | April          | 533.33333 | 2324        | April         |
-		| 2324         | May            | 533.33333 | 2324        | May           |
-		| 2324         | June           | 533.33333 | 2324        | June          |
-		| 2324         | July           | 533.33333 | 2324        | July          |
-		| 2425         | August         | 533.33333 | 2425        | August        |
-		| 2425         | September      | 533.33333 | 2425        | September     |
-		| 2425         | October        | 533.33333 | 2425        | October       |
-		| 2425         | November       | 533.33333 | 2425        | November      |
-		| 2425         | December       | 533.33333 | 2425        | December      |
 		| 2425         | January        | 533.33333 | 2425        | January       |
 		| 2425         | February       | 533.33333 | 2425        | February      |
 		| 2425         | March          | 533.33333 | 2425        | March         |
 		| 2425         | April          | 533.33333 | 2425        | April         |
 		| 2425         | May            | 533.33333 | 2425        | May           |
 		| 2425         | June           | 533.33333 | 2425        | June          |
+		| 2425         | July           | 533.33333 | 2425        | July          |
+		| 2526         | August         | 533.33333 | 2526        | August        |
+		| 2526         | September      | 533.33333 | 2526        | September     |
+		| 2526         | October        | 533.33333 | 2526        | October       |
+		| 2526         | November       | 533.33333 | 2526        | November      |
+		| 2526         | December       | 533.33333 | 2526        | December      |
+		| 2526         | January        | 533.33333 | 2526        | January       |
+		| 2526         | February       | 533.33333 | 2526        | February      |
+		| 2526         | March          | 533.33333 | 2526        | March         |
+		| 2526         | April          | 533.33333 | 2526        | April         |
+		| 2526         | May            | 533.33333 | 2526        | May           |
+		| 2526         | June           | 533.33333 | 2526        | June          |
 	And the newly calculated Unfunded Payments are marked as not sent to payments BAU
 
 Examples:
 	| start_date | planned_end_date | agreed_price | training_code |
-	| 2024-01-01 | 2025-06-30       | 15,000       | 8             |
+	| 2025-01-01 | 2026-06-30       | 15,000       | 8             |

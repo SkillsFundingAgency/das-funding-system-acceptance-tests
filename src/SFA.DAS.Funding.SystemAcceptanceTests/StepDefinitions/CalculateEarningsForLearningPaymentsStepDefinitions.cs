@@ -12,6 +12,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private readonly ApprenticeshipMessageHandler _messageHelper;
         private CommitmentsMessages.ApprenticeshipCreatedEvent _commitmentsApprenticeshipCreatedEvent;
         private ApprenticeshipsMessages.ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
+        private EarningsEntityModel? _earningsEntity;
 
         private EarningsGeneratedEvent _earnings;
         private List<DeliveryPeriod> _deliveryPeriods;
@@ -82,6 +83,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _deliveryPeriods = _earnings.DeliveryPeriods;
 
             _context.Set(_deliveryPeriods);
+
+            var earningsApiClient = new EarningsEntityApiClient(_context);
+
+            await WaitHelper.WaitForIt(() =>
+            {
+                _earningsEntity = earningsApiClient.GetEarningsEntityModel();
+
+                if (_earningsEntity != null)
+                {
+                    return true;
+                }
+                return false;
+            }, "Failed to find Earnings Entity");
+
+            _context.Set(_earningsEntity.Model.EarningsProfile.EarningsProfileId, "InitialEarningsProfileId");
         }
 
 
