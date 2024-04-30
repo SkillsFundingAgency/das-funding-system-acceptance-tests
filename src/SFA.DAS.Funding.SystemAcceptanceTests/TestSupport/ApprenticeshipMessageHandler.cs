@@ -29,6 +29,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 .With(_ => _.TransferSenderId, (long?)null)
                 .With(_ => _.DateOfBirth, DateTime.Now.AddYears((-18)))
                 .With(_ => _.IsOnFlexiPaymentPilot, true)
+                .With(x => x.TrainingCourseVersion, "1.0")
                 .Create();
         }
 
