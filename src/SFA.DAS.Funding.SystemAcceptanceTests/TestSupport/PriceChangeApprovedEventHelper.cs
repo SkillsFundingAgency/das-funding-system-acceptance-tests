@@ -1,16 +1,15 @@
-﻿using AutoFixture;
-using SFA.DAS.Apprenticeships.Types;
+﻿using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using PriceChangeApprovedEvent = SFA.DAS.Apprenticeships.Types.PriceChangeApprovedEvent;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
-    internal class PriceChangeMessageHandler
+    internal class PriceChangeApprovedEventHelper
     {
         private readonly ScenarioContext _context;
         private ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
 
-        public PriceChangeMessageHandler(ScenarioContext context)
+        public PriceChangeApprovedEventHelper(ScenarioContext context)
         {
             _context = context;
         }
@@ -35,22 +34,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         public async Task PublishPriceChangeApprovedEvent(PriceChangeApprovedEvent priceChangeApprovedEvent)
         {
             await TestServiceBus.Das.SendPriceChangeApprovedMessage(priceChangeApprovedEvent);
-        }
-
-        public async Task ReceiveEarningsRecalculatedEvent(Guid apprenticeshipKey)
-        {
-            await WaitHelper.WaitForIt(() =>
-            {
-                ApprenticeshipEarningsRecalculatedEvent? earningsRecalculatedEvent =
-                    ApprenticeshipEarningsRecalculatedEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.ApprenticeshipKey == apprenticeshipKey).message;
-
-                if (earningsRecalculatedEvent != null)
-                {
-                    _context.Set(earningsRecalculatedEvent);
-                    return true;
-                }
-                return false;
-            }, "Failed to find published Apprenticeship Earnings Recalculated Event");
         }
     }
 }

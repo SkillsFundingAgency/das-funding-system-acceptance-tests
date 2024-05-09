@@ -13,7 +13,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private readonly CalculateEarningsForLearningPaymentsStepDefinitions _calculateEarningsStepDefinitions;
         private readonly CalculateUnfundedPaymentsStepDefinitions _calculateUnfundedPaymentsStepDefinitions;
         private readonly PaymentsMessageHandler _paymentsMessageHelper;
-        private PriceChangeMessageHandler _priceChangeMessageHandler;
+        private readonly EarningsRecalculatedEventHelper _earningsRecalculatedEventHelper;
+        private readonly PriceChangeApprovedEventHelper _priceChangeApprovedEventHelper;
         private PriceChangeApprovedEvent _priceChangeApprovedEvent;
         private EarningsEntityModel? _earningsEntity;
         private DateTime _priceChangeEffectiveFrom;
@@ -36,9 +37,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _paymentsMessageHelper = new PaymentsMessageHandler(context);
             _calculateEarningsStepDefinitions = new CalculateEarningsForLearningPaymentsStepDefinitions(_context);
             _calculateUnfundedPaymentsStepDefinitions = new CalculateUnfundedPaymentsStepDefinitions(context);
-            _priceChangeMessageHandler = new PriceChangeMessageHandler(_context);
+            _priceChangeApprovedEventHelper = new PriceChangeApprovedEventHelper(_context);
             _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
             _currentCollectionYear = TableExtensions.CalculateAcademicYear("0");
+            _earningsRecalculatedEventHelper = new EarningsRecalculatedEventHelper(_context);
         }
 
         [Given(@"earnings have been calculated for an apprenticeship with (.*), (.*), (.*), and (.*)")]
@@ -98,9 +100,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             // clear previous PaymentsGeneratedEvent before publishing PriceChangeApproved Event 
             PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
 
-            _priceChangeApprovedEvent = _priceChangeMessageHandler.CreatePriceChangeApprovedMessageWithCustomValues(_newTrainingPrice, _newAssessmentPrice, _priceChangeEffectiveFrom, _priceChangeApprovedDate);
+            _priceChangeApprovedEvent = _priceChangeApprovedEventHelper.CreatePriceChangeApprovedMessageWithCustomValues(_newTrainingPrice, _newAssessmentPrice, _priceChangeEffectiveFrom, _priceChangeApprovedDate);
 
-            await _priceChangeMessageHandler.PublishPriceChangeApprovedEvent(_priceChangeApprovedEvent);
+            await _priceChangeApprovedEventHelper.PublishPriceChangeApprovedEvent(_priceChangeApprovedEvent);
 
             // Receive the update PaymentsGeneratedEvent
             await _paymentsMessageHelper.ReceivePaymentsEvent(_priceChangeApprovedEvent.ApprenticeshipKey);
@@ -109,7 +111,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the earnings are recalculated based on the new instalment amount of (.*) from (.*) and (.*)")]
         public async Task EarningsAreRecalculatedBasedOnTheNewInstalmentAmountOfFromAnd(decimal newInstalmentAmount, int deliveryPeriod, int academicYear)
         {
-            await _priceChangeMessageHandler.ReceiveEarningsRecalculatedEvent(_priceChangeApprovedEvent.ApprenticeshipKey);
+            await _earningsRecalculatedEventHelper.ReceiveEarningsRecalculatedEvent(_priceChangeApprovedEvent.ApprenticeshipKey);
 
             ApprenticeshipEarningsRecalculatedEvent recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
 
