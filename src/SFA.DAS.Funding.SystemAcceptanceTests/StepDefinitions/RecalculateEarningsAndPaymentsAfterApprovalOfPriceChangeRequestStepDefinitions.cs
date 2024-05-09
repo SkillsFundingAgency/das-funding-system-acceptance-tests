@@ -15,6 +15,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private readonly PaymentsMessageHandler _paymentsMessageHelper;
         private readonly EarningsRecalculatedEventHelper _earningsRecalculatedEventHelper;
         private readonly PriceChangeApprovedEventHelper _priceChangeApprovedEventHelper;
+        private readonly ApprenticeshipStartDateChangedEventHelper _apprenticeshipStartDateChangedEventHelper;
         private PriceChangeApprovedEvent _priceChangeApprovedEvent;
         private EarningsEntityModel? _earningsEntity;
         private DateTime _priceChangeEffectiveFrom;
@@ -28,6 +29,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private decimal _newEarningsAmount;
         private decimal _fundingBandMax;
         private Guid _initialEarningsProfileId;
+        private DateTime _startDateChangeApprovedDate;
+        private DateTime _newStartDate;
 
 
 
@@ -41,6 +44,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
             _currentCollectionYear = TableExtensions.CalculateAcademicYear("0");
             _earningsRecalculatedEventHelper = new EarningsRecalculatedEventHelper(_context);
+            _apprenticeshipStartDateChangedEventHelper = new ApprenticeshipStartDateChangedEventHelper(_context);
         }
 
         [Given(@"earnings have been calculated for an apprenticeship with (.*), (.*), (.*), and (.*)")]
@@ -87,6 +91,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _newAssessmentPrice = newTotalPrice * 0.2m;
         }
 
+        [Given(@"a start date change request was sent with an approval date of (.*) with a new start date of (.*)")]
+        public void StartDateChangeRequestWasSentWithAnApprovalDateAndNewStartDate(DateTime approvedDate, DateTime newStartDate)
+        {
+            _startDateChangeApprovedDate = approvedDate;
+            _newStartDate = newStartDate;
+        }
+
         [Given(@"funding band max (.*) is determined for the training code")]
         public void GivenFundingBandMaxIsDeterminedForTheTrainingCode(decimal fundingBandMax)
         {
@@ -106,6 +117,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             // Receive the update PaymentsGeneratedEvent
             await _paymentsMessageHelper.ReceivePaymentsEvent(_priceChangeApprovedEvent.ApprenticeshipKey);
+        }
+
+        [When(@"the start date change is approved")]
+        public async Task StartDateChangeIsApproved()
+        {
+            // clear previous PaymentsGeneratedEvent before publishing StartDateChangeApproved Event 
+            PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
+
+            var startDateChangedEvent = _apprenticeshipStartDateChangedEventHelper.CreateStartDateChangedMessageWithCustomValues(_newStartDate, _startDateChangeApprovedDate);
+
+            await _apprenticeshipStartDateChangedEventHelper.PublishApprenticeshipStartDateChangedEvent(startDateChangedEvent);
+
+            // Receive the update PaymentsGeneratedEvent
+            await _paymentsMessageHelper.ReceivePaymentsEvent(startDateChangedEvent.ApprenticeshipKey);
         }
 
         [Then(@"the earnings are recalculated based on the new instalment amount of (.*) from (.*) and (.*)")]
@@ -200,6 +225,32 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             // Validate Payments Entity
 
             for (int i = _currentCollectionPeriod; i < _currentCollectionPeriod*2; i++)
+            {
+                Assert.AreEqual(difference, _paymentsEntityArray[i].Amount, $"Expected Amount to be {difference} for payment record {i + 1} but was {_paymentsEntityArray[i].Amount} in Durable Entity");
+                Assert.IsFalse(_paymentsEntityArray[i].SentForPayment, $"Expected SentForPayment flag to be False for payment record {i + 1} in durable entity");
+            }
+        }
+
+        [Then(@"for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new earnings (.*) and old earnings")]
+        public void NewPaymentsEntriesAreCreatedAndMarkedAsNotSentForPaymentInTheDurableEntityWithTheDifferenceBetweenNewEarningsAndOldEarnings(int expectedNewEarningAmount)
+        {
+            var earningsGeneratedEvent = _context.Get<EarningsGeneratedEvent>();
+
+            _newEarningsAmount = expectedNewEarningAmount;
+
+            var difference = _newEarningsAmount - earningsGeneratedEvent.DeliveryPeriods[0].LearningAmount;
+
+            // Validate PaymentsGenerateEvent
+
+            for (int i = _currentCollectionPeriod; i < _currentCollectionPeriod * 2; i++)
+            {
+                Assert.AreEqual(difference, _paymentsEventList[i].Amount, $"Expected Amount for delivery period {_paymentsEventList[i].DeliveryPeriod} to be {difference} but was {_paymentsEventList[i].Amount} " +
+                                                                          $" in Payments Generated Event post CoP - Different between new and old payments");
+            }
+
+            // Validate Payments Entity
+
+            for (int i = _currentCollectionPeriod; i < _currentCollectionPeriod * 2; i++)
             {
                 Assert.AreEqual(difference, _paymentsEntityArray[i].Amount, $"Expected Amount to be {difference} for payment record {i + 1} but was {_paymentsEntityArray[i].Amount} in Durable Entity");
                 Assert.IsFalse(_paymentsEntityArray[i].SentForPayment, $"Expected SentForPayment flag to be False for payment record {i + 1} in durable entity");
