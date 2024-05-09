@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <SpecFlowObsoleteCodeBehindFiles Remove="Features\RecalculatePaymentsFollowingApprovalOfPriceChangeRequest - Copy.feature.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.17.0" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.16.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
@@ -32,9 +36,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Features\RecalculatePaymentsFollowingApprovalOfStartDateChangeRequest.feature.cs">
+      <DependentUpon>RecalculatePaymentsFollowingApprovalOfStartDateChangeRequest.feature</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="appsettings.ProjectConfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <SpecFlowFeatureFiles Update="Features\RecalculatePaymentsFollowingApprovalOfStartDateChangeRequest.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
   </ItemGroup>
 
 </Project>
