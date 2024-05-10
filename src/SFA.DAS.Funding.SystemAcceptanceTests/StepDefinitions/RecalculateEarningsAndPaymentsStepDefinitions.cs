@@ -7,7 +7,7 @@ using PriceChangeApprovedEvent = SFA.DAS.Apprenticeships.Types.PriceChangeApprov
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
     [Binding]
-    public class RecalculateEarningsAndPaymentsAfterApprovalOfPriceChangeRequestStepDefinitions
+    public class RecalculateEarningsAndPaymentsStepDefinitions
     {
         private readonly ScenarioContext _context;
         private readonly CalculateEarningsForLearningPaymentsStepDefinitions _calculateEarningsStepDefinitions;
@@ -34,7 +34,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
 
 
-        public RecalculateEarningsAndPaymentsAfterApprovalOfPriceChangeRequestStepDefinitions(ScenarioContext context)
+        public RecalculateEarningsAndPaymentsStepDefinitions(ScenarioContext context)
         {
             _context = context;
             _paymentsMessageHelper = new PaymentsMessageHandler(context);
