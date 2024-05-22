@@ -71,7 +71,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await _calculateUnfundedPaymentsStepDefinitions.SchedulerTriggersUnfundedPaymentProcessing();
 
-            await _calculateUnfundedPaymentsStepDefinitions.UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(_currentCollectionPeriod-1);
+			var startDatePeriod = TableExtensions.Period[startDate.ToString("MMMM")];
+
+			await _calculateUnfundedPaymentsStepDefinitions.UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(_currentCollectionPeriod- startDatePeriod);
         }
 
 
