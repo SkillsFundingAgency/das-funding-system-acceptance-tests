@@ -148,8 +148,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             recalculatedEarningsEvent.DeliveryPeriods.Where(Dp => Dp.AcademicYear >= academicYear && Dp.Period >= deliveryPeriod).All(p => p.LearningAmount.Should().Equals(newInstalmentAmount));
         }
 
-        [Then(@"for all the past census periods, where the payment has already been made, the amount is still same as previous earnings (.*) and are flagged as sent for payment")]
-        public void ThenForAllThePastCensusPeriodsWhereThePaymentHasAlreadyBeenMadeTheAmountIsStillSameAsPreviousEarningsAndAreFlaggedAsSentForPayment(double oldEarnings)
+        [Then(@"for all the past census periods since (.*), where the payment has already been made, the amount is still same as previous earnings (.*) and are flagged as sent for payment")]
+		public void ThenForAllThePastCensusPeriodsWhereThePaymentHasAlreadyBeenMadeTheAmountIsStillSameAsPreviousEarningsAndAreFlaggedAsSentForPayment(DateTime startDate, double oldEarnings)
         {
             _paymentsEventList = _context.Get<PaymentsGeneratedEvent>().Payments;
 
@@ -157,11 +157,25 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _paymentsEventList = _paymentsEventList.Where(x => x.AcademicYear >= Convert.ToInt16(_currentCollectionYear)).ToList();
 
-            for (int i = 0; i < _currentCollectionPeriod; i++)
-            {
-                Assert.AreEqual(oldEarnings, _paymentsEventList[i].Amount, $"Expected Amount for delivery period {i + 1} to be {oldEarnings} but was {_paymentsEventList[i].Amount} " +
-                    $" in Payments Generated Event post CoP - Payments already made");
-            }
+            var startDatePeriod = TableExtensions.Period[startDate.ToString("MMMM")];
+
+			var expectedPayments = new List<PaymentPeriodExpectation>();
+
+			for (byte i = startDatePeriod; i <= _currentCollectionPeriod; i++)
+			{
+				expectedPayments.Add(new PaymentPeriodExpectation
+				{
+					DeliveryPeriod = i,
+					Amount = oldEarnings
+				});
+			}
+
+			foreach (var expectation in expectedPayments)
+			{
+                Assert.That(_paymentsEventList.Any(x => x.DeliveryPeriod == expectation.DeliveryPeriod && x.Amount == (decimal)expectation.Amount),
+	                $"Expected Amount for delivery period {expectation.DeliveryPeriod} to be {expectation.Amount} but was {_paymentsEventList.FirstOrDefault(x => x.DeliveryPeriod == expectation.DeliveryPeriod)?.Amount}" +
+	                $" in Payments Generated Event post CoP - Payments already made");
+			}
 
             // Validate Payments Entity - remove payments from previous academic years
 

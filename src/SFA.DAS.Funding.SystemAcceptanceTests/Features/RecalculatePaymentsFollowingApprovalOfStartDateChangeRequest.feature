@@ -14,7 +14,7 @@ Scenario: Start date change approved; recalc payments
 	And a start date change request was sent with an approval date of <sdc_approved_date> with a new start date of <new_start_date>
 	And funding band max 18000 is determined for the training code
 	When the start date change is approved
-	Then for all the past census periods, where the payment has already been made, the amount is still same as previous earnings <previous_earnings> and are flagged as sent for payment
+	Then for all the past census periods since <start_date>, where the payment has already been made, the amount is still same as previous earnings <previous_earnings> and are flagged as sent for payment
 	And for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new earnings <new_expected_earnings> and old earnings
 	And for all payments for future collection periods are equal to the new earnings
 

@@ -18,7 +18,7 @@ Scenario: Price change approved; recalc payments
 	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>
 	And funding band max <funding_band_max> is determined for the training code
 	When the price change is approved
-	Then for all the past census periods, where the payment has already been made, the amount is still same as previous earnings <previous_earnings> and are flagged as sent for payment
+	Then for all the past census periods since <start_date>, where the payment has already been made, the amount is still same as previous earnings <previous_earnings> and are flagged as sent for payment
 	And for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new and old earnings
 	And for all payments for future collection periods are equal to the new earnings
 
