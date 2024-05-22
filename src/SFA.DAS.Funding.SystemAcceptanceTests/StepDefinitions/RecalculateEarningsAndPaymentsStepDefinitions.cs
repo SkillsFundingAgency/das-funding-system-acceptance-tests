@@ -3,6 +3,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using PriceChangeApprovedEvent = SFA.DAS.Apprenticeships.Types.PriceChangeApprovedEvent;
+using System.Runtime.CompilerServices;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -27,7 +28,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private readonly byte _currentCollectionPeriod;
         private readonly string _currentCollectionYear;
         private decimal _newEarningsAmount;
+        private decimal _previousEarningsAmount;
         private decimal _fundingBandMax;
+        private decimal _difference;
         private Guid _initialEarningsProfileId;
         private DateTime _startDateChangeApprovedDate;
         private DateTime _newStartDate;
@@ -238,21 +241,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _newEarningsAmount = expectedNewEarningAmount;
 
-            var difference = _newEarningsAmount - earningsGeneratedEvent.DeliveryPeriods[0].LearningAmount;
+            _previousEarningsAmount = earningsGeneratedEvent.DeliveryPeriods[0].LearningAmount;
 
-            // Validate PaymentsGenerateEvent
+            var newStartDateCollectionPeriod = TableExtensions.Period[_newStartDate.ToString("MMMM")];
+            var newStartDateCollectionYear = TableExtensions.CalculateAcademicYear("0", _newStartDate);
+
+            // Validate PaymentsGenerateEvent and payments entity
 
             for (int i = _currentCollectionPeriod; i < _currentCollectionPeriod * 2; i++)
             {
-                Assert.AreEqual(difference, _paymentsEventList[i].Amount, $"Expected Amount for delivery period {_paymentsEventList[i].DeliveryPeriod} to be {difference} but was {_paymentsEventList[i].Amount} " +
+                _difference = CalculatePaymentDifference(_newEarningsAmount, _previousEarningsAmount, newStartDateCollectionPeriod, newStartDateCollectionYear, _paymentsEntityArray[i]);
+
+                Assert.AreEqual(_difference, _paymentsEventList[i].Amount, $"Expected Amount for delivery period {_paymentsEventList[i].DeliveryPeriod} to be {_difference} but was {_paymentsEventList[i].Amount} " +
                                                                           $" in Payments Generated Event post CoP - Different between new and old payments");
-            }
 
-            // Validate Payments Entity
-
-            for (int i = _currentCollectionPeriod; i < _currentCollectionPeriod * 2; i++)
-            {
-                Assert.AreEqual(difference, _paymentsEntityArray[i].Amount, $"Expected Amount to be {difference} for payment record {i + 1} but was {_paymentsEntityArray[i].Amount} in Durable Entity");
+                Assert.AreEqual(_difference, _paymentsEntityArray[i].Amount, $"Expected Amount to be {_difference} for payment record {i + 1} but was {_paymentsEntityArray[i].Amount} in Durable Entity");
                 Assert.IsFalse(_paymentsEntityArray[i].SentForPayment, $"Expected SentForPayment flag to be False for payment record {i + 1} in durable entity");
             }
         }
@@ -353,6 +356,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var amountAlreadyPaid = censusDatesPassedUpToCoPEffectiveFromDate * oldEarnings;
 
             return ((priceToUse * 0.8m) - amountAlreadyPaid) / (apprenticeshipDurationInMonth - censusDatesPassedUpToCoPEffectiveFromDate);
+        }
+
+        static decimal CalculatePaymentDifference(decimal newEarningsAmount, decimal previousEarningsAmount, byte newStartDateCollectionPeriod, string newStartDateCollectionYear, TestSupport.Payments paymentsEntityArray)
+        {
+            bool isPeriodOutOfNewRange = paymentsEntityArray.CollectionYear < Int32.Parse(newStartDateCollectionYear) ||
+                            (paymentsEntityArray.CollectionYear == Int32.Parse(newStartDateCollectionYear) && paymentsEntityArray.DeliveryPeriod < newStartDateCollectionPeriod);
+
+            return isPeriodOutOfNewRange ? -previousEarningsAmount : newEarningsAmount - previousEarningsAmount;
         }
     }
 }
