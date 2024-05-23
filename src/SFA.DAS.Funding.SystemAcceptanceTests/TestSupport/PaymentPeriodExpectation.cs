@@ -1,10 +1,8 @@
 ﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
-	public class PaymentPeriodExpectation
+	public class PaymentDeliveryPeriodExpectation
 	{
-		public byte DeliveryPeriod { get; set; }
-		public double Amount { get; set; }
-		public bool SentForPayment { get; set; }
-		public Guid EarningsProfileId { get; set; }
+		public Period DeliveryPeriod { get; set; }
+		public PaymentExpectation Expectation { get; set; }
 	}
 }
