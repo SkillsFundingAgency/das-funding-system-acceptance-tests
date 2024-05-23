@@ -22,5 +22,5 @@ Scenario: Start date change approved; recalc payments
 Examples:
 	| start_date | end_date   | agreed_price | training_code | new_start_date | sdc_approved_date | previous_earnings | new_expected_earnings |
 	| 2023-08-23 | 2025-08-23 | 15000        | 2             | 2023-12-23     | 2024-06-10        | 500               | 600                   |
-	| 2024-03-24 | 2026-03-24 | 18000        | 2             | 2023-09-24     | 2024-06-10        | 600               | 400                   |
+	| 2024-03-24 | 2026-03-24 | 18000        | 2             | 2023-09-24     | 2024-06-10        | 600               | 480                   |
 	| 2023-08-26 | 2025-04-26 | 15000        | 2             | 2024-10-26     | 2024-10-10        | 600               | 2000                  |
