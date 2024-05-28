@@ -17,6 +17,7 @@ Scenario: Start date change approved; recalc payments
 	Then for all the past census periods since <start_date>, where the payment has already been made, the amount is still same as previous earnings <previous_earnings> and are flagged as sent for payment
 	And for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new earnings <new_expected_earnings> and old earnings
 	And for all payments for future collection periods are equal to the new earnings
+	And for all payments for past collection periods before the original start date (new start date has moved backwards) are equal to the new earnings
 
 
 Examples:
