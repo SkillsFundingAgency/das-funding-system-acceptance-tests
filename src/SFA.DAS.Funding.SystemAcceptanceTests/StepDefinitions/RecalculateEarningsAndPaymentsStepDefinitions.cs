@@ -159,9 +159,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             _paymentsEventList = _context.Get<PaymentsGeneratedEvent>().Payments;
 
-            // validate PaymentsGenerateEvent - remove payments from previous academic years 
-
-            _paymentsEventList = _paymentsEventList.Where(x => x.AcademicYear >= Convert.ToInt16(_currentCollectionYear)).ToList();
+            // validate PaymentsGenerateEvent
 
             var startDatePeriod = TableExtensions.Period[startDate.ToString("MMMM")];
             _initialEarningsProfileId = _context.Get<Guid>("InitialEarningsProfileId");
@@ -183,7 +181,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 	                $" in Payments Generated Event post CoP - Payments already made");
 			}
 
-            // Validate Payments Entity - remove payments from previous academic years
+            // Validate Payments Entity
 
             var paymentsApiClient = new PaymentsEntityApiClient(_context);
 
@@ -307,8 +305,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public void ThenForAllPaymentsForFutureCollectionPeriodsAreEqualToTheNewEarnings()
         {
             var paymentPeriodExpectations = PaymentDeliveryPeriodExpectationBuilder.BuildForDeliveryPeriodRange(
-	            new Period(DateTime.Now).GetNextPeriod(),
-	            new Period(_plannedEndDate.Value).GetPreviousPeriod(),
+	            _newStartDate > DateTime.Now ? new Period(_newStartDate): new Period(DateTime.Now).GetNextPeriod(), //latest of new start date vs current collection period
+				new Period(_plannedEndDate.Value).GetPreviousPeriod(),
 	            new PaymentExpectation
 	            {
                     Amount = _newEarningsAmount,
