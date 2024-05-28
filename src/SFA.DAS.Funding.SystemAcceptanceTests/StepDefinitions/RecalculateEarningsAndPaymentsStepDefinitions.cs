@@ -4,6 +4,7 @@ using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using PriceChangeApprovedEvent = SFA.DAS.Apprenticeships.Types.PriceChangeApprovedEvent;
 using System.Runtime.CompilerServices;
+using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -154,6 +155,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             recalculatedEarningsEvent.DeliveryPeriods.Where(Dp => Dp.AcademicYear >= academicYear && Dp.Period >= deliveryPeriod).All(p => p.LearningAmount.Should().Equals(newInstalmentAmount));
         }
 
+        [Then(@"the earnings are recalculated based on the new expected earnings (.*)")]
+        public async Task EarningsAreRecalculatedBasedOnTheNewExpectedEarnings(decimal newInstalmentAmount)
+        {
+            await _earningsRecalculatedEventHelper.ReceiveEarningsRecalculatedEvent(_context.Get<EarningsGeneratedEvent>().ApprenticeshipKey);
+
+            ApprenticeshipEarningsRecalculatedEvent recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
+
+            recalculatedEarningsEvent.DeliveryPeriods.All(Dp => Dp.LearningAmount.Should().Equals(newInstalmentAmount));
+        }
+
+
+
         [Then(@"for all the past census periods since (.*), where the payment has already been made, the amount is still same as previous earnings (.*) and are flagged as sent for payment")]
 		public void ThenForAllThePastCensusPeriodsWhereThePaymentHasAlreadyBeenMadeTheAmountIsStillSameAsPreviousEarningsAndAreFlaggedAsSentForPayment(DateTime startDate, double oldEarnings)
         {
@@ -210,6 +223,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
 
             Assert.AreEqual(agreedPrice, apprenticeshipEntity.Model.AgreedPrice);
+        }
+
+        [Then(@"the ActualStartDate on the earnings entity is updated to (.*)")]
+        public void ThenTheActualStartDateOnTheEarningsEntityIsUpdatedTo(DateTime startDate)
+        {
+            var apiClient = new EarningsEntityApiClient(_context);
+
+            var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
+
+            Assert.AreEqual(startDate, apprenticeshipEntity.Model.ActualStartDate);
         }
 
         [Then(@"old earnings maintain their initial Profile Id and new earnings have a new profile id")]
@@ -356,6 +379,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the history of old earnings is maintained with (.*)")]
         public async Task HistoryOfOldEarningsIsMaintained(double old_instalment_amount)
         {
+            var earningsApiClient = new EarningsEntityApiClient(_context);
+
+            _earningsEntity = earningsApiClient.GetEarningsEntityModel();
+
             await WaitHelper.WaitForIt(() =>
             {
                 var historicalInstalments = _earningsEntity.Model.EarningsProfileHistory[0].Record.Instalments;

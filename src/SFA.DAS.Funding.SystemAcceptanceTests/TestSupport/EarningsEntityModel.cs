@@ -11,6 +11,8 @@
         public Guid ApprenticeshipKey { get; set; }
         public long ApprovalsApprenticeshipId { get; set; }
         public string Uln { get; set; }
+        public DateTime ActualStartDate { get; set; }
+        public DateTime PlannedEndDate {  get; set; }
         public EarningsProfile EarningsProfile { get; set; }
         public EarningsProfileHistory[]? EarningsProfileHistory { get; set; } 
         public double FundingBandMaximum { get; set; }
