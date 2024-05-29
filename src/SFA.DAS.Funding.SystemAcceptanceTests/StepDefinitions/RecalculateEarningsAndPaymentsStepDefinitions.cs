@@ -174,12 +174,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 					SentForPayment = true
 				});
 
-			foreach (var periodExpectation in expectedPaymentPeriods)
-			{
-                Assert.That(_paymentsEventList.Any(x => x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue && x.Amount == periodExpectation.Expectation.Amount),
-	                $"Expected Amount for delivery period {periodExpectation.DeliveryPeriod} to be {periodExpectation.Expectation.Amount} but was {_paymentsEventList.FirstOrDefault(x => x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue)?.Amount}" +
-	                $" in Payments Generated Event post CoP - Payments already made");
-			}
+			//foreach (var periodExpectation in expectedPaymentPeriods)
+			//{
+   //             Assert.That(_paymentsEventList.Any(x => x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue && x.Amount == periodExpectation.Expectation.Amount),
+	  //              $"Expected Amount for delivery period {periodExpectation.DeliveryPeriod} to be {periodExpectation.Expectation.Amount} but was {_paymentsEventList.FirstOrDefault(x => x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue)?.Amount}" +
+	  //              $" in Payments Generated Event post CoP - Payments already made");
+			//}
+
+            expectedPaymentPeriods.AssertAgainstEventPayments(_paymentsEventList);
 
             // Validate Payments Entity
 
@@ -189,15 +191,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _paymentsEntityArray = _paymentsEntityArray.Where(x => x.AcademicYear >= Convert.ToInt16(_currentCollectionYear)).ToArray();
 
-            foreach (var expectation in expectedPaymentPeriods)
-            {
-                Assert.That(_paymentsEntityArray.Any(x => x.AcademicYear == expectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == expectation.DeliveryPeriod.PeriodValue && (decimal)x.Amount == expectation.Expectation.Amount),
-	                $"Expected Amount to be {expectation.Expectation.Amount} for payment record in delivery period {expectation.DeliveryPeriod} but was {_paymentsEntityArray.FirstOrDefault(x => x.DeliveryPeriod == expectation.DeliveryPeriod.PeriodValue)?.Amount} in Durable Entity");
-                Assert.That(_paymentsEntityArray.Any(x => x.AcademicYear == expectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == expectation.DeliveryPeriod.PeriodValue && x.SentForPayment == expectation.Expectation.SentForPayment),
-	                $"Expected SentForPayment flag to be {expectation.Expectation.SentForPayment} for payment record in delivery period {expectation.DeliveryPeriod} but was {_paymentsEntityArray.FirstOrDefault(x => x.DeliveryPeriod == expectation.DeliveryPeriod.PeriodValue)?.SentForPayment} in Durable Entity");
-                Assert.That(_paymentsEntityArray.Any(x => x.AcademicYear == expectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == expectation.DeliveryPeriod.PeriodValue && x.EarningsProfileId == expectation.Expectation.EarningsProfileId),
-	                $"Expected EarningsProfileId to be {expectation.Expectation.EarningsProfileId} for payment record in delivery period {expectation.DeliveryPeriod} but was {_paymentsEntityArray.FirstOrDefault(x => x.DeliveryPeriod == expectation.DeliveryPeriod.PeriodValue)?.EarningsProfileId} in Durable Entity");
-			}
+   //         foreach (var expectation in expectedPaymentPeriods)
+   //         {
+   //             Assert.That(_paymentsEntityArray.Any(x => x.AcademicYear == expectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == expectation.DeliveryPeriod.PeriodValue && (decimal)x.Amount == expectation.Expectation.Amount),
+	  //              $"Expected Amount to be {expectation.Expectation.Amount} for payment record in delivery period {expectation.DeliveryPeriod} but was {_paymentsEntityArray.FirstOrDefault(x => x.DeliveryPeriod == expectation.DeliveryPeriod.PeriodValue)?.Amount} in Durable Entity");
+   //             Assert.That(_paymentsEntityArray.Any(x => x.AcademicYear == expectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == expectation.DeliveryPeriod.PeriodValue && x.SentForPayment == expectation.Expectation.SentForPayment),
+	  //              $"Expected SentForPayment flag to be {expectation.Expectation.SentForPayment} for payment record in delivery period {expectation.DeliveryPeriod} but was {_paymentsEntityArray.FirstOrDefault(x => x.DeliveryPeriod == expectation.DeliveryPeriod.PeriodValue)?.SentForPayment} in Durable Entity");
+   //             Assert.That(_paymentsEntityArray.Any(x => x.AcademicYear == expectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == expectation.DeliveryPeriod.PeriodValue && x.EarningsProfileId == expectation.Expectation.EarningsProfileId),
+	  //              $"Expected EarningsProfileId to be {expectation.Expectation.EarningsProfileId} for payment record in delivery period {expectation.DeliveryPeriod} but was {_paymentsEntityArray.FirstOrDefault(x => x.DeliveryPeriod == expectation.DeliveryPeriod.PeriodValue)?.EarningsProfileId} in Durable Entity");
+			//}
+
+            expectedPaymentPeriods.AssertAgainstEntityArray(_paymentsEntityArray);
         }
 
         [Then(@"the AgreedPrice on the earnings entity is updated to (.*)")]
