@@ -56,9 +56,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Given(@"earnings have been calculated for an apprenticeship with (.*), (.*), (.*), and (.*)")]
-        public async Task EarningsHaveBeenCalculatedForAnApprenticeshipWithAnd(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, string trainingCode)
+        public async Task EarningsHaveBeenCalculatedForAnApprenticeshipWithAnd(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice, string trainingCode)
         {
-            _calculateEarningsStepDefinitions.ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, agreedPrice, trainingCode);
+            _calculateEarningsStepDefinitions.ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
 
             await _calculateEarningsStepDefinitions.TheApprenticeshipCommitmentIsApproved();
         }
@@ -212,15 +212,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             Assert.AreEqual(agreedPrice, apprenticeshipEntity.Model.AgreedPrice);
         }
 
-        [Then(@"the ActualStartDate on the earnings entity is updated to (.*)")]
-        public void ThenTheActualStartDateOnTheEarningsEntityIsUpdatedTo(DateTime startDate)
+        [Then(@"the ActualStartDate (.*) and PlannedEndDate (.*) are updated on earnings entity")]
+        public void ActualStartDateAndPlannedEndDateAreUpdatedOnEarningsEntity(TokenisableDateTime startDate, TokenisableDateTime endDate)
         {
             var apiClient = new EarningsEntityApiClient(_context);
 
             var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
 
-            Assert.AreEqual(startDate, apprenticeshipEntity.Model.ActualStartDate);
+            Assert.AreEqual(startDate.Value, apprenticeshipEntity.Model.ActualStartDate);
+            Assert.AreEqual(endDate.Value, apprenticeshipEntity.Model.PlannedEndDate);
         }
+
 
         [Then(@"old earnings maintain their initial Profile Id and new earnings have a new profile id")]
         public void OldEarningsMaintainTheirInitialProfileId()
