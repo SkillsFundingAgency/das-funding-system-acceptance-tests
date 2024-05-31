@@ -8,8 +8,9 @@ public class TokenisableDateTime
 	private const string CurrentAyToken = "currentAY";
 	private const string PreviousAyToken = "previousAY";
 	private const string NextAyToken = "nextAY";
+    private const string CurrentAyPlusTwoToken = "currentAYPlusTwo";
 
-	public TokenisableDateTime(DateTime value)
+    public TokenisableDateTime(DateTime value)
 	{
 		Value = value;
 	}
@@ -40,7 +41,12 @@ public class TokenisableDateTime
 			return new TokenisableDateTime(GetDateForCurrentAcademicYear(dateComponents).AddYears(1));
 		}
 
-		throw new ArgumentException("Invalid date string format for TokenisableDateTime.");
+        if (dateComponents[0].ToLower() == CurrentAyPlusTwoToken.ToLower())
+        {
+            return new TokenisableDateTime(GetDateForCurrentAcademicYear(dateComponents).AddYears(2));
+        }
+
+        throw new ArgumentException("Invalid date string format for TokenisableDateTime.");
 	}
 
 	private static DateTime GetDateForCurrentAcademicYear(string[] dateComponents)
