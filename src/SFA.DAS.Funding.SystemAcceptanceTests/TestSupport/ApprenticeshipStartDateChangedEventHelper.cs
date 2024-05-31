@@ -11,8 +11,7 @@ internal class ApprenticeshipStartDateChangedEventHelper
     {
         _context = context;
     }
-
-    public ApprenticeshipStartDateChangedEvent CreateStartDateChangedMessageWithCustomValues(DateTime actualStartDate, DateTime approvedDate)
+    public ApprenticeshipStartDateChangedEvent CreateStartDateChangedMessageWithCustomValues(DateTime actualStartDate, DateTime plannedEndDate, DateTime approvedDate)
     {
         var apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
 
@@ -21,6 +20,7 @@ internal class ApprenticeshipStartDateChangedEventHelper
             .With(_ => _.ApprenticeshipKey, apprenticeshipCreatedEvent.ApprenticeshipKey)
             .With(_ => _.ApprenticeshipId, apprenticeshipCreatedEvent.ApprovalsApprenticeshipId)
             .With(_ => _.ActualStartDate, actualStartDate)
+            .With(_ => _.PlannedEndDate, plannedEndDate)
             .With(_ => _.ApprovedDate, approvedDate)
             .With(_ => _.EmployerAccountId, apprenticeshipCreatedEvent.EmployerAccountId)
             .With(_ => _.ProviderId, apprenticeshipCreatedEvent.UKPRN)
