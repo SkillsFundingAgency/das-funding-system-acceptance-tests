@@ -2,7 +2,7 @@
 {
     public static async Task WaitForIt(Func<bool> lookForIt, string failText)
     {
-        var endTime = DateTime.Now.Add(TimeSpan.FromSeconds(240));
+        var endTime = DateTime.Now.Add(TimeSpan.FromSeconds(180));
 
         while (DateTime.Now <= endTime)
         {
@@ -16,7 +16,7 @@
 
     public static async Task WaitForUnexpected(Func<bool> findUnexpected, string failText)
     {
-        var endTime = DateTime.Now.Add(TimeSpan.FromSeconds(240));
+        var endTime = DateTime.Now.Add(TimeSpan.FromSeconds(180));
 
         while (DateTime.Now < endTime)
         {
