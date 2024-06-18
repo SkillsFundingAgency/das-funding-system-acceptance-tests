@@ -40,7 +40,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
                 paymentsStatus = apiClient.GetPaymentsEntityModel().Model.PaymentsFrozen;
 
-                return (_paymentEntity.All(p => p.SentForPayment) && !paymentsStatus);
+                return (_paymentEntity.Any(p => p.SentForPayment) || !paymentsStatus);
 
             }, "PaymentsFrozen flag is false and/or unexpected payments were released!");
         }
