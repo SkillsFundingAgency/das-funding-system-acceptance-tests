@@ -32,15 +32,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var apiClient = new PaymentsEntityApiClient(_context);
 
-            bool paymentsStatus;
-
             await WaitHelper.WaitForUnexpected(() =>
             {
-                _paymentEntity = apiClient.GetPaymentsEntityModel().Model.Payments;
+                var paymentModel = apiClient.GetPaymentsEntityModel().Model;
 
-                paymentsStatus = apiClient.GetPaymentsEntityModel().Model.PaymentsFrozen;
-
-                return (_paymentEntity.Any(p => p.SentForPayment) || !paymentsStatus);
+                return (paymentModel.Payments.Any(p => p.SentForPayment) || !paymentModel.PaymentsFrozen);
 
             }, "PaymentsFrozen flag is false and/or unexpected payments were released!");
         }
