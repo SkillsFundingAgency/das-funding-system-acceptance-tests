@@ -8,6 +8,7 @@
         {
             var config = Configurator.GetConfiguration();
             context.Set(config);
+            Console.WriteLine($"Begin Scenario {context.ScenarioInfo.Title}");
         }
     }
 }
