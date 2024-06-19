@@ -56,6 +56,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
         public Task SendReleasePaymentsMessage(object message) => Send(message, _config.ReleasePaymentsEventHandlersQueue);
         public Task SendPriceChangeApprovedMessage(object message) => Send(message, _config.PriceChangeApprovedEventHandlersQueue);
         public Task SendStartDateChangedMessage(object message) => Send(message, _config.StartDateChangeApprovedEventHandlersQueue);
+        public Task SendPaymentsFrozenMessage(object message) => Send(message, _config.PaymentsFrozenEventHandlersQueue);
 
         public Task Send(object message, string queueName) 
         {
