@@ -57,6 +57,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
         public async Task SendReleasePaymentsMessage(object message) => await Send(message, _config.ReleasePaymentsEventHandlersQueue);
         public async Task SendPriceChangeApprovedMessage(object message) => await Send(message, _config.PriceChangeApprovedEventHandlersQueue);
         public async Task SendStartDateChangedMessage(object message) => await Send(message, _config.StartDateChangeApprovedEventHandlersQueue);
+        public async Task SendPaymentsFrozenMessage(object message) => await Send(message, _config.PaymentsFrozenEventHandlersQueue);
+
 
         public async Task Send(object message, string queueName)
         {

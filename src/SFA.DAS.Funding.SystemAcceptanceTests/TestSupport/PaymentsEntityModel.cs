@@ -11,6 +11,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         public Guid ApprenticeshipKey { get; set; }
         public Earnings[] Earnings { get; set;}
         public Payments[] Payments { get; set; }
+        public bool PaymentsFrozen { get; set; }
     }
 
     public class Earnings
