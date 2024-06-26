@@ -17,6 +17,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private PaymentsUnfrozenEvent _paymentsUnfrozenEvent;
         private TestSupport.Payments[] _paymentEntity;
         private readonly PaymentsMessageHandler _paymentsMessageHelper;
+        private readonly PaymentsEntityApiClient _paymentsApiClient;
         private byte _currentCollectionPeriod;
         private string _currentCollectionYear;
 
@@ -26,6 +27,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _paymentsFrozenEventHelper = new PaymentsFrozenEventHelper(context);
             _paymentsUnfrozenEventHelper = new PaymentsUnfrozenEventHelper(context);
             _paymentsMessageHelper = new PaymentsMessageHandler(context);
+            _paymentsApiClient = new PaymentsEntityApiClient(context);
         }
 
         [When(@"Employer has frozen provider payments")]
@@ -47,11 +49,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"validate payments are not frozen in the payments entity")]
         public async Task ThenValidatePaymentsAreNotFrozenInThePaymentsEntity()
         {
-            var apiClient = new PaymentsEntityApiClient(_context);
-
             await WaitHelper.WaitForIt(() =>
             {
-                return apiClient.GetPaymentsEntityModel().Model.PaymentsFrozen == false;
+                return _paymentsApiClient.GetPaymentsEntityModel().Model.PaymentsFrozen == false;
             }, "Payments are still frozen in durable entity");
         }
 
@@ -71,11 +71,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"do not make an on-programme payment to the training provider for that apprentice")]
         public async Task ThenDoNotMakeAnOn_ProgrammePaymentToTheTrainingProviderForThatApprentice()
         {
-            var apiClient = new PaymentsEntityApiClient(_context);
-
             await WaitHelper.WaitForUnexpected(() =>
             {
-                var paymentModel = apiClient.GetPaymentsEntityModel().Model;
+                var paymentModel = _paymentsApiClient.GetPaymentsEntityModel().Model;
 
                 return (paymentModel.Payments.Any(p => p.SentForPayment) || !paymentModel.PaymentsFrozen);
 
@@ -85,11 +83,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"make any on-programme payments to the provider that were not paid whilst the payment status was Inactive")]
         public async Task MakeAnyOn_ProgrammePaymentsToTheProviderThatWereNotPaidWhilstThePaymentStatusWasInactive()
         {
-            var apiClient = new PaymentsEntityApiClient(_context);
-
             await WaitHelper.WaitForIt(() =>
             {
-                var paymentModel = apiClient.GetPaymentsEntityModel().Model;
+                var paymentModel = _paymentsApiClient.GetPaymentsEntityModel().Model;
 
                 var payments = paymentModel.Payments.Where(p => p.CollectionPeriod <= _currentCollectionPeriod
                 && p.CollectionYear <= short.Parse(_currentCollectionYear));
