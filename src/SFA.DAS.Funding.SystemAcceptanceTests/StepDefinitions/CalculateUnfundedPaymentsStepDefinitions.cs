@@ -59,6 +59,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [When(@"the scheduler triggers Unfunded Payment processing")]
+        [Then(@"the scheduler triggers Unfunded Payment processing")]
         public async Task SchedulerTriggersUnfundedPaymentProcessing()
         {
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
