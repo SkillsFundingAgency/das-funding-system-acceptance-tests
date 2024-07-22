@@ -97,7 +97,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 return false;
             }, "Failed to find Earnings Entity");
 
-            _context.Set(_earningsEntity.Model.EarningsProfile.EarningsProfileId, "InitialEarningsProfileId");
+            _context.Set(_earningsEntity.Model.ApprenticeshipEpisodes.First().EarningsProfile.EarningsProfileId, "InitialEarningsProfileId");
         }
 
 
@@ -129,7 +129,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
 
-            Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model.EarningsProfile.CompletionPayment);
+            Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model.ApprenticeshipEpisodes.First().EarningsProfile.CompletionPayment);
         }
 
         [Then(@"the leaners age (.*) at the start of the course and funding line type (.*) must be calculated")]

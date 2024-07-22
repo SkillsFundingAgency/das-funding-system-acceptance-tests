@@ -209,7 +209,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
 
-            Assert.AreEqual(agreedPrice, apprenticeshipEntity.Model.AgreedPrice);
+            Assert.AreEqual(agreedPrice, apprenticeshipEntity.Model.ApprenticeshipEpisodes.First().Prices.First().AgreedPrice);
         }
 
         [Then(@"the ActualStartDate (.*) and PlannedEndDate (.*) are updated on earnings entity")]
@@ -219,8 +219,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
 
-            Assert.AreEqual(startDate.Value, apprenticeshipEntity.Model.ActualStartDate);
-            Assert.AreEqual(endDate.Value, apprenticeshipEntity.Model.PlannedEndDate);
+            Assert.AreEqual(startDate.Value, apprenticeshipEntity.Model.ApprenticeshipEpisodes.First().Prices.First().ActualStartDate);
+            Assert.AreEqual(endDate.Value, apprenticeshipEntity.Model.ApprenticeshipEpisodes.First().Prices.First().PlannedEndDate);
         }
 
 
@@ -233,9 +233,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _initialEarningsProfileId = _context.Get<Guid>("InitialEarningsProfileId");
 
-            Assert.AreEqual(_initialEarningsProfileId, earningsEntity.Model.EarningsProfileHistory.FirstOrDefault().Record.EarningsProfileId, "Unexpected historical EarningsProfileId found");
+            Assert.AreEqual(_initialEarningsProfileId, earningsEntity.Model.ApprenticeshipEpisodes.First().EarningsProfileHistory.FirstOrDefault().Record.EarningsProfileId, "Unexpected historical EarningsProfileId found");
 
-            Assert.AreNotEqual(_initialEarningsProfileId, earningsEntity.Model.EarningsProfile.EarningsProfileId, "Historical EarningsProfileId and new EarningsProfileId are the same");
+            Assert.AreNotEqual(_initialEarningsProfileId, earningsEntity.Model.ApprenticeshipEpisodes.First().EarningsProfile.EarningsProfileId, "Historical EarningsProfileId and new EarningsProfileId are the same");
         }
 
         [Then(@"for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new and old earnings")]
@@ -358,7 +358,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _earningsEntity = earningsApiClient.GetEarningsEntityModel();
 
-            var newEarningsProfile = _earningsEntity.Model.EarningsProfile.Instalments;
+            var newEarningsProfile = _earningsEntity.Model.ApprenticeshipEpisodes.First().EarningsProfile.Instalments;
 
             for (int i = 0; i < delivery_period - 1; i++)
             {
@@ -380,7 +380,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await WaitHelper.WaitForIt(() =>
             {
-                var historicalInstalments = _earningsEntity.Model.EarningsProfileHistory[0].Record.Instalments;
+                var historicalInstalments = _earningsEntity.Model.ApprenticeshipEpisodes.First().EarningsProfileHistory[0].Record.Instalments;
 
                 if (historicalInstalments != null)
                 {
