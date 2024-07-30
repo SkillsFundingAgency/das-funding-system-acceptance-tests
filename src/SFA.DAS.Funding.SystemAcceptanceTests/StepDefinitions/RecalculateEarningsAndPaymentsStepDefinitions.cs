@@ -209,7 +209,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
 
-            Assert.AreEqual(agreedPrice, apprenticeshipEntity.Model.ApprenticeshipEpisodes.First().Prices.First().AgreedPrice);
+            Assert.AreEqual(agreedPrice, apprenticeshipEntity.Model.ApprenticeshipEpisodes.First().Prices.OrderByDescending(x => x.ActualStartDate).First().AgreedPrice);
         }
 
         [Then(@"the ActualStartDate (.*) and PlannedEndDate (.*) are updated on earnings entity")]
