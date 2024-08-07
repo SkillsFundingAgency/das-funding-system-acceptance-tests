@@ -2,9 +2,10 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
-using PriceChangeApprovedEvent = SFA.DAS.Apprenticeships.Types.PriceChangeApprovedEvent;
 using System.Runtime.CompilerServices;
+using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
+using System;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -18,7 +19,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private readonly EarningsRecalculatedEventHelper _earningsRecalculatedEventHelper;
         private readonly PriceChangeApprovedEventHelper _priceChangeApprovedEventHelper;
         private readonly ApprenticeshipStartDateChangedEventHelper _apprenticeshipStartDateChangedEventHelper;
-        private PriceChangeApprovedEvent _priceChangeApprovedEvent;
+        private ApprenticeshipPriceChangedEvent _apprenticeshipPriceChangedEvent;
         private EarningsEntityModel? _earningsEntity;
         private DateTime _priceChangeEffectiveFrom;
         private DateTime _priceChangeApprovedDate;
@@ -125,12 +126,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             // clear previous PaymentsGeneratedEvent before publishing PriceChangeApproved Event 
             PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
 
-            _priceChangeApprovedEvent = _priceChangeApprovedEventHelper.CreatePriceChangeApprovedMessageWithCustomValues(_newTrainingPrice, _newAssessmentPrice, _priceChangeEffectiveFrom, _priceChangeApprovedDate);
+            _apprenticeshipPriceChangedEvent = _priceChangeApprovedEventHelper.CreatePriceChangeApprovedMessageWithCustomValues(_newTrainingPrice, _newAssessmentPrice, _priceChangeEffectiveFrom, _priceChangeApprovedDate);
 
-            await _priceChangeApprovedEventHelper.PublishPriceChangeApprovedEvent(_priceChangeApprovedEvent);
+            await _priceChangeApprovedEventHelper.PublishPriceChangeApprovedEvent(_apprenticeshipPriceChangedEvent);
 
             // Receive the update PaymentsGeneratedEvent
-            await _paymentsMessageHelper.ReceivePaymentsEvent(_priceChangeApprovedEvent.ApprenticeshipKey);
+            await _paymentsMessageHelper.ReceivePaymentsEvent(_apprenticeshipPriceChangedEvent.ApprenticeshipKey);
         }
 
         [When(@"the start date change is approved")]
@@ -150,7 +151,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the earnings are recalculated based on the new instalment amount of (.*) from (.*) and (.*)")]
         public async Task EarningsAreRecalculatedBasedOnTheNewInstalmentAmountOfFromAnd(decimal newInstalmentAmount, int deliveryPeriod, int academicYear)
         {
-            await _earningsRecalculatedEventHelper.ReceiveEarningsRecalculatedEvent(_priceChangeApprovedEvent.ApprenticeshipKey);
+            await _earningsRecalculatedEventHelper.ReceiveEarningsRecalculatedEvent(_apprenticeshipPriceChangedEvent.ApprenticeshipKey);
 
             ApprenticeshipEarningsRecalculatedEvent recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
 
@@ -399,18 +400,31 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var fixture = new Fixture();
              
-            var priceChangeApprovedEvent = fixture.Build<PriceChangeApprovedEvent>()
+            var apprenticeshipPriceChangedEvent = fixture.Build<ApprenticeshipPriceChangedEvent>()
             .With(_ => _.ApprenticeshipKey, Guid.Parse(table.Rows[0]["apprenticeship_key"]))
             .With(_ => _.ApprenticeshipId, long.Parse(table.Rows[0]["apprenticeship_id"]))
-            .With(_ => _.TrainingPrice, decimal.Parse(table.Rows[0]["training_price"]))
-            .With(_ => _.AssessmentPrice, decimal.Parse(table.Rows[0]["assessment_price"]))
+            .With(_ => _.Episode, new ApprenticeshipEpisode
+            {
+                Prices = new List<ApprenticeshipEpisodePrice>
+                {
+                    new ApprenticeshipEpisodePrice
+                    {
+                        EndPointAssessmentPrice = decimal.Parse(table.Rows[0]["assessment_price"]),
+                        StartDate = _originalStartDate.GetValueOrDefault(),
+                        EndDate = _plannedEndDate.GetValueOrDefault(),
+                        TrainingPrice = decimal.Parse(table.Rows[0]["training_price"]),
+                        FundingBandMaximum = (int)Math.Ceiling(_fundingBandMax),
+                        Key = Guid.NewGuid()
+                    }
+                },
+                EmployerAccountId = long.Parse(table.Rows[0]["employer_account_id"]),
+                Ukprn = long.Parse(table.Rows[0]["provider_id"])
+            })
             .With(_ => _.EffectiveFromDate, DateTime.Parse(table.Rows[0]["effective_from_date"]))
             .With(_ => _.ApprovedDate, DateTime.Parse(table.Rows[0]["approved_date"]))
-            .With(_ => _.EmployerAccountId, long.Parse(table.Rows[0]["employer_account_id"]))
-            .With(_ => _.ProviderId, long.Parse(table.Rows[0]["provider_id"]))
             .Create();
 
-            await TestServiceBus.Das.SendPriceChangeApprovedMessage(priceChangeApprovedEvent);
+            await TestServiceBus.Das.SendPriceChangeApprovedMessage(apprenticeshipPriceChangedEvent);
         }
 
 
