@@ -37,7 +37,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     }
                 },
                 EmployerAccountId = _apprenticeshipCreatedEvent.Episode.EmployerAccountId,
-                Ukprn = _apprenticeshipCreatedEvent.Episode.Ukprn
+                Ukprn = _apprenticeshipCreatedEvent.Episode.Ukprn,
+                Key = _apprenticeshipCreatedEvent.Episode.Key
             })
             .With(_ => _.EffectiveFromDate, effectiveFromDate)
             .With(_ => _.ApprovedDate, approvedDate)

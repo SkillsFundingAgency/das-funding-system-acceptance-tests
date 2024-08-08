@@ -73,9 +73,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             await WaitHelper.WaitForUnexpected(() =>
             {
-                var paymentModel = _paymentsApiClient.GetPaymentsEntityModel().Model;
+                var paymentModel = _paymentsApiClient.GetPaymentsEntityModel()?.Model;
 
-                return (paymentModel.Payments.Any(p => p.SentForPayment) || !paymentModel.PaymentsFrozen);
+                return ((paymentModel?.Payments.Any(p => p.SentForPayment)).GetValueOrDefault() || (!paymentModel?.PaymentsFrozen).GetValueOrDefault());
 
             }, "PaymentsFrozen flag is false and/or unexpected payments were released!");
         }

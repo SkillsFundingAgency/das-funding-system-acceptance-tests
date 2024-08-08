@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
 using System;
+using SFA.DAS.CommitmentsV2.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -418,7 +419,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     }
                 },
                 EmployerAccountId = long.Parse(table.Rows[0]["employer_account_id"]),
-                Ukprn = long.Parse(table.Rows[0]["provider_id"])
+                Ukprn = long.Parse(table.Rows[0]["provider_id"]),
+                Key = _context.Get<Apprenticeships.Types.ApprenticeshipCreatedEvent>().Episode.Key
             })
             .With(_ => _.EffectiveFromDate, DateTime.Parse(table.Rows[0]["effective_from_date"]))
             .With(_ => _.ApprovedDate, DateTime.Parse(table.Rows[0]["approved_date"]))

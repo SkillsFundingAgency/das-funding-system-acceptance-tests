@@ -37,7 +37,8 @@ internal class ApprenticeshipStartDateChangedEventHelper
                     },
                 },
                 EmployerAccountId = apprenticeshipCreatedEvent.Episode.EmployerAccountId,
-                Ukprn = apprenticeshipCreatedEvent.Episode.Ukprn
+                Ukprn = apprenticeshipCreatedEvent.Episode.Ukprn,
+                Key = apprenticeshipCreatedEvent.Episode.Key
             })
             .Create();
     }
