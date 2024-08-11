@@ -27,13 +27,25 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 {
                     new ApprenticeshipEpisodePrice
                     {
+                        TrainingPrice = _apprenticeshipCreatedEvent.Episode.Prices[0].TrainingPrice,
+                        EndPointAssessmentPrice = _apprenticeshipCreatedEvent.Episode.Prices[0].EndPointAssessmentPrice,
+                        EndDate = effectiveFromDate.AddDays(-1),
+                        FundingBandMaximum = _apprenticeshipCreatedEvent.Episode.Prices[0].FundingBandMaximum,
+                        Key = _apprenticeshipCreatedEvent.Episode.Key,
+                        StartDate = _apprenticeshipCreatedEvent.Episode.Prices[0].StartDate,
+                        TotalPrice = _apprenticeshipCreatedEvent.Episode.Prices[0].TotalPrice,
+                    },
+                    {
+                        new ApprenticeshipEpisodePrice
+                    {
                         TrainingPrice = trainingPrice,
                         EndPointAssessmentPrice = assessmentPrice,
                         EndDate = _apprenticeshipCreatedEvent.Episode.Prices[0].EndDate,
                         FundingBandMaximum = _apprenticeshipCreatedEvent.Episode.Prices[0].FundingBandMaximum,
                         Key = Guid.NewGuid(),
-                        StartDate = _apprenticeshipCreatedEvent.Episode.Prices[0].StartDate,
+                        StartDate = effectiveFromDate,
                         TotalPrice = trainingPrice + assessmentPrice
+                    }
                     }
                 },
                 EmployerAccountId = _apprenticeshipCreatedEvent.Episode.EmployerAccountId,
