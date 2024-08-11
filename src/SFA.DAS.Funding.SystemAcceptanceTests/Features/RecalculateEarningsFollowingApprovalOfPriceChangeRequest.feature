@@ -32,7 +32,7 @@ Examples:
 	| currentAY-08-24 | nextAY-04-24 | 15000        | 1             | currentAY-09-23 | 18000           | currentAY-06-10  | 684.21          | currentAY            | 600             | 2               |
 	| currentAY-08-25 | nextAY-04-25 | 15000        | 2             | nextAY-12-01    | 18000           | nextAY-03-10     | 1200            | nextAY               | 600             | 5               |
 	| currentAY-08-26 | nextAY-04-26 | 15000        | 1             | nextAY-08-01    | 8000            | nextAY-03-10     | -100            | nextAY               | 600             | 1               |
-	| currentAY-08-27 | nextAY-04-27 | 15000        | 2             | currentAY-08-25 | 18000           | nextAY-08-10     | 720             | currentAY            | 600             | 1               |
+	| currentAY-08-27 | nextAY-04-27 | 15000        | 2             | currentAY-08-29 | 18000           | nextAY-08-10     | 720             | currentAY            | 600             | 1               |
 
 
 
