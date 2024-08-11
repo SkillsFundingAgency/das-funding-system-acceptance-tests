@@ -45,6 +45,17 @@ public static class TableExtensions
         else return $"{Year % 100:00}{(Year + 1) % 100:00}";
     }
 
+    public static string GetAcademicYear(string stringDate)
+    {
+        var date = stringDate == "currentAY" ? DateTime.Now
+            : stringDate == "nextAY" ? DateTime.Now.AddYears(1)
+            : stringDate == "previousAY" ? DateTime.Now.AddYears(-1)
+            : stringDate == "currentAYPlusTwo" ? DateTime.Now.AddYears(2)
+            : default;
+
+        return CalculateAcademicYear("0", date);
+    }
+
     public static Dictionary<string, byte> Months = new()
     {
         { "January", 1 },

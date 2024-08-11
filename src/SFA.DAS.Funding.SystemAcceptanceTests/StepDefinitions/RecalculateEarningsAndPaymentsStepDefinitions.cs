@@ -66,7 +66,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Given(@"payments have been paid for an apprenticeship with (.*), (.*), (.*), and (.*)")]
-        public async Task GivenPaymentsHaveBeenCalculatedForAnApprenticeshipWithAnd(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice, string  trainingCode)
+        public async Task GivenPaymentsHaveBeenCalculatedForAnApprenticeshipWithAnd(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice, string trainingCode)
         {
             _calculateEarningsStepDefinitions.ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
 
@@ -78,12 +78,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await _calculateUnfundedPaymentsStepDefinitions.SchedulerTriggersUnfundedPaymentProcessing();
 
-			var startDatePeriod = TableExtensions.Period[startDate.Value.ToString("MMMM")];
+            var startDatePeriod = TableExtensions.Period[startDate.Value.ToString("MMMM")];
 
-			_originalStartDate = startDate.Value;
-			_plannedEndDate = plannedEndDate.Value;
+            _originalStartDate = startDate.Value;
+            _plannedEndDate = plannedEndDate.Value;
 
-			await _calculateUnfundedPaymentsStepDefinitions.UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(_currentCollectionPeriod- startDatePeriod);
+            await _calculateUnfundedPaymentsStepDefinitions.UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(_currentCollectionPeriod - startDatePeriod);
         }
 
 
@@ -93,15 +93,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Given(@"a price change request was sent on (.*)")]
-        public void PriceChangeRequestWasSentOn(DateTime effectiveFromDate)
+        public void PriceChangeRequestWasSentOn(TokenisableDateTime effectiveFromDate)
         {
-            _priceChangeEffectiveFrom = effectiveFromDate;
+            _priceChangeEffectiveFrom = effectiveFromDate.Value;
         }
 
         [Given(@"the price change request has an approval date of (.*) with a new total (.*)")]
-        public void PriceChangeRequestHasAnApprovalDateOfWithANewTotal(DateTime approvedDate, decimal newTotalPrice)
+        public void PriceChangeRequestHasAnApprovalDateOfWithANewTotal(TokenisableDateTime approvedDate, decimal newTotalPrice)
         {
-            _priceChangeApprovedDate = approvedDate;
+            _priceChangeApprovedDate = approvedDate.Value;
             _newTrainingPrice = newTotalPrice * 0.8m;
             _newAssessmentPrice = newTotalPrice * 0.2m;
         }
@@ -150,13 +150,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Then(@"the earnings are recalculated based on the new instalment amount of (.*) from (.*) and (.*)")]
-        public async Task EarningsAreRecalculatedBasedOnTheNewInstalmentAmountOfFromAnd(decimal newInstalmentAmount, int deliveryPeriod, int academicYear)
+        public async Task EarningsAreRecalculatedBasedOnTheNewInstalmentAmountOfFromAnd(decimal newInstalmentAmount, int deliveryPeriod, string academicYearString)
         {
+            var academicYear = TableExtensions.GetAcademicYear(academicYearString);
+
             await _earningsRecalculatedEventHelper.ReceiveEarningsRecalculatedEvent(_apprenticeshipPriceChangedEvent.ApprenticeshipKey);
 
             ApprenticeshipEarningsRecalculatedEvent recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
 
-            recalculatedEarningsEvent.DeliveryPeriods.Where(Dp => Dp.AcademicYear >= academicYear && Dp.Period >= deliveryPeriod).All(p => p.LearningAmount.Should().Equals(newInstalmentAmount));
+            recalculatedEarningsEvent.DeliveryPeriods.Where(Dp => Dp.AcademicYear >= Convert.ToInt16(academicYear) && Dp.Period >= deliveryPeriod).All(p => p.LearningAmount.Should().Equals(newInstalmentAmount));
         }
 
         [Then(@"the earnings are recalculated based on the new expected earnings (.*)")]
@@ -172,7 +174,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
 
         [Then(@"for all the past census periods since (.*), where the payment has already been made, the amount is still same as previous earnings (.*) and are flagged as sent for payment")]
-		public void ThenForAllThePastCensusPeriodsWhereThePaymentHasAlreadyBeenMadeTheAmountIsStillSameAsPreviousEarningsAndAreFlaggedAsSentForPayment(TokenisableDateTime startDate, double oldEarnings)
+        public void ThenForAllThePastCensusPeriodsWhereThePaymentHasAlreadyBeenMadeTheAmountIsStillSameAsPreviousEarningsAndAreFlaggedAsSentForPayment(TokenisableDateTime startDate, double oldEarnings)
         {
             _paymentsEventList = _context.Get<PaymentsGeneratedEvent>().Payments;
 
@@ -181,15 +183,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var startDatePeriod = TableExtensions.Period[startDate.Value.ToString("MMMM")];
             _initialEarningsProfileId = _context.Get<Guid>("InitialEarningsProfileId");
 
-			var expectedPaymentPeriods = PaymentDeliveryPeriodExpectationBuilder.BuildForDeliveryPeriodRange(
-				new Period(short.Parse(_currentCollectionYear), startDatePeriod),
-				new Period(short.Parse(_currentCollectionYear), _currentCollectionPeriod),
-				new PaymentExpectation
-				{
-					Amount = (decimal)oldEarnings,
-					EarningsProfileId = _initialEarningsProfileId,
-					SentForPayment = true
-				});
+            var expectedPaymentPeriods = PaymentDeliveryPeriodExpectationBuilder.BuildForDeliveryPeriodRange(
+                new Period(short.Parse(_currentCollectionYear), startDatePeriod),
+                new Period(short.Parse(_currentCollectionYear), _currentCollectionPeriod),
+                new PaymentExpectation
+                {
+                    Amount = (decimal)oldEarnings,
+                    EarningsProfileId = _initialEarningsProfileId,
+                    SentForPayment = true
+                });
 
             expectedPaymentPeriods.AssertAgainstEventPayments(_paymentsEventList);
 
@@ -286,14 +288,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             //work out when the overlapping period starts where a diff payment needs to be created (will be difference depending on if the start date has moved backwards or forwards)
             var overlappingPeriodStart = _originalStartDate.GetValueOrDefault() < _newStartDate ? _newStartDate : _originalStartDate.GetValueOrDefault();
 
-			var expectedPaymentPeriods = PaymentDeliveryPeriodExpectationBuilder.BuildForDeliveryPeriodRange(
-	            new Period(overlappingPeriodStart),
-	            new Period(short.Parse(_currentCollectionYear), _currentCollectionPeriod),
-	            new PaymentExpectation
-	            {
-		            Amount = _newEarningsAmount - _previousEarningsAmount,
-		            SentForPayment = false
-	            });
+            var expectedPaymentPeriods = PaymentDeliveryPeriodExpectationBuilder.BuildForDeliveryPeriodRange(
+                new Period(overlappingPeriodStart),
+                new Period(short.Parse(_currentCollectionYear), _currentCollectionPeriod),
+                new PaymentExpectation
+                {
+                    Amount = _newEarningsAmount - _previousEarningsAmount,
+                    SentForPayment = false
+                });
 
             //Validate PaymentsGenerateEvent and payments entity
 
@@ -306,13 +308,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public void ThenForAllPaymentsForFutureCollectionPeriodsAreEqualToTheNewEarnings()
         {
             var paymentPeriodExpectations = PaymentDeliveryPeriodExpectationBuilder.BuildForDeliveryPeriodRange(
-	            _newStartDate > DateTime.Now ? new Period(_newStartDate): new Period(DateTime.Now).GetNextPeriod(), //latest of new start date vs current collection period
-				new Period(_plannedEndDate.Value).GetPreviousPeriod(),
-	            new PaymentExpectation
-	            {
+                _newStartDate > DateTime.Now ? new Period(_newStartDate) : new Period(DateTime.Now).GetNextPeriod(), //latest of new start date vs current collection period
+                new Period(_plannedEndDate.Value).GetPreviousPeriod(),
+                new PaymentExpectation
+                {
                     Amount = _newEarningsAmount,
                     SentForPayment = false
-	            });
+                });
 
             //validate Payments Generated Event & Entity
 
@@ -322,41 +324,43 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Then(@"for all payments for past collection periods before the original start date \(new start date has moved backwards\) are equal to the new earnings")]
-		public void ThenForAllPaymentsForPastCollectionPeriodsBeforeOriginalStartDateAreEqualToTheNewEarnings()
-		{
-            if(_newStartDate > _originalStartDate || _newStartDate > DateTime.Now) return; //no past periods this step applies to if new start date is not in the past and not before original start date
+        public void ThenForAllPaymentsForPastCollectionPeriodsBeforeOriginalStartDateAreEqualToTheNewEarnings()
+        {
+            if (_newStartDate > _originalStartDate || _newStartDate > DateTime.Now) return; //no past periods this step applies to if new start date is not in the past and not before original start date
 
-			var paymentPeriodExpectations = PaymentDeliveryPeriodExpectationBuilder.BuildForDeliveryPeriodRange(
-				new Period(_newStartDate),
-				new Period(_originalStartDate.Value).GetPreviousPeriod(),
-				new PaymentExpectation
-				{
-					Amount = _newEarningsAmount,
-					SentForPayment = false
-				});
+            var paymentPeriodExpectations = PaymentDeliveryPeriodExpectationBuilder.BuildForDeliveryPeriodRange(
+                new Period(_newStartDate),
+                new Period(_originalStartDate.Value).GetPreviousPeriod(),
+                new PaymentExpectation
+                {
+                    Amount = _newEarningsAmount,
+                    SentForPayment = false
+                });
 
-			//validate Payments Generated Event  &Entity
+            //validate Payments Generated Event  &Entity
 
-			foreach (var periodExpectation in paymentPeriodExpectations)
-			{
-				Assert.That(_paymentsEventList.Any(x => x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue && x.Amount == periodExpectation.Expectation.Amount),
-					$"Expected Amount for delivery period {periodExpectation.DeliveryPeriod.AcademicYear}-{periodExpectation.DeliveryPeriod.PeriodValue} to be {periodExpectation.Expectation.Amount} but was {_paymentsEventList.FirstOrDefault(x => x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue)?.Amount} " +
-					$" in Payments Generated Event post CoP - Future delivery periods");
+            foreach (var periodExpectation in paymentPeriodExpectations)
+            {
+                Assert.That(_paymentsEventList.Any(x => x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue && x.Amount == periodExpectation.Expectation.Amount),
+                    $"Expected Amount for delivery period {periodExpectation.DeliveryPeriod.AcademicYear}-{periodExpectation.DeliveryPeriod.PeriodValue} to be {periodExpectation.Expectation.Amount} but was {_paymentsEventList.FirstOrDefault(x => x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue)?.Amount} " +
+                    $" in Payments Generated Event post CoP - Future delivery periods");
 
-				Assert.That(_paymentsEntityArray.Any(x => x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue && (decimal)x.Amount == periodExpectation.Expectation.Amount),
-					$"Expected Amount for delivery period {periodExpectation.DeliveryPeriod.AcademicYear}-{periodExpectation.DeliveryPeriod.PeriodValue} to be {periodExpectation.Expectation.Amount} but was {_paymentsEntityArray.FirstOrDefault(x => x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue)?.Amount} " +
-					$" in Durable Entity - Future delivery periods");
+                Assert.That(_paymentsEntityArray.Any(x => x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue && (decimal)x.Amount == periodExpectation.Expectation.Amount),
+                    $"Expected Amount for delivery period {periodExpectation.DeliveryPeriod.AcademicYear}-{periodExpectation.DeliveryPeriod.PeriodValue} to be {periodExpectation.Expectation.Amount} but was {_paymentsEntityArray.FirstOrDefault(x => x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue)?.Amount} " +
+                    $" in Durable Entity - Future delivery periods");
 
-				Assert.That(_paymentsEntityArray.Any(x => x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue && x.SentForPayment == periodExpectation.Expectation.SentForPayment),
-					$"Expected SentForPayment flag for delivery period {periodExpectation.DeliveryPeriod.AcademicYear}-{periodExpectation.DeliveryPeriod.PeriodValue} to be {periodExpectation.Expectation.SentForPayment} but was {_paymentsEntityArray.FirstOrDefault(x => x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue)?.SentForPayment} " +
-					$" in Durable Entity - Future delivery periods");
-			}
-		}
+                Assert.That(_paymentsEntityArray.Any(x => x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear && x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue && x.SentForPayment == periodExpectation.Expectation.SentForPayment),
+                    $"Expected SentForPayment flag for delivery period {periodExpectation.DeliveryPeriod.AcademicYear}-{periodExpectation.DeliveryPeriod.PeriodValue} to be {periodExpectation.Expectation.SentForPayment} but was {_paymentsEntityArray.FirstOrDefault(x => x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue)?.SentForPayment} " +
+                    $" in Durable Entity - Future delivery periods");
+            }
+        }
 
-		[Then(@"earnings prior to (.*) and (.*) are frozen with (.*)")]
-        public void EarningsPriorToAndAreFrozenWith(int delivery_period, int academicYear, double oldInstalmentAmount)
+        [Then(@"earnings prior to (.*) and (.*) are frozen with (.*)")]
+        public void EarningsPriorToAndAreFrozenWith(int delivery_period, string academicYearString, double oldInstalmentAmount)
         {
             var earningsApiClient = new EarningsEntityApiClient(_context);
+
+            var academicYear = TableExtensions.GetAcademicYear(academicYearString);
 
             _earningsEntity = earningsApiClient.GetEarningsEntityModel();
 
@@ -364,7 +368,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             for (int i = 0; i < delivery_period - 1; i++)
             {
-                if (newEarningsProfile[i].AcademicYear <= academicYear)
+                if (newEarningsProfile[i].AcademicYear <= Convert.ToInt16(academicYear))
                 {
                     Assert.AreEqual(oldInstalmentAmount, newEarningsProfile[i].Amount, $"Earning prior to DeliveryPeriod {delivery_period} " +
                         $" are not frozen. Expected Amount for Delivery Period: {newEarningsProfile[i].DeliveryPeriod} and AcademicYear: " +
@@ -400,7 +404,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task GivenAPriceChangeEventIsApproved(Table table)
         {
             var fixture = new Fixture();
-             
+
             var apprenticeshipPriceChangedEvent = fixture.Build<ApprenticeshipPriceChangedEvent>()
             .With(_ => _.ApprenticeshipKey, Guid.Parse(table.Rows[0]["apprenticeship_key"]))
             .With(_ => _.ApprenticeshipId, long.Parse(table.Rows[0]["apprenticeship_id"]))

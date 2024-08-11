@@ -21,18 +21,18 @@ Scenario: Price change approved; recalc earnings
 	And a price change request was sent on <pc_from_date>
 	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>
 	When the price change is approved
-	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year>
-	And earnings prior to <delivery_period> and <academic_year> are frozen with <old_inst_amount>
+	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
+	And earnings prior to <delivery_period> and <academic_year_string> are frozen with <old_inst_amount>
 	And the history of old earnings is maintained with <old_inst_amount>
 	And the AgreedPrice on the earnings entity is updated to <new_total_price>
 	And old earnings maintain their initial Profile Id and new earnings have a new profile id
 Examples:
-	| start_date | end_date   | agreed_price | training_code | pc_from_date | new_total_price | pc_approved_date | new_inst_amount | academic_year | old_inst_amount | delivery_period |
-	| 2023-08-23 | 2025-04-23 | 15000        | 2             | 2023-08-29   | 18000           | 2024-06-10       | 720             | 2324          | 600             | 1               |
-	| 2023-08-24 | 2025-04-24 | 15000        | 1             | 2023-09-23   | 18000           | 2024-06-10       | 684.21          | 2324          | 600             | 2               |
-	| 2023-08-25 | 2025-04-25 | 15000        | 2             | 2024-12-01   | 18000           | 2025-03-10       | 1200            | 2425          | 600             | 5               |
-	| 2023-08-26 | 2025-04-26 | 15000        | 1             | 2024-08-01   | 8000            | 2025-03-10       | -100            | 2425          | 600             | 1               |
-	| 2023-08-27 | 2025-04-27 | 15000        | 2             | 2023-08-25   | 18000           | 2024-08-10       | 720             | 2324          | 600             | 1               |
+	| start_date      | end_date     | agreed_price | training_code | pc_from_date    | new_total_price | pc_approved_date | new_inst_amount | academic_year_string | old_inst_amount | delivery_period |
+	| currentAY-08-23 | nextAY-04-23 | 15000        | 2             | currentAY-08-29 | 18000           | currentAY-06-10  | 720             | currentAY            | 600             | 1               |
+	| currentAY-08-24 | nextAY-04-24 | 15000        | 1             | currentAY-09-23 | 18000           | currentAY-06-10  | 684.21          | currentAY            | 600             | 2               |
+	| currentAY-08-25 | nextAY-04-25 | 15000        | 2             | nextAY-12-01    | 18000           | nextAY-03-10     | 1200            | nextAY               | 600             | 5               |
+	| currentAY-08-26 | nextAY-04-26 | 15000        | 1             | nextAY-08-01    | 8000            | nextAY-03-10     | -100            | nextAY               | 600             | 1               |
+	| currentAY-08-27 | nextAY-04-27 | 15000        | 2             | currentAY-08-25 | 18000           | nextAY-08-10     | 720             | currentAY            | 600             | 1               |
 
 
 
