@@ -213,7 +213,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
 
-            Assert.AreEqual(agreedPrice, apprenticeshipEntity.Model.ApprenticeshipEpisodes.First().Prices.OrderByDescending(x => x.ActualStartDate).First().AgreedPrice);
+            Assert.AreEqual(agreedPrice, apprenticeshipEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).Prices.MaxBy(x => x.ActualStartDate).AgreedPrice);
         }
 
         [Then(@"the ActualStartDate (.*) and PlannedEndDate (.*) are updated on earnings entity")]
@@ -223,8 +223,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
 
-            Assert.AreEqual(startDate.Value, apprenticeshipEntity.Model.ApprenticeshipEpisodes.First().Prices.First().ActualStartDate);
-            Assert.AreEqual(endDate.Value, apprenticeshipEntity.Model.ApprenticeshipEpisodes.First().Prices.First().PlannedEndDate);
+            Assert.IsNotNull(apprenticeshipEntity);
+            Assert.AreEqual(startDate.Value, apprenticeshipEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).Prices.MaxBy(x => x.ActualStartDate).ActualStartDate);
+            Assert.AreEqual(endDate.Value, apprenticeshipEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).Prices.MaxBy(x => x.ActualStartDate)?.PlannedEndDate);
         }
 
 
@@ -237,9 +238,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _initialEarningsProfileId = _context.Get<Guid>("InitialEarningsProfileId");
 
-            Assert.AreEqual(_initialEarningsProfileId, earningsEntity.Model.ApprenticeshipEpisodes.First().EarningsProfileHistory.FirstOrDefault().Record.EarningsProfileId, "Unexpected historical EarningsProfileId found");
+            Assert.AreEqual(_initialEarningsProfileId, earningsEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfileHistory.FirstOrDefault().Record.EarningsProfileId, "Unexpected historical EarningsProfileId found");
 
-            Assert.AreNotEqual(_initialEarningsProfileId, earningsEntity.Model.ApprenticeshipEpisodes.First().EarningsProfile.EarningsProfileId, "Historical EarningsProfileId and new EarningsProfileId are the same");
+            Assert.AreNotEqual(_initialEarningsProfileId, earningsEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfile.EarningsProfileId, "Historical EarningsProfileId and new EarningsProfileId are the same");
         }
 
         [Then(@"for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new and old earnings")]
@@ -364,7 +365,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _earningsEntity = earningsApiClient.GetEarningsEntityModel();
 
-            var newEarningsProfile = _earningsEntity.Model.ApprenticeshipEpisodes.First().EarningsProfile.Instalments;
+            var newEarningsProfile = _earningsEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfile.Instalments;
 
             for (int i = 0; i < delivery_period - 1; i++)
             {
@@ -386,7 +387,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await WaitHelper.WaitForIt(() =>
             {
-                var historicalInstalments = _earningsEntity.Model.ApprenticeshipEpisodes.First().EarningsProfileHistory[0].Record.Instalments;
+                var historicalInstalments = _earningsEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfileHistory[0].Record.Instalments;
 
                 if (historicalInstalments != null)
                 {

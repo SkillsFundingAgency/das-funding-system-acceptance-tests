@@ -67,8 +67,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the agreed price is (below|above) the funding band maximum for the selected course")]
         public void VerifyFundingBandMaxValue(string condition)
         {
-            if (condition == "below") Assert.Less(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.Episode.Prices[0].FundingBandMaximum);
-            else Assert.Greater(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.Episode.Prices[0].FundingBandMaximum);
+            if (condition == "below") Assert.Less(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, _apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
+            else Assert.Greater(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, _apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
         }
 
         [Given(@"the apprenticeship commitment is approved")]
@@ -98,7 +98,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 return false;
             }, "Failed to find Earnings Entity");
 
-            _context.Set(_earningsEntity.Model.ApprenticeshipEpisodes.First().EarningsProfile.EarningsProfileId, "InitialEarningsProfileId");
+            _context.Set(_earningsEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfile.EarningsProfileId, "InitialEarningsProfileId");
         }
 
 
@@ -130,7 +130,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
 
-            Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model.ApprenticeshipEpisodes.First().EarningsProfile.CompletionPayment);
+            Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfile.CompletionPayment);
         }
 
         [Then(@"the leaners age (.*) at the start of the course and funding line type (.*) must be calculated")]
