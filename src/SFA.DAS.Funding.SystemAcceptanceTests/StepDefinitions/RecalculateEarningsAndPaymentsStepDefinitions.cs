@@ -224,7 +224,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
 
             Assert.IsNotNull(apprenticeshipEntity);
-            Assert.AreEqual(startDate.Value, apprenticeshipEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).Prices.MaxBy(x => x.ActualStartDate).ActualStartDate);
+            Assert.AreEqual(startDate.Value, apprenticeshipEntity.Model.ApprenticeshipEpisodes.MinBy(x => x.Prices.MinBy(y => y.ActualStartDate).ActualStartDate).Prices.MinBy(x => x.ActualStartDate).ActualStartDate);
             Assert.AreEqual(endDate.Value, apprenticeshipEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).Prices.MaxBy(x => x.ActualStartDate)?.PlannedEndDate);
         }
 
