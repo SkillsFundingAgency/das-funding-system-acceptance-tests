@@ -1,6 +1,5 @@
 ﻿using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
-using PriceChangeApprovedEvent = SFA.DAS.Apprenticeships.Types.PriceChangeApprovedEvent;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
@@ -14,26 +13,53 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             _context = context;
         }
 
-        public PriceChangeApprovedEvent CreatePriceChangeApprovedMessageWithCustomValues(decimal trainingPrice, decimal assessmentPrice, DateTime effectiveFromDate, DateTime approvedDate)
+        public ApprenticeshipPriceChangedEvent CreatePriceChangeApprovedMessageWithCustomValues(decimal trainingPrice, decimal assessmentPrice, DateTime effectiveFromDate, DateTime approvedDate)
         {
             _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
 
             var fixture = new Fixture();
-            return fixture.Build<PriceChangeApprovedEvent>()
+            return fixture.Build<ApprenticeshipPriceChangedEvent>()
             .With(_ => _.ApprenticeshipKey, _apprenticeshipCreatedEvent.ApprenticeshipKey)
             .With(_ => _.ApprenticeshipId, _apprenticeshipCreatedEvent.ApprovalsApprenticeshipId)
-            .With(_ => _.TrainingPrice, trainingPrice)
-            .With(_ => _.AssessmentPrice, assessmentPrice)
+            .With(_ => _.Episode, new ApprenticeshipEpisode
+            {
+                Prices = new List<ApprenticeshipEpisodePrice>()
+                {
+                    new ApprenticeshipEpisodePrice
+                    {
+                        TrainingPrice = _apprenticeshipCreatedEvent.Episode.Prices[0].TrainingPrice,
+                        EndPointAssessmentPrice = _apprenticeshipCreatedEvent.Episode.Prices[0].EndPointAssessmentPrice,
+                        EndDate = effectiveFromDate.AddDays(-1),
+                        FundingBandMaximum = _apprenticeshipCreatedEvent.Episode.Prices[0].FundingBandMaximum,
+                        Key = _apprenticeshipCreatedEvent.Episode.Key,
+                        StartDate = _apprenticeshipCreatedEvent.Episode.Prices[0].StartDate,
+                        TotalPrice = _apprenticeshipCreatedEvent.Episode.Prices[0].TotalPrice,
+                    },
+                    {
+                        new ApprenticeshipEpisodePrice
+                    {
+                        TrainingPrice = trainingPrice,
+                        EndPointAssessmentPrice = assessmentPrice,
+                        EndDate = _apprenticeshipCreatedEvent.Episode.Prices[0].EndDate,
+                        FundingBandMaximum = _apprenticeshipCreatedEvent.Episode.Prices[0].FundingBandMaximum,
+                        Key = Guid.NewGuid(),
+                        StartDate = effectiveFromDate,
+                        TotalPrice = trainingPrice + assessmentPrice
+                    }
+                    }
+                },
+                EmployerAccountId = _apprenticeshipCreatedEvent.Episode.EmployerAccountId,
+                Ukprn = _apprenticeshipCreatedEvent.Episode.Ukprn,
+                Key = _apprenticeshipCreatedEvent.Episode.Key
+            })
             .With(_ => _.EffectiveFromDate, effectiveFromDate)
             .With(_ => _.ApprovedDate, approvedDate)
-            .With(_ => _.EmployerAccountId, _apprenticeshipCreatedEvent.EmployerAccountId)
-            .With(_ => _.ProviderId, _apprenticeshipCreatedEvent.UKPRN)
             .Create();
         }
 
-        public async Task PublishPriceChangeApprovedEvent(PriceChangeApprovedEvent priceChangeApprovedEvent)
+        public async Task PublishPriceChangeApprovedEvent(ApprenticeshipPriceChangedEvent apprenticeshipPriceChangedEvent)
         {
-            await TestServiceBus.Das.SendPriceChangeApprovedMessage(priceChangeApprovedEvent);
+            await TestServiceBus.Das.SendPriceChangeApprovedMessage(apprenticeshipPriceChangedEvent);
         }
     }
 }

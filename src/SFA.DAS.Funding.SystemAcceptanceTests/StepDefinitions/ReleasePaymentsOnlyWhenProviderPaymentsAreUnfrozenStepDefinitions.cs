@@ -73,9 +73,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             await WaitHelper.WaitForUnexpected(() =>
             {
-                var paymentModel = _paymentsApiClient.GetPaymentsEntityModel().Model;
+                var paymentModel = _paymentsApiClient.GetPaymentsEntityModel()?.Model;
 
-                return (paymentModel.Payments.Any(p => p.SentForPayment) || !paymentModel.PaymentsFrozen);
+                return ((paymentModel?.Payments.Any(p => p.SentForPayment)).GetValueOrDefault() || (!paymentModel?.PaymentsFrozen).GetValueOrDefault());
 
             }, "PaymentsFrozen flag is false and/or unexpected payments were released!");
         }
@@ -88,10 +88,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 var paymentModel = _paymentsApiClient.GetPaymentsEntityModel().Model;
 
                 var payments = paymentModel.Payments.Where(p => p.CollectionPeriod <= _currentCollectionPeriod
-                && p.CollectionYear <= short.Parse(_currentCollectionYear));
+                && p.CollectionYear == short.Parse(_currentCollectionYear));
 
                 return paymentModel.Payments.Where(p => p.CollectionPeriod <= _currentCollectionPeriod 
-                && p.CollectionYear <= short.Parse(_currentCollectionYear)).All(p => p.SentForPayment);
+                && p.CollectionYear == short.Parse(_currentCollectionYear)).All(p => p.SentForPayment);
             }, "Some or all expected payments were not sent for payment after provider payment status was unfrozen!");
         }
     }

@@ -19,11 +19,27 @@ internal class ApprenticeshipStartDateChangedEventHelper
         return fixture.Build<ApprenticeshipStartDateChangedEvent>()
             .With(_ => _.ApprenticeshipKey, apprenticeshipCreatedEvent.ApprenticeshipKey)
             .With(_ => _.ApprenticeshipId, apprenticeshipCreatedEvent.ApprovalsApprenticeshipId)
-            .With(_ => _.ActualStartDate, actualStartDate)
-            .With(_ => _.PlannedEndDate, plannedEndDate)
+            .With(_ => _.StartDate, actualStartDate)
             .With(_ => _.ApprovedDate, approvedDate)
-            .With(_ => _.EmployerAccountId, apprenticeshipCreatedEvent.EmployerAccountId)
-            .With(_ => _.ProviderId, apprenticeshipCreatedEvent.UKPRN)
+            .With(_ => _.Episode, new ApprenticeshipEpisode
+            {
+                Prices = new List<ApprenticeshipEpisodePrice>
+                {
+                    new ApprenticeshipEpisodePrice
+                    {
+                        EndDate = plannedEndDate,
+                        FundingBandMaximum = apprenticeshipCreatedEvent.Episode.Prices.First().FundingBandMaximum,
+                        TrainingPrice = apprenticeshipCreatedEvent.Episode.Prices.First().TrainingPrice,
+                        EndPointAssessmentPrice = apprenticeshipCreatedEvent.Episode.Prices.First().EndPointAssessmentPrice,
+                        Key = Guid.NewGuid() ,
+                        StartDate = actualStartDate,
+                        TotalPrice = apprenticeshipCreatedEvent.Episode.Prices.First().TotalPrice
+                    },
+                },
+                EmployerAccountId = apprenticeshipCreatedEvent.Episode.EmployerAccountId,
+                Ukprn = apprenticeshipCreatedEvent.Episode.Ukprn,
+                Key = apprenticeshipCreatedEvent.Episode.Key
+            })
             .Create();
     }
 

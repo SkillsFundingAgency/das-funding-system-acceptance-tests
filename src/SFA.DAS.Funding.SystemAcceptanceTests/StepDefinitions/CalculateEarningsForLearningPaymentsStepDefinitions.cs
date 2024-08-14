@@ -67,8 +67,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the agreed price is (below|above) the funding band maximum for the selected course")]
         public void VerifyFundingBandMaxValue(string condition)
         {
-            if (condition == "below") Assert.Less(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.FundingBandMaximum);
-            else Assert.Greater(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes[0].Cost, _apprenticeshipCreatedEvent.FundingBandMaximum);
+            if (condition == "below") Assert.Less(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, _apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
+            else Assert.Greater(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, _apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
         }
 
         [Given(@"the apprenticeship commitment is approved")]
@@ -79,6 +79,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await _messageHelper.PublishApprenticeshipApprovedMessage(_commitmentsApprenticeshipCreatedEvent);
 
             _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
+
             _earnings = _context.Get<EarningsGeneratedEvent>();
             _deliveryPeriods = _earnings.DeliveryPeriods;
 
@@ -97,7 +98,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 return false;
             }, "Failed to find Earnings Entity");
 
-            _context.Set(_earningsEntity.Model.EarningsProfile.EarningsProfileId, "InitialEarningsProfileId");
+            _context.Set(_earningsEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfile.EarningsProfileId, "InitialEarningsProfileId");
         }
 
 
@@ -129,14 +130,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
 
-            Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model.EarningsProfile.CompletionPayment);
+            Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfile.CompletionPayment);
         }
 
         [Then(@"the leaners age (.*) at the start of the course and funding line type (.*) must be calculated")]
         public void ValidateAgeAndFundingLineTypeCalculated(int age, string fundingLineType)
         {
             _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
-            Assert.AreEqual(_apprenticeshipCreatedEvent.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {_apprenticeshipCreatedEvent.AgeAtStartOfApprenticeship}");
+            Assert.AreEqual(_apprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {_apprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship}");
             
             _deliveryPeriods.ShouldHaveCorrectFundingLineType(fundingLineType);
         }

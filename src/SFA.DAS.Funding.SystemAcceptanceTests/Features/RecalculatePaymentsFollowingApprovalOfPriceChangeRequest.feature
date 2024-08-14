@@ -24,11 +24,11 @@ Scenario: Price change approved; recalc payments
 
 
 Examples:
-	| start_date | end_date   | agreed_price | training_code | pc_from_date | new_total_price | pc_approved_date | funding_band_max | previous_earnings |
-	| 2023-08-23 | 2025-08-23 | 15000        | 2             | 2023-08-25   | 18000           | 2024-06-10       | 18000            | 500               |
-	| 2023-08-24 | 2025-08-24 | 18000        | 2             | 2023-08-26   | 9000            | 2024-06-10       | 18000            | 600               |
-	| 2023-08-25 | 2025-04-25 | 15000        | 1             | 2023-08-27   | 18000           | 2024-06-10       | 17000            | 600               |
-	| 2023-08-26 | 2025-04-26 | 15000        | 2             | 2023-08-28   | 18000           | 2024-10-10       | 18000            | 600               |
+	| start_date      | end_date               | agreed_price | training_code | pc_from_date    | new_total_price | pc_approved_date | funding_band_max | previous_earnings |
+	| currentAY-08-23 | currentAYPlusTwo-08-23 | 15000        | 2             | currentAY-08-25 | 18000           | currentAY-06-10  | 18000            | 500               |
+	| currentAY-08-24 | currentAYPlusTwo-08-24 | 18000        | 2             | currentAY-08-26 | 9000            | currentAY-06-10  | 18000            | 600               |
+	| currentAY-08-25 | nextAY-04-25           | 15000        | 1             | currentAY-08-27 | 18000           | currentAY-06-10  | 17000            | 600               |
+	| currentAY-08-26 | nextAY-04-26           | 15000        | 2             | currentAY-08-28 | 18000           | nextAY-10-10     | 18000            | 600               |
 
 @ignore
 Scenario: Publish Price Change Approved Event
