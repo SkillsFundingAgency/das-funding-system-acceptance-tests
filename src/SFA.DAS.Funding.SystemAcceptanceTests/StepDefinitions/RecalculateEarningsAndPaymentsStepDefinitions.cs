@@ -387,7 +387,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await WaitHelper.WaitForIt(() =>
             {
-                var historicalInstalments = _earningsEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfileHistory[0].Record.Instalments;
+                var historicalInstalments = _earningsEntity?.Model?.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate)?.ActualStartDate)?.EarningsProfileHistory.FirstOrDefault()?.Record?.Instalments;
 
                 if (historicalInstalments != null)
                 {
