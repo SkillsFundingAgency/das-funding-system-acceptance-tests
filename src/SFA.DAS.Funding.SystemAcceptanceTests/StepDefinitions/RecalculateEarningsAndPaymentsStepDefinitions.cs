@@ -383,10 +383,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var earningsApiClient = new EarningsEntityApiClient(_context);
 
-            _earningsEntity = earningsApiClient.GetEarningsEntityModel();
-
             await WaitHelper.WaitForIt(() =>
             {
+                _earningsEntity = earningsApiClient.GetEarningsEntityModel();
+
                 var historicalInstalments = _earningsEntity?.Model?.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate)?.ActualStartDate)?.EarningsProfileHistory.FirstOrDefault()?.Record?.Instalments;
 
                 if (historicalInstalments != null)
