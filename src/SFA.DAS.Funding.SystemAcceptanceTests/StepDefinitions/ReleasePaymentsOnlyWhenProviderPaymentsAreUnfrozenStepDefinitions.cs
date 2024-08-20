@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
@@ -71,19 +72,28 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"do not make an on-programme payment to the training provider for that apprentice")]
         public async Task ThenDoNotMakeAnOn_ProgrammePaymentToTheTrainingProviderForThatApprentice()
         {
+            var failText = "Failure (ThenDoNotMakeAnOn_ProgrammePaymentToTheTrainingProviderForThatApprentice): ";
+
             await WaitHelper.WaitForUnexpected(() =>
             {
                 var paymentModel = _paymentsApiClient.GetPaymentsEntityModel()?.Model;
 
                 if (paymentModel != null && paymentModel.PaymentsFrozen == false)
-                    return true; //unexpected payments frozen true flag
+                {
+                    failText += $"PaymentsFrozen flag is false, full entity: {JsonConvert.SerializeObject(paymentModel)}";
+                    return true; //unexpected payments frozen false flag
+                }
 
-                if(paymentModel?.Payments != null && paymentModel.Payments.Any(p => p.SentForPayment))
+
+                if (paymentModel?.Payments != null && paymentModel.Payments.Any(p => p.SentForPayment))
+                {
+                    failText += $"Unexpected payments released, full entity: {JsonConvert.SerializeObject(paymentModel)}";
                     return true; //unexpected sent for payment payments
+                }
 
                 return false;
 
-            }, "PaymentsFrozen flag is false and/or unexpected payments were released!");
+            }, failText);
         }
 
         [Then(@"make any on-programme payments to the provider that were not paid whilst the payment status was Inactive")]
