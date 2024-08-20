@@ -74,24 +74,32 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var failText = "Failure (ThenDoNotMakeAnOn_ProgrammePaymentToTheTrainingProviderForThatApprentice): ";
 
-            await WaitHelper.WaitForUnexpected(() =>
+            //await WaitHelper.WaitForUnexpected(() =>
+            //{
+            //    var paymentModel = _paymentsApiClient.GetPaymentsEntityModel()?.Model;
+
+            //    if (paymentModel != null && paymentModel.PaymentsFrozen == false)
+            //    {
+            //        failText += $"PaymentsFrozen flag is false, full entity: {JsonConvert.SerializeObject(paymentModel)}";
+            //        return true; //unexpected payments frozen false flag
+            //    }
+
+
+            //    if (paymentModel?.Payments != null && paymentModel.Payments.Any(p => p.SentForPayment))
+            //    {
+            //        failText += $"Unexpected payments released, full entity: {JsonConvert.SerializeObject(paymentModel)}";
+            //        return true; //unexpected sent for payment payments
+            //    }
+
+            //    return false;
+
+            //}, failText);
+
+            await WaitHelper.WaitForIt(() =>
             {
                 var paymentModel = _paymentsApiClient.GetPaymentsEntityModel()?.Model;
 
-                if (paymentModel != null && paymentModel.PaymentsFrozen == false)
-                {
-                    failText += $"PaymentsFrozen flag is false, full entity: {JsonConvert.SerializeObject(paymentModel)}";
-                    return true; //unexpected payments frozen false flag
-                }
-
-
-                if (paymentModel?.Payments != null && paymentModel.Payments.Any(p => p.SentForPayment))
-                {
-                    failText += $"Unexpected payments released, full entity: {JsonConvert.SerializeObject(paymentModel)}";
-                    return true; //unexpected sent for payment payments
-                }
-
-                return false;
+                return paymentModel?.PaymentsFrozen == true && (paymentModel?.Payments?.All(x => x.SentForPayment == false)).GetValueOrDefault();
 
             }, failText);
         }
