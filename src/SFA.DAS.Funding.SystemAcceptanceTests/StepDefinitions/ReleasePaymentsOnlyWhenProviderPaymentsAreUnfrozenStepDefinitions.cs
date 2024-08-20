@@ -94,6 +94,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             await WaitHelper.WaitForIt(() =>
             {
+                var paymentModel = _paymentsApiClient.GetPaymentsEntityModel()?.Model;
+
+                return paymentModel?.PaymentsFrozen == false;
+
+            }, "Payments frozen flag not set to false.");
+
+            await WaitHelper.WaitForIt(() =>
+            {
                 var paymentModel = _paymentsApiClient.GetPaymentsEntityModel().Model;
 
                 var payments = paymentModel.Payments.Where(p => p.CollectionPeriod <= _currentCollectionPeriod
