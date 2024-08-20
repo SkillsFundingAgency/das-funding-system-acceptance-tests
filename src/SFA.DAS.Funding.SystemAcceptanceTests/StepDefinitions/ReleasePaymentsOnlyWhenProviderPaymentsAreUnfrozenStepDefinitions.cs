@@ -75,7 +75,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             {
                 var paymentModel = _paymentsApiClient.GetPaymentsEntityModel()?.Model;
 
-                return ((paymentModel?.Payments.Any(p => p.SentForPayment)).GetValueOrDefault() || (!paymentModel?.PaymentsFrozen).GetValueOrDefault());
+                if (paymentModel != null && paymentModel.PaymentsFrozen == false)
+                    return true; //unexpected payments frozen true flag
+
+                if(paymentModel?.Payments != null && paymentModel.Payments.Any(p => p.SentForPayment))
+                    return true; //unexpected sent for payment payments
+
+                return false;
 
             }, "PaymentsFrozen flag is false and/or unexpected payments were released!");
         }
