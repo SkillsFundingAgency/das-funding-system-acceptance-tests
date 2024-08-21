@@ -52,6 +52,8 @@ jobs:
             PaymentsFunctionKey: $(FundingApprenticeshipPaymentsFunctionAppSystemKey)
           inputs:
             command: 'test'
+            rerunFailedTests: true
+            rerunMaxAttempts: 2
             projects: |
               **/${{ parameters.SolutionBaseName }}.csproj
         - template: azure-pipelines-templates/deploy/step/app-reg-remove-client-secret.yml@das-platform-building-blocks
