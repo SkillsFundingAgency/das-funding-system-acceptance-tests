@@ -56,6 +56,38 @@ jobs:
             rerunMaxAttempts: '2'
             projects: |
               **/${{ parameters.SolutionBaseName }}.csproj
+              
+        - task: DotNetCoreCLI@2
+          env:
+            NServiceBusLicense: $(NServiceBusLicense)
+            AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
+            EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
+            PaymentsFunctionKey: $(FundingApprenticeshipPaymentsFunctionAppSystemKey)
+          inputs:
+            command: 'test'
+            projects: |
+              **/${{ parameters.SolutionBaseName }}.csproj
+            arguments: '--logger "trx;LogFileName=test_results.trx"'
+
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'VSTest'
+            testResultsFiles: '**/*.trx'
+            failTaskOnFailedTests: false
+
+        # Condition to check if tests failed and rerun if necessary
+        - task: DotNetCoreCLI@2
+          condition: failed()
+          env:
+            NServiceBusLicense: $(NServiceBusLicense)
+            AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
+            EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
+            PaymentsFunctionKey: $(FundingApprenticeshipPaymentsFunctionAppSystemKey)
+          inputs:
+            command: 'test'
+            projects: |
+              **/${{ parameters.SolutionBaseName }}.csproj
+            arguments: '--logger "trx;LogFileName=test_results_retry.trx"'
         - template: azure-pipelines-templates/deploy/step/app-reg-remove-client-secret.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
