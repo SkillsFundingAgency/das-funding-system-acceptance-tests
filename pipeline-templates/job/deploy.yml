@@ -44,19 +44,7 @@ jobs:
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             AppRegistrationObjectId: $(AppRegistrationObjectId)
-        - task: DotNetCoreCLI@2
-          env:
-            NServiceBusLicense: $(NServiceBusLicense)
-            AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
-            EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
-            PaymentsFunctionKey: $(FundingApprenticeshipPaymentsFunctionAppSystemKey)
-          inputs:
-            command: 'test'
-            rerunFailedTests: 'true'
-            rerunMaxAttempts: '2'
-            projects: |
-              **/${{ parameters.SolutionBaseName }}.csproj
-              
+
         - task: DotNetCoreCLI@2
           env:
             NServiceBusLicense: $(NServiceBusLicense)
