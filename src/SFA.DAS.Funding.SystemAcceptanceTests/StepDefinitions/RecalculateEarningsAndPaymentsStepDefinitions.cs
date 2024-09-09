@@ -308,8 +308,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"for all payments for future collection periods are equal to the new earnings")]
         public void ThenForAllPaymentsForFutureCollectionPeriodsAreEqualToTheNewEarnings()
         {
+
+            var firstDeliveryPeriod = _newStartDate.GetYearMonthFirstDay() > DateTime.Now.GetYearMonthFirstDay() ? new Period(_newStartDate) : new Period(DateTime.Now).GetNextPeriod();//latest of new start date vs current collection period
+
             var paymentPeriodExpectations = PaymentDeliveryPeriodExpectationBuilder.BuildForDeliveryPeriodRange(
-                _newStartDate > DateTime.Now ? new Period(_newStartDate) : new Period(DateTime.Now).GetNextPeriod(), //latest of new start date vs current collection period
+                firstDeliveryPeriod, 
                 new Period(_plannedEndDate.Value).GetPreviousPeriod(),
                 new PaymentExpectation
                 {
