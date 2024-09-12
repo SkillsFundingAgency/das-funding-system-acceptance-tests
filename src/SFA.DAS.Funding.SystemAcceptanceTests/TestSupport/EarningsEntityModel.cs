@@ -1,62 +1,77 @@
 ﻿using SFA.DAS.Apprenticeships.Types;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 
-public class EarningsEntityModel
+public class EarningsApprenticeshipModel // In the earnings repo this is called ApprenticeshipModel, but to avoid confusion with other tests Its prefixed with Earnings
 {
-    public Model? Model { get; set; }
-}
-
-public class Model
-{
-    public Guid ApprenticeshipKey { get; set; }
+    public Guid Key { get; set; }
     public long ApprovalsApprenticeshipId { get; set; }
     public string Uln { get; set; }
-    public List<ApprenticeshipEpisodes> ApprenticeshipEpisodes { get; set; } = null;
+    public List<EpisodeModel> Episodes { get; set; } = null;
 }
 
-public class ApprenticeshipEpisodes
+public class EpisodeModel
 {
-    public Guid ApprenticeshipEpisodeKey { get; set; }
-    public long UKPRN { get; set; }
+    public Guid Key { get; set; }
+    public long Ukprn { get; set; }
     public long EmployerAccountId { get; set; }
-    public string LegalEntityName { get; set; } = null;
-    public string TrainingCode { get; set; } = null;
+    public FundingType FundingType { get; set; }
     public long? FundingEmployerAccountId { get; set; }
-    public FundingType FundingType { get; }
+    public string LegalEntityName { get; set; }
+    public string TrainingCode { get; set; } = null!;
     public int AgeAtStartOfApprenticeship { get; set; }
-    public List<PriceModel> Prices { get; set; }
-    public EarningsProfileEntityModel EarningsProfile { get; set; }
-    public List<HistoryRecord<EarningsProfileEntityModel>> EarningsProfileHistory { get; set; }
+    public List<EpisodePriceModel> Prices { get; set; }
+    public EarningsProfileModel EarningsProfile { get; set; }
+    public List<EarningsProfileHistoryModel> EarningsProfileHistory { get; set; }
 }
 
-public class PriceModel
+public class EpisodePriceModel
 {
-    public Guid PriceKey { get; set; }
-    public DateTime ActualStartDate { get; set; }
-    public DateTime PlannedEndDate { get; set; }
+    public Guid Key { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
     public decimal AgreedPrice { get; set; }
     public decimal FundingBandMaximum { get; set; }
 }
 
-public class HistoryRecord<T> where T : class
-{
-    public T Record { get; set; } = null!;
-    public DateTime SupersededDate { get; set; }
-}
-
-public class EarningsProfileEntityModel
+public abstract class EarningsProfileModelBase
 {
     public Guid EarningsProfileId { get; set; }
-    public decimal AdjustedPrice { get; set; }
-    public List<InstalmentEntityModel> Instalments { get; set; }
+    public Guid EpisodeKey { get; set; }
+    public decimal OnProgramTotal { get; set; }
     public decimal CompletionPayment { get; set; }
 }
 
-public class InstalmentEntityModel
+public class EarningsProfileModel : EarningsProfileModelBase
 {
+    public List<InstalmentModel> Instalments { get; set; } = null!;
+}
+
+public class EarningsProfileHistoryModel : EarningsProfileModelBase
+{
+
+    public List<InstalmentHistoryModel> Instalments { get; set; } = null!;
+    public DateTime SupersededDate { get; set; }
+}
+
+public abstract class InstalmentModelBase
+{
+    public Guid Key { get; set; }
+    public Guid EarningsProfileId { get; set; }
     public short AcademicYear { get; set; }
     public byte DeliveryPeriod { get; set; }
     public decimal Amount { get; set; }
+}
+
+public class InstalmentModel : InstalmentModelBase
+{
+
+}
+
+public class InstalmentHistoryModel : InstalmentModelBase
+{
+
 }

@@ -15,7 +15,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         
         private CommitmentsMessages.ApprenticeshipCreatedEvent _commitmentsApprenticeshipCreatedEvent;
         private ApprenticeshipsMessages.ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
-        private EarningsEntityModel? _earningsEntity;
+        private EarningsApprenticeshipModel? _earningsApprenticeshipModel;
 
         private EarningsGeneratedEvent _earnings;
         private List<DeliveryPeriod> _deliveryPeriods;
@@ -91,16 +91,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await WaitHelper.WaitForIt(() =>
             {
-                _earningsEntity = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+                _earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
-                if (_earningsEntity != null)
+                if (_earningsApprenticeshipModel != null)
                 {
                     return true;
                 }
                 return false;
             }, "Failed to find Earnings Entity");
 
-            _context.Set(_earningsEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfile.EarningsProfileId, "InitialEarningsProfileId");
+            _context.Set(_earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId, "InitialEarningsProfileId");
         }
 
 
@@ -130,7 +130,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var apprenticeshipEntity = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
-            Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfile.CompletionPayment);
+            Assert.AreEqual(completionAmount, apprenticeshipEntity?.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.CompletionPayment);
         }
 
         [Then(@"the leaners age (.*) at the start of the course and funding line type (.*) must be calculated")]
