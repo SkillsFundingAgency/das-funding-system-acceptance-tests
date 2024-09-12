@@ -37,20 +37,22 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     },
                     {
                         new ApprenticeshipEpisodePrice
-                    {
-                        TrainingPrice = trainingPrice,
-                        EndPointAssessmentPrice = assessmentPrice,
-                        EndDate = _apprenticeshipCreatedEvent.Episode.Prices[0].EndDate,
-                        FundingBandMaximum = _apprenticeshipCreatedEvent.Episode.Prices[0].FundingBandMaximum,
-                        Key = Guid.NewGuid(),
-                        StartDate = effectiveFromDate,
-                        TotalPrice = trainingPrice + assessmentPrice
-                    }
+                        {
+                            TrainingPrice = trainingPrice,
+                            EndPointAssessmentPrice = assessmentPrice,
+                            EndDate = _apprenticeshipCreatedEvent.Episode.Prices[0].EndDate,
+                            FundingBandMaximum = _apprenticeshipCreatedEvent.Episode.Prices[0].FundingBandMaximum,
+                            Key = Guid.NewGuid(),
+                            StartDate = effectiveFromDate,
+                            TotalPrice = trainingPrice + assessmentPrice
+                        }
                     }
                 },
                 EmployerAccountId = _apprenticeshipCreatedEvent.Episode.EmployerAccountId,
                 Ukprn = _apprenticeshipCreatedEvent.Episode.Ukprn,
-                Key = _apprenticeshipCreatedEvent.Episode.Key
+                Key = _apprenticeshipCreatedEvent.Episode.Key,
+                LegalEntityName = _apprenticeshipCreatedEvent.Episode.LegalEntityName,
+                TrainingCode = _apprenticeshipCreatedEvent.Episode.TrainingCode
             })
             .With(_ => _.EffectiveFromDate, effectiveFromDate)
             .With(_ => _.ApprovedDate, approvedDate)
