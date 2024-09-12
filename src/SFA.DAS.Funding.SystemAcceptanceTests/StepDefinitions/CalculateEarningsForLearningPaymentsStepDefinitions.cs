@@ -2,6 +2,7 @@ using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -10,6 +11,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     {
         private readonly ScenarioContext _context;
         private readonly ApprenticeshipMessageHandler _messageHelper;
+        private readonly EarningsEntitySqlClient _earningsEntitySqlClient;
+        
         private CommitmentsMessages.ApprenticeshipCreatedEvent _commitmentsApprenticeshipCreatedEvent;
         private ApprenticeshipsMessages.ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
         private EarningsEntityModel? _earningsEntity;
@@ -21,6 +24,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             _context = context;
             _messageHelper = new ApprenticeshipMessageHandler(_context);
+            _earningsEntitySqlClient = new EarningsEntitySqlClient();
         }
 
         [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
@@ -85,11 +89,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _context.Set(_deliveryPeriods);
 
-            var earningsApiClient = new EarningsEntityApiClient(_context);
-
             await WaitHelper.WaitForIt(() =>
             {
-                _earningsEntity = earningsApiClient.GetEarningsEntityModel();
+                _earningsEntity = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
                 if (_earningsEntity != null)
                 {
@@ -126,9 +128,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]
         public void VerifyCompletionAmountIsCalculatedCorrectly(decimal completionAmount)
         {
-            var apiClient = new EarningsEntityApiClient(_context);
-
-            var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
+            var apprenticeshipEntity = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
             Assert.AreEqual(completionAmount, apprenticeshipEntity?.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfile.CompletionPayment);
         }

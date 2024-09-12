@@ -7,6 +7,7 @@ using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
 using System;
 using SFA.DAS.CommitmentsV2.Messages.Events;
+using SFA.DAS.Payments.Model.Core.OnProgramme;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -14,6 +15,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     public class RecalculateEarningsAndPaymentsStepDefinitions
     {
         private readonly ScenarioContext _context;
+        private readonly EarningsEntitySqlClient _earningsEntitySqlClient;
         private readonly CalculateEarningsForLearningPaymentsStepDefinitions _calculateEarningsStepDefinitions;
         private readonly CalculateUnfundedPaymentsStepDefinitions _calculateUnfundedPaymentsStepDefinitions;
         private readonly PaymentsMessageHandler _paymentsMessageHelper;
@@ -46,6 +48,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public RecalculateEarningsAndPaymentsStepDefinitions(ScenarioContext context)
         {
             _context = context;
+            _earningsEntitySqlClient = new EarningsEntitySqlClient();
             _paymentsMessageHelper = new PaymentsMessageHandler(context);
             _calculateEarningsStepDefinitions = new CalculateEarningsForLearningPaymentsStepDefinitions(_context);
             _calculateUnfundedPaymentsStepDefinitions = new CalculateUnfundedPaymentsStepDefinitions(context);
@@ -209,9 +212,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the AgreedPrice on the earnings entity is updated to (.*)")]
         public void AgreedPriceOnTheEarningsEntityIsUpdated(decimal agreedPrice)
         {
-            var apiClient = new EarningsEntityApiClient(_context);
-
-            var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
+            var apprenticeshipEntity = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
             Assert.AreEqual(agreedPrice, apprenticeshipEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).Prices.MaxBy(x => x.ActualStartDate).AgreedPrice);
         }
@@ -219,9 +220,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the ActualStartDate (.*) and PlannedEndDate (.*) are updated on earnings entity")]
         public void ActualStartDateAndPlannedEndDateAreUpdatedOnEarningsEntity(TokenisableDateTime startDate, TokenisableDateTime endDate)
         {
-            var apiClient = new EarningsEntityApiClient(_context);
-
-            var apprenticeshipEntity = apiClient.GetEarningsEntityModel();
+            var apprenticeshipEntity = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
             Assert.IsNotNull(apprenticeshipEntity);
             Assert.AreEqual(startDate.Value, apprenticeshipEntity.Model.ApprenticeshipEpisodes.MinBy(x => x.Prices.MinBy(y => y.ActualStartDate).ActualStartDate).Prices.MinBy(x => x.ActualStartDate).ActualStartDate);
@@ -232,9 +231,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"old earnings maintain their initial Profile Id and new earnings have a new profile id")]
         public void OldEarningsMaintainTheirInitialProfileId()
         {
-            var apiClient = new EarningsEntityApiClient(_context);
-
-            var earningsEntity = apiClient.GetEarningsEntityModel();
+            var earningsEntity = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
             _initialEarningsProfileId = _context.Get<Guid>("InitialEarningsProfileId");
 
@@ -362,11 +359,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"earnings prior to (.*) and (.*) are frozen with (.*)")]
         public void EarningsPriorToAndAreFrozenWith(int delivery_period, string academicYearString, double oldInstalmentAmount)
         {
-            var earningsApiClient = new EarningsEntityApiClient(_context);
-
             var academicYear = TableExtensions.GetAcademicYear(academicYearString);
 
-            _earningsEntity = earningsApiClient.GetEarningsEntityModel();
+            _earningsEntity = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
             var newEarningsProfile = _earningsEntity.Model.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate).ActualStartDate).EarningsProfile.Instalments;
 
@@ -384,11 +379,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the history of old earnings is maintained with (.*)")]
         public async Task HistoryOfOldEarningsIsMaintained(double old_instalment_amount)
         {
-            var earningsApiClient = new EarningsEntityApiClient(_context);
-
             await WaitHelper.WaitForIt(() =>
             {
-                _earningsEntity = earningsApiClient.GetEarningsEntityModel();
+                _earningsEntity = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
                 var historicalInstalments = _earningsEntity?.Model?.ApprenticeshipEpisodes.MaxBy(x => x.Prices.MaxBy(y => y.ActualStartDate)?.ActualStartDate)?.EarningsProfileHistory.FirstOrDefault()?.Record?.Instalments;
 

@@ -6,6 +6,7 @@ public class FundingConfig
     public string SharedServiceBusTopicEndpoint { get; set; } = "<not set>";
     public string LearningTransportStorageDirectory { get; set; } = "<not set>";
     public string EarningsEntityApi_BaseUrl { get; set; } = "<not set>";
+    public string EarningsDbConnectionString { get; set; } = "<not set>";
     public string PaymentsEntityApi_BaseUrl { get; set; } = "<not set>";
     public string EarningsFunctionKey { get; set; } = "<not set>";
     public string PaymentsFunctionKey { get; set; } = "<not set>";
