@@ -3,6 +3,7 @@ using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
+using SFA.DAS.Payments.Model.Core.Entities;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -63,11 +64,35 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public void AddDateOfBirthToCommitmentsApprenticeshipCreatedEvent(DateTime dob)
         {
             _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
-            
-            _messageHelper.UpdateApprenticeshipCreatedMessageWithDoB(_commitmentsApprenticeshipCreatedEvent, dob);
 
+            _messageHelper.UpdateApprenticeshipCreatedMessageWithDoB(_commitmentsApprenticeshipCreatedEvent, dob);
         }
-        
+
+        [Given(@"the apprenticeship learner's age is (below|at) (.*)")]
+        public void ApprenticeshipLearnersAgeIsBelowOrAt(string condition, int age)
+        {
+            _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+            var dob = _commitmentsApprenticeshipCreatedEvent.ActualStartDate.Value.AddYears(-age);
+
+            if (condition == "below")
+                dob = dob.AddDays(+1);
+
+            _messageHelper.UpdateApprenticeshipCreatedMessageWithDoB(_commitmentsApprenticeshipCreatedEvent, dob);
+        }
+
+
+        [Given(@"apprenticeship employer type is (Levy|NonLevy)")]
+        public void EmployerTypeIsLevyOrNonLevy(string employerType)
+        {
+            _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+            var employer = employerType == "Levy" ? CommitmentsV2.Types.ApprenticeshipEmployerType.Levy : CommitmentsV2.Types.ApprenticeshipEmployerType.NonLevy;
+
+            _messageHelper.UpdateApprenticeshipCreatedMessageWithEmployerType(_commitmentsApprenticeshipCreatedEvent, employer);
+        }
+
+
         [When(@"the agreed price is (below|above) the funding band maximum for the selected course")]
         public void VerifyFundingBandMaxValue(string condition)
         {

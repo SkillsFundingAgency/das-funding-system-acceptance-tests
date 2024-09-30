@@ -83,16 +83,24 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     Assert.That(_calculatedRequiredLevyAmountList[i].IlrFileName, Is.Empty, "Incorrect Irl File Name found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].IlrSubmissionDateTime, Is.EqualTo(new DateTime(_currentAcademicYear.ToStartingCalendarYear(), 8, 1, 0, 0, 0, DateTimeKind.Utc)), "Incorrect Ilr Submission Date Time found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].JobId, Is.EqualTo(-1), "Incorrect Job Id found");
-                    Assert.That(_calculatedRequiredLevyAmountList[i].SfaContributionPercentage, Is.EqualTo(0.95), "Incorrect Sfa Contribution Percentage found");
+                    Assert.That(_calculatedRequiredLevyAmountList[i].SfaContributionPercentage, Is.EqualTo(CalculateGovernmentContributionPercentage(earnings)), "Incorrect Sfa Contribution Percentage found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].EarningEventId, Is.TypeOf<Guid>(), "Incorrect Earnings Event Id found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].TransferSenderAccountId, Is.EqualTo(cmt_apprenticeshipCreatedEvent.AccountId), "Incorrect Transfer Sender Account Id found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].InstalmentAmount, Is.EqualTo(_finalisedPaymentsList[i].Amount), "Incorrect Instalment Amount found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].NumberOfInstalments, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.NumberOfInstalments), "Incorrect Number of Installments found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipId, Is.EqualTo(cmt_apprenticeshipCreatedEvent.ApprenticeshipId), "Incorrect Apprenticeship Id found");
-                    Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipEmployerType, Is.EqualTo(ApprenticeshipEmployerType.Levy), "Incorrect Apprenticeship Employer Type found");
+                    Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipEmployerType.ToString(), Is.EqualTo(cmt_apprenticeshipCreatedEvent.ApprenticeshipEmployerTypeOnApproval.ToString()), "Incorrect Apprenticeship Employer Type found");
                     Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.StandardCode, Is.EqualTo(Convert.ToInt16(cmt_apprenticeshipCreatedEvent.TrainingCode)), "Incorrect Learning Aim - Standard Code found");
                 });
             }
+        }
+
+        private decimal CalculateGovernmentContributionPercentage(EarningsGeneratedEvent earningsEvent)
+        {
+            if (earningsEvent.EmployerType == EmployerType.NonLevy && earningsEvent.AgeAtStartOfApprenticeship < 22)
+                return 1;
+
+            return 0.95m;
         }
     }
 }
