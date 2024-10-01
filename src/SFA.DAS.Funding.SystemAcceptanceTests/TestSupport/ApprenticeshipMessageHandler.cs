@@ -44,6 +44,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             return apprenticeshipCreatedEvent;
         }
 
+        public CMT.ApprenticeshipCreatedEvent UpdateApprenticeshipCreatedMessageWithEmployerType(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent, ApprenticeshipEmployerType employerType)
+        {
+            apprenticeshipCreatedEvent.ApprenticeshipEmployerTypeOnApproval = employerType;
+            return apprenticeshipCreatedEvent;
+        }
+
         public async Task PublishApprenticeshipApprovedMessage(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
         {
             await TestServiceBus.Das.SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
