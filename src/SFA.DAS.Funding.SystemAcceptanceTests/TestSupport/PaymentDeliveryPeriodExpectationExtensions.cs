@@ -5,11 +5,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
 	public static class PaymentDeliveryPeriodExpectationExtensions
 	{
-		public static void AssertAgainstEntityArray(this IEnumerable<PaymentDeliveryPeriodExpectation> periodExpectations, Payments[] entityArray)
+		public static void AssertAgainstEntityArray(this IEnumerable<PaymentDeliveryPeriodExpectation> periodExpectations, List<Payments> paymentRecords)
 		{
 			foreach (var expectation in periodExpectations)
 			{
-				expectation.AssertAgainstEntityArray(entityArray);
+				expectation.AssertAgainstEntityArray(paymentRecords);
 			}
 		}
 
@@ -21,9 +21,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 			}
 		}
 
-		public static void AssertAgainstEntityArray(this PaymentDeliveryPeriodExpectation periodExpectation, Payments[] entityArray)
+		public static void AssertAgainstEntityArray(this PaymentDeliveryPeriodExpectation periodExpectation, List<Payments> paymentRecords)
 		{
-			var periodPayments = entityArray.Where(x =>
+			var periodPayments = paymentRecords.Where(x =>
 				x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear &&
 				x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue);
 

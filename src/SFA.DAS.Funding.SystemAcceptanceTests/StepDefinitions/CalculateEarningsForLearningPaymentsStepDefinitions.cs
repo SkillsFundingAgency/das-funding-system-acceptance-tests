@@ -109,6 +109,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
 
+            var wireMockClient = new WireMockClient();
+            var learnerData = _context.GetLearner();
+            var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
+            await wireMockClient.CreateMockResponse($"learners/{currentAcademicYear}?ukprn={learnerData.Ukprn}&fundModel=36&progType=-1&standardCode=-1&pageNumber=1&pageSize=1000", learnerData);
+
             _earnings = _context.Get<EarningsGeneratedEvent>();
             _deliveryPeriods = _earnings.DeliveryPeriods;
 
