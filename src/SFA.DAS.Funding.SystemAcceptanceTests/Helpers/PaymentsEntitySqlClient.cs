@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 {

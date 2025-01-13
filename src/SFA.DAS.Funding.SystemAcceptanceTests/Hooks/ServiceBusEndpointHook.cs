@@ -32,6 +32,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
             // var pv2TestMessageBus = new TestMessageBus();
             // pv2TestMessageBus.Start(config, config.Pv2FundingSourceQueue, config.Pv2ServiceBusFqdn).GetAwaiter().GetResult();
             // TestServiceBus.Pv2 = pv2TestMessageBus;
+
+            BaseQueueReciever.SetConfig(config);
         }
 
         [AfterTestRun(Order = 1)]

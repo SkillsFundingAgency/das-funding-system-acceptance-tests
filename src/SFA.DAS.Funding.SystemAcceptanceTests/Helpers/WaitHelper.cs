@@ -12,6 +12,20 @@ public static class WaitHelper
         waitTime = config.EventWaitTimeInSeconds;
     }
 
+    public static async Task WaitForItAsync(Func<Task<bool>> lookForIt, string failText)
+    {
+        var endTime = DateTime.Now.Add(TimeSpan.FromSeconds(waitTime));
+
+        while (DateTime.Now <= endTime)
+        {
+            if (await lookForIt()) return;
+
+            await Task.Delay(TimeSpan.FromMilliseconds(100));
+        }
+
+        Assert.Fail($"{failText}  Time: {DateTime.Now:G}.");
+    }
+
     public static async Task WaitForIt(Func<bool> lookForIt, string failText)
     {
         var endTime = DateTime.Now.Add(TimeSpan.FromSeconds(waitTime));

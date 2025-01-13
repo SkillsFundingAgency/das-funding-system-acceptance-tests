@@ -265,7 +265,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 });
 
             // Validate PaymentsGenerateEvent & Payments Entity
-
             expectedPaymentPeriods.AssertAgainstEventPayments(_paymentsEventList);
 
             expectedPaymentPeriods.AssertAgainstEntityArray(_paymentDbRecords);

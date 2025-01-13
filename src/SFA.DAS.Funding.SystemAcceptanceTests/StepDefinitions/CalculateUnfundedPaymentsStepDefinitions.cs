@@ -63,6 +63,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task SchedulerTriggersUnfundedPaymentProcessing()
         {
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
+            await Task.Delay(10000);
         }
 
         [Given(@"fire command")]
