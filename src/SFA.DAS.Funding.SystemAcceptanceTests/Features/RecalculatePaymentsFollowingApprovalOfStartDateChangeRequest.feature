@@ -8,7 +8,7 @@ Example 1: Start date moved forwards within year 1
 Example 2: Start date moved backwards within year 1
 Example 3: Start date moved forwards into year 2
 
-@regression
+@regression @releasesPayments
 Scenario: Start date change approved; recalc payments
 	Given payments have been paid for an apprenticeship with <start_date>, <end_date>, <agreed_price>, and <training_code>
 	And a start date change request was sent with an approval date of <sdc_approved_date> with a new start date of <new_start_date> and end date of <new_end_date>

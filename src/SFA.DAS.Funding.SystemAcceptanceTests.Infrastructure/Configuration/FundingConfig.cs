@@ -2,6 +2,7 @@
 
 public class FundingConfig
 {
+    public bool ShouldReleasePayments { get; set; } = true;
     public string SharedServiceBusFqdn { get; set; } = "<not set>";
     public string SharedServiceBusTopicEndpoint { get; set; } = "<not set>";
     public string LearningTransportStorageDirectory { get; set; } = "<not set>";

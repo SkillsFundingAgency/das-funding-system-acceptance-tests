@@ -11,7 +11,7 @@ Example 2: Price Fall in year 1 - New Price below Funding Band Max
 Example 3: Price Rise in year 1 - New Price above Funding Band Max
 Example 4: Price Rise in year 2 - New price at Funding Band Max
 
-@regression
+@regression @releasesPayments
 Scenario: Price change approved; recalc payments
 	Given payments have been paid for an apprenticeship with <start_date>, <end_date>, <agreed_price>, and <training_code>
 	And a price change request was sent on <pc_from_date>
