@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
+﻿using SFA.DAS.Payments.FundingSource.Messages.Commands;
+
+namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
     internal class AdaptorMessageHandler
     {
@@ -9,19 +11,18 @@
             _context = context;
         }
 
-        public async Task ReceiveCalculatedRequiredLevyAmountEvent(string ULN, int expectedCount)
+        public async Task ReceiveCalculateOnProgrammePaymentEvent(string ULN, int expectedCount)
         {
-            await WaitHelper.WaitForIt(() =>
+            await WaitHelper.WaitForItAsync(async () =>
             {
-                var calculatedRequiredLevyAmountList =
-                    CalculatedRequiredLevyAmountEventHandler.ReceivedEvents.Where(x => x.message.Learner.Uln.ToString() == ULN).Select(x => x.message).ToList();
+                var calculatedOnProgrammePaymentList = await CalculateOnProgrammePaymentEventHandler.ReceivedEvents<CalculateOnProgrammePayment>(x => x.Learner.Uln.ToString() == ULN);
+                
+                if (calculatedOnProgrammePaymentList.Count != expectedCount) return false;
 
-                if (calculatedRequiredLevyAmountList.Count != expectedCount) return false;
+                _context.Set(calculatedOnProgrammePaymentList);
 
-                _context.Set(calculatedRequiredLevyAmountList);
+                return calculatedOnProgrammePaymentList.All(x => x.Learner.Uln.ToString() == ULN);
 
-                return calculatedRequiredLevyAmountList.All(x=> x.Learner.Uln.ToString() == ULN);
-   
             }, $"Failed to find published 'Calculated Required Levy Amount' event in Payments. Expected Count: {expectedCount}");
         }
     }

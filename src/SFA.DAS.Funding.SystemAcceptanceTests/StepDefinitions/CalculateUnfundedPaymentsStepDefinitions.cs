@@ -13,7 +13,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private readonly PaymentsMessageHandler _paymentsMessageHelper;
         private ReleasePaymentsCommand _releasePaymentsCommand;
         private List<FinalisedOnProgammeLearningPaymentEvent> _finalisedPaymentsList;
-        private TestSupport.Payments[] _paymentEntity;
+        private List<TestSupport.Payments> _paymentEntity;
         private readonly byte _currentCollectionPeriod;
         private readonly string _currentCollectionYear;
 
@@ -43,9 +43,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the newly calculated Unfunded Payments are marked as not sent to payments BAU")]
         public void NewlyCalculatedUnfundedPaymentsAreMarkedAsNotSentToPaymentsBAU()
         {
-            var apiClient = new PaymentsEntityApiClient(_context);
+            var apiClient = new PaymentsEntitySqlClient();
 
-            var payments = apiClient.GetPaymentsEntityModel().Model.Payments;
+            var payments = apiClient.GetPaymentsEntityModel(_context).Payments;
 
             Assert.IsTrue(payments.All(x => !x.SentForPayment));
         }
@@ -63,6 +63,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task SchedulerTriggersUnfundedPaymentProcessing()
         {
             await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
+            await Task.Delay(10000);
         }
 
         [Given(@"fire command")]
@@ -115,9 +116,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the relevant payments entities are marked as sent to payments BAU")]
         public void PaymentsEntitiesAreMarkedAsSentToPaymentsBAU()
         {
-            var apiClient = new PaymentsEntityApiClient(_context);
+            var apiClient = new PaymentsEntitySqlClient();
 
-            _paymentEntity = apiClient.GetPaymentsEntityModel().Model.Payments;
+            _paymentEntity = apiClient.GetPaymentsEntityModel(_context).Payments;
 
             Assert.IsTrue(_paymentEntity.Where(p => p.CollectionPeriod == _currentCollectionPeriod).All(p => p.SentForPayment));
         }

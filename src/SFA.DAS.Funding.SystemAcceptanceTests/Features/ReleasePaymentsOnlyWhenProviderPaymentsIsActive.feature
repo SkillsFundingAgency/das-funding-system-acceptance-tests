@@ -4,7 +4,7 @@ The purpose of this test is to hold back provider payments when the payment stat
 When provider payment status is set back to "Active" release payments for current collection period as well as 
 previous unpaid periods.
 
-@regression
+@regression @releasesPayments
 Scenario: ReleasePaymentsOnlyWhenProviderPaymentsStatusIsActive
 	Given earnings have been calculated for an apprenticeship with currentAY-08-23, currentAYPlusTwo-08-23, 15000, and 2
 	And the user wants to process payments for the current collection Period 

@@ -4,6 +4,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.Payments.Model.Core.Entities;
+using static SFA.DAS.Funding.SystemAcceptanceTests.TestSupport.DcLearnerDataHelper;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -108,6 +109,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await _messageHelper.PublishApprenticeshipApprovedMessage(_commitmentsApprenticeshipCreatedEvent);
 
             _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
+
+            var wireMockClient = new WireMockClient();
+            var learnerData = _context.GetLearner();
+            var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
+            await wireMockClient.CreateMockResponse($"learners/{currentAcademicYear}?ukprn={learnerData.Ukprn}&fundModel=36&progType=-1&standardCode=-1&pageNumber=1&pageSize=1000", new List<Learner> { learnerData });
 
             _earnings = _context.Get<EarningsGeneratedEvent>();
             _deliveryPeriods = _earnings.DeliveryPeriods;

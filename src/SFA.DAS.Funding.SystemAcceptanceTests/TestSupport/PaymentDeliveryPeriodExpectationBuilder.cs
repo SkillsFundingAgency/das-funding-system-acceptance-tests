@@ -29,7 +29,11 @@ public static class PaymentDeliveryPeriodExpectationBuilder
 					Expectation = expectation
 				};
 
-				result.Add(paymentDeliveryPeriodExpectation);
+				if(paymentDeliveryPeriodExpectation.Expectation.Amount != 0)
+				{
+                    result.Add(paymentDeliveryPeriodExpectation);
+                }
+				
 			}
 		}
 
