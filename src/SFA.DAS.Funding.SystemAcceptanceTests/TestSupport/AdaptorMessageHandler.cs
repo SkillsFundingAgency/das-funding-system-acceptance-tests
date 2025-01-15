@@ -13,12 +13,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
         public async Task ReceiveCalculateOnProgrammePaymentEvent(string ULN, int expectedCount)
         {
-            Task.Delay(10000).Wait();
             await WaitHelper.WaitForItAsync(async () =>
             {
                 var calculatedOnProgrammePaymentList = await CalculateOnProgrammePaymentEventHandler.ReceivedEvents<CalculateOnProgrammePayment>(x => x.Learner.Uln.ToString() == ULN);
-                //CalculateOnProgrammePaymentEventHandler.ReceivedEvents.Where(x => x.message.Learner.Uln.ToString() == ULN).Select(x => x.message).ToList();
-
+                
                 if (calculatedOnProgrammePaymentList.Count != expectedCount) return false;
 
                 _context.Set(calculatedOnProgrammePaymentList);
