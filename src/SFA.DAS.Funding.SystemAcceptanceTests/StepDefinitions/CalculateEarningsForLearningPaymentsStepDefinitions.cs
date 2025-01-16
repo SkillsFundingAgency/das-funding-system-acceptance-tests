@@ -105,21 +105,25 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the apprenticeship commitment is approved")]
         public async Task TheApprenticeshipCommitmentIsApproved()
         {
+            Console.WriteLine($"TheApprenticeshipCommitmentIsApproved() called successfully");
             _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
             await _messageHelper.PublishApprenticeshipApprovedMessage(_commitmentsApprenticeshipCreatedEvent);
 
             _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
 
+            Console.WriteLine("Preparing to create wiremock stub");
             var wireMockClient = new WireMockClient();
             var learnerData = _context.GetLearner();
             var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
             await wireMockClient.CreateMockResponse($"learners/{currentAcademicYear}?ukprn={learnerData.Ukprn}&fundModel=36&progType=-1&standardCode=-1&pageNumber=1&pageSize=1000", new List<Learner> { learnerData });
+            Console.WriteLine("Wiremock stub created successfully");
 
             _earnings = _context.Get<EarningsGeneratedEvent>();
             _deliveryPeriods = _earnings.DeliveryPeriods;
 
             _context.Set(_deliveryPeriods);
 
+            Console.WriteLine("Preparing to wait for earning entity to be created");
             await WaitHelper.WaitForIt(() =>
             {
                 _earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);

@@ -63,6 +63,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
 
         public async Task Send(object message, string queueName)
         {
+            Console.WriteLine($"Sending message to {queueName}");
             var options = new SendOptions();
             options.DoNotEnforceBestPractices();
             options.SetDestination(queueName);
