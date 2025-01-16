@@ -6,7 +6,7 @@ parameters:
 jobs:
 - deployment: RunAcceptanceTests
   pool:
-    vmImage: 'windows-latest'
+    vmImage: 'ubuntu-latest'
   environment: ${{ parameters.Environment }}
   strategy:
     runOnce:

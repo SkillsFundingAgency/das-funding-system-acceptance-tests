@@ -12,14 +12,28 @@ internal class WireMockClient
 
     public WireMockClient()
     {
-        var connectionString = Configurator.GetConfiguration().WireMockBaseUrl;
-        _apiClient = HttpClientProvider.GetClient(connectionString);
+        try
+        {
+            var connectionString = Configurator.GetConfiguration().WireMockBaseUrl;
+            _apiClient = HttpClientProvider.GetClient(connectionString);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Failed to create WireMockClient", ex);
+        }
     }
 
     public async Task CreateMockResponse(string url, object body, string verb = "Get")
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, $"api-stub/save?httpMethod={verb}&url=/{url}");
-        request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
-        var response = await _apiClient.SendAsync(request);
+        try
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, $"api-stub/save?httpMethod={verb}&url=/{url}");
+            request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+            var response = await _apiClient.SendAsync(request);
+        }
+        catch(Exception ex)
+        {
+            throw new Exception($"Failed to create mock response for {url}", ex);
+        }
     }
 }
