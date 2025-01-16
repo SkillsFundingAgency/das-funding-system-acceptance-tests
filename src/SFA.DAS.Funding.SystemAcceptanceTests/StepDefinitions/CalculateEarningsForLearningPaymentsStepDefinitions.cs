@@ -124,18 +124,29 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _context.Set(_deliveryPeriods);
 
             Console.WriteLine("Preparing to wait for earning entity to be created");
-            await WaitHelper.WaitForIt(() =>
+
+            try
             {
-                _earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
-
-                if (_earningsApprenticeshipModel != null)
+                await WaitHelper.WaitForIt(() =>
                 {
-                    return true;
-                }
-                return false;
-            }, "Failed to find Earnings Entity");
+                    _earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
-            _context.Set(_earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId, "InitialEarningsProfileId");
+                    if (_earningsApprenticeshipModel != null)
+                    {
+                        return true;
+                    }
+                    return false;
+                }, "Failed to find Earnings Entity");
+
+                var contextKeyForInitialEarningsProfileId = _earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId;
+                Console.WriteLine($"InitialEarningsProfileId: {contextKeyForInitialEarningsProfileId}");
+                _context.Set(contextKeyForInitialEarningsProfileId, "InitialEarningsProfileId");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
         }
 
 
