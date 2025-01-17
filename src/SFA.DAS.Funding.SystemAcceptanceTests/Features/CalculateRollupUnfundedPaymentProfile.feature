@@ -12,8 +12,8 @@ Scenario: Rollup Payment profile for single learner - Training start date declar
 	When the Unfunded Payments for the remainder of the apprenticeship are determined
 	Then Unfunded Payments for the apprenticeship including rollup payments are calculated as below
 		| DeliveryPeriod | PaymentPeriod  | Amount |
-		| CurrentMonth-2 | CurrentMonth+0 | 1000   |
-		| CurrentMonth-1 | CurrentMonth+0 | 1000   |
+		| CurrentMonth-2 | CurrentMonth-2 | 1000   |
+		| CurrentMonth-1 | CurrentMonth-1 | 1000   |
 		| CurrentMonth+0 | CurrentMonth+0 | 1000   |
 		| CurrentMonth+1 | CurrentMonth+1 | 1000   |
 		| CurrentMonth+2 | CurrentMonth+2 | 1000   |
