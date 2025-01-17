@@ -30,6 +30,13 @@ jobs:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(FundingApprenticeshipPaymentsFunctionAppName)
             RuleName: "FundingAcceptanceTestsPayments"
+
+        - template: azure-pipelines-templates/deploy/step/sql-whitelist-ip.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            SQLServerName: $(SharedSQLServerFQDN)
+
+
         - template: azure-pipelines-templates/deploy/step/function-app-get-system-key.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
@@ -90,3 +97,10 @@ jobs:
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(FundingApprenticeshipPaymentsFunctionAppName)
+
+        - template: azure-pipelines-templates/deploy/step/sql-remove-ip.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            SQLServerName: $(SharedSQLServerFQDN)
+            IPAddress: $(IPAddress)
+
