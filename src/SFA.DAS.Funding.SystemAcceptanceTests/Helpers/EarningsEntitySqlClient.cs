@@ -1,6 +1,7 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
+
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 
 internal class EarningsEntitySqlClient
@@ -9,7 +10,9 @@ internal class EarningsEntitySqlClient
 
     public EarningsEntitySqlClient()
     {
+        
         var connectionString = Configurator.GetConfiguration().EarningsDbConnectionString;
+        Console.WriteLine($"Earning Db connection string {connectionString}");
         _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
     }
 
