@@ -29,13 +29,45 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 .With(_ => _.TransferSenderId, (long?)null)
                 .With(_ => _.DateOfBirth, DateTime.Now.AddYears((-18)))
                 .With(_ => _.IsOnFlexiPaymentPilot, true)
-                .With(x => x.TrainingCourseVersion, "1.0")
+                .With(_ => _.TrainingCourseVersion, "1.0")
+                .With(_ => _.ProviderId, 88888888)
                 .Create();
         }
 
-        public static int GenerateRandomNumberBetweenTwoValues(int min, int max) => new Random().Next(min, max);
+        private static String GenerateRandomUln()
+        {
+            String randomUln = GenerateRandomNumberBetweenTwoValues(10, 99).ToString()
+                + DateTime.Now.ToString("ssffffff");
 
-        private string GenerateRandomUln()=> GenerateRandomNumberBetweenTwoValues(10, 99).ToString() + DateTime.Now.ToString("ssffffff");
+            for (int i = 1; i < 30; i++)
+            {
+                if (IsValidCheckSum(randomUln))
+                {
+                    return randomUln;
+                }
+                randomUln = (long.Parse(randomUln) + 1).ToString();
+            }
+            throw new Exception("Unable to generate ULN");
+        }
+
+        private static int GenerateRandomNumberBetweenTwoValues(int min, int max) => new Random().Next(min, max);
+
+        private static bool IsValidCheckSum(string uln)
+        {
+            var ulnCheckArray = uln.ToCharArray()
+                                    .Select(c => long.Parse(c.ToString()))
+                                    .ToList();
+
+            var multiplier = 10;
+            long checkSumValue = 0;
+            for (var i = 0; i < 10; i++)
+            {
+                checkSumValue += ulnCheckArray[i] * multiplier;
+                multiplier--;
+            }
+
+            return checkSumValue % 11 == 10;
+        }
 
 
         public CMT.ApprenticeshipCreatedEvent UpdateApprenticeshipCreatedMessageWithDoB(CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent, DateTime dob)
