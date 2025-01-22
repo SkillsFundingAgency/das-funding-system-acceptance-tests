@@ -1,11 +1,8 @@
-using Newtonsoft.Json;
 using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using SFA.DAS.Payments.Model.Core.Entities;
-using TechTalk.SpecFlow;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {

@@ -15,7 +15,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         
         private CommitmentsMessages.ApprenticeshipCreatedEvent _commitmentsApprenticeshipCreatedEvent;
         private ApprenticeshipsMessages.ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
-        private EarningsApprenticeshipModel? _earningsApprenticeshipModel;
 
         public CalculateEarningsForLearningPaymentsStepDefinitions(ScenarioContext context)
         {

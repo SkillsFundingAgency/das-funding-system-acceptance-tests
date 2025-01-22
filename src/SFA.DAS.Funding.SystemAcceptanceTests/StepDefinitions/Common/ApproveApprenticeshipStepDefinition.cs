@@ -4,7 +4,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using static SFA.DAS.Funding.SystemAcceptanceTests.TestSupport.DcLearnerDataHelper;
 using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
-namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
+namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
 
 [Binding]
 public class ApproveApprenticeshipStepDefinition
