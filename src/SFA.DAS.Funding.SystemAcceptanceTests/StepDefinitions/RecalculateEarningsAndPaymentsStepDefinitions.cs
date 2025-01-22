@@ -61,12 +61,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
         }
 
-        [Given(@"earnings have been calculated for an apprenticeship with (.*), (.*), (.*), and (.*)")]
-        public async Task EarningsHaveBeenCalculatedForAnApprenticeshipWithAnd(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice, string trainingCode)
-        {
-            _calculateEarningsStepDefinitions.ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, agreedPrice, trainingCode);
-        }
-
         [Given(@"payments have been paid for an apprenticeship with (.*), (.*)")]
         public async Task GivenPaymentsHaveBeenCalculatedForAnApprenticeshipWithAnd(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate)
         {
