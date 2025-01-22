@@ -1,11 +1,8 @@
-using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
-using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
-using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using SFA.DAS.Payments.Model.Core.Entities;
-using static SFA.DAS.Funding.SystemAcceptanceTests.TestSupport.DcLearnerDataHelper;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
+using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -20,9 +17,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private ApprenticeshipsMessages.ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
         private EarningsApprenticeshipModel? _earningsApprenticeshipModel;
 
-        private EarningsGeneratedEvent _earnings;
-        private List<DeliveryPeriod> _deliveryPeriods;
-
         public CalculateEarningsForLearningPaymentsStepDefinitions(ScenarioContext context)
         {
             _context = context;
@@ -31,9 +25,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
-        public void ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(DateTime startDate, DateTime plannedEndDate, decimal agreedPrice, string trainingCode)
+        public void ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice, string trainingCode)
         {
-            _commitmentsApprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
+            _commitmentsApprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
             _context.Set(_commitmentsApprenticeshipCreatedEvent);
         }
 
@@ -46,7 +40,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var futureDate = currentDate.AddMonths(duration-1);
             var plannedEndDate = new DateTime(futureDate.Year, futureDate.Month, DateTime.DaysInMonth(futureDate.Year, futureDate.Month));
 
-            ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate, plannedEndDate, 30000, "614");
+            ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(new TokenisableDateTime(startDate), new TokenisableDateTime(plannedEndDate), 30000, "614");
         }
 
 
@@ -98,34 +92,35 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the agreed price is (below|above) the funding band maximum for the selected course")]
         public void VerifyFundingBandMaxValue(string condition)
         {
+            _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
+
             if (condition == "below") Assert.Less(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, _apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
             else Assert.Greater(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, _apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
         }
-
-
-
-
-
 
         [Then(@"80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months (.*)")]
         [Then(@"Agreed price is used to calculate the on-program earnings which is divided equally into number of planned months (.*)")]
         [Then(@"Funding band maximum price is used to calculate the on-program earnings which is divided equally into number of planned months (.*)")]
         public void VerifyInstalmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal instalmentAmount)
         {
-            _deliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(instalmentAmount));
+            var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
+            deliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(instalmentAmount));
         }
 
         [Then(@"the planned number of months must be the number of months from the start date to the planned end date (.*)")]
         public void VerifyThePlannedDurationMonthsWithinTheEarningsGenerated(short numberOfInstalments)
         {
-            _deliveryPeriods.Should().HaveCount(numberOfInstalments);
+            var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
+            deliveryPeriods.Should().HaveCount(numberOfInstalments);
         }
 
         [Given(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
         [Then(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
         public void ThenTheDeliveryPeriodForEachInstalmentMustBeTheDeliveryPeriodFromTheCollectionCalendarWithAMatchingCalendarMonthYear(Table table)
         {
-            _deliveryPeriods.ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
+            var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
+            deliveryPeriods.ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
         }
 
         [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]

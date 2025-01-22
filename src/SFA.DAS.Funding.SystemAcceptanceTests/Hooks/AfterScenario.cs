@@ -23,7 +23,8 @@ internal class AfterScenario
     [AfterScenario(Order = 10)]
     public void AfterScenarioCleanup()
     {
-        if (_context.TestError == null)
+        var config = Configurator.GetConfiguration();
+        if (config.ShouldCleanUpTestRecords)
         {
             PurgeCreatedRecords();
         }
@@ -38,6 +39,9 @@ internal class AfterScenario
 
         var earningsSqlClient = new EarningsSqlClient();
         earningsSqlClient.DeleteEarnings(apprenticeshipKey);
+
+        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
+        apprenticeshipSqlClient.DeleteApprenticeship(apprenticeshipKey);
     }
 
     private void OutputTestDataToFile()

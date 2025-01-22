@@ -3,10 +3,12 @@
 public class FundingConfig
 {
     public bool ShouldReleasePayments { get; set; } = true;
+    public bool ShouldCleanUpTestRecords { get; set; } = false;
     public string SharedServiceBusFqdn { get; set; } = "<not set>";
     public string SharedServiceBusTopicEndpoint { get; set; } = "<not set>";
     public string LearningTransportStorageDirectory { get; set; } = "<not set>";
     public string EarningsEntityApi_BaseUrl { get; set; } = "<not set>";
+    public string ApprenticeshipsDbConnectionString { get; set; } = "<not set>";
     public string EarningsDbConnectionString { get; set; } = "<not set>";
     public string PaymentsDbConnectionString { get; set; } = "<not set>";
     public string WireMockBaseUrl { get; set; } = "<not set>";

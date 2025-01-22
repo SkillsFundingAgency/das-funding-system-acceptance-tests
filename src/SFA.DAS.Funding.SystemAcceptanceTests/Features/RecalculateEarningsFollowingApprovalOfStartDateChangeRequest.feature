@@ -14,7 +14,8 @@ Example 3: Start date move forwards, into next year
 
 @regression
 Scenario: Start Date change approved; recalc earnings
-	Given earnings have been calculated for an apprenticeship with <start_date>, <end_date>, <agreed_price>, and <training_code>
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the apprenticeship commitment is approved
 	And a start date change request was sent with an approval date of <sdc_approved_date> with a new start date of <new_start_date> and end date of <new_end_date>
 	And funding band max 18000 is determined for the training code
 	When the start date change is approved
