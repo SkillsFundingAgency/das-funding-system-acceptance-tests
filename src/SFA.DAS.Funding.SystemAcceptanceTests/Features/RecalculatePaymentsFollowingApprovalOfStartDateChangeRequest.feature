@@ -10,7 +10,9 @@ Example 3: Start date moved forwards into year 2
 
 @regression @releasesPayments
 Scenario: Start date change approved; recalc payments
-	Given payments have been paid for an apprenticeship with <start_date>, <end_date>, <agreed_price>, and <training_code>
+	Given earnings have been calculated for an apprenticeship with <start_date>, <end_date>, <agreed_price>, and <training_code>
+	And the apprenticeship commitment is approved
+	And payments have been paid for an apprenticeship with <start_date>, <end_date>
 	And a start date change request was sent with an approval date of <sdc_approved_date> with a new start date of <new_start_date> and end date of <new_end_date>
 	And funding band max 18000 is determined for the training code
 	When the start date change is approved

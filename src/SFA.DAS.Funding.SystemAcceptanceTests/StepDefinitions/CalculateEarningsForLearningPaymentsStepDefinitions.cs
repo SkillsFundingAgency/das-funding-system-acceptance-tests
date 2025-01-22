@@ -5,6 +5,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.Payments.Model.Core.Entities;
 using static SFA.DAS.Funding.SystemAcceptanceTests.TestSupport.DcLearnerDataHelper;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -13,7 +14,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     {
         private readonly ScenarioContext _context;
         private readonly ApprenticeshipMessageHandler _messageHelper;
-        private readonly EarningsEntitySqlClient _earningsEntitySqlClient;
+        private readonly EarningsSqlClient _earningsEntitySqlClient;
         
         private CommitmentsMessages.ApprenticeshipCreatedEvent _commitmentsApprenticeshipCreatedEvent;
         private ApprenticeshipsMessages.ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
@@ -26,7 +27,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             _context = context;
             _messageHelper = new ApprenticeshipMessageHandler(_context);
-            _earningsEntitySqlClient = new EarningsEntitySqlClient();
+            _earningsEntitySqlClient = new EarningsSqlClient();
         }
 
         [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
@@ -101,38 +102,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             else Assert.Greater(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, _apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
         }
 
-        [Given(@"the apprenticeship commitment is approved")]
-        [When(@"the apprenticeship commitment is approved")]
-        public async Task TheApprenticeshipCommitmentIsApproved()
-        {
-            _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
-            await _messageHelper.PublishApprenticeshipApprovedMessage(_commitmentsApprenticeshipCreatedEvent);
 
-            _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
 
-            var wireMockClient = new WireMockClient();
-            var learnerData = _context.GetLearner();
-            var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
-            await wireMockClient.CreateMockResponse($"learners/{currentAcademicYear}?ukprn={learnerData.Ukprn}&fundModel=36&progType=-1&standardCode=-1&pageNumber=1&pageSize=1000", new List<Learner> { learnerData });
 
-            _earnings = _context.Get<EarningsGeneratedEvent>();
-            _deliveryPeriods = _earnings.DeliveryPeriods;
-
-            _context.Set(_deliveryPeriods);
-
-            await WaitHelper.WaitForIt(() =>
-            {
-                _earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
-
-                if (_earningsApprenticeshipModel != null)
-                {
-                    return true;
-                }
-                return false;
-            }, "Failed to find Earnings Entity");
-
-            _context.Set(_earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId, "InitialEarningsProfileId");
-        }
 
 
         [Then(@"80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months (.*)")]
@@ -170,7 +142,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
             Assert.AreEqual(_apprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {_apprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship}");
             
-            _deliveryPeriods.ShouldHaveCorrectFundingLineType(fundingLineType);
+            var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
+            deliveryPeriods.ShouldHaveCorrectFundingLineType(fundingLineType);
         }
     }
 }

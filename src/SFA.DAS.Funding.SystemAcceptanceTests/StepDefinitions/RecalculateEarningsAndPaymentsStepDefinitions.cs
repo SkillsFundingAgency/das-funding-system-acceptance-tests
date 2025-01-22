@@ -8,6 +8,7 @@ using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
 using System;
 using SFA.DAS.CommitmentsV2.Messages.Events;
 using SFA.DAS.Payments.Model.Core.OnProgramme;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -15,7 +16,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     public class RecalculateEarningsAndPaymentsStepDefinitions
     {
         private readonly ScenarioContext _context;
-        private readonly EarningsEntitySqlClient _earningsEntitySqlClient;
+        private readonly EarningsSqlClient _earningsEntitySqlClient;
         private readonly CalculateEarningsForLearningPaymentsStepDefinitions _calculateEarningsStepDefinitions;
         private readonly CalculateUnfundedPaymentsStepDefinitions _calculateUnfundedPaymentsStepDefinitions;
         private readonly PaymentsMessageHandler _paymentsMessageHelper;
@@ -48,7 +49,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public RecalculateEarningsAndPaymentsStepDefinitions(ScenarioContext context)
         {
             _context = context;
-            _earningsEntitySqlClient = new EarningsEntitySqlClient();
+            _earningsEntitySqlClient = new EarningsSqlClient();
             _paymentsMessageHelper = new PaymentsMessageHandler(context);
             _calculateEarningsStepDefinitions = new CalculateEarningsForLearningPaymentsStepDefinitions(_context);
             _calculateUnfundedPaymentsStepDefinitions = new CalculateUnfundedPaymentsStepDefinitions(context);
@@ -64,17 +65,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task EarningsHaveBeenCalculatedForAnApprenticeshipWithAnd(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice, string trainingCode)
         {
             _calculateEarningsStepDefinitions.ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
-
-            await _calculateEarningsStepDefinitions.TheApprenticeshipCommitmentIsApproved();
         }
 
-        [Given(@"payments have been paid for an apprenticeship with (.*), (.*), (.*), and (.*)")]
-        public async Task GivenPaymentsHaveBeenCalculatedForAnApprenticeshipWithAnd(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice, string trainingCode)
+        [Given(@"payments have been paid for an apprenticeship with (.*), (.*)")]
+        public async Task GivenPaymentsHaveBeenCalculatedForAnApprenticeshipWithAnd(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate)
         {
-            _calculateEarningsStepDefinitions.ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
-
-            await _calculateEarningsStepDefinitions.TheApprenticeshipCommitmentIsApproved();
-
             await _calculateUnfundedPaymentsStepDefinitions.UnfundedPaymentsForTheRemainderOfTheApprenticeshipAreDetermined();
 
             _calculateUnfundedPaymentsStepDefinitions.UserWantsToProcessPaymentsForTheCurrentCollectionPeriod();
@@ -200,9 +195,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             // Validate Payments Entity
 
-            var paymentsApiClient = new PaymentsEntitySqlClient();
+            var paymentsApiClient = new PaymentsSqlClient();
 
-            _paymentDbRecords = paymentsApiClient.GetPaymentsEntityModel(_context).Payments;
+            _paymentDbRecords = paymentsApiClient.GetPaymentsModel(_context).Payments;
 
             _paymentDbRecords = _paymentDbRecords.Where(x => x.AcademicYear >= Convert.ToInt16(_currentCollectionYear)).ToList();
 

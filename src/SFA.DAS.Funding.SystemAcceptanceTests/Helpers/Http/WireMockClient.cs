@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
 /// <summary>
 /// This class is used to create mock responses for the WireMock server
