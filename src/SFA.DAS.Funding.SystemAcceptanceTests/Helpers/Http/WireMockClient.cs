@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
 /// <summary>
 /// This class is used to create mock responses for the WireMock server
@@ -12,8 +12,8 @@ internal class WireMockClient
 
     public WireMockClient()
     {
-        var connectionString = Configurator.GetConfiguration().WireMockBaseUrl;
-        _apiClient = HttpClientProvider.GetClient(connectionString);
+        var baseUrl = Configurator.GetConfiguration().WireMockBaseUrl;
+        _apiClient = HttpClientProvider.GetClient(baseUrl);
     }
 
     public async Task CreateMockResponse(string url, object body, string verb = "Get")

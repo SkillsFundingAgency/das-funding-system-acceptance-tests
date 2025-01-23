@@ -1,44 +1,74 @@
-﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
+
+[Binding]
+internal class AfterScenario
 {
-    [Binding]
-    internal class AfterScenario
+    private ScenarioContext _context;
+    private readonly string _outputFile;
+
+    public AfterScenario(ScenarioContext context)
     {
-        private ScenarioContext _context;
-        private readonly string _outputFile;
+        _context = context;
+        _outputFile = $"TESTDATA_{DateTime.Now:HH-mm-ss-fffff}.txt";
+    }
 
-        public AfterScenario(ScenarioContext context)
+    [AfterStep(Order = 10)]
+    public void AfterStep()
+    {
+        OutputTestDataToFile();
+    }
+
+    [AfterScenario(Order = 10)]
+    public void AfterScenarioCleanup()
+    {
+        var config = Configurator.GetConfiguration();
+        if (config.ShouldCleanUpTestRecords)
         {
-            _context = context;
-            _outputFile = $"TESTDATA_{DateTime.Now:HH-mm-ss-fffff}.txt";
+            PurgeCreatedRecords();
+        }
+    }
+
+    private void PurgeCreatedRecords()
+    {
+        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
+
+        var paymentsSqlClient = new PaymentsSqlClient();
+        paymentsSqlClient.DeletePayments(apprenticeshipKey);
+
+        var earningsSqlClient = new EarningsSqlClient();
+        earningsSqlClient.DeleteEarnings(apprenticeshipKey);
+
+        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
+        apprenticeshipSqlClient.DeleteApprenticeship(apprenticeshipKey);
+    }
+
+    private void OutputTestDataToFile()
+    {
+        string StepOutcome() => _context.TestError != null ? "ERROR" : "Done";
+
+        var stepInfo = _context.StepContext.StepInfo;
+
+        _context.Set($"-> {StepOutcome()}: {stepInfo.StepDefinitionType} {stepInfo.Text}");
+
+        IDictionary<string, string> testData = new Dictionary<string, string>();
+
+        foreach (KeyValuePair<string, object> kvp in _context)
+        {
+            string valueString = kvp.Value != null ? kvp.Value.ToString() : null;
+            testData[kvp.Key] = valueString;
         }
 
-        [AfterStep(Order = 10)]
-        public void AfterStep()
+        using (StreamWriter writer = File.CreateText(_outputFile))
         {
-            string StepOutcome() => _context.TestError != null ? "ERROR" : "Done";
-
-            var stepInfo = _context.StepContext.StepInfo;
-
-            _context.Set($"-> {StepOutcome()}: {stepInfo.StepDefinitionType} {stepInfo.Text}");
-
-            IDictionary<string, string> testData = new Dictionary<string, string>();
-
-            foreach (KeyValuePair<string, object> kvp in _context)
+            foreach (KeyValuePair<string, string> kvp in testData)
             {
-                string valueString = kvp.Value != null ? kvp.Value.ToString() : null;
-                testData[kvp.Key] = valueString;
+                writer.WriteLine($"{kvp.Key}: {kvp.Value}");
             }
-
-             using (StreamWriter writer = File.CreateText(_outputFile))
-            {
-                foreach (KeyValuePair<string, string> kvp in testData)
-                {
-                    writer.WriteLine($"{kvp.Key}: {kvp.Value}");
-                }
-            }
-
-            // Attach the test data file to the test output
-            TestContext.AddTestAttachment(_outputFile);
         }
+
+        // Attach the test data file to the test output
+        TestContext.AddTestAttachment(_outputFile);
     }
 }

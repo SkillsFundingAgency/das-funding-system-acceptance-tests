@@ -6,7 +6,8 @@ previous unpaid periods.
 
 @regression @releasesPayments
 Scenario: ReleasePaymentsOnlyWhenProviderPaymentsStatusIsActive
-	Given earnings have been calculated for an apprenticeship with currentAY-08-23, currentAYPlusTwo-08-23, 15000, and 2
+	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of currentAYPlusTwo-08-23, an agreed price of 15000, and a training code 2
+	And the apprenticeship commitment is approved
 	And the user wants to process payments for the current collection Period 
 	When Employer has frozen provider payments 
 	And the scheduler triggers Unfunded Payment processing

@@ -1,6 +1,7 @@
 ﻿using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
@@ -43,9 +44,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the newly calculated Unfunded Payments are marked as not sent to payments BAU")]
         public void NewlyCalculatedUnfundedPaymentsAreMarkedAsNotSentToPaymentsBAU()
         {
-            var apiClient = new PaymentsEntitySqlClient();
+            var apiClient = new PaymentsSqlClient();
 
-            var payments = apiClient.GetPaymentsEntityModel(_context).Payments;
+            var payments = apiClient.GetPaymentsModel(_context).Payments;
 
             Assert.IsTrue(payments.All(x => !x.SentForPayment));
         }
@@ -116,9 +117,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the relevant payments entities are marked as sent to payments BAU")]
         public void PaymentsEntitiesAreMarkedAsSentToPaymentsBAU()
         {
-            var apiClient = new PaymentsEntitySqlClient();
+            var apiClient = new PaymentsSqlClient();
 
-            _paymentEntity = apiClient.GetPaymentsEntityModel(_context).Payments;
+            _paymentEntity = apiClient.GetPaymentsModel(_context).Payments;
 
             Assert.IsTrue(_paymentEntity.Where(p => p.CollectionPeriod == _currentCollectionPeriod).All(p => p.SentForPayment));
         }

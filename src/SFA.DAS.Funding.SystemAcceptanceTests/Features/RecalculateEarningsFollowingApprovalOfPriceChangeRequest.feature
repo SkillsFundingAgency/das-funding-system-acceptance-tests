@@ -16,7 +16,8 @@ Example 5: Price Rise in R13 of year 1 - New Price at Funding Band Max
 
 @regression
 Scenario: Price change approved; recalc earnings
-	Given earnings have been calculated for an apprenticeship with <start_date>, <end_date>, <agreed_price>, and <training_code>
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the apprenticeship commitment is approved
 	And the total price is above or below or at the funding band maximum
 	And a price change request was sent on <pc_from_date>
 	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>

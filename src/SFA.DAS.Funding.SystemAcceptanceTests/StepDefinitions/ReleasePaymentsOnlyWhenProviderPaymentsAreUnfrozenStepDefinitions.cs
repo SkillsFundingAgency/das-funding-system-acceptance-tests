@@ -1,10 +1,8 @@
-using Newtonsoft.Json;
 using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using SFA.DAS.Payments.Model.Core.Entities;
-using TechTalk.SpecFlow;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -18,7 +16,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private PaymentsUnfrozenEvent _paymentsUnfrozenEvent;
         private TestSupport.Payments[] _paymentEntity;
         private readonly PaymentsMessageHandler _paymentsMessageHelper;
-        private readonly PaymentsEntitySqlClient _paymentsApiClient;
+        private readonly PaymentsSqlClient _paymentsApiClient;
         private byte _currentCollectionPeriod;
         private string _currentCollectionYear;
 
@@ -28,7 +26,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _paymentsFrozenEventHelper = new PaymentsFrozenEventHelper(context);
             _paymentsUnfrozenEventHelper = new PaymentsUnfrozenEventHelper(context);
             _paymentsMessageHelper = new PaymentsMessageHandler(context);
-            _paymentsApiClient = new PaymentsEntitySqlClient();
+            _paymentsApiClient = new PaymentsSqlClient();
         }
 
         [When(@"Employer has frozen provider payments")]
@@ -53,7 +51,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await Task.Delay(10000);
             await WaitHelper.WaitForIt(() =>
             {
-                return _paymentsApiClient.GetPaymentsEntityModel(_context).PaymentsFrozen == false;
+                return _paymentsApiClient.GetPaymentsModel(_context).PaymentsFrozen == false;
             }, "Payments are still frozen in durable entity");
         }
 
@@ -75,7 +73,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             await WaitHelper.WaitForIt(() =>
             {
-                var paymentModel = _paymentsApiClient.GetPaymentsEntityModel(_context);
+                var paymentModel = _paymentsApiClient.GetPaymentsModel(_context);
 
                 return paymentModel?.PaymentsFrozen == true;
 
@@ -83,7 +81,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await WaitHelper.WaitForUnexpected(() =>
             {
-                var paymentModel = _paymentsApiClient.GetPaymentsEntityModel(_context);
+                var paymentModel = _paymentsApiClient.GetPaymentsModel(_context);
 
                 return paymentModel?.Payments != null && paymentModel.Payments.Any(p => p.SentForPayment);
 
@@ -95,7 +93,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             await WaitHelper.WaitForIt(() =>
             {
-                var paymentModel = _paymentsApiClient.GetPaymentsEntityModel(_context);
+                var paymentModel = _paymentsApiClient.GetPaymentsModel(_context);
 
                 return paymentModel?.PaymentsFrozen == false;
 
@@ -103,7 +101,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await WaitHelper.WaitForIt(() =>
             {
-                var paymentModel = _paymentsApiClient.GetPaymentsEntityModel(_context);
+                var paymentModel = _paymentsApiClient.GetPaymentsModel(_context);
 
                 var payments = paymentModel.Payments.Where(p => p.CollectionPeriod <= _currentCollectionPeriod
                 && p.CollectionYear == short.Parse(_currentCollectionYear));

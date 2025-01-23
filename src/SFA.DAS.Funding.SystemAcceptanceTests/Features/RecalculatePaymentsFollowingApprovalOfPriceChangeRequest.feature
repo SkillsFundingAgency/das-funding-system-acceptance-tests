@@ -13,7 +13,9 @@ Example 4: Price Rise in year 2 - New price at Funding Band Max
 
 @regression @releasesPayments
 Scenario: Price change approved; recalc payments
-	Given payments have been paid for an apprenticeship with <start_date>, <end_date>, <agreed_price>, and <training_code>
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the apprenticeship commitment is approved
+	And payments have been paid for an apprenticeship with <start_date>, <end_date>
 	And a price change request was sent on <pc_from_date>
 	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>
 	And funding band max <funding_band_max> is determined for the training code
