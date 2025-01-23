@@ -7,6 +7,12 @@ using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
 
 [Binding]
+/// <summary>
+/// This class will 'approve' the apprenticeship commitment therefore creating it in the das-apprenticeship,
+/// funding-earnings and funding-payments. 
+/// The configuration of the apprenticeship is done in the ConfigureApprenticeshipStepDefinition class before
+/// the approve is called.
+/// </summary>
 public class ApproveApprenticeshipStepDefinition
 {
 

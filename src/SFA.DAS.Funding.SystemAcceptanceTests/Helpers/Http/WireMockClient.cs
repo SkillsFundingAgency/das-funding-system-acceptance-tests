@@ -12,8 +12,8 @@ internal class WireMockClient
 
     public WireMockClient()
     {
-        var connectionString = Configurator.GetConfiguration().WireMockBaseUrl;
-        _apiClient = HttpClientProvider.GetClient(connectionString);
+        var baseUrl = Configurator.GetConfiguration().WireMockBaseUrl;
+        _apiClient = HttpClientProvider.GetClient(baseUrl);
     }
 
     public async Task CreateMockResponse(string url, object body, string verb = "Get")
