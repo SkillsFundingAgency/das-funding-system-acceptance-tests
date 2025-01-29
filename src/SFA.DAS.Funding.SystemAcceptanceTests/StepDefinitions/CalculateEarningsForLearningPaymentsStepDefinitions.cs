@@ -43,6 +43,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             deliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(instalmentAmount));
         }
 
+        [Given(@"the planned number of months must be the number of months from the start date to the planned end date (.*)")]
         [Then(@"the planned number of months must be the number of months from the start date to the planned end date (.*)")]
         public void VerifyThePlannedDurationMonthsWithinTheEarningsGenerated(short numberOfInstalments)
         {
