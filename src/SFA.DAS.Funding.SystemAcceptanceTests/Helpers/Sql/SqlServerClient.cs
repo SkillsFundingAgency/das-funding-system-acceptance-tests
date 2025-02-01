@@ -12,14 +12,14 @@ internal class SqlServerClient
         _connectionString = connectionString;
     }
 
-    public List<T> GetList<T>(string sql)
+    public List<T> GetList<T>(string sql, object? parameters = null)
     {
         List<T> result = new List<T>();
 
         using (SqlConnection connection = new SqlConnection(_connectionString))
         {
             connection.Open();
-            result = connection.Query<T>(sql).ToList();
+            result = connection.Query<T>(sql, parameters).ToList();
             connection.Close();
         }
 

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Net;
 using System.Text;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
@@ -21,6 +22,8 @@ internal class ApprenticeshipsClient
         var request = new HttpRequestMessage(HttpMethod.Post, $"api/WithdrawApprenticeship?code={_functionKey}");
         request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
         var response = await _apiClient.SendAsync(request);
+
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"Expected HTTP 200 OK response from Withdrawal request, but got {response.StatusCode}");
     }
 }
 

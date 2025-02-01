@@ -34,7 +34,7 @@ internal class ApprenticeshipsSqlClient
 
     public Apprenticeship GetApprenticeship(Guid apprenticeshipKey)
     {
-        var apprenticeship = _sqlServerClient.GetList<Apprenticeship>("SELECT * FROM [dbo].[Apprenticeship]").FirstOrDefault();
+        var apprenticeship = _sqlServerClient.GetList<Apprenticeship>("SELECT * FROM [dbo].[Apprenticeship] WHERE [KEY] = @apprenticeshipKey", new {apprenticeshipKey}).FirstOrDefault(); ;
         if (apprenticeship == null)
         {
             throw new InvalidOperationException("No apprenticeship found");
