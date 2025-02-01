@@ -4,6 +4,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using System.ComponentModel.DataAnnotations;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -42,7 +43,7 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     {
         _context = context;
         _earningsEntitySqlClient = new EarningsSqlClient();
-        _paymentsMessageHelper = new PaymentsMessageHandler(context);;
+        _paymentsMessageHelper = new PaymentsMessageHandler(context);
         _calculateUnfundedPaymentsStepDefinitions = new CalculateUnfundedPaymentsStepDefinitions(context);
         _priceChangeApprovedEventHelper = new PriceChangeApprovedEventHelper(_context);
         _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
@@ -62,11 +63,15 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
         await _calculateUnfundedPaymentsStepDefinitions.SchedulerTriggersUnfundedPaymentProcessing();
 
         var startDatePeriod = TableExtensions.Period[startDate.Value.ToString("MMMM")];
+        var startDateYear = TableExtensions.CalculateAcademicYear("0", startDate.Value);
 
         _originalStartDate = startDate.Value;
         _plannedEndDate = plannedEndDate.Value;
 
-        await _calculateUnfundedPaymentsStepDefinitions.UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(_currentCollectionPeriod - startDatePeriod);
+        var firstDeliveryPeriod = short.Parse(startDateYear) < short.Parse(_currentCollectionYear) ? TableExtensions.Period["August"] : startDatePeriod;
+
+
+        await _calculateUnfundedPaymentsStepDefinitions.UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(_currentCollectionPeriod - firstDeliveryPeriod);
     }
 
 

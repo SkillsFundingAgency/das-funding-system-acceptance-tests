@@ -3,7 +3,10 @@ using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using System.Linq;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
+using System.Runtime.Intrinsics.Arm;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -13,13 +16,22 @@ internal class WithdrawApprenticeshipStepDefinitions
     private readonly ScenarioContext _context;
     private Helpers.Sql.Apprenticeship? apprenticeship;
     private readonly EarningsRecalculatedEventHelper _earningsRecalculatedEventHelper;
+    private PaymentsGeneratedEvent paymentsGeneratedEvent;
     private EarningsApprenticeshipModel? _earningsApprenticeshipModel;
+    private PaymentsApprenticeshipModel? _paymentsApprenticeshipModel; 
     private ApprenticeshipEarningsRecalculatedEvent _recalculatedEarningsEvent;
+    private readonly PaymentsMessageHandler _paymentsMessageHelper;
+    private readonly byte _currentCollectionPeriod;
+    private readonly string _currentCollectionYear;
+    private DateTime _lastDayOfLearning;
 
     public WithdrawApprenticeshipStepDefinitions(ScenarioContext context)
     {
         _context = context;
         _earningsRecalculatedEventHelper = new EarningsRecalculatedEventHelper(_context);
+        _paymentsMessageHelper = new PaymentsMessageHandler(context);
+        _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
+        _currentCollectionYear = TableExtensions.CalculateAcademicYear("0");
     }
 
     [When(@"the apprenticeship is withdrawn")]
@@ -45,6 +57,11 @@ internal class WithdrawApprenticeshipStepDefinitions
     [When("a Withdrawal request is recorded with a reason (.*) and last day of delivery (.*)")]
     public async Task WithdrawalRequestIsRecordedWithAReasonWithdrawDuringLearningAndLastDayOfDelivery(string reason, DateTime lastDayOfDelivery)
     {
+        // clear previous PaymentsGeneratedEvent before triggering the withdrawal
+        PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
+
+        _lastDayOfLearning = lastDayOfDelivery;
+
         var apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
         var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
 
@@ -55,7 +72,7 @@ internal class WithdrawApprenticeshipStepDefinitions
             ULN = apprenticeshipCreatedEvent.Uln,
             Reason = reason,
             ReasonText = "",
-            LastDayOfLearning = lastDayOfDelivery,
+            LastDayOfLearning = _lastDayOfLearning,
             ProviderApprovedBy = "SystemAcceptanceTest"
         };
 
@@ -91,6 +108,18 @@ internal class WithdrawApprenticeshipStepDefinitions
         _earningsApprenticeshipModel = new EarningsSqlClient().GetEarningsEntityModel(_context);
     }
 
+    [Then("payments are recalculated")]
+    public async Task PaymentsAreRecalculated()
+    {
+        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
+
+        // Receive the updated PaymentsGeneratedEvent
+        await _paymentsMessageHelper.ReceivePaymentsEvent(apprenticeshipKey);
+
+        _paymentsApprenticeshipModel = new PaymentsSqlClient().GetPaymentsModel(_context);
+    }
+
+
     [Then("the expected number of earnings instalments after withdrawal are (.*)")]
     public void ExpectedNumberOfEarningsInstalmentsAfterWithdrawalIs(int expectedInstalmentsNumber)
     {
@@ -118,5 +147,51 @@ internal class WithdrawApprenticeshipStepDefinitions
 
             Assert.IsTrue(isValidEarningInDb, $"Some instalments have a delivery period > {deliveryPeriod} and academic year > {academicYear} in earnings db.");
         }
+    }
+
+    [Then("new payments with amount (.*) are marked as Not sent for payment and clawed back")]
+    public void NewPaymentsWithAmountSinceDeliveryPeriodAndAcademicYearAreMarkedAsNotSentForPaymentClawedBack(decimal amount)
+    {
+        var earningsGeneratedEvent = _context.Get<EarningsGeneratedEvent>();
+
+        var lastDayOfLearningPeriod = TableExtensions.Period[_lastDayOfLearning.ToString("MMMM")];
+        var lastDayOfLearningAcademicYear = short.Parse(TableExtensions.CalculateAcademicYear("0", _lastDayOfLearning));
+
+        //var startDatePeriod = TableExtensions.Period[earningsGeneratedEvent.StartDate.ToString("MMMM")];
+        var startDateAcademicYear = short.Parse(TableExtensions.CalculateAcademicYear("0", earningsGeneratedEvent.StartDate));
+
+        var firstDeliveryPeriod = startDateAcademicYear < short.Parse(_currentCollectionYear) ? TableExtensions.Period["August"] : lastDayOfLearningPeriod;
+
+           var expectedPaymentPeriods = PaymentDeliveryPeriodExpectationBuilder.BuildForDeliveryPeriodRange(
+           new Period(short.Parse(_currentCollectionYear), firstDeliveryPeriod),
+           new Period(short.Parse(_currentCollectionYear), _currentCollectionPeriod),
+           new PaymentExpectation
+           {
+               Amount = -amount,
+               SentForPayment = false
+           });
+
+            paymentsGeneratedEvent = _context.Get<PaymentsGeneratedEvent>();
+
+            // Validate PaymentsGenerateEvent & Payments Entity
+            expectedPaymentPeriods.AssertAgainstEventPayments(paymentsGeneratedEvent.Payments);
+
+            expectedPaymentPeriods.AssertAgainstEntityArray(_paymentsApprenticeshipModel.Payments);
+    }
+
+    [Then("all the payments from delivery periods after last payment made are deleted")]
+    public void ThenAllThePaymentsFromDeliveryPeriodsAfterLastPaymentMadeAreDeleted()
+    {
+        bool futurePaymentsDeletedFromEvent = paymentsGeneratedEvent.Payments
+        .All(x => x.AcademicYear < short.Parse(_currentCollectionYear)
+            || (x.AcademicYear == Convert.ToInt16(_currentCollectionYear) && x.DeliveryPeriod <= Convert.ToInt16(_currentCollectionPeriod)));
+
+        Assert.IsTrue(futurePaymentsDeletedFromEvent, $"Some instalments have a delivery period > {_currentCollectionPeriod} and academic year > {_currentCollectionYear} in recalculated payments event.");
+
+        bool isValidPaymentsInDb = _paymentsApprenticeshipModel.Payments.All(i => i.AcademicYear < Convert.ToInt16(_currentCollectionYear)
+               || (i.AcademicYear == Convert.ToInt16(_currentCollectionYear) && i.DeliveryPeriod <= Convert.ToInt16(_currentCollectionPeriod)));
+
+        Assert.IsTrue(isValidPaymentsInDb, $"Some instalments have a delivery period > {_currentCollectionPeriod} and academic year > {_currentCollectionYear} in payments db.");
+
     }
 }
