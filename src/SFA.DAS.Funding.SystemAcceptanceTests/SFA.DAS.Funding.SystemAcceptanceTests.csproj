@@ -27,6 +27,7 @@
     <PackageReference Include="System.Security.Cryptography.Xml" Version="7.0.1" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
 	<PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Messages" Version="0.0.14" />
+	<PackageReference Include="WireMock.Net" Version="1.7.1" />
   </ItemGroup>
 
   <ItemGroup>
