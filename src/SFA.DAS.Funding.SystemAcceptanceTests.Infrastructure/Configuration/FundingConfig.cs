@@ -27,4 +27,5 @@ public class FundingConfig
     public string Pv2ServiceBusFqdn { get; set; } = "<not set>";
     public string Pv2FundingSourceQueue { get; set; } = "<not set>";
     public int EventWaitTimeInSeconds { get; set; } = 120;
+    public string ApprovalCreatedQueue { get; set; } = "<not set>";
 }
