@@ -6,9 +6,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
     public static class Configurator
     {
 
-        private readonly static string? EnvironmentName;
-        private readonly static bool IsVstsExecution;
-        private readonly static IConfigurationRoot _hostingConfig;
+        public static readonly string? EnvironmentName;
+        private static readonly bool IsVstsExecution;
+        private static readonly IConfigurationRoot _hostingConfig;
 
         static Configurator()
         {
