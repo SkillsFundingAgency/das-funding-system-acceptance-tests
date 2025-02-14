@@ -5,10 +5,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 [TypeConverter(typeof(TokenisableDateTimeConverter))]
 public class TokenisableDateTime
 {
-	private const string CurrentAyToken = "currentAY";
-	private const string PreviousAyToken = "previousAY";
-	private const string NextAyToken = "nextAY";
-    private const string CurrentAyPlusTwoToken = "currentAYPlusTwo";
+    public const string CurrentAyToken = "currentAY";
+    public const string PreviousAyToken = "previousAY";
+    public const string NextAyToken = "nextAY";
+    public const string CurrentAyPlusTwoToken = "currentAYPlusTwo";
+    public const string CurrentDate = "currentDate";
 
     public TokenisableDateTime(DateTime value)
 	{
@@ -24,9 +25,14 @@ public class TokenisableDateTime
 			return new TokenisableDateTime(parseResult);
 		}
 
-		var dateComponents = value.Split('-');
+        if (value.ToLower() == CurrentDate.ToLower())
+        {
+            return new TokenisableDateTime(DateTime.Now);
+        }
 
-		if (dateComponents[0].ToLower() == CurrentAyToken.ToLower())
+        var dateComponents = value.Split('-');
+
+        if (dateComponents[0].ToLower() == CurrentAyToken.ToLower())
 		{
 			return new TokenisableDateTime(GetDateForCurrentAcademicYear(dateComponents));
 		}
