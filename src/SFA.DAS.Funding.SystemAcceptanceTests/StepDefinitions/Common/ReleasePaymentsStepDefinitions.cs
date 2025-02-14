@@ -24,15 +24,14 @@ public class ReleasePaymentsStepDefinitions
     }
 
 
-    [Given(@"payments are released")]
-    [When(@"payments are released")]
-    public async Task ReleasePayments()
+    [Given(@"payments are released for (.*)")]
+    [When(@"payments are released for (.*)")]
+    public async Task ReleasePayments(TokenisableDateTime searchDate)
     {
-        //var releasePaymentsCommand = _context.Get<ReleasePaymentsCommand>();
         var releasePaymentsCommand = new ReleasePaymentsCommand();
 
-        releasePaymentsCommand.CollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];// DELETE THIS IS TEMP
-        releasePaymentsCommand.CollectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0"));// DELETE THIS IS TEMP
+        releasePaymentsCommand.CollectionPeriod = TableExtensions.Period[searchDate.Value.ToString("MMMM")];
+        releasePaymentsCommand.CollectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", searchDate.Value));
 
         await _messageHelper.PublishReleasePaymentsCommand(releasePaymentsCommand);
     }
