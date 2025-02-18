@@ -10,7 +10,7 @@ public static class PeriodisedValuesHelper
         if (values == null)
             Assert.Fail($"No PriceEpisodePeriodisedValues found for attribute {attributeName}");
 
-        foreach (var propertyInfo in typeof(PriceEpisodePeriodisedValues).GetProperties().Where(p => p.Name.StartsWith("period")))
+        foreach (var propertyInfo in typeof(PriceEpisodePeriodisedValues).GetProperties().Where(p => p.Name.StartsWith("Period")))
         {
             var periodNumber = byte.Parse(propertyInfo.Name.Substring(6));
             yield return (periodNumber, propertyInfo.GetValue(values).As<decimal>());
