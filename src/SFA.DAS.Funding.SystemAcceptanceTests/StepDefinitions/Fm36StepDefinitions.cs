@@ -4,7 +4,6 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
-using FluentAssertions;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -131,9 +130,9 @@ public class Fm36StepDefinitions
             Assert.AreEqual("25-" + apprenticeshipCreatedEvent.TrainingCode, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeLDAppIdent, "Unexpected PriceEpisodeLDAppIdent value found!");
             Assert.AreEqual(EarningsFM36Constants.PriceEpisodeAugmentedBandLimitFactor, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeAugmentedBandLimitFactor, "Unexpected PriceEpisodeAugmentedBandLimitFactor value found!");
 
-            var PriceEpisodeApplic1618FrameworkUpliftBalancing = fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues.Where(x => x.AttributeName == "PriceEpisodeApplic1618FrameworkUpliftBalancing").FirstOrDefault();
-            var allZeroPriceEpisodeApplic1618FrameworkUpliftBalancing = PriceEpisodeApplic1618FrameworkUpliftBalancing?.GetType().GetProperties().Where(p => p.Name.StartsWith("period")).All(p => (int)p.GetValue(PriceEpisodeApplic1618FrameworkUpliftBalancing) == 0);
-            Assert.IsTrue(allZeroPriceEpisodeApplic1618FrameworkUpliftBalancing, "Not all PriceEpisodeApplic1618FrameworkUpliftBalancing are zero.");
+            fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeApplic1618FrameworkUpliftBalancing)
+                .Should().OnlyContain(x => x.Value == 0, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeApplic1618FrameworkUpliftBalancing} are zero.");
 
             var PriceEpisodeApplic1618FrameworkUpliftCompletionPayment = fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues.Where(x => x.AttributeName == "PriceEpisodeApplic1618FrameworkUpliftBalancing").FirstOrDefault();
             var allZeroPriceEpisodeApplic1618FrameworkUpliftCompletionPayment = PriceEpisodeApplic1618FrameworkUpliftCompletionPayment?.GetType().GetProperties().Where(p => p.Name.StartsWith("period")).All(p => (int)p.GetValue(PriceEpisodeApplic1618FrameworkUpliftCompletionPayment) == 0);
