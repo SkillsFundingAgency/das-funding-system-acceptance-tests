@@ -349,14 +349,14 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
 
         var newEarningsProfile = _earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.Instalments;
 
-        for (int i = 0; i < delivery_period - 1; i++)
+        for (int i = 1; i < delivery_period; i++)
         {
-            if (newEarningsProfile[i].AcademicYear <= Convert.ToInt16(academicYear))
-            {
-                Assert.AreEqual(oldInstalmentAmount, newEarningsProfile[i].Amount, $"Earning prior to DeliveryPeriod {delivery_period} " +
-                    $" are not frozen. Expected Amount for Delivery Period: {newEarningsProfile[i].DeliveryPeriod} and AcademicYear: " +
-                    $" {newEarningsProfile[i].AcademicYear} to be {oldInstalmentAmount} but was {newEarningsProfile[i].Amount}");
-            }
+            var instalment =
+                newEarningsProfile.Single(x => x.AcademicYear.ToString() == academicYear && x.DeliveryPeriod == i);
+
+            Assert.AreEqual(oldInstalmentAmount, instalment.Amount, $"Earning prior to DeliveryPeriod {delivery_period} " +
+                                                                               $" are not frozen. Expected Amount for Delivery Period: {instalment.DeliveryPeriod} and AcademicYear: " +
+                                                                               $" {instalment.AcademicYear} to be {oldInstalmentAmount} but was {instalment.Amount}");
         }
     }
 
