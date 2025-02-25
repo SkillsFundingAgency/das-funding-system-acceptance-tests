@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using System;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 
@@ -47,10 +48,11 @@ public static class TableExtensions
 
     public static string GetAcademicYear(string stringDate)
     {
-        var date = stringDate == "currentAY" ? DateTime.Now
-            : stringDate == "nextAY" ? DateTime.Now.AddYears(1)
-            : stringDate == "previousAY" ? DateTime.Now.AddYears(-1)
-            : stringDate == "currentAYPlusTwo" ? DateTime.Now.AddYears(2)
+        var date = stringDate == TokenisableDateTime.CurrentDate ? DateTime.Now
+            : stringDate == TokenisableDateTime.CurrentAyToken ? DateTime.Now
+            : stringDate == TokenisableDateTime.NextAyToken ? DateTime.Now.AddYears(1)
+            : stringDate == TokenisableDateTime.PreviousAyToken ? DateTime.Now.AddYears(-1)
+            : stringDate == TokenisableDateTime.CurrentAyPlusTwoToken ? DateTime.Now.AddYears(2)
             : default;
 
         return CalculateAcademicYear("0", date);
