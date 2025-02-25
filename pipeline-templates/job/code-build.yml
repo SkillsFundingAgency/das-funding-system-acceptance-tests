@@ -1,6 +1,7 @@
 parameters:
   SolutionBaseName:
   BuildConfiguration:
+  AzureArtifactsFeed:
 
 jobs:
 - job: CodeBuild
@@ -16,3 +17,4 @@ jobs:
   - template: azure-pipelines-templates/build/step/app-build.yml@das-platform-building-blocks
     parameters:
       ContinueOnVulnerablePackageScanError: true
+      AzureArtifactsFeed: ${{ parameters.AzureArtifactsFeed }}

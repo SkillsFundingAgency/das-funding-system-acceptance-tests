@@ -15,19 +15,19 @@ variables:
 - group: RELEASE das-funding-system-acceptance-tests
 - name: Deploy
   value: $[or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'PullRequest'))]
-  
+
 resources:
   repositories:
   - repository: self
   - repository: das-platform-building-blocks
     type: github
     name: SkillsFundingAgency/das-platform-building-blocks
-    ref: refs/tags/2.1.28
+    ref: refs/tags/2.2.26
     endpoint: SkillsFundingAgency
   - repository: das-platform-automation
     type: github
     name: SkillsFundingAgency/das-platform-automation
-    ref: refs/tags/5.1.8
+    ref: refs/tags/5.1.15
     endpoint: SkillsFundingAgency
 
 stages:
@@ -37,6 +37,7 @@ stages:
     parameters:
       SolutionBaseName: $(SolutionBaseName)
       BuildConfiguration: $(BuildConfiguration)
+      AzureArtifactsFeed: dct-pkg
 - stage: Deploy_AT
   dependsOn: Build
   displayName: Deploy to AT
