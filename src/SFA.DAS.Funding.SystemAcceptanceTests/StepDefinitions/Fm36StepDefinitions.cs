@@ -675,4 +675,52 @@ public class Fm36StepDefinitions
 
         fm36Learner.Should().BeNull();
     }
+
+    [Then(@"fm36 FundStart value is (.*)")]
+    public void ThenFm36FundStartValueIsFalse(string expectedValue)
+    {
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
+        var earningsSqlClient = new EarningsSqlClient();
+
+        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
+
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
+
+        // get your learner data 
+
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+
+        var parsedExpectedValue = bool.Parse(expectedValue);
+
+        Assert.AreEqual(parsedExpectedValue,
+            fm36Learner.LearningDeliveries.First().LearningDeliveryValues.FundStart, "Unexpected FundStart found!");
+    }
+
+    [Then(@"fm36 ThresholdDays value is (.*)")]
+    public void ThenFm36ThresholdDaysValueIs(int expectedValue)
+    {
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
+        var earningsSqlClient = new EarningsSqlClient();
+
+        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
+
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
+
+        // get your learner data 
+
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+
+        Assert.AreEqual(expectedValue,
+            fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ThresholdDays, "Unexpected ThresholdDays value found!");
+    }
+
+
 }
