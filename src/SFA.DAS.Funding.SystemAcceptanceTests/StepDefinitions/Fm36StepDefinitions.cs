@@ -677,7 +677,7 @@ public class Fm36StepDefinitions
     }
 
     [Then(@"fm36 FundStart value is (.*)")]
-    public void ThenFm36FundStartValueIsFalse(string expectedValue)
+    public void ThenFm36FundStartValueIsFalse(bool expectedValue)
     {
         var fm36 = _context.Get<List<FM36Learner>>();
         var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
@@ -694,9 +694,7 @@ public class Fm36StepDefinitions
 
         var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
 
-        var parsedExpectedValue = bool.Parse(expectedValue);
-
-        Assert.AreEqual(parsedExpectedValue,
+        Assert.AreEqual(expectedValue,
             fm36Learner.LearningDeliveries.First().LearningDeliveryValues.FundStart, "Unexpected FundStart found!");
     }
 
