@@ -40,15 +40,14 @@ Examples:
 	| start_date      | end_date        | agreed_price | training_code | reason            | last_day_of_delivery |
 	| currentAY-08-01 | currentAY-07-31 | 15000        | 2             | WithdrawFromStart | currentAY-08-01      |
 
+@regression
+Scenario: Withdrawal of learner from private beta results in no FM36 block (FLP-969 AC4)
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the apprenticeship commitment is approved
+	When a Withdrawal request is recorded with a reason <reason> and last day of delivery <last_day_of_delivery>
+	And the fm36 data is retrieved for currentDate
+	Then fm36 data does not exist for that apprenticeship
 
-#@regression
-#Scenario: Withdrawal of learner from private beta results in no FM36 block (FLP-969 AC4)
-#	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-#	And the apprenticeship commitment is approved
-#	When a Withdrawal request is recorded with a reason <reason> and last day of delivery <last_day_of_delivery>
-#	And the fm36 data is retrieved for currentDate
-#	Then fm36 data does not exist for that apprenticeship
-#
-#Examples:
-#	| start_date      | end_date        | agreed_price | training_code | reason           | last_day_of_delivery |
-#	| currentAY-08-01 | currentAY-07-31 | 15000        | 2             | WithdrawFromBeta | currentAYPlusTwo     |
+Examples:
+	| start_date      | end_date        | agreed_price | training_code | reason           | last_day_of_delivery |
+	| currentAY-08-01 | currentAY-07-31 | 15000        | 2             | WithdrawFromBeta | currentAY-011-01     |
