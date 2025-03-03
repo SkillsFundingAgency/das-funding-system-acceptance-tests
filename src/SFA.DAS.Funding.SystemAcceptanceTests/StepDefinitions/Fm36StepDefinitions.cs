@@ -742,4 +742,24 @@ public class Fm36StepDefinitions
             fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected FundStart found!");
     }
 
+    [Then(@"fm36 block contains a new price episode")]
+    public void ThenFmBlockContainsANewPriceEpisode()
+    {
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
+        var earningsSqlClient = new EarningsSqlClient();
+
+        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
+
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
+
+        // get your learner data 
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+
+        Assert.AreEqual(2, fm36Learner.PriceEpisodes.Count);
+    }
+
 }
