@@ -21,7 +21,9 @@ public class Fm36StepDefinitions
         _earningsOuterClient = new EarningsOuterClient();
     }
 
+    [Given(@"the fm36 data is retrieved for (.*)")]
     [When(@"the fm36 data is retrieved for (.*)")]
+    [Then(@"the fm36 data is retrieved for (.*)")]
     public async Task GetFm36Data(TokenisableDateTime searchDate)
     {
         var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
@@ -30,6 +32,7 @@ public class Fm36StepDefinitions
 
         var fm36 = await _earningsOuterClient.GetFm36Block(apprenticeshipCreatedEvent.ProviderId, collectionYear,
             collectionPeriod);
+
         _context.Set(fm36);
     }
 
@@ -759,7 +762,15 @@ public class Fm36StepDefinitions
         // get your learner data 
         var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
 
-        Assert.AreEqual(2, fm36Learner.PriceEpisodes.Count);
+        Assert.AreEqual(2, fm36Learner.PriceEpisodes.Count,$"Expected 2 price episodes but got {fm36Learner?.PriceEpisodes?.Count}");
     }
 
+    [Then(@"the fm36 PriceEpisodeInstalmentValue is (.*)")]
+    public void ThenTheFmPriceEpisodeInstalmentValueIs(int priceEpisodeInstalmentValue)
+    {
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        Assert.AreEqual(priceEpisodeInstalmentValue, fm36Learner!.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeInstalmentValue);
+    }
 }
