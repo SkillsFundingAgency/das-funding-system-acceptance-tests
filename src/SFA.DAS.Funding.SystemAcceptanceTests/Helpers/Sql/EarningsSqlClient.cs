@@ -34,6 +34,7 @@ internal class EarningsSqlClient
                 history.Instalments = _sqlServerClient.GetList<InstalmentHistoryModel>($"SELECT * FROM [Domain].[Instalment] Where EarningsProfileId ='{history.EarningsProfileId}'");
             }
 
+            episode.AdditionalPayments = _sqlServerClient.GetList<AdditionalPaymentsModel>($"SELECT * FROM [Domain].[AdditionalPayment] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
         }
 
         apprenticeship.Episodes = apprenticeshipEpisodes;
