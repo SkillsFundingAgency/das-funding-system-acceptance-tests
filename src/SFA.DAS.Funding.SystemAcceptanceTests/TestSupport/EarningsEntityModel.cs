@@ -26,6 +26,7 @@ public class EpisodeModel
     public List<EpisodePriceModel> Prices { get; set; }
     public EarningsProfileModel EarningsProfile { get; set; }
     public List<EarningsProfileHistoryModel> EarningsProfileHistory { get; set; }
+    public List<AdditionalPaymentsModel> AdditionalPayments { get; set; }
 }
 
 public class EpisodePriceModel
@@ -74,4 +75,16 @@ public class InstalmentModel : InstalmentModelBase
 public class InstalmentHistoryModel : InstalmentModelBase
 {
 
+}
+
+public class AdditionalPaymentsModel : InstalmentModelBase
+{
+    public AdditionalPaymentType AdditionalPaymentType { get; set; }
+    public DateTime DueDate { get; set; }
+}
+
+public enum AdditionalPaymentType
+{
+    ProviderIncentive,
+    EmployerIncentive
 }

@@ -69,6 +69,17 @@ public class ConfigureApprenticeshipStepDefinition
         _messageHelper.UpdateApprenticeshipCreatedMessageWithDoB(commitmentsApprenticeshipCreatedEvent, dob);
     }
 
+    [Given("the age at the start of the apprenticeship is (.*)")]
+    public void TheAgeAtTheStartOfTheApprenticeshipIs(int age)
+    {
+        var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        var dob = commitmentsApprenticeshipCreatedEvent.ActualStartDate.Value.AddYears(-age);
+
+        _messageHelper.UpdateApprenticeshipCreatedMessageWithDoB(commitmentsApprenticeshipCreatedEvent, dob);
+    }
+
+
     [Given(@"the apprenticeship learner's age is (below|at) (.*)")]
     public void ApprenticeshipLearnersAgeIsBelowOrAt(string condition, int age)
     {
