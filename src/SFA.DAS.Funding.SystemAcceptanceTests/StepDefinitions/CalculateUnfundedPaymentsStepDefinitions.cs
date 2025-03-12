@@ -1,6 +1,7 @@
 ﻿using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -17,6 +18,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private List<TestSupport.Payments> _paymentEntity;
         private readonly byte _currentCollectionPeriod;
         private readonly string _currentCollectionYear;
+        private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
 
         public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context)
         {
@@ -24,6 +26,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _paymentsMessageHelper = new PaymentsMessageHandler(context);
             _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
             _currentCollectionYear = TableExtensions.CalculateAcademicYear("0");
+            _paymentsFunctionsClient = new PaymentsFunctionsClient();
         }
 
         [Given(@"the Unfunded Payments for the remainder of the apprenticeship are determined")]
@@ -63,26 +66,26 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"the scheduler triggers Unfunded Payment processing")]
         public async Task SchedulerTriggersUnfundedPaymentProcessing()
         {
-            await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
+            await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_currentCollectionPeriod,
+                Convert.ToInt16(_currentCollectionYear));
+
             await Task.Delay(10000);
         }
 
         [Given(@"fire command")]
         public async Task FireCommand()
         {
-            _releasePaymentsCommand = new ReleasePaymentsCommand();
-            _releasePaymentsCommand.CollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
-            _releasePaymentsCommand.CollectionYear = Convert.ToInt16(_currentCollectionYear);
-            await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
+            await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_currentCollectionPeriod,
+                Convert.ToInt16(_currentCollectionYear));
         }
-
 
         [When(@"the Release Payments command is published again")]
         public async Task WhenTheReleasePaymentsCommandIsPublishedAgain()
         {
             FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Clear();
 
-            await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
+            await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_currentCollectionPeriod,
+                Convert.ToInt16(_currentCollectionYear));
         }
 
         [When(@"the unpaid unfunded payments for the current Collection Month and (.*) rollup payments are sent to be paid")]
