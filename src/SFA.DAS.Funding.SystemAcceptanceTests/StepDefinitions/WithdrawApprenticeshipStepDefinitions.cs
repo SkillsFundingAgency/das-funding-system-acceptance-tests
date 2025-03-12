@@ -55,12 +55,12 @@ internal class WithdrawApprenticeshipStepDefinitions
     }
 
     [When("a Withdrawal request is recorded with a reason (.*) and last day of delivery (.*)")]
-    public async Task WithdrawalRequestIsRecordedWithAReasonWithdrawDuringLearningAndLastDayOfDelivery(string reason, DateTime lastDayOfDelivery)
+    public async Task WithdrawalRequestIsRecordedWithAReasonWithdrawDuringLearningAndLastDayOfDelivery(string reason, TokenisableDateTime lastDayOfDelivery)
     {
         // clear previous PaymentsGeneratedEvent before triggering the withdrawal
         PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
 
-        _lastDayOfLearning = lastDayOfDelivery;
+        _lastDayOfLearning = lastDayOfDelivery.Value;
 
         var apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
         var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();

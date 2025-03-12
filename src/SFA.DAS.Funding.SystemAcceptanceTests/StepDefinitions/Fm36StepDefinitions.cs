@@ -23,14 +23,18 @@ public class Fm36StepDefinitions
         _earningsOuterClient = new EarningsOuterClient();
     }
 
+    [Given(@"the fm36 data is retrieved for (.*)")]
     [When(@"the fm36 data is retrieved for (.*)")]
+    [Then(@"the fm36 data is retrieved for (.*)")]
     public async Task GetFm36Data(TokenisableDateTime searchDate)
     {
         var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
         var collectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", searchDate.Value));
         var collectionPeriod = TableExtensions.Period[searchDate.Value.ToString("MMMM")];
 
-        var fm36 = await _earningsOuterClient.GetFm36Block(apprenticeshipCreatedEvent.ProviderId, collectionYear, collectionPeriod);
+        var fm36 = await _earningsOuterClient.GetFm36Block(apprenticeshipCreatedEvent.ProviderId, collectionYear,
+            collectionPeriod);
+
         _context.Set(fm36);
     }
 
@@ -52,14 +56,23 @@ public class Fm36StepDefinitions
 
         var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
 
-        var expectedPriceEpisodeIdentifier = "25-" + apprenticeshipCreatedEvent.TrainingCode + "-" + apprenticeshipCreatedEvent.ActualStartDate?.ToString("dd/MM/yyyy");
-        var priceEpisodeInstalmentsThisPeriod = (DateTime.Today >= apprenticeshipCreatedEvent.ActualStartDate && DateTime.Today <= apprenticeshipCreatedEvent.EndDate) ? 1 : 0;
+        var expectedPriceEpisodeIdentifier = "25-" + apprenticeshipCreatedEvent.TrainingCode + "-" +
+                                             apprenticeshipCreatedEvent.ActualStartDate?.ToString("dd/MM/yyyy");
+        var priceEpisodeInstalmentsThisPeriod = (DateTime.Today >= apprenticeshipCreatedEvent.ActualStartDate &&
+                                                 DateTime.Today <= apprenticeshipCreatedEvent.EndDate)
+            ? 1
+            : 0;
         var totalPrice = _earnings?.Episodes.FirstOrDefault()?.Prices.FirstOrDefault()?.AgreedPrice;
         var onProgPayment = _earnings?.Episodes.FirstOrDefault()?.EarningsProfile.OnProgramTotal;
         var completionPayment = _earnings?.Episodes.FirstOrDefault()?.EarningsProfile.CompletionPayment;
         var fundingBandMax = _apprenticeship.Episodes.First().Prices.FirstOrDefault()?.FundingBandMaximum;
-        var instalmentAmount = _earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.FirstOrDefault()?.Amount;
+        var instalmentAmount =
+            _earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.FirstOrDefault()?.Amount;
         var currentPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
+
+        int daysInLearning =
+            1 + (apprenticeshipCreatedEvent.EndDate.Date - apprenticeshipCreatedEvent.StartDate.Date).Days;
+
         int daysInLearningThisAY = 1 + (TokenisableDateTime.FromString("currentAY-07-31").Value - apprenticeshipCreatedEvent.StartDate.Date).Days; ;
         int plannedTotalDaysInLearning = 1 + (apprenticeshipCreatedEvent.EndDate.Date - apprenticeshipCreatedEvent.StartDate.Date).Days;
         var ageAtStartOfApprenticeship = _earnings?.Episodes.FirstOrDefault()?.AgeAtStartOfApprenticeship;
@@ -70,13 +83,14 @@ public class Fm36StepDefinitions
         var firstIncentiveThresholdDate = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DueDate;
         var secondIncentiveThresholdDate = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DueDate;
 
+
         Assert.Multiple(() =>
         {
-            Assert.AreEqual(EarningsFM36Constants.LearnRefNumber, fm36Learner.LearnRefNumber, "Unexpected Learner Ref Number found!");
+            Assert.AreEqual(EarningsFM36Constants.LearnRefNumber, fm36Learner.LearnRefNumber,
+                "Unexpected Learner Ref Number found!");
             Assert.AreEqual(2, fm36Learner.EarningsPlatform, "Unexpected Earnings Platform found!");
 
             //Price Episodes
-
             Assert.AreEqual(expectedPriceEpisodeIdentifier, fm36Learner.PriceEpisodes.First().PriceEpisodeIdentifier, "Unexpected PriceEpisodeIdentifier found!");
             Assert.AreEqual(apprenticeshipCreatedEvent.ActualStartDate, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.EpisodeStartDate, "Unexpected PriceEpisodeStartDate found!");
             Assert.AreEqual(apprenticeshipCreatedEvent.PriceEpisodes.First().TrainingPrice, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.TNP1, "Unexpected TNP1 value found!");
@@ -142,32 +156,42 @@ public class Fm36StepDefinitions
             Assert.AreEqual(EarningsFM36Constants.PriceEpisodeAugmentedBandLimitFactor, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeAugmentedBandLimitFactor, "Unexpected PriceEpisodeAugmentedBandLimitFactor value found!");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeApplic1618FrameworkUpliftBalancing)
-                .Should().OnlyContain(x => x.Value == 0, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeApplic1618FrameworkUpliftBalancing} are zero.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames
+                    .PriceEpisodeApplic1618FrameworkUpliftBalancing)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeApplic1618FrameworkUpliftBalancing} are zero.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeApplic1618FrameworkUpliftCompletionPayment)
-                .Should().OnlyContain(x => x.Value == 0, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeApplic1618FrameworkUpliftCompletionPayment} are zero.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames
+                    .PriceEpisodeApplic1618FrameworkUpliftCompletionPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeApplic1618FrameworkUpliftCompletionPayment} are zero.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-              .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeApplic1618FrameworkUpliftOnProgPayment)
-              .Should().OnlyContain(x => x.Value == 0, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeApplic1618FrameworkUpliftOnProgPayment} are zero.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames
+                    .PriceEpisodeApplic1618FrameworkUpliftOnProgPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeApplic1618FrameworkUpliftOnProgPayment} are zero.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-               .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeBalancePayment)
-               .Should().OnlyContain(x => x.Value == 0, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeBalancePayment} are zero.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeBalancePayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeBalancePayment} are zero.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-               .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeBalanceValue)
-               .Should().OnlyContain(x => x.Value == 0, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeBalanceValue} are zero.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeBalanceValue)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeBalanceValue} are zero.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-               .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeCompletionPayment)
-               .Should().OnlyContain(x => x.Value == 0, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeCompletionPayment} are zero.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeCompletionPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeCompletionPayment} are zero.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-              .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeFirstDisadvantagePayment)
-              .Should().OnlyContain(x => x.Value == 0, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeFirstDisadvantagePayment} are zero.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeFirstDisadvantagePayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeFirstDisadvantagePayment} are zero.");
 
             if (ageAtStartOfApprenticeship < 19)
             {
@@ -191,16 +215,19 @@ public class Fm36StepDefinitions
             }
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-              .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLevyNonPayInd)
-              .Should().OnlyContain(x => x.Value == 0, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLevyNonPayInd} are zero.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLevyNonPayInd)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLevyNonPayInd} are zero.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-              .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLSFCash)
-              .Should().OnlyContain(x => x.Value == 0, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLSFCash} are zero.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLSFCash)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLSFCash} are zero.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-              .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeSecondDisadvantagePayment)
-              .Should().OnlyContain(x => x.Value == 0, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeSecondDisadvantagePayment} are zero.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeSecondDisadvantagePayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeSecondDisadvantagePayment} are zero.");
 
             if (ageAtStartOfApprenticeship < 19)
             {
@@ -224,35 +251,41 @@ public class Fm36StepDefinitions
             }
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-              .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLearnerAdditionalPayment)
-              .Should().OnlyContain(x => x.Value == 0, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLearnerAdditionalPayment} are zero.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLearnerAdditionalPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLearnerAdditionalPayment} are zero.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-              .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeInstalmentsThisPeriod)
-              .Should().OnlyContain(x => x.Value == 1, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeInstalmentsThisPeriod} are 1.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeInstalmentsThisPeriod)
+                .Should().OnlyContain(x => x.Value == 1,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeInstalmentsThisPeriod} are 1.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-              .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeOnProgPayment)
-              .Should().OnlyContain(x => x.Value == instalmentAmount, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeOnProgPayment} are {instalmentAmount}.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeOnProgPayment)
+                .Should().OnlyContain(x => x.Value == instalmentAmount,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeOnProgPayment} are {instalmentAmount}.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-              .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeProgFundIndMaxEmpCont)
-              .Should().OnlyContain(x => x.Value == (instalmentAmount * 5) / 100, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeProgFundIndMaxEmpCont} are {(instalmentAmount * 5) / 100}.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeProgFundIndMaxEmpCont)
+                .Should().OnlyContain(x => x.Value == (instalmentAmount * 5) / 100,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeProgFundIndMaxEmpCont} are {(instalmentAmount * 5) / 100}.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-              .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeProgFundIndMinCoInvest)
-              .Should().OnlyContain(x => x.Value == (instalmentAmount * 95) / 100, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeProgFundIndMinCoInvest} are {(instalmentAmount * 95) / 100}.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeProgFundIndMinCoInvest)
+                .Should().OnlyContain(x => x.Value == (instalmentAmount * 95) / 100,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeProgFundIndMinCoInvest} are {(instalmentAmount * 95) / 100}.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-              .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeTotProgFunding)
-              .Should().OnlyContain(x => x.Value == instalmentAmount, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeTotProgFunding} are {instalmentAmount}.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeTotProgFunding)
+                .Should().OnlyContain(x => x.Value == instalmentAmount,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeTotProgFunding} are {instalmentAmount}.");
 
             fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
-              .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeESFAContribPct)
-              .Should().OnlyContain(x => x.Value == 0.95m, $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeESFAContribPct} are 0.95.");
+                .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeESFAContribPct)
+                .Should().OnlyContain(x => x.Value == 0.95m,
+                    $"Not all {PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeESFAContribPct} are 0.95.");
 
             // Learning Deliveries
-
             Assert.AreEqual(EarningsFM36Constants.AimSeqNumber, fm36Learner.LearningDeliveries.First().AimSeqNumber, "Unexpected AimSeqNumber found!");
             Assert.AreEqual(EarningsFM36Constants.ActualDaysIL, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected ActualDaysIL found!");
             Assert.AreEqual(null, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualNumInstalm, "Unexpected ActualNumInstalm found!");
@@ -305,28 +338,37 @@ public class Fm36StepDefinitions
             Assert.AreEqual(EarningsFM36Constants.LearnDelRedStartDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelRedStartDate, "Unexpected LearnDelRedStartDate found!");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-             .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.DisadvFirstPayment)
-             .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.DisadvFirstPayment} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.DisadvFirstPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.DisadvFirstPayment} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-            .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.DisadvSecondPayment)
-            .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.DisadvSecondPayment} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.DisadvSecondPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.DisadvSecondPayment} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-           .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.InstPerPeriod)
-           .Should().OnlyContain(x => x.Value == 1, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.InstPerPeriod} are 1.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.InstPerPeriod)
+                .Should().OnlyContain(x => x.Value == 1,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.InstPerPeriod} are 1.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-           .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LDApplic1618FrameworkUpliftBalancingPayment)
-           .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LDApplic1618FrameworkUpliftBalancingPayment} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames
+                    .LDApplic1618FrameworkUpliftBalancingPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LDApplic1618FrameworkUpliftBalancingPayment} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-           .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LDApplic1618FrameworkUpliftCompletionPayment)
-           .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LDApplic1618FrameworkUpliftCompletionPayment} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames
+                    .LDApplic1618FrameworkUpliftCompletionPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LDApplic1618FrameworkUpliftCompletionPayment} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-           .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LDApplic1618FrameworkUpliftOnProgPayment)
-           .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LDApplic1618FrameworkUpliftOnProgPayment} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames
+                    .LDApplic1618FrameworkUpliftOnProgPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LDApplic1618FrameworkUpliftOnProgPayment} are 0.");
 
             if (ageAtStartOfApprenticeship < 19)
             {
@@ -352,16 +394,19 @@ public class Fm36StepDefinitions
             }
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-           .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.DisadvSecondPayment)
-           .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.DisadvSecondPayment} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.DisadvSecondPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.DisadvSecondPayment} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-           .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnDelLearnAddPayment)
-           .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LearnDelLearnAddPayment} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnDelLearnAddPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LearnDelLearnAddPayment} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-           .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnDelLevyNonPayInd)
-           .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LearnDelLevyNonPayInd} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnDelLevyNonPayInd)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LearnDelLevyNonPayInd} are 0.");
 
             if (ageAtStartOfApprenticeship < 19)
             {
@@ -385,52 +430,65 @@ public class Fm36StepDefinitions
             }
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-           .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnDelSEMContWaiver)
-           .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LearnDelSEMContWaiver} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnDelSEMContWaiver)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LearnDelSEMContWaiver} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-           .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnDelESFAContribPct)
-           .Should().OnlyContain(x => x.Value == 0.95m, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LearnDelESFAContribPct} are 0.95.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnDelESFAContribPct)
+                .Should().OnlyContain(x => x.Value == 0.95m,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LearnDelESFAContribPct} are 0.95.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-            .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnSuppFund)
-            .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LearnSuppFund} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnSuppFund)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LearnSuppFund} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-            .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnSuppFundCash)
-            .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LearnSuppFundCash} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnSuppFundCash)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.LearnSuppFundCash} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-            .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.MathEngBalPayment)
-            .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.MathEngBalPayment} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.MathEngBalPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.MathEngBalPayment} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-            .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.MathEngOnProgPayment)
-            .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.MathEngOnProgPayment} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.MathEngOnProgPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.MathEngOnProgPayment} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-            .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimBalPayment)
-            .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimBalPayment} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimBalPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimBalPayment} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-            .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimCompletionPayment)
-            .Should().OnlyContain(x => x.Value == 0, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimCompletionPayment} are 0.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimCompletionPayment)
+                .Should().OnlyContain(x => x.Value == 0,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimCompletionPayment} are 0.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-            .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimOnProgPayment)
-            .Should().OnlyContain(x => x.Value == instalmentAmount, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimOnProgPayment} are {instalmentAmount}.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimOnProgPayment)
+                .Should().OnlyContain(x => x.Value == instalmentAmount,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimOnProgPayment} are {instalmentAmount}.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-            .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimProgFundIndMaxEmpCont)
-            .Should().OnlyContain(x => x.Value == (instalmentAmount * 5) / 100, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimProgFundIndMaxEmpCont} are {(instalmentAmount * 5) / 100}.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimProgFundIndMaxEmpCont)
+                .Should().OnlyContain(x => x.Value == (instalmentAmount * 5) / 100,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimProgFundIndMaxEmpCont} are {(instalmentAmount * 5) / 100}.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-            .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimProgFundIndMinCoInvest)
-            .Should().OnlyContain(x => x.Value == (instalmentAmount * 95) / 100, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimProgFundIndMinCoInvest} are {(instalmentAmount * 95) / 100}.");
+                .GetValuesForAttribute(
+                    LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimProgFundIndMinCoInvest)
+                .Should().OnlyContain(x => x.Value == (instalmentAmount * 95) / 100,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimProgFundIndMinCoInvest} are {(instalmentAmount * 95) / 100}.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
-            .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimTotProgFund)
-            .Should().OnlyContain(x => x.Value == instalmentAmount, $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimTotProgFund} are {instalmentAmount}.");
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimTotProgFund)
+                .Should().OnlyContain(x => x.Value == instalmentAmount,
+                    $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.ProgrammeAimTotProgFund} are {instalmentAmount}.");
 
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedTextValues
             .GetValuesForAttribute(LearningDeliveryPeriodisedTextValuesAttributeNames.FundLineType)
@@ -440,5 +498,121 @@ public class Fm36StepDefinitions
             .GetValuesForAttribute(LearningDeliveryPeriodisedTextValuesAttributeNames.LearnDelContType)
             .Should().OnlyContain(x => x.Value.ToString() == "Contract for services with the employer", $"Not all {LearningDeliveryPeriodisedTextValuesAttributeNames.LearnDelContType} are \"Contract for services with the employer\".");
         });
+    }
+
+    [Then(@"fm36 data does not exist for that apprenticeship")]
+    public async Task Fm36DataDoesNotExist()
+    {
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
+        var earningsSqlClient = new EarningsSqlClient();
+
+        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
+
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
+
+        // get your learner data 
+
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+
+        fm36Learner.Should().BeNull();
+    }
+
+    [Then(@"fm36 FundStart value is (.*)")]
+    public void ThenFm36FundStartValueIsFalse(bool expectedValue)
+    {
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
+        var earningsSqlClient = new EarningsSqlClient();
+
+        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
+
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
+
+        // get your learner data 
+
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+
+        Assert.AreEqual(expectedValue,
+            fm36Learner.LearningDeliveries.First().LearningDeliveryValues.FundStart, "Unexpected FundStart found!");
+    }
+
+    [Then(@"fm36 ThresholdDays value is (.*)")]
+    public void ThenFm36ThresholdDaysValueIs(int expectedValue)
+    {
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
+        var earningsSqlClient = new EarningsSqlClient();
+
+        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
+
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
+
+        // get your learner data 
+
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+
+        Assert.AreEqual(expectedValue,
+            fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ThresholdDays, "Unexpected ThresholdDays value found!");
+    }
+
+    [Then(@"fm36 ActualDaysIL value is (.*)")]
+    public void ThenFm36ActualDaysInLearningValueIs(int expectedValue)
+    {
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
+        var earningsSqlClient = new EarningsSqlClient();
+
+        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
+
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
+
+        // get your learner data 
+
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+
+        Assert.AreEqual(expectedValue,
+            fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected FundStart found!");
+    }
+
+    [Then(@"fm36 block contains a new price episode")]
+    public void ThenFmBlockContainsANewPriceEpisode()
+    {
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
+        var earningsSqlClient = new EarningsSqlClient();
+
+        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
+
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
+
+        // get your learner data 
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+
+        Assert.AreEqual(2, fm36Learner.PriceEpisodes.Count,$"Expected 2 price episodes but got {fm36Learner?.PriceEpisodes?.Count}");
+    }
+
+    [Then(@"the fm36 PriceEpisodeInstalmentValue is (.*)")]
+    public void ThenTheFmPriceEpisodeInstalmentValueIs(int priceEpisodeInstalmentValue)
+    {
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        Assert.AreEqual(priceEpisodeInstalmentValue, fm36Learner!.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeInstalmentValue);
     }
 }
