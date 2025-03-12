@@ -2,11 +2,7 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
 
@@ -14,15 +10,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
 public class ReleasePaymentsStepDefinitions
 {
     private readonly ScenarioContext _context;
-    private readonly PaymentsMessageHandler _messageHelper;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
+    private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
 
     public ReleasePaymentsStepDefinitions(ScenarioContext context)
     {
         _context = context;
-        _messageHelper = new PaymentsMessageHandler(_context);
+        _paymentsFunctionsClient = new PaymentsFunctionsClient();
     }
-
 
     [Given(@"payments are released for (.*)")]
     [When(@"payments are released for (.*)")]
@@ -30,9 +25,9 @@ public class ReleasePaymentsStepDefinitions
     {
         var releasePaymentsCommand = new ReleasePaymentsCommand();
 
-        releasePaymentsCommand.CollectionPeriod = TableExtensions.Period[searchDate.Value.ToString("MMMM")];
-        releasePaymentsCommand.CollectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", searchDate.Value));
+        var period = TableExtensions.Period[searchDate.Value.ToString("MMMM")];
+        var year = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", searchDate.Value));
 
-        await _messageHelper.PublishReleasePaymentsCommand(releasePaymentsCommand);
+        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(period, year);
     }
 }

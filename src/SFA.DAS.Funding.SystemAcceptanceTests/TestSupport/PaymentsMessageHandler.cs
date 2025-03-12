@@ -1,5 +1,4 @@
 ﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
-using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
@@ -29,16 +28,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 }
                 return false;
             }, "Failed to find published event in Payments");
-        }
-
-        public async Task PublishReleasePaymentsCommand(ReleasePaymentsCommand releasePaymentsCommand)
-        {
-            if(_fundingConfig.ShouldReleasePayments == false)
-            {
-                throw new PendingStepException($"Release payments set to false in test enviroment variables");
-            }
-                
-            await TestServiceBus.Das.SendReleasePaymentsMessage(releasePaymentsCommand);
         }
     }
 }
