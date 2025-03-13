@@ -16,7 +16,7 @@ internal class ApprenticeshipsClient
         var baseUrl = config.ApprenticeshipAzureFunctionBaseUrl;
         _apiClient = HttpClientProvider.GetClient(baseUrl);
         _functionKey = config.ApprenticeshipAzureFunctionKey;
-        _signingKey = config.ServiceBearerTokenSigningKey;
+        _signingKey = config.ApprenticeshipServiceBearerTokenSigningKey;
     }
 
     public async Task WithdrawApprenticeship(WithdrawApprenticeshipRequestBody body)
