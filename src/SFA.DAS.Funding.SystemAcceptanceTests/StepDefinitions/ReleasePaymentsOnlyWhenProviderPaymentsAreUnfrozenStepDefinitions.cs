@@ -1,6 +1,7 @@
 using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -15,18 +16,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private PaymentsFrozenEvent _paymentsFrozenEvent;
         private PaymentsUnfrozenEvent _paymentsUnfrozenEvent;
         private TestSupport.Payments[] _paymentEntity;
-        private readonly PaymentsMessageHandler _paymentsMessageHelper;
         private readonly PaymentsSqlClient _paymentsApiClient;
         private byte _currentCollectionPeriod;
         private string _currentCollectionYear;
+        private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
 
         public ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions(ScenarioContext context)
         {
             _context = context;
             _paymentsFrozenEventHelper = new PaymentsFrozenEventHelper(context);
             _paymentsUnfrozenEventHelper = new PaymentsUnfrozenEventHelper(context);
-            _paymentsMessageHelper = new PaymentsMessageHandler(context);
             _paymentsApiClient = new PaymentsSqlClient();
+            _paymentsFunctionsClient = new PaymentsFunctionsClient();
         }
 
         [When(@"Employer has frozen provider payments")]
@@ -65,7 +66,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             _releasePaymentsCommand.CollectionPeriod = _currentCollectionPeriod;
             _releasePaymentsCommand.CollectionYear = short.Parse(_currentCollectionYear);
 
-            await _paymentsMessageHelper.PublishReleasePaymentsCommand(_releasePaymentsCommand);
+            await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_currentCollectionPeriod,
+                Convert.ToInt16(_currentCollectionYear));
         }
 
         [Then(@"do not make an on-programme payment to the training provider for that apprentice")]

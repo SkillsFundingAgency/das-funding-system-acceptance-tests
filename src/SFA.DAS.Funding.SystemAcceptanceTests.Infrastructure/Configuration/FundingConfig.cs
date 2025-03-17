@@ -20,7 +20,6 @@ public class FundingConfig
     public string FundingSystemAcceptanceTestQueue { get; set; } = "<not set>";
     public string ApprovalsEventHandlersQueue { get; set; } = "<not set>";
     public string FundingSystemAcceptanceTestSubscription { get; set; } = "<not set>";
-    public string ReleasePaymentsEventHandlersQueue { get; set; } = "<not set>";
     public string PriceChangeApprovedEventHandlersQueue { get; set; } = "<not set>";
     public string StartDateChangeApprovedEventHandlersQueue { get; set; } = "<not set>";
     public string PaymentsFrozenEventHandlersQueue { get; set; } = "<not set>";
@@ -29,4 +28,5 @@ public class FundingConfig
     public string Pv2FundingSourceQueue { get; set; } = "<not set>";
     public int EventWaitTimeInSeconds { get; set; } = 120;
     public string ApprovalCreatedQueue { get; set; } = "<not set>";
+    public string PaymentsFunctionsBaseUrl { get; set; } = "<not set>";
 }
