@@ -21,8 +21,9 @@ internal class ApprenticeshipsClient
 
     public async Task WithdrawApprenticeship(WithdrawApprenticeshipRequestBody body)
     {
+        var token = ServiceBearerTokenProvider.GetServiceBearerToken(_signingKey);
         var request = new HttpRequestMessage(HttpMethod.Post, $"api/WithdrawApprenticeship?code={_functionKey}");
-        request.Headers.Add("ServiceBearerToken", ServiceBearerTokenProvider.GetServiceBearerToken(_signingKey));
+        request.Headers.Add("ServiceBearerToken", token);
         request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
         var response = await _apiClient.SendAsync(request);
 

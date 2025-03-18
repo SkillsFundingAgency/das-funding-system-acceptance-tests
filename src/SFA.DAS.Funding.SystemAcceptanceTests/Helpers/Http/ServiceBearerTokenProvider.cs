@@ -6,13 +6,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
 public static class ServiceBearerTokenProvider
 {
-    private const int ExpiryTime = 5;
+    private const int ExpiryTime = 15;
 
     public static string GetServiceBearerToken(string? signingKey)
     {
         ValidateSigningKey(signingKey);
 
-        var claims = ClaimsHelper.GetServiceAccountClaims();
+        var claims = ClaimsHelper.GetProviderUserClaims();
 
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(signingKey!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
