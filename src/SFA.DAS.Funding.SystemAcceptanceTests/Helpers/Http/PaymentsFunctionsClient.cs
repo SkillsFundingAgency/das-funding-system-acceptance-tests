@@ -10,7 +10,7 @@ internal class PaymentsFunctionsClient
         var config = Configurator.GetConfiguration();
         var baseUrl = config.PaymentsFunctionsBaseUrl;
         _apiClient = HttpClientProvider.GetClient(baseUrl);
-        _code = config.PaymentsFunctionsCode;
+        _code = config.PaymentsFunctionKey;
     }
 
     public async Task InvokeReleasePaymentsHttpTrigger(byte collectionPeriod, short collectionYear)

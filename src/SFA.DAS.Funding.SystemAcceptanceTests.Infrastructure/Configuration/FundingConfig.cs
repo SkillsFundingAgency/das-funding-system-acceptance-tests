@@ -30,6 +30,4 @@ public class FundingConfig
     public string ApprovalCreatedQueue { get; set; } = "<not set>";
     public string ApprenticeshipServiceBearerTokenSigningKey { get; set; } = "<not set>";
     public string PaymentsFunctionsBaseUrl { get; set; } = "<not set>";
-    public string PaymentsFunctionsCode { get; set; } = "<not set>";
-
 }
