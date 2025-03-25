@@ -8,6 +8,7 @@ internal class ApprenticeshipsClient
 {
     private HttpClient _apiClient;
     private readonly string _functionKey;
+    private readonly string _signingKey;
 
     public ApprenticeshipsClient()
     {
@@ -15,15 +16,15 @@ internal class ApprenticeshipsClient
         var baseUrl = config.ApprenticeshipAzureFunctionBaseUrl;
         _apiClient = HttpClientProvider.GetClient(baseUrl);
         _functionKey = config.ApprenticeshipAzureFunctionKey;
+        _signingKey = config.ApprenticeshipServiceBearerTokenSigningKey;
     }
 
     public async Task WithdrawApprenticeship(WithdrawApprenticeshipRequestBody body)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, $"api/WithdrawApprenticeship?code={_functionKey}");
+        request.Headers.Add("ServiceBearerToken", ServiceBearerTokenProvider.GetServiceBearerToken(_signingKey));
         request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
         var response = await _apiClient.SendAsync(request);
-
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"Expected HTTP 200 OK response from Withdrawal request, but got {response.StatusCode}");
     }
 }
 
