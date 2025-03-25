@@ -11,7 +11,8 @@ public static class ClaimsHelper
     {
         var claims = new List<Claim>
         {
-            new ServiceAccount().CreateClaim(x => x.Sub),
+            CreateSubClaim(),
+            CreateServiceAccountClaim(),
             CreateExpiryClaim()
         };
 
@@ -22,6 +23,16 @@ public static class ClaimsHelper
     {
         long unixTime = ((DateTimeOffset)DateTime.UtcNow.AddMinutes(5)).ToUnixTimeSeconds();
         return new Claim("exp", unixTime.ToString());
+    }
+
+    private static Claim CreateSubClaim()
+    {
+        return new Claim("sub", "service-account-id");
+    }
+
+    private static Claim CreateServiceAccountClaim()
+    {
+        return new Claim("serviceAccount", "system-acceptance-tests");
     }
 
     private static Claim CreateClaim<T>(this T user, Expression<Func<T, string?>> expression)

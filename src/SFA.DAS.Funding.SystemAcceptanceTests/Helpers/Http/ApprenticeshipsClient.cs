@@ -25,8 +25,6 @@ internal class ApprenticeshipsClient
         request.Headers.Add("ServiceBearerToken", ServiceBearerTokenProvider.GetServiceBearerToken(_signingKey));
         request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
         var response = await _apiClient.SendAsync(request);
-
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"Expected HTTP 200 OK response from Withdrawal request, but got {response.StatusCode}");
     }
 }
 

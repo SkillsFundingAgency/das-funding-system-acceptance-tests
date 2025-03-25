@@ -6,7 +6,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
 public static class ServiceBearerTokenProvider
 {
-    private const int ExpiryTime = 5;
+    private const int ExpiryTime = 20;
 
     public static string GetServiceBearerToken(string? signingKey)
     {
