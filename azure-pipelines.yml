@@ -53,6 +53,7 @@ stages:
       Environment: AT
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DAS-DevTest-ARM
+      AzureArtifactsFeed: dct-pkg
 - stage: Deploy_TEST
   dependsOn: Build
   displayName: Deploy to TEST
@@ -67,6 +68,7 @@ stages:
       Environment: TEST
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DAS-DevTest-ARM
+      AzureArtifactsFeed: dct-pkg
 - stage: Deploy_TEST2
   dependsOn: Build
   displayName: Deploy to TEST2
@@ -81,6 +83,7 @@ stages:
       Environment: TEST2
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DAS-DevTest-ARM
+      AzureArtifactsFeed: dct-pkg
 - stage: Deploy_PP
   dependsOn: Build
   displayName: Deploy to PP
@@ -95,6 +98,7 @@ stages:
       Environment: PP
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DIG-PreProd-ARM
+      AzureArtifactsFeed: dct-pkg
 
 - stage: Deploy_DEMO
   dependsOn: Build
@@ -110,3 +114,4 @@ stages:
       Environment: DEMO
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DAS-DevTest-ARM
+      AzureArtifactsFeed: dct-pkg

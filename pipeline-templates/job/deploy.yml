@@ -2,6 +2,7 @@ parameters:
   Environment:
   SolutionBaseName:
   ServiceConnection:
+  AzureArtifactsFeed:
 
 jobs:
 - deployment: RunAcceptanceTests
@@ -44,6 +45,17 @@ jobs:
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             AppRegistrationObjectId: $(AppRegistrationObjectId)
+
+        - task: DotNetCoreCLI@2
+          condition: ne('${{ parameters.AzureArtifactsFeed }}', '')
+          displayName: Restore - Including Custom Feed
+          inputs:
+            command: restore
+            projects: '**/*.csproj'
+            noCache: true
+            feedsToUse: 'select'
+            vstsFeed: ${{ parameters.AzureArtifactsFeed }}
+            includeNuGetOrg: true
 
         - task: DotNetCoreCLI@2
           env:
