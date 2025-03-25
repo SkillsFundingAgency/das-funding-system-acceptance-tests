@@ -18,7 +18,6 @@ public class FundingConfig
     public string EarningsFunctionKey { get; set; } = "<not set>";
     public string PaymentsFunctionKey { get; set; } = "<not set>";
     public string FundingSystemAcceptanceTestQueue { get; set; } = "<not set>";
-    public string ApprovalsEventHandlersQueue { get; set; } = "<not set>";
     public string FundingSystemAcceptanceTestSubscription { get; set; } = "<not set>";
     public string PriceChangeApprovedEventHandlersQueue { get; set; } = "<not set>";
     public string StartDateChangeApprovedEventHandlersQueue { get; set; } = "<not set>";
