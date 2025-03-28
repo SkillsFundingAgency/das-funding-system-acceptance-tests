@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests
@@ -39,6 +40,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
             var iConfig = GetIConfigurationRoot();
 
             iConfig.Bind(configuration);
+
+            TestContext.Progress.WriteLine($"Built Configuration:{Environment.NewLine}{JsonSerializer.Serialize(configuration)}");
 
             return configuration;
         }
