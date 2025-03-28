@@ -41,15 +41,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
 
             iConfig.Bind(configuration);
 
-            TestContext.Progress.WriteLine($"Built Configuration:{Environment.NewLine}{JsonSerializer.Serialize(configuration)}");
+            TestContext.Progress.WriteLine($"Available Env Variables: {JsonSerializer.Serialize(Environment.GetEnvironmentVariables())}");
 
-            var configurationEnvless = new FundingConfig();
-
-            var iConfigEnvless = GetIConfigurationRootWithoutEnvVariables();
-
-            iConfigEnvless.Bind(configurationEnvless);
-
-            TestContext.Progress.WriteLine($"Built Environmentless Configuration:{Environment.NewLine}{JsonSerializer.Serialize(configurationEnvless)}");
+            TestContext.Progress.WriteLine($"Built Configuration: {Environment.NewLine}{JsonSerializer.Serialize(configuration)}");
 
             return configuration;
         }
