@@ -42,15 +42,15 @@ public class ApproveApprenticeshipStepDefinition
 
         EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
 
-        //await WaitHelper.WaitForIt(() =>
-        //{
-        //    earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
-        //    if (earningsApprenticeshipModel != null)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}, "Failed to find Earnings Entity");
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+            if (earningsApprenticeshipModel != null)
+            {
+                return true;
+            }
+            return false;
+        }, "Failed to find Earnings Entity");
 
         //var initialEarningsProfileId = earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId;
         //_context.Set(initialEarningsProfileId, ContextKeys.InitialEarningsProfileId);
