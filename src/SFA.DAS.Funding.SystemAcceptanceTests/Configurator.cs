@@ -43,6 +43,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
 
             TestContext.Progress.WriteLine($"Built Configuration:{Environment.NewLine}{JsonSerializer.Serialize(configuration)}");
 
+            var configurationEnvless = new FundingConfig();
+
+            var iConfigEnvless = GetIConfigurationRootWithoutEnvVariables();
+
+            iConfigEnvless.Bind(configurationEnvless);
+
+            TestContext.Progress.WriteLine($"Built Environmentless Configuration:{Environment.NewLine}{JsonSerializer.Serialize(configurationEnvless)}");
+
             return configuration;
         }
         private static IConfigurationRoot GetIConfigurationRoot()
@@ -52,6 +60,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
                 .AddJsonFile("appsettings.ProjectConfig.json", optional: true)
                 .AddUserSecrets($"Funding_{EnvironmentName}_ExecutionSecrets")
                 .AddEnvironmentVariables()
+                .Build();
+        }
+
+        private static IConfigurationRoot GetIConfigurationRootWithoutEnvVariables()
+        {
+            return new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.ProjectConfig.json", optional: true)
+                .AddUserSecrets($"Funding_{EnvironmentName}_ExecutionSecrets")
                 .Build();
         }
 
