@@ -9,12 +9,15 @@ internal class EarningsSqlClient
 
     public EarningsSqlClient()
     {
+        TestContext.Progress.WriteLine("EarningsSqlClient");
         var connectionString = Configurator.GetConfiguration().EarningsDbConnectionString;
+        TestContext.Progress.WriteLine($"connectionString {connectionString}");
         _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
     }
 
     public EarningsApprenticeshipModel? GetEarningsEntityModel(ScenarioContext context)
     {
+        TestContext.Progress.WriteLine("GetEarningsEntityModel");
         var earningsEvent = context.Get<EarningsGeneratedEvent>();
         var apprenticeshipKey = earningsEvent.ApprenticeshipKey;
 
