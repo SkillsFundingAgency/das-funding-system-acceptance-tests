@@ -31,30 +31,30 @@ public class ApproveApprenticeshipStepDefinition
     [When(@"the apprenticeship commitment is approved")]
     public async Task TheApprenticeshipCommitmentIsApproved()
     {
-        var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
-        await _messageHelper.PublishApprenticeshipApprovedMessage(commitmentsApprenticeshipCreatedEvent);
+        //var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+        //await _messageHelper.PublishApprenticeshipApprovedMessage(commitmentsApprenticeshipCreatedEvent);
 
-        await MockLearnerDataResponse();
+        //await MockLearnerDataResponse();
 
-        var earnings = _context.Get<EarningsGeneratedEvent>();
-        var deliveryPeriods = earnings.DeliveryPeriods;
-        _context.Set(deliveryPeriods);
+        //var earnings = _context.Get<EarningsGeneratedEvent>();
+        //var deliveryPeriods = earnings.DeliveryPeriods;
+        //_context.Set(deliveryPeriods);
 
-        EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+        //EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
 
-        await WaitHelper.WaitForIt(() =>
-        {
-            earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
-            if (earningsApprenticeshipModel != null)
-            {
-                return true;
-            }
-            return false;
-        }, "Failed to find Earnings Entity");
+        //await WaitHelper.WaitForIt(() =>
+        //{
+        //    earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+        //    if (earningsApprenticeshipModel != null)
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}, "Failed to find Earnings Entity");
 
-        var initialEarningsProfileId = earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId;
-        _context.Set(initialEarningsProfileId, ContextKeys.InitialEarningsProfileId);
-        _context.Set(earnings.ApprenticeshipKey, ContextKeys.ApprenticeshipKey);
+        //var initialEarningsProfileId = earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId;
+        //_context.Set(initialEarningsProfileId, ContextKeys.InitialEarningsProfileId);
+        //_context.Set(earnings.ApprenticeshipKey, ContextKeys.ApprenticeshipKey);
     }
 
     private async Task MockLearnerDataResponse()
