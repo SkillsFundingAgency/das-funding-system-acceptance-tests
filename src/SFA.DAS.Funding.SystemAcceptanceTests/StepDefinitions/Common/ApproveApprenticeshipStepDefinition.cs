@@ -31,16 +31,16 @@ public class ApproveApprenticeshipStepDefinition
     [When(@"the apprenticeship commitment is approved")]
     public async Task TheApprenticeshipCommitmentIsApproved()
     {
-        //var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
-        //await _messageHelper.PublishApprenticeshipApprovedMessage(commitmentsApprenticeshipCreatedEvent);
+        var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+        await _messageHelper.PublishApprenticeshipApprovedMessage(commitmentsApprenticeshipCreatedEvent);
 
-        //await MockLearnerDataResponse();
+        await MockLearnerDataResponse();
 
-        //var earnings = _context.Get<EarningsGeneratedEvent>();
-        //var deliveryPeriods = earnings.DeliveryPeriods;
-        //_context.Set(deliveryPeriods);
+        var earnings = _context.Get<EarningsGeneratedEvent>();
+        var deliveryPeriods = earnings.DeliveryPeriods;
+        _context.Set(deliveryPeriods);
 
-        //EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+        EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
 
         //await WaitHelper.WaitForIt(() =>
         //{
