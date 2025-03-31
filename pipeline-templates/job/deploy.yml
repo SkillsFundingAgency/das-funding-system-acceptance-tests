@@ -63,6 +63,9 @@ jobs:
             AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
             EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
             PaymentsFunctionKey: $(FundingApprenticeshipPaymentsFunctionAppSystemKey)
+            ApprenticeshipsDbConnectionString: $(ApprenticeshipsDbConnectionString)
+            EarningsDbConnectionString: $(EarningsDbConnectionString)
+            PaymentsDbConnectionString : $(PaymentsDbConnectionString)
           inputs:
             command: 'test'
             projects: |
