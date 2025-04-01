@@ -45,6 +45,10 @@ jobs:
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             AppRegistrationObjectId: $(AppRegistrationObjectId)
+        - template: azure-pipelines-templates/deploy/step/sql-whitelist-ip.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            SQLServerName: $(SharedSQLServerName)
 
         - task: DotNetCoreCLI@2
           condition: ne('${{ parameters.AzureArtifactsFeed }}', '')
@@ -63,6 +67,9 @@ jobs:
             AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
             EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
             PaymentsFunctionKey: $(FundingApprenticeshipPaymentsFunctionAppSystemKey)
+            ApprenticeshipsDbConnectionString: $(ApprenticeshipsDbConnectionString)
+            EarningsDbConnectionString: $(EarningsDbConnectionString)
+            PaymentsDbConnectionString : $(PaymentsDbConnectionString)
           inputs:
             command: 'test'
             projects: |
