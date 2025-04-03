@@ -5,8 +5,6 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
-using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
-using System.Runtime.Intrinsics.Arm;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -89,9 +87,6 @@ internal class WithdrawApprenticeshipStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
-
-            LoggerHelper.WriteLog($"apprenticeship status for withdrawal test: {apprenticeship.Episodes.First().LearningStatus}");
-            LoggerHelper.WriteLog($"apprenticeship episodes for withdrawal test: {System.Text.Json.JsonSerializer.Serialize(apprenticeship.Episodes)}");
 
             return apprenticeship.Episodes.First().LearningStatus == "Withdrawn";
         }, "LearningStatus did not change to 'Withdrawn' in time.");
