@@ -31,6 +31,11 @@ jobs:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(FundingApprenticeshipPaymentsFunctionAppName)
             RuleName: "FundingAcceptanceTestsPayments"
+        - template: azure-pipelines-templates/deploy/step/appservice-whitelist-ip.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            ResourceName: $(ApprenticeshipsFunctionAppName)
+            RuleName: "FundingAcceptanceTestsApprenticeships"
         - template: azure-pipelines-templates/deploy/step/function-app-get-system-key.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
