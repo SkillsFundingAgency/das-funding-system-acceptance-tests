@@ -91,8 +91,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         {
             apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
 
-            LoggerHelper.WriteLog($"apprenticeship for withdrawal test: {System.Text.Json.JsonSerializer.Serialize(apprenticeship)}");
-            LoggerHelper.WriteLog($"apprenticeship episodes for withdrawal test: {System.Text.Json.JsonSerializer.Serialize(apprenticeship.Episodes, new JsonSerializerOptions{ WriteIndented = true })}");
+            LoggerHelper.WriteLog($"apprenticeship status for withdrawal test: {apprenticeship.Episodes.First().LearningStatus}");
 
             return apprenticeship.Episodes.First().LearningStatus == "Withdrawn";
         }, "LearningStatus did not change to 'Withdrawn' in time.");
