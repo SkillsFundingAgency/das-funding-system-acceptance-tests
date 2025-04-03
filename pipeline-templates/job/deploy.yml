@@ -71,6 +71,7 @@ jobs:
             EarningsDbConnectionString: $(EarningsDbConnectionString)
             PaymentsDbConnectionString : $(PaymentsDbConnectionString)
             ApprenticeshipServiceBearerTokenSigningKey : $(ApprenticeshipServiceBearerTokenSigningKey)
+            ApprenticeshipAzureFunctionKey : $(ApprenticeshipAzureFunctionKey)
           inputs:
             command: 'test'
             projects: |
