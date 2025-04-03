@@ -70,6 +70,7 @@ jobs:
             ApprenticeshipsDbConnectionString: $(ApprenticeshipsDbConnectionString)
             EarningsDbConnectionString: $(EarningsDbConnectionString)
             PaymentsDbConnectionString : $(PaymentsDbConnectionString)
+            ApprenticeshipServiceBearerTokenSigningKey : $(ApprenticeshipServiceBearerTokenSigningKey)
           inputs:
             command: 'test'
             projects: |
