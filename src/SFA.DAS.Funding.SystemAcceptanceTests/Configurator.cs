@@ -44,8 +44,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
                 var iConfig = GetIConfigurationRoot();
 
                 iConfig.Bind(_builtConfiguration);
-
-                LoggerHelper.WriteLog($"Built Configuration: {Environment.NewLine}{JsonSerializer.Serialize(_builtConfiguration)}");
             }
 
             return _builtConfiguration;
