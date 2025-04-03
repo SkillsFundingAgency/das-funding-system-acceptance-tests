@@ -66,10 +66,11 @@ jobs:
             NServiceBusLicense: $(NServiceBusLicense)
             AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
             EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
-            PaymentsFunctionKey: $(FundingApprenticeshipPaymentsFunctionAppSystemKey)
+            PaymentsFunctionKey: $(PaymentsFunctionKey)
             ApprenticeshipsDbConnectionString: $(ApprenticeshipsDbConnectionString)
             EarningsDbConnectionString: $(EarningsDbConnectionString)
             PaymentsDbConnectionString : $(PaymentsDbConnectionString)
+            ApprenticeshipServiceBearerTokenSigningKey : $(ApprenticeshipServiceBearerTokenSigningKey)
           inputs:
             command: 'test'
             projects: |
