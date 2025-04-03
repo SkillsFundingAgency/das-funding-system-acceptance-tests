@@ -32,20 +32,24 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
 
         private static string? GetEnvironmentName() => IsVstsExecution ? GetHostingConfigSection("ResourceEnvironmentName") :  GetHostingConfigSection("EnvironmentName");
         private static string? GetHostingConfigSection(string name) => _hostingConfig.GetSection(name)?.Value;
+        private static FundingConfig? _builtConfiguration;
 
         public static FundingConfig GetConfiguration()
         {
-            var configuration = new FundingConfig();
+            if (_builtConfiguration == null)
+            {
+                _builtConfiguration = new FundingConfig();
 
-            var iConfig = GetIConfigurationRoot();
+                var iConfig = GetIConfigurationRoot();
 
-            iConfig.Bind(configuration);
+                iConfig.Bind(_builtConfiguration);
 
-            TestContext.Progress.WriteLine($"Available Env Variables: {JsonSerializer.Serialize(Environment.GetEnvironmentVariables())}");
+                TestContext.Progress.WriteLine($"Available Env Variables: {JsonSerializer.Serialize(Environment.GetEnvironmentVariables())}");
 
-            TestContext.Progress.WriteLine($"Built Configuration: {Environment.NewLine}{JsonSerializer.Serialize(configuration)}");
+                TestContext.Progress.WriteLine($"Built Configuration: {Environment.NewLine}{JsonSerializer.Serialize(_builtConfiguration)}");
+            }
 
-            return configuration;
+            return _builtConfiguration;
         }
         private static IConfigurationRoot GetIConfigurationRoot()
         {
