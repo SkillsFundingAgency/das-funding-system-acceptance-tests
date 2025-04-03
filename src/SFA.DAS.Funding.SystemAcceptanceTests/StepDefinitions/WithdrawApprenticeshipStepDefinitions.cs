@@ -5,8 +5,6 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
-using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
-using System.Runtime.Intrinsics.Arm;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
