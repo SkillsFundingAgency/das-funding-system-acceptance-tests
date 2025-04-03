@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Configuration;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests
@@ -44,9 +45,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
 
                 iConfig.Bind(_builtConfiguration);
 
-                TestContext.Progress.WriteLine($"Available Env Variables: {JsonSerializer.Serialize(Environment.GetEnvironmentVariables())}");
-
-                TestContext.Progress.WriteLine($"Built Configuration: {Environment.NewLine}{JsonSerializer.Serialize(_builtConfiguration)}");
+                LoggerHelper.WriteLog($"Built Configuration: {Environment.NewLine}{JsonSerializer.Serialize(_builtConfiguration)}");
             }
 
             return _builtConfiguration;
