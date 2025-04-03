@@ -13,6 +13,10 @@ internal class EarningsOuterClient
     {
         var config = Configurator.GetConfiguration();
         var baseUrl = config.EarningsOuterApiBaseUrl;
+
+        LoggerHelper.WriteLog($"EarningsOuterApiBaseUrl: {baseUrl}");
+        LoggerHelper.WriteLog($"EarningsOuterSubscriptionKey: {config.EarningsOuterSubscriptionKey}");
+
         _apiClient = HttpClientProvider.GetClient(baseUrl);
         _subscriptionKey = config.EarningsOuterSubscriptionKey;
     }
