@@ -9,7 +9,6 @@ internal class ApprenticeshipsSqlClient
     public ApprenticeshipsSqlClient()
     {
         var connectionString = Configurator.GetConfiguration().ApprenticeshipsDbConnectionString;
-        LoggerHelper.WriteLog($"apprenticeships db connection string:{connectionString}");
         _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
     }
 
