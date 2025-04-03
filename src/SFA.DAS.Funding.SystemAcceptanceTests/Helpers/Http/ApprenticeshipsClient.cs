@@ -25,9 +25,20 @@ internal class ApprenticeshipsClient
         var request = new HttpRequestMessage(HttpMethod.Post, $"api/WithdrawApprenticeship?code={_functionKey}");
         request.Headers.Add("ServiceBearerToken", ServiceBearerTokenProvider.GetServiceBearerToken(_signingKey));
         request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
-        var response = await _apiClient.SendAsync(request);
-        LoggerHelper.WriteLog($"WithdrawApprenticeshipRequest: {System.Text.Json.JsonSerializer.Serialize(request, new JsonSerializerOptions(){ WriteIndented = true })}");
-        LoggerHelper.WriteLog($"WithdrawApprenticeshipResponse: {System.Text.Json.JsonSerializer.Serialize(response, new JsonSerializerOptions() { WriteIndented = true })}");
+        try
+        {
+            var response = await _apiClient.SendAsync(request);
+        }
+        catch (Exception e)
+        {
+            LoggerHelper.WriteLog(e.Message);
+            throw;
+        }
+        finally
+        {
+            LoggerHelper.WriteLog($"WithdrawApprenticeshipRequest: {System.Text.Json.JsonSerializer.Serialize(request, new JsonSerializerOptions() { WriteIndented = true })}");
+            LoggerHelper.WriteLog($"WithdrawApprenticeshipResponse: {System.Text.Json.JsonSerializer.Serialize(response, new JsonSerializerOptions() { WriteIndented = true })}");
+        }
     }
 }
 
