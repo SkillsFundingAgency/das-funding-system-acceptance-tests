@@ -35,7 +35,7 @@ jobs:
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(ApprenticeshipsFunctionAppName)
-            RuleName: "FundingAcceptanceTestsApprenticeships"
+            RuleName: "FundingAcceptanceTestsApps"
         - template: azure-pipelines-templates/deploy/step/function-app-get-system-key.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
