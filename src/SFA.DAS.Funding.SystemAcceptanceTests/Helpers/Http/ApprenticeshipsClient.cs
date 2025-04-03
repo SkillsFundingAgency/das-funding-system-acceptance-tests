@@ -37,8 +37,7 @@ internal class ApprenticeshipsClient
         }
         finally
         {
-            LoggerHelper.WriteLog($"WithdrawApprenticeshipRequest: {System.Text.Json.JsonSerializer.Serialize(request, new JsonSerializerOptions() { WriteIndented = true })}");
-            LoggerHelper.WriteLog($"WithdrawApprenticeshipResponse: {System.Text.Json.JsonSerializer.Serialize(response, new JsonSerializerOptions() { WriteIndented = true })}");
+            LoggerHelper.WriteLog($"Withdraw Apprenticeship Response Code: {response?.StatusCode}");
         }
     }
 }
