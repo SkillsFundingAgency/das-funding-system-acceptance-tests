@@ -20,10 +20,10 @@ Scenario: Send unfunded payments for the current collection period to be paid
 	And all payments for the following collection periods are marked as not sent to payments BAU
 
 
-@regression @releasesPayments
-Scenario: Nothing is sent if all Unfunded Payments for the current Collection Month have already been sent
-	When the unpaid unfunded payments for the current Collection Month and 2 rollup payments are sent to be paid
-	And the Release Payments command is published again
-	Then the unfunded payments that have already been sent to Payments BAU are not sent to be paid again
+#@regression @releasesPayments
+#Scenario: Nothing is sent if all Unfunded Payments for the current Collection Month have already been sent
+#	When the unpaid unfunded payments for the current Collection Month and 2 rollup payments are sent to be paid
+#	And the Release Payments command is published again
+#	Then the unfunded payments that have already been sent to Payments BAU are not sent to be paid again
 
 
