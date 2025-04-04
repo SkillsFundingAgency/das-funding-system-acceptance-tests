@@ -29,4 +29,29 @@ Within the SFA.Das.Funding.SystemAcceptanceTests project is a appsettings.Projec
 
 ### Running the tests
 
-The tests can be triggered in visual studio by running tests as you would with any unit test. You will also need to white list your ip address for the sql server database in azure for the enviroment you are trying to test.
+The tests can be triggered in visual studio by running tests as you would with any unit test. You will also need to white list your ip address for the sql server database as well as the apprenticeships & payments function apps in azure for the enviroment you are trying to test:
+ - das-xx-shared-sql
+ - das-xx-apps-fa
+ - das-xx-funapppay-fa
+ 
+### Working with the tests
+
+If a config value needs to be added to the tests, it will need to be added to the variable group library, and the deploy.yaml. E.g.: 
+
+```yaml
+
+- task: DotNetCoreCLI@2
+          env:
+            NServiceBusLicense: $(NServiceBusLicense)
+            AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
+            EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
+            PaymentsFunctionKey: $(FundingApprenticeshipPaymentsFunctionAppSystemKey)
+            NewRequiredVariable: $(NameOfNewRequiredVariableInVariableGroup)
+          inputs:
+            command: 'test'
+            projects: |
+              **/${{ parameters.SolutionBaseName }}.csproj
+            arguments: '--logger "trx;LogFileName=test_results.trx"'
+```
+
+Additionally if a call to a new api endpoint or azure function is needed, likely an auth token and/or a function key might be required.
