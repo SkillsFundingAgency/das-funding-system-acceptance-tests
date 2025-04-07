@@ -55,3 +55,8 @@ If a config value needs to be added to the tests, it will need to be added to th
 ```
 
 Additionally if a call to a new api endpoint or azure function is needed, likely an auth token and/or a function key might be required.
+
+## Confluence Documentation
+
+https://skillsfundingagency.atlassian.net/wiki/spaces/NDL/pages/3784572929/PS+-+System+Acceptance+Tests
+https://skillsfundingagency.atlassian.net/wiki/spaces/NDL/pages/4885970964/PS+-+System+Acceptance+Tests+Secrets
