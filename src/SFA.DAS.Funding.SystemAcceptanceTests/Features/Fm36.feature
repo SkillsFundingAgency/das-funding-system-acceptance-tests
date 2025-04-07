@@ -53,21 +53,21 @@ Examples:
 	| start_date      | end_date        | agreed_price | training_code | reason           | last_day_of_delivery |
 	| currentAY-08-01 | currentAY-07-31 | 15000        | 2             | WithdrawFromBeta | currentAY-011-01     |
 
-#@regression
-#Scenario: Price change approved; new price episode in FM36 block
-#	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-#	And the apprenticeship commitment is approved
-#	And the total price is above or below or at the funding band maximum
-#	And a price change request was sent on <pc_from_date>
-#	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>
-#	When the price change is approved
-#	And the fm36 data is retrieved for currentDate
-#	Then fm36 block contains a new price episode
-#	
-#Examples:
-#	| start_date      | end_date     | agreed_price | training_code | pc_from_date    | new_total_price | pc_approved_date | new_inst_amount | academic_year_string | old_inst_amount | delivery_period |
-#	| currentAY-08-20 | nextAY-04-23 | 15000        | 2             | currentAY-09-29 | 18000           | currentAY-09-29  | 720             | currentAY            | 600             | 1               |
-#
+@regression
+Scenario: Price change approved; new price episode in FM36 block
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the apprenticeship commitment is approved
+	And the total price is above or below or at the funding band maximum
+	And a price change request was sent on <pc_from_date>
+	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>
+	When the price change is approved
+	And the fm36 data is retrieved for currentDate
+	Then fm36 block contains a new price episode
+	
+Examples:
+	| start_date      | end_date     | agreed_price | training_code | pc_from_date    | new_total_price | pc_approved_date | new_inst_amount | academic_year_string | old_inst_amount | delivery_period |
+	| currentAY-08-20 | nextAY-04-23 | 15000        | 2             | currentAY-09-29 | 18000           | currentAY-09-29  | 720             | currentAY            | 600             | 1               |
+
 
 @regression
 Scenario: Start date change approved

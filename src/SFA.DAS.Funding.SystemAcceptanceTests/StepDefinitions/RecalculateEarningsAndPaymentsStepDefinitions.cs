@@ -4,7 +4,6 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using System.ComponentModel.DataAnnotations;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -20,6 +19,7 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     private readonly ApprenticeshipStartDateChangedEventHelper _apprenticeshipStartDateChangedEventHelper;
     private ApprenticeshipPriceChangedEvent _apprenticeshipPriceChangedEvent;
     private EarningsApprenticeshipModel? _earningsApprenticeshipModel;
+    private readonly ApprenticeshipsInnerApiHelper _apprenticeshipsInnerApiHelper;
     private DateTime _priceChangeEffectiveFrom;
     private DateTime _priceChangeApprovedDate;
     private decimal _newTrainingPrice;
@@ -50,7 +50,7 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
         _currentCollectionYear = TableExtensions.CalculateAcademicYear("0");
         _earningsRecalculatedEventHelper = new EarningsRecalculatedEventHelper(_context);
         _apprenticeshipStartDateChangedEventHelper = new ApprenticeshipStartDateChangedEventHelper(_context);
-
+        _apprenticeshipsInnerApiHelper = new ApprenticeshipsInnerApiHelper(_context);
     }
 
     [Given(@"payments have been paid for an apprenticeship with (.*), (.*)")]
@@ -115,12 +115,8 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
         // clear previous PaymentsGeneratedEvent before publishing PriceChangeApproved Event 
         PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
 
-        _apprenticeshipPriceChangedEvent = _priceChangeApprovedEventHelper.CreatePriceChangeApprovedMessageWithCustomValues(_newTrainingPrice, _newAssessmentPrice, _priceChangeEffectiveFrom, _priceChangeApprovedDate);
-
-        await _priceChangeApprovedEventHelper.PublishPriceChangeApprovedEvent(_apprenticeshipPriceChangedEvent);
-
-        // Receive the update PaymentsGeneratedEvent
-        await _paymentsMessageHelper.ReceivePaymentsEvent(_apprenticeshipPriceChangedEvent.ApprenticeshipKey);
+        await _apprenticeshipsInnerApiHelper.CreatePriceChangeRequest(_newTrainingPrice, _newAssessmentPrice, _priceChangeEffectiveFrom);
+        await _apprenticeshipsInnerApiHelper.ApprovePendingPriceChangeRequest(_newTrainingPrice, _priceChangeApprovedDate);
     }
 
     [When(@"the start date change is approved")]
@@ -142,7 +138,9 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     {
         var academicYear = TableExtensions.GetAcademicYear(academicYearString);
 
-        await _earningsRecalculatedEventHelper.ReceiveEarningsRecalculatedEvent(_apprenticeshipPriceChangedEvent.ApprenticeshipKey);
+        var apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
+
+        await _earningsRecalculatedEventHelper.ReceiveEarningsRecalculatedEvent(apprenticeshipCreatedEvent.ApprenticeshipKey);
 
         ApprenticeshipEarningsRecalculatedEvent recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
 

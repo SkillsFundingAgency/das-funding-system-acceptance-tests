@@ -1,10 +1,8 @@
 ﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
-using SFA.DAS.Funding.SystemAcceptanceTests.Features;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using System.ComponentModel.DataAnnotations;
 using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;

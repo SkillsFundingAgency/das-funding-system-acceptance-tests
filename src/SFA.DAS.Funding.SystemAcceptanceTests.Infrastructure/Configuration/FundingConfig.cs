@@ -15,6 +15,7 @@ public class FundingConfig
     public string ApprenticeshipAzureFunctionKey { get; set; } = "<not set>";
     public string EarningsOuterApiBaseUrl { get; set; } = "<not set>";
     public string EarningsOuterSubscriptionKey { get; set; } = "<not set>";
+    public string ApprenticeshipsInnerApiBaseUrl { get; set; } = "<not set>";
     public string EarningsFunctionKey { get; set; } = "<not set>";
     public string PaymentsFunctionKey { get; set; } = "<not set>";
     public string FundingSystemAcceptanceTestQueue { get; set; } = "<not set>";
@@ -29,4 +30,7 @@ public class FundingConfig
     public string ApprovalCreatedQueue { get; set; } = "<not set>";
     public string ApprenticeshipServiceBearerTokenSigningKey { get; set; } = "<not set>";
     public string PaymentsFunctionsBaseUrl { get; set; } = "<not set>";
+    public string ApprenticeshipsInnerApiClientBaseUrl { get; set; } = "<not set>";
+    public string ApprenticeshipsInnerApiIdentifier { get; set; } = "<not set>";
+    public string BearerTokenSigningKey { get; set; } = "<not set>";
 }
