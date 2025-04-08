@@ -47,7 +47,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             var accessToken = await _credentialHelper.GetAccessTokenAsync(_fundingConfig.ApprenticeshipsInnerApiIdentifier);
 
             var claims = GetClaims();
-            var signingKey = _fundingConfig.BearerTokenSigningKey;
+            var signingKey = _fundingConfig.ApprenticeshipServiceBearerTokenSigningKey;
 
             accessToken = BearerTokenHelper.AddClaimsToBearerToken(accessToken, claims, signingKey);
 
