@@ -20,7 +20,7 @@ internal class PaymentsFunctionsClient
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new Exception();
+            throw new Exception($"Payments Http Trigger failed. {response.StatusCode} -  {response.ReasonPhrase}\nBaseUrl: {_apiClient.BaseAddress}\nPath:{path}");
         }
     }
 }

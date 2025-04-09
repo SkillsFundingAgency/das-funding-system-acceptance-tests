@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Configuration;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests
@@ -31,16 +33,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
 
         private static string? GetEnvironmentName() => IsVstsExecution ? GetHostingConfigSection("ResourceEnvironmentName") :  GetHostingConfigSection("EnvironmentName");
         private static string? GetHostingConfigSection(string name) => _hostingConfig.GetSection(name)?.Value;
+        private static FundingConfig? _builtConfiguration;
 
         public static FundingConfig GetConfiguration()
         {
-            var configuration = new FundingConfig();
+            if (_builtConfiguration == null)
+            {
+                _builtConfiguration = new FundingConfig();
 
-            var iConfig = GetIConfigurationRoot();
+                var iConfig = GetIConfigurationRoot();
 
-            iConfig.Bind(configuration);
+                iConfig.Bind(_builtConfiguration);
+            }
 
-            return configuration;
+            return _builtConfiguration;
         }
         private static IConfigurationRoot GetIConfigurationRoot()
         {

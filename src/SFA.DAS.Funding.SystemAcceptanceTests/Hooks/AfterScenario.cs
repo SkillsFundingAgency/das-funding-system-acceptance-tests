@@ -32,6 +32,9 @@ internal class AfterScenario
 
     private void PurgeCreatedRecords()
     {
+        if (!_context.ContainsKey(ContextKeys.ApprenticeshipKey))
+            return;
+
         var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
 
         var paymentsSqlClient = new PaymentsSqlClient();
