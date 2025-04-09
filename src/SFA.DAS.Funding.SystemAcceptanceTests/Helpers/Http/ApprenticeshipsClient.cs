@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
@@ -24,7 +25,20 @@ internal class ApprenticeshipsClient
         var request = new HttpRequestMessage(HttpMethod.Post, $"api/WithdrawApprenticeship?code={_functionKey}");
         request.Headers.Add("ServiceBearerToken", ServiceBearerTokenProvider.GetServiceBearerToken(_signingKey));
         request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
-        var response = await _apiClient.SendAsync(request);
+        HttpResponseMessage? response = null;
+        try
+        {
+            response = await _apiClient.SendAsync(request);
+        }
+        catch (Exception e)
+        {
+            LoggerHelper.WriteLog(e.Message);
+            throw;
+        }
+        finally
+        {
+            LoggerHelper.WriteLog($"Withdraw Apprenticeship Response Code: {response?.StatusCode}");
+        }
     }
 }
 
