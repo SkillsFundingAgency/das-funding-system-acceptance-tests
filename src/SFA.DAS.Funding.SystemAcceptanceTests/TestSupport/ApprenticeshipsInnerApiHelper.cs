@@ -23,30 +23,22 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             };
 
             var response = await _apiClient.PostAsync($"{apprenticeshipCreatedEvent.ApprenticeshipKey}/priceHistory", requestBody);
-
-            if (!response.IsSuccessStatusCode)
-            {
-
-            }
-
+            response.EnsureSuccessStatusCode();
         }
 
-        public async Task ApprovePendingPriceChangeRequest(decimal trainingPrice, DateTime approvedDate)
+        public async Task ApprovePendingPriceChangeRequest(decimal trainingPrice, decimal assessmentPrice, DateTime approvedDate)
         {
             var apprenticeshipCreatedEvent = context.Get<ApprenticeshipCreatedEvent>();
 
             var requestBody = new ApprenticeshipsInnerApiClient.ApprovePriceChangeRequest
             {
                 TrainingPrice = trainingPrice,
+                AssessmentPrice = assessmentPrice,
                 UserId = "SystemAcceptanceTests",
             };
 
             var response = await _apiClient.PatchAsync($"{apprenticeshipCreatedEvent.ApprenticeshipKey}/priceHistory/pending", requestBody);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                
-            }
+            response.EnsureSuccessStatusCode();
         }
     }
 }

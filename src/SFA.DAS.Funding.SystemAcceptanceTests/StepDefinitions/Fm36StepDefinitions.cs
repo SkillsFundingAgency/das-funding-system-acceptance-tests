@@ -585,8 +585,8 @@ public class Fm36StepDefinitions
             fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected FundStart found!");
     }
 
-    [Then(@"fm36 block contains a new price episode")]
-    public void ThenFmBlockContainsANewPriceEpisode()
+    [Then(@"fm36 block contains a new price episode starting (.*)")]
+    public void ThenFm36BlockContainsANewPriceEpisodeStarting(TokenisableDateTime newEpisodeStartDate)
     {
         var fm36 = _context.Get<List<FM36Learner>>();
         var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
@@ -602,7 +602,14 @@ public class Fm36StepDefinitions
         // get your learner data 
         var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
 
-        Assert.AreEqual(2, fm36Learner.PriceEpisodes.Count,$"Expected 2 price episodes but got {fm36Learner?.PriceEpisodes?.Count}");
+        Assert.IsNotNull(fm36Learner);
+        Assert.AreEqual(2, fm36Learner.PriceEpisodes.Count, $"Expected 2 price episodes but got {fm36Learner?.PriceEpisodes?.Count}");
+
+        var episode1 = fm36Learner.PriceEpisodes[0];
+        var episode2 = fm36Learner.PriceEpisodes[1];
+
+        Assert.IsTrue(episode1.PriceEpisodeValues.PriceEpisodeCompleted);
+        Assert.AreEqual(newEpisodeStartDate.Value.Date, episode2.PriceEpisodeValues.EpisodeStartDate);
     }
 
     [Then(@"the fm36 PriceEpisodeInstalmentValue is (.*)")]

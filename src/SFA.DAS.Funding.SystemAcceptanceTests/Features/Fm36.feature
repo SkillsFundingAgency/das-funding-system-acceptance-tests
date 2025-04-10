@@ -62,7 +62,7 @@ Scenario: Price change approved; new price episode in FM36 block
 	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>
 	When the price change is approved
 	And the fm36 data is retrieved for currentDate
-	Then fm36 block contains a new price episode
+	Then fm36 block contains a new price episode starting <pc_from_date>
 	
 Examples:
 	| start_date      | end_date     | agreed_price | training_code | pc_from_date    | new_total_price | pc_approved_date | new_inst_amount | academic_year_string | old_inst_amount | delivery_period |
