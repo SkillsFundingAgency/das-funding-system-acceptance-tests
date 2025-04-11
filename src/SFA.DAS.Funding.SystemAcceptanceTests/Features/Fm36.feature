@@ -82,3 +82,16 @@ Scenario: Start date change approved
 Examples:
 	| start_date      | end_date               | agreed_price | training_code | new_start_date  | new_end_date           | sdc_approved_date | previous_earnings | new_expected_earnings |
 	| currentAY-08-23 | currentAYPlusTwo-08-23 | 15000        | 2             | currentAY-12-23 | currentAYPlusTwo-08-23 | currentAY-06-10   | 500               | 600                   |
+
+
+@regression
+Scenario: Retrieve Valid Fm36 data for learners aged 15
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the learner is aged <age> at the start of the apprenticeship
+	And the apprenticeship commitment is approved
+	When the fm36 data is retrieved for currentDate
+	Then incentives earnings are generated for learners aged 15
+
+Examples:
+	| start_date      | end_date     | agreed_price | training_code | age |
+	| currentAY-08-01 | nextAY-11-15 | 15000        | 2             | 15  |

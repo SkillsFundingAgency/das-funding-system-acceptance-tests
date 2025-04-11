@@ -36,6 +36,7 @@ public class Fm36StepDefinitions
         _context.Set(fm36);
     }
 
+    [Then("incentives earnings are generated for learners aged 15")]
     [Then(@"fm36 data exists for that apprenticeship")]
     public async Task Fm36DataExists()
     {
