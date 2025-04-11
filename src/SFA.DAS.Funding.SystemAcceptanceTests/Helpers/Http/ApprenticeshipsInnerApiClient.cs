@@ -7,7 +7,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
     public class ApprenticeshipsInnerApiClient
     {
         private readonly FundingConfig _fundingConfig;
-        private readonly IAzureClientCredentialHelper _credentialHelper;
         private readonly HttpClient _httpClient;
         private string _cachedToken;
         private DateTime _tokenExpiry;
@@ -17,8 +16,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             _fundingConfig = Configurator.GetConfiguration();
 
             var baseUrl = _fundingConfig.ApprenticeshipsInnerApiClientBaseUrl;
-
-            _credentialHelper = new AzureClientCredentialHelper();
             _httpClient = HttpClientProvider.GetClient(baseUrl);
         }
 
@@ -44,8 +41,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         private async Task AddBearerToken()
         {
-            //var accessToken = await _credentialHelper.GetAccessTokenAsync(_fundingConfig.ApprenticeshipsInnerApiIdentifier);
-            
             var claims = GetClaims();
             var signingKey = _fundingConfig.ApprenticeshipServiceBearerTokenSigningKey;
 
@@ -54,7 +49,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             accessToken = BearerTokenHelper.AddClaimsToBearerToken(accessToken, claims, signingKey);
 
             _cachedToken = accessToken;
-            _tokenExpiry = DateTime.UtcNow.AddMinutes(30); // Adjust expiry duration based on your token setup
+            _tokenExpiry = DateTime.UtcNow.AddMinutes(20);
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _cachedToken);
         }
