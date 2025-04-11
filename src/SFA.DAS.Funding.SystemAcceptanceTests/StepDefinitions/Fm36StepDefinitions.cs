@@ -586,7 +586,7 @@ public class Fm36StepDefinitions
             fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected FundStart found!");
     }
 
-    [Then(@"fm36 block contains a new price episode starting (.*) with episode 1 TNP of (.*) and episode 2 TNP of (.*)")]
+    [Then(@"fm36 block contains a new price episode starting (.*) with episode 1 tnp of (.*) and episode 2 tnp of (.*)")]
     public void ThenFm36BlockContainsANewPriceEpisodeStarting(TokenisableDateTime newEpisodeStartDate, decimal expectedEpisode1Tnp, decimal expectedEpisode2Tnp)
     {
         // Retrieve necessary data from the context
