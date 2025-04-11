@@ -29,4 +29,6 @@ public class FundingConfig
     public string ApprovalCreatedQueue { get; set; } = "<not set>";
     public string ApprenticeshipServiceBearerTokenSigningKey { get; set; } = "<not set>";
     public string PaymentsFunctionsBaseUrl { get; set; } = "<not set>";
+    public string ApprenticeshipsInnerApiClientBaseUrl { get; set; } = "<not set>";
+    public string ApprenticeshipsInnerApiIdentifier { get; set; } = "<not set>";
 }
