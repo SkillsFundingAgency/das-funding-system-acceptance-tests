@@ -95,3 +95,31 @@ Scenario: Retrieve Valid Fm36 data for learners aged 15
 Examples:
 	| start_date      | end_date     | agreed_price | training_code | age |
 	| currentAY-08-01 | nextAY-11-15 | 15000        | 2             | 15  |
+
+
+@regression
+Scenario: Do not retrieve Fm36 data for Inactive learners
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the learner is aged <age> at the start of the apprenticeship
+	And the apprenticeship commitment is approved
+	When the fm36 data is retrieved for currentDate
+	Then fm36 data does not exist for that apprenticeship
+
+Examples:
+	| start_date        | end_date               | agreed_price | training_code | age |
+	| previousAy-08-01  | previousAY-07-31       | 15000        | 2             | 16  |
+	| nextAy-08-01      | CurrentAyPlusTwo-11-15 | 15000        | 2             | 18  |
+	| nextMonthFirstDay | CurrentAyPlusTwo-11-15 | 15000        | 2             | 19  |
+
+
+@regression
+Scenario: Retrieve Fm36 data for Active learners
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the learner is aged <age> at the start of the apprenticeship
+	And the apprenticeship commitment is approved
+	When the fm36 data is retrieved for currentDate
+	Then learner is returned in the fm36 response
+
+Examples:
+	| start_date            | end_date               | agreed_price | training_code | age |
+	| lastDayOfCurrentMonth | CurrentAyPlusTwo-11-15 | 15000        | 91            | 19  |
