@@ -522,6 +522,20 @@ public class Fm36StepDefinitions
         fm36Learner.Should().BeNull();
     }
 
+    [Then("learner is returned in the fm36 response")]
+    public void ThenLearnerIsReturnedInTheFmResponse()
+    {
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        // get your learner data 
+
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+
+        fm36Learner.Should().NotBeNull();
+    }
+
+
     [Then(@"fm36 FundStart value is (.*)")]
     public void ThenFm36FundStartValueIsFalse(bool expectedValue)
     {

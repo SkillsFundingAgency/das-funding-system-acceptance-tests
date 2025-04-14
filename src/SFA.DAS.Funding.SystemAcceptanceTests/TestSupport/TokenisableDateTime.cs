@@ -10,6 +10,8 @@ public class TokenisableDateTime
     public const string NextAyToken = "nextAY";
     public const string CurrentAyPlusTwoToken = "currentAYPlusTwo";
     public const string CurrentDate = "currentDate";
+	public const string NextMonthFirstDay = "nextMonthFirstDay";
+	public const string LastDayOfCurrentMonth = "lastDayOfCurrentMonth";
 
     public TokenisableDateTime(DateTime value)
 	{
@@ -28,6 +30,20 @@ public class TokenisableDateTime
         if (value.ToLower() == CurrentDate.ToLower())
         {
             return new TokenisableDateTime(DateTime.Now);
+        }
+
+        if (value.ToLower() == NextMonthFirstDay.ToLower())
+        {
+            var nextMonth = DateTime.Now.AddMonths(1);
+            var firstDayOfNextMonth = new DateTime(nextMonth.Year, nextMonth.Month, 1);
+            return new TokenisableDateTime(firstDayOfNextMonth);
+        }
+
+        if (value.ToLower() == LastDayOfCurrentMonth.ToLower())
+        {
+            var firstDayOfNextMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1);
+            var lastDayOfCurrentMonth = firstDayOfNextMonth.AddDays(-1);
+            return new TokenisableDateTime(lastDayOfCurrentMonth);
         }
 
         var dateComponents = value.Split('-');
