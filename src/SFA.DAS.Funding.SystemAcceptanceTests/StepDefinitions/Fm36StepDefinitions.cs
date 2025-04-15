@@ -633,11 +633,13 @@ public class Fm36StepDefinitions
 
         var episode1Tnp1Expected = expectedEpisode1Tnp * 0.8m;
         var episode1Tnp2Expected = expectedEpisode1Tnp * 0.2m;
+        var totalInstalments = _earnings?.Episodes[0].EarningsProfile.Instalments.Count;
 
         Assert.AreEqual(episode1Tnp1Expected, episode1.PriceEpisodeValues.TNP1,
             $"Episode 1 TNP1 mismatch. Expected: {episode1Tnp1Expected}, Actual: {episode1.PriceEpisodeValues.TNP1}");
         Assert.AreEqual(episode1Tnp2Expected, episode1.PriceEpisodeValues.TNP2,
             $"Episode 1 TNP2 mismatch. Expected: {episode1Tnp2Expected}, Actual: {episode1.PriceEpisodeValues.TNP2}");
+        Assert.AreEqual(episode1Tnp1Expected/totalInstalments, episode1.PriceEpisodeValues.PriceEpisodeTotalEarnings, "Incorrect PriceEpisodeTotalEarnings found for first price episode");
 
         // Validate Episode 2
         Assert.AreEqual(newEpisodeStartDate.Value.Date, episode2.PriceEpisodeValues.EpisodeStartDate,
@@ -650,6 +652,12 @@ public class Fm36StepDefinitions
             $"Episode 2 TNP1 mismatch. Expected: {episode2Tnp1Expected}, Actual: {episode2.PriceEpisodeValues.TNP1}");
         Assert.AreEqual(episode2Tnp2Expected, episode2.PriceEpisodeValues.TNP2,
             $"Episode 2 TNP2 mismatch. Expected: {episode2Tnp2Expected}, Actual: {episode2.PriceEpisodeValues.TNP2}");
+
+        var totalPaidInFirstPriceEpisode = episode1Tnp1Expected / totalInstalments;
+        var totalToBePaidInSecondPriceEpisode = episode2Tnp1Expected - totalPaidInFirstPriceEpisode;
+
+        Assert.AreEqual(Math.Round((decimal)totalToBePaidInSecondPriceEpisode), Math.Round((decimal)episode2.PriceEpisodeValues.PriceEpisodeTotalEarnings), "Incorrect PriceEpisodeTotalEarnings found for second price episode");
+
     }
 
     [Then(@"the fm36 PriceEpisodeInstalmentValue is (.*)")]
