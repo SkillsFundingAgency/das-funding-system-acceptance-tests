@@ -668,4 +668,44 @@ public class Fm36StepDefinitions
         var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
         Assert.AreEqual(priceEpisodeInstalmentValue, fm36Learner!.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeInstalmentValue);
     }
+
+    [Then("Incentive periods and dates are updated in the fm36 response")]
+    public void IncentivePeriodsAndDatesAreUpdatedInTheFm36Response()
+    {
+        // learner has to be eligible for incentive earnings 
+
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        var earningsSqlClient = new EarningsSqlClient();
+
+        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
+
+        // get your learner data 
+
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+
+        var firstIncentivePeriod = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DeliveryPeriod;
+        var firstIncentiveThresholdDate = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DueDate;
+        var secondIncentiveThresholdDate = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DueDate;
+
+        fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
+             .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeFirstEmp1618Pay).SingleOrDefault(x => x.PeriodNumber == firstIncentivePeriod).Value
+             .Should().Be(500, $"{PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeFirstEmp1618Pay} value for period {firstIncentivePeriod} is not 500");
+
+        fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
+        .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeFirstProv1618Pay).SingleOrDefault(x => x.PeriodNumber == firstIncentivePeriod).Value
+        .Should().Be(500, $"{PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeFirstProv1618Pay} value for period {firstIncentivePeriod} is not 500");
+
+        fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
+        .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnDelFirstEmp1618Pay).SingleOrDefault(x => x.PeriodNumber == firstIncentivePeriod).Value
+        .Should().Be(500, $"{LearningDeliveryPeriodisedValuesAttributeNames.LearnDelFirstEmp1618Pay} value for period {firstIncentivePeriod} is not 500");
+
+        fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
+          .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnDelFirstProv1618Pay).SingleOrDefault(x => x.PeriodNumber == firstIncentivePeriod).Value
+          .Should().Be(500, $"{LearningDeliveryPeriodisedValuesAttributeNames.LearnDelFirstProv1618Pay} value for period {firstIncentivePeriod} is not 500");
+        
+        Assert.AreEqual(firstIncentiveThresholdDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.FirstIncentiveThresholdDate, "Unexpected FirstIncentiveThresholdDate found!");
+        Assert.AreEqual(secondIncentiveThresholdDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.SecondIncentiveThresholdDate, "Unexpected SecondIncentiveThresholdDate found!");
+    }
 }
