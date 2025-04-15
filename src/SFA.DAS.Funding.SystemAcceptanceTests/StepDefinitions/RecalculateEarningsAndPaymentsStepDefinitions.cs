@@ -117,6 +117,9 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
 
         await _apprenticeshipsInnerApiHelper.CreatePriceChangeRequest(_newTrainingPrice, _newAssessmentPrice, _priceChangeEffectiveFrom);
         await _apprenticeshipsInnerApiHelper.ApprovePendingPriceChangeRequest(_newTrainingPrice, _newAssessmentPrice, _priceChangeApprovedDate);
+
+        // Receive updated PaymentsGeneratedEvent after publishing PriceChangeApproved Event 
+        await _paymentsMessageHelper.ReceivePaymentsEvent(_context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
     }
 
     [When(@"the start date change is approved")]
