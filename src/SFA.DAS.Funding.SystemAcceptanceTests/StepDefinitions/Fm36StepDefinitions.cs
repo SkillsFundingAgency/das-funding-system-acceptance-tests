@@ -1,10 +1,8 @@
 ﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
-using SFA.DAS.Funding.SystemAcceptanceTests.Features;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using System.ComponentModel.DataAnnotations;
 using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
@@ -602,24 +600,64 @@ public class Fm36StepDefinitions
             fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected FundStart found!");
     }
 
-    [Then(@"fm36 block contains a new price episode")]
-    public void ThenFmBlockContainsANewPriceEpisode()
+    [Then(@"fm36 block contains a new price episode starting (.*) with episode 1 tnp of (.*) and episode 2 tnp of (.*)")]
+    public void ThenFm36BlockContainsANewPriceEpisodeStarting(TokenisableDateTime newEpisodeStartDate, decimal expectedEpisode1Tnp, decimal expectedEpisode2Tnp)
     {
-        var fm36 = _context.Get<List<FM36Learner>>();
+        // Retrieve necessary data from the context
+        var fm36Learners = _context.Get<List<FM36Learner>>();
         var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
 
+        // Fetch apprenticeship and earnings data
         var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
         var earningsSqlClient = new EarningsSqlClient();
-
-        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
 
         _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
         _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
 
-        // get your learner data 
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        // Get the learner associated with the apprenticeship
+        var fm36Learner = fm36Learners.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        Assert.IsNotNull(fm36Learner, $"Expected FM36 learner ULN {apprenticeshipCreatedEvent.Uln} not found.");
 
-        Assert.AreEqual(2, fm36Learner.PriceEpisodes.Count,$"Expected 2 price episodes but got {fm36Learner?.PriceEpisodes?.Count}");
+        // Ensure there are exactly 2 price episodes
+        Assert.AreEqual(2, fm36Learner.PriceEpisodes.Count,
+            $"Expected 2 price episodes but found {fm36Learner?.PriceEpisodes?.Count}.");
+
+        // Extract price episodes
+        var episode1 = fm36Learner.PriceEpisodes[0];
+        var episode2 = fm36Learner.PriceEpisodes[1];
+
+        // Validate Episode 1
+        Assert.IsTrue(episode1.PriceEpisodeValues.PriceEpisodeCompleted,
+            "Price Episode 1 was expected to be completed but was not.");
+
+        var episode1Tnp1Expected = expectedEpisode1Tnp * 0.8m;
+        var episode1Tnp2Expected = expectedEpisode1Tnp * 0.2m;
+        var totalInstalments = _earnings?.Episodes[0].EarningsProfile.Instalments.Count;
+
+        Assert.AreEqual(episode1Tnp1Expected, episode1.PriceEpisodeValues.TNP1,
+            $"Episode 1 TNP1 mismatch. Expected: {episode1Tnp1Expected}, Actual: {episode1.PriceEpisodeValues.TNP1}");
+        Assert.AreEqual(episode1Tnp2Expected, episode1.PriceEpisodeValues.TNP2,
+            $"Episode 1 TNP2 mismatch. Expected: {episode1Tnp2Expected}, Actual: {episode1.PriceEpisodeValues.TNP2}");
+        Assert.AreEqual(episode1Tnp1Expected/totalInstalments, episode1.PriceEpisodeValues.PriceEpisodeTotalEarnings, "Incorrect PriceEpisodeTotalEarnings found for first price episode");
+
+        // Validate Episode 2
+        Assert.AreEqual(newEpisodeStartDate.Value.Date, episode2.PriceEpisodeValues.EpisodeStartDate,
+            $"Episode 2 start date mismatch. Expected: {newEpisodeStartDate.Value.Date}, Actual: {episode2.PriceEpisodeValues.EpisodeStartDate}");
+
+        var episode2Tnp1Expected = expectedEpisode2Tnp * 0.8m;
+        var episode2Tnp2Expected = expectedEpisode2Tnp * 0.2m;
+
+        Assert.AreEqual(episode2Tnp1Expected, episode2.PriceEpisodeValues.TNP1,
+            $"Episode 2 TNP1 mismatch. Expected: {episode2Tnp1Expected}, Actual: {episode2.PriceEpisodeValues.TNP1}");
+        Assert.AreEqual(episode2Tnp2Expected, episode2.PriceEpisodeValues.TNP2,
+            $"Episode 2 TNP2 mismatch. Expected: {episode2Tnp2Expected}, Actual: {episode2.PriceEpisodeValues.TNP2}");
+
+        var totalPaidInFirstPriceEpisode = episode1Tnp1Expected / totalInstalments;
+        var totalToBePaidInSecondPriceEpisode = episode2Tnp1Expected - totalPaidInFirstPriceEpisode;
+
+        Assert.AreEqual(Math.Round((decimal)totalToBePaidInSecondPriceEpisode), Math.Round((decimal)episode2.PriceEpisodeValues.PriceEpisodeTotalEarnings), "Incorrect PriceEpisodeTotalEarnings found for second price episode");
+
     }
 
     [Then(@"the fm36 PriceEpisodeInstalmentValue is (.*)")]
