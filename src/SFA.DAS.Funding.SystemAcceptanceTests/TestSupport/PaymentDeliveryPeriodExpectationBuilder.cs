@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+
+namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 public static class PaymentDeliveryPeriodExpectationBuilder
 {
@@ -39,4 +41,31 @@ public static class PaymentDeliveryPeriodExpectationBuilder
 
 		return result;
 	}
+
+    /// <summary>
+    /// This builds an expectation for an incentive payment.
+    /// </summary>
+    /// <param name="startDate">The start date of the apprenticeship</param>
+    /// <param name="incentiveNumber">The incentive number (1 or 2) to build the expectation for</param>
+    /// <param name="paymentType">The payment type to build the expectation for (ProviderIncentive or EmployerIncentive)</param>
+    /// <returns>An incentive expectation</returns>
+    public static PaymentDeliveryPeriodExpectation BuildForIncentive(DateTime startDate, byte incentiveNumber, AdditionalPaymentType paymentType)
+    {
+        if (incentiveNumber is not (1 or 2))
+            throw new Exception("PaymentDeliveryPeriodExpectationBuilder only supports building payments with an incentive number of 1 or 2");
+
+        var expectedPeriod = incentiveNumber == 2
+            ? startDate.AddDays(364).ToAcademicYearAndPeriod() // 365th day of learning
+            : startDate.AddDays(89).ToAcademicYearAndPeriod(); // 90th day of learning
+
+        return new PaymentDeliveryPeriodExpectation
+        {
+            DeliveryPeriod = new Period(expectedPeriod.AcademicYear, expectedPeriod.Period),
+            Expectation = new PaymentExpectation
+            {
+                ProviderIncentiveAmount = paymentType == AdditionalPaymentType.ProviderIncentive ? 500 : null,
+                EmployerIncentiveAmount = paymentType == AdditionalPaymentType.EmployerIncentive ? 500 : null
+            }
+        };
+    }
 }

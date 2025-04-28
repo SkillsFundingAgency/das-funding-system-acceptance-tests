@@ -75,6 +75,45 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             
             var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
             deliveryPeriods.ShouldHaveCorrectFundingLineType(fundingLineType);
+        //}
+
+        //[Then(@"the (first|second) incentive earning (is|is not) generated for provider & employer")]
+        //public void VerifyIncentiveEarnings(string incentiveEarningNumber, string outcome)
+        //{
+        //    _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        //    var additionalPayments = _context
+        //        .Get<EarningsApprenticeshipModel>(ContextKeys.InitialEarningsApprenticeshipModel)
+        //        .Episodes
+        //        .SingleOrDefault()
+        //        ?.AdditionalPayments;
+
+        //    additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
+
+        //    var incentiveExpected = outcome == "is";
+        //    var expectation = incentiveExpected ? "Expected" : "Not Expected";
+
+        //    switch (incentiveEarningNumber)
+        //    {
+        //        case "first":
+        //            additionalPayments!
+        //                .IncentivePaymentExists(_commitmentsApprenticeshipCreatedEvent.StartDate, 1, AdditionalPaymentType.ProviderIncentive)
+        //                .Should().Be(incentiveExpected,$"First Incentive Earning {expectation} For Provider");
+        //            additionalPayments!
+        //                .IncentivePaymentExists(_commitmentsApprenticeshipCreatedEvent.StartDate, 1, AdditionalPaymentType.EmployerIncentive)
+        //                .Should().BeTrue($"First Incentive Earning {expectation} For Employer");
+        //            break;
+        //        case "second":
+        //            additionalPayments!
+        //                .IncentivePaymentExists(_commitmentsApprenticeshipCreatedEvent.StartDate, 2, AdditionalPaymentType.ProviderIncentive)
+        //                .Should().BeTrue($"Second Incentive Earning {expectation} For Provider");
+        //            additionalPayments!
+        //                .IncentivePaymentExists(_commitmentsApprenticeshipCreatedEvent.StartDate, 2, AdditionalPaymentType.EmployerIncentive)
+        //                .Should().BeTrue($"Second Incentive Earning {expectation} For Employer");
+        //            break;
+        //        default:
+        //            throw new Exception("Step definition requires 'first' or 'second' to be specified for incentive earning");
+        //    }
         }
     }
 }

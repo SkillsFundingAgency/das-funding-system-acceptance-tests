@@ -52,7 +52,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 				filteredPeriodPayments = filteredPeriodPayments.Where(x => x.EarningsProfileId == periodExpectation.Expectation.EarningsProfileId);
 			}
 
-			Assert.That(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
+            if (periodExpectation.Expectation.ProviderIncentiveAmount != null)
+            {
+                errorMessage += $" with an Amount of {periodExpectation.Expectation.ProviderIncentiveAmount},";
+                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.ProviderIncentiveAmount); //TODO UPDATE THIS TO MATCH NEW PROD CODE
+            }
+
+            if (periodExpectation.Expectation.EmployerIncentiveAmount != null)
+            {
+                errorMessage += $" with an Amount of {periodExpectation.Expectation.EmployerIncentiveAmount},";
+                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.EmployerIncentiveAmount); //TODO UPDATE THIS TO MATCH NEW PROD CODE
+            }
+
+            Assert.That(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
 		}
 
 		public static void AssertAgainstEventPayments(this PaymentDeliveryPeriodExpectation periodExpectation, IEnumerable<Payment> payments)
@@ -75,7 +87,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 				filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.Amount);
 			}
 
-			Assert.That(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
+            if (periodExpectation.Expectation.ProviderIncentiveAmount != null)
+            {
+                errorMessage += $" with a ProviderIncentiveAmount of {periodExpectation.Expectation.ProviderIncentiveAmount},";
+                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.ProviderIncentiveAmount); //TODO UPDATE THIS TO MATCH NEW PROD CODE
+            }
+
+            if (periodExpectation.Expectation.EmployerIncentiveAmount != null)
+            {
+                errorMessage += $" with a EmployerIncentiveAmount of {periodExpectation.Expectation.EmployerIncentiveAmount},";
+                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.EmployerIncentiveAmount); //TODO UPDATE THIS TO MATCH NEW PROD CODE
+            }
+
+            Assert.That(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
 		}
 	}
 }
