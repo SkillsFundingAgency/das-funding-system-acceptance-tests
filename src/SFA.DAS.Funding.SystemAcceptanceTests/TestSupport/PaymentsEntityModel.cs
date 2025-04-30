@@ -49,6 +49,7 @@ public class Payments
     public bool SentForPayment { get; set; }
     public string FundingLineType { get; set; }
     public bool NotPaidDueToFreeze { get; set; }
+    public string? PaymentType { get; set; }
 }
 
 #pragma warning restore CS8618

@@ -55,13 +55,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             if (periodExpectation.Expectation.ProviderIncentiveAmount != null)
             {
                 errorMessage += $" with an Amount of {periodExpectation.Expectation.ProviderIncentiveAmount},";
-                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.ProviderIncentiveAmount); //TODO UPDATE THIS TO MATCH NEW PROD CODE
+                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.ProviderIncentiveAmount && x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString());
             }
 
             if (periodExpectation.Expectation.EmployerIncentiveAmount != null)
             {
                 errorMessage += $" with an Amount of {periodExpectation.Expectation.EmployerIncentiveAmount},";
-                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.EmployerIncentiveAmount); //TODO UPDATE THIS TO MATCH NEW PROD CODE
+                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.EmployerIncentiveAmount && x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString());
             }
 
             Assert.That(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
@@ -90,13 +90,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             if (periodExpectation.Expectation.ProviderIncentiveAmount != null)
             {
                 errorMessage += $" with a ProviderIncentiveAmount of {periodExpectation.Expectation.ProviderIncentiveAmount},";
-                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.ProviderIncentiveAmount); //TODO UPDATE THIS TO MATCH NEW PROD CODE
+                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.ProviderIncentiveAmount && x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString());
             }
 
             if (periodExpectation.Expectation.EmployerIncentiveAmount != null)
             {
                 errorMessage += $" with a EmployerIncentiveAmount of {periodExpectation.Expectation.EmployerIncentiveAmount},";
-                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.EmployerIncentiveAmount); //TODO UPDATE THIS TO MATCH NEW PROD CODE
+                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.EmployerIncentiveAmount && x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString());
             }
 
             Assert.That(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");

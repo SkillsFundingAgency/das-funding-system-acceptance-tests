@@ -41,15 +41,15 @@ public class IncentivesAssertionsStepDefinitions
                     .Should().Be(incentiveExpected, $"First Incentive Earning {expectation} For Provider");
                 additionalPayments!
                     .IncentiveEarningExists(commitmentsApprenticeshipCreatedEvent.StartDate, 1, AdditionalPaymentType.EmployerIncentive)
-                    .Should().BeTrue($"First Incentive Earning {expectation} For Employer");
+                    .Should().Be(incentiveExpected,$"First Incentive Earning {expectation} For Employer");
                 break;
             case "second":
                 additionalPayments!
                     .IncentiveEarningExists(commitmentsApprenticeshipCreatedEvent.StartDate, 2, AdditionalPaymentType.ProviderIncentive)
-                    .Should().BeTrue($"Second Incentive Earning {expectation} For Provider");
+                    .Should().Be(incentiveExpected, $"Second Incentive Earning {expectation} For Provider");
                 additionalPayments!
                     .IncentiveEarningExists(commitmentsApprenticeshipCreatedEvent.StartDate, 2, AdditionalPaymentType.EmployerIncentive)
-                    .Should().BeTrue($"Second Incentive Earning {expectation} For Employer");
+                    .Should().Be(incentiveExpected, $"Second Incentive Earning {expectation} For Employer");
                 break;
             default:
                 throw new Exception("Step definition requires 'first' or 'second' to be specified for incentive earning");
@@ -93,10 +93,14 @@ public class IncentivesAssertionsStepDefinitions
                 break;
             }
             case "is not":
-                paymentsGeneratedEvent.Payments.Should().NotContain(x => x.Amount > 0); //TODO UPDATE THIS TO MATCH NEW PROD CODE
-                paymentsGeneratedEvent.Payments.Should().NotContain(x => x.Amount > 0); //TODO UPDATE THIS TO MATCH NEW PROD CODE
-                paymentsApprenticeshipModel.Payments.Should().NotContain(x => x.Amount > 0); //TODO UPDATE THIS TO MATCH NEW PROD CODE
-                paymentsApprenticeshipModel.Payments.Should().NotContain(x => x.Amount > 0); //TODO UPDATE THIS TO MATCH NEW PROD CODE
+                var expectedPeriod = incentiveEarningNumber == "first"
+                    ? commitmentsApprenticeshipCreatedEvent.StartDate.AddDays(89).ToAcademicYearAndPeriod() // 90th day of learning
+                    : commitmentsApprenticeshipCreatedEvent.StartDate.AddDays(364).ToAcademicYearAndPeriod(); // 365th day of learning
+
+                paymentsGeneratedEvent.Payments.Should().NotContain(x => x.Amount > 0 && x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString() && x.AcademicYear == expectedPeriod.AcademicYear && x.DeliveryPeriod == expectedPeriod.Period);
+                paymentsGeneratedEvent.Payments.Should().NotContain(x => x.Amount > 0 && x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString() && x.AcademicYear == expectedPeriod.AcademicYear && x.DeliveryPeriod == expectedPeriod.Period);
+                paymentsApprenticeshipModel.Payments.Should().NotContain(x => x.Amount > 0 && x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString() && x.AcademicYear == expectedPeriod.AcademicYear && x.DeliveryPeriod == expectedPeriod.Period);
+                paymentsApprenticeshipModel.Payments.Should().NotContain(x => x.Amount > 0 && x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString() && x.AcademicYear == expectedPeriod.AcademicYear && x.DeliveryPeriod == expectedPeriod.Period);
                 break;
             default: throw new Exception("This step only supports and outcome of 'is' or 'is not'");
         }
