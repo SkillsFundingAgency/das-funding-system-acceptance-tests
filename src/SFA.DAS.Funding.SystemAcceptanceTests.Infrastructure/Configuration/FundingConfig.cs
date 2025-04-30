@@ -31,4 +31,5 @@ public class FundingConfig
     public string PaymentsFunctionsBaseUrl { get; set; } = "<not set>";
     public string ApprenticeshipsInnerApiClientBaseUrl { get; set; } = "<not set>";
     public string ApprenticeshipsInnerApiIdentifier { get; set; } = "<not set>";
+    public string EarningsInnerApiClientBaseUrl { get; set; } = "<not set>";
 }

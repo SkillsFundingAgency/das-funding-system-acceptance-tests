@@ -1,3 +1,4 @@
+using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -16,6 +17,14 @@ public class IncentivesAssertionsStepDefinitions
         _context = context;
         _paymentsMessageHandler = new PaymentsMessageHandler(context);
     }
+
+    [When(@"the apprentice is marked as a care leaver")]
+    public async Task MarkAsCareLeaver()
+    {
+        var helper = new EarningsInnerApiHelper();
+        await helper.MarkAsCareLeaver(_context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
+    }
+
 
     [Then(@"the (first|second) incentive earning (is|is not) generated for provider & employer")]
     public void VerifyIncentiveEarnings(string incentiveEarningNumber, string outcome)
