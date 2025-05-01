@@ -7,15 +7,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 public class EarningsInnerApiClient
 {
     private readonly HttpClient _httpClient;
-    private string _cachedToken;
-    private DateTime _tokenExpiry;
+    private string _cachedBearerToken;
+    private DateTime _bearerTokenExpiry;
     private readonly FundingConfig _fundingConfig;
+    private string? _azureToken;
+    private readonly AzureTokenHelper _azureTokenHelper;
 
     public EarningsInnerApiClient()
     {
         _fundingConfig = Configurator.GetConfiguration();
         var baseUrl = _fundingConfig.EarningsInnerApiClientBaseUrl;
         _httpClient = HttpClientProvider.GetClient(baseUrl);
+        _azureTokenHelper = new AzureTokenHelper();
     }
 
     /// <summary>
@@ -38,13 +41,23 @@ public class EarningsInnerApiClient
         };
 
         await EnsureBearerToken();
+        await EnsureAzureToken();
         var response = await _httpClient.SendAsync(requestMessage);
         return response;
     }
 
+    private async Task EnsureAzureToken()
+    {
+        if (string.IsNullOrEmpty(_azureToken))
+        {
+            _azureToken = await _azureTokenHelper.GetAccessTokenAsync(_fundingConfig.EarningsInnerApiScope);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _azureToken);
+        }
+    }
+
     private async Task EnsureBearerToken()
     {
-        if (string.IsNullOrEmpty(_cachedToken) || DateTime.UtcNow >= _tokenExpiry)
+        if (string.IsNullOrEmpty(_cachedBearerToken) || DateTime.UtcNow >= _bearerTokenExpiry)
         {
             await AddBearerToken();
         }
@@ -59,10 +72,10 @@ public class EarningsInnerApiClient
 
         accessToken = BearerTokenHelper.AddClaimsToBearerToken(accessToken, claims, signingKey);
 
-        _cachedToken = accessToken;
-        _tokenExpiry = DateTime.UtcNow.AddMinutes(20);
+        _cachedBearerToken = accessToken;
+        _bearerTokenExpiry = DateTime.UtcNow.AddMinutes(20);
 
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _cachedToken);
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _cachedBearerToken);
     }
 
     private Dictionary<string, string> GetClaims()
