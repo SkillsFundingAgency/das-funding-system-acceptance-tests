@@ -3,7 +3,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
-internal class EarningsSqlClient
+public class EarningsSqlClient
 {
     private readonly SqlServerClient _sqlServerClient;
 

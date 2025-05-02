@@ -73,7 +73,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 				x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear &&
 				x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue);
 
-			var errorMessage = $"Expected a payment on the ENTITY for delivery period {periodExpectation.DeliveryPeriod.AcademicYear}-{periodExpectation.DeliveryPeriod.PeriodValue}";
+			var errorMessage = $"Expected a payment on the EVENT for delivery period {periodExpectation.DeliveryPeriod.AcademicYear}-{periodExpectation.DeliveryPeriod.PeriodValue}";
 
 			Assert.That(periodPayments.Any(), $"{errorMessage}, but found no payments.");
 

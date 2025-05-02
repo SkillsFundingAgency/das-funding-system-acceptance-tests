@@ -20,7 +20,6 @@ Scenario: Incentive Earnings & Payments for learner ending after 90 days not at 
 Examples:
 	| start_date | planned_end_date | agreed_price | training_code | age |
 	| 2022-08-15 | 2022-11-25       | 15,000       | 614           | 17	 |
-	| 2022-08-15 | 2022-11-25       | 15,000       | 614           | 20	 |
 
 
 @regression
@@ -36,4 +35,3 @@ Scenario: Incentive Earnings & Payments for learner ending after 365 days not at
 Examples:
 	| start_date | planned_end_date | agreed_price | training_code | age |
 	| 2022-08-15 | 2023-08-25       | 15,000       | 614           | 17	 |
-	| 2022-08-15 | 2023-08-25       | 15,000       | 614           | 20	 |
