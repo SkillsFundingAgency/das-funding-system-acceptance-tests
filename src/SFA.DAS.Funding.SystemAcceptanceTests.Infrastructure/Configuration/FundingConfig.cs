@@ -2,35 +2,37 @@
 
 public class FundingConfig
 {
+    public const string NotSet = "<not set>";
+
     public bool ShouldReleasePayments { get; set; } = true;
     public bool ShouldCleanUpTestRecords { get; set; } = false;
-    public string SharedServiceBusFqdn { get; set; } = "<not set>";
-    public string SharedServiceBusTopicEndpoint { get; set; } = "<not set>";
-    public string LearningTransportStorageDirectory { get; set; } = "<not set>";
-    public string ApprenticeshipsDbConnectionString { get; set; } = "<not set>";
-    public string EarningsDbConnectionString { get; set; } = "<not set>";
-    public string PaymentsDbConnectionString { get; set; } = "<not set>";
-    public string WireMockBaseUrl { get; set; } = "<not set>";
-    public string ApprenticeshipAzureFunctionBaseUrl { get; set; } = "<not set>";
-    public string ApprenticeshipAzureFunctionKey { get; set; } = "<not set>";
-    public string EarningsOuterApiBaseUrl { get; set; } = "<not set>";
-    public string EarningsOuterSubscriptionKey { get; set; } = "<not set>";
-    public string EarningsFunctionKey { get; set; } = "<not set>";
-    public string PaymentsFunctionKey { get; set; } = "<not set>";
-    public string FundingSystemAcceptanceTestQueue { get; set; } = "<not set>";
-    public string FundingSystemAcceptanceTestSubscription { get; set; } = "<not set>";
-    public string PriceChangeApprovedEventHandlersQueue { get; set; } = "<not set>";
-    public string StartDateChangeApprovedEventHandlersQueue { get; set; } = "<not set>";
-    public string PaymentsFrozenEventHandlersQueue { get; set; } = "<not set>";
-    public string PaymentsUnfrozenEventHandlersQueue { get; set; } = "<not set>";
-    public string Pv2ServiceBusFqdn { get; set; } = "<not set>";
-    public string Pv2FundingSourceQueue { get; set; } = "<not set>";
+    public string SharedServiceBusFqdn { get; set; } = NotSet;
+    public string SharedServiceBusTopicEndpoint { get; set; } = NotSet;
+    public string LearningTransportStorageDirectory { get; set; } = NotSet;
+    public string ApprenticeshipsDbConnectionString { get; set; } = NotSet;
+    public string EarningsDbConnectionString { get; set; } = NotSet;
+    public string PaymentsDbConnectionString { get; set; } = NotSet;
+    public string WireMockBaseUrl { get; set; } = NotSet;
+    public string ApprenticeshipAzureFunctionBaseUrl { get; set; } = NotSet;
+    public string ApprenticeshipAzureFunctionKey { get; set; } = NotSet;
+    public string EarningsOuterApiBaseUrl { get; set; } = NotSet;
+    public string EarningsOuterSubscriptionKey { get; set; } = NotSet;
+    public string EarningsFunctionKey { get; set; } = NotSet;
+    public string PaymentsFunctionKey { get; set; } = NotSet;
+    public string FundingSystemAcceptanceTestQueue { get; set; } = NotSet;
+    public string FundingSystemAcceptanceTestSubscription { get; set; } = NotSet;
+    public string PriceChangeApprovedEventHandlersQueue { get; set; } = NotSet;
+    public string StartDateChangeApprovedEventHandlersQueue { get; set; } = NotSet;
+    public string PaymentsFrozenEventHandlersQueue { get; set; } = NotSet;
+    public string PaymentsUnfrozenEventHandlersQueue { get; set; } = NotSet;
+    public string Pv2ServiceBusFqdn { get; set; } = NotSet;
+    public string Pv2FundingSourceQueue { get; set; } = NotSet;
     public int EventWaitTimeInSeconds { get; set; } = 120;
-    public string ApprovalCreatedQueue { get; set; } = "<not set>";
-    public string ApprenticeshipServiceBearerTokenSigningKey { get; set; } = "<not set>";
-    public string PaymentsFunctionsBaseUrl { get; set; } = "<not set>";
-    public string ApprenticeshipsInnerApiClientBaseUrl { get; set; } = "<not set>";
-    public string ApprenticeshipsInnerApiIdentifier { get; set; } = "<not set>";
-    public string EarningsInnerApiClientBaseUrl { get; set; } = "<not set>";
-    public string EarningsInnerApiScope { get; set; } = "<not set>";
+    public string ApprovalCreatedQueue { get; set; } = NotSet;
+    public string ApprenticeshipServiceBearerTokenSigningKey { get; set; } = NotSet;
+    public string PaymentsFunctionsBaseUrl { get; set; } = NotSet;
+    public string ApprenticeshipsInnerApiClientBaseUrl { get; set; } = NotSet;
+    public string ApprenticeshipsInnerApiIdentifier { get; set; } = NotSet;
+    public string EarningsInnerApiClientBaseUrl { get; set; } = NotSet;
+    public string EarningsInnerApiScope { get; set; } = NotSet;
 }
