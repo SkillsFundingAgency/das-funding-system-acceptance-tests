@@ -27,7 +27,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 .With(_ => _.ApprenticeshipEmployerTypeOnApproval, ApprenticeshipEmployerType.Levy)
                 .With(_ => _.AccountId, 3871)
                 .With(_ => _.TransferSenderId, (long?)null)
-                .With(_ => _.DateOfBirth, DateTime.Now.AddYears((-18)))
+                .With(_ => _.DateOfBirth, DateTime.Now.AddYears((-25)))
                 .With(_ => _.IsOnFlexiPaymentPilot, true)
                 .With(_ => _.TrainingCourseVersion, "1.0")
                 .With(_ => _.ProviderId, 88888888)

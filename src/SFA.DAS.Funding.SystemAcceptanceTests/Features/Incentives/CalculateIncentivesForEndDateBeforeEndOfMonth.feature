@@ -18,8 +18,8 @@ Scenario: Incentive Earnings & Payments for learner ending after 90 days not at 
 	And the second incentive payment is not generated for provider & employer
 
 Examples:
-	| start_date | planned_end_date | agreed_price | training_code | age |
-	| 2022-08-15 | 2022-11-25       | 15,000       | 614           | 17	 |
+	| start_date      | planned_end_date | agreed_price | training_code | age |
+	| currentAY-08-15 | currentAY-11-25  | 15,000       | 614           | 17  |
 
 
 @regression
@@ -33,5 +33,5 @@ Scenario: Incentive Earnings & Payments for learner ending after 365 days not at
 	And the second incentive payment is generated for provider & employer
 
 Examples:
-	| start_date | planned_end_date | agreed_price | training_code | age |
-	| 2022-08-15 | 2023-08-25       | 15,000       | 614           | 17	 |
+	| start_date      | planned_end_date | agreed_price | training_code | age |
+	| currentAY-08-15 | nextAY-08-25     | 15,000       | 614           | 17  |

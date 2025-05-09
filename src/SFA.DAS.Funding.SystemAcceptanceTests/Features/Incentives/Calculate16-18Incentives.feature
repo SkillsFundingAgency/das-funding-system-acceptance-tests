@@ -19,10 +19,10 @@ Scenario: 16-18 Incentive Earnings & Payments
 	And the second incentive payment is generated for provider & employer
 
 Examples:
-	| start_date | planned_end_date | agreed_price | training_code | age |
-	| 2022-08-01 | 2023-07-31       | 15,000       | 614           | 16	 |
-	| 2022-08-01 | 2023-07-31       | 15,000       | 614           | 17	 |
-	| 2022-08-01 | 2023-07-31       | 15,000       | 614           | 18	 |
+	| start_date      | planned_end_date | agreed_price | training_code | age |
+	| currentAY-08-01 | currentAY-07-31  | 15,000       | 614           | 16  |
+	| currentAY-08-01 | currentAY-07-31  | 15,000       | 614           | 17  |
+	| currentAY-08-01 | currentAY-07-31  | 15,000       | 614           | 18  |
 
 
 @regression
@@ -36,9 +36,9 @@ Scenario: 16-18 Incentive Earnings & Payments (duration only long enough for fir
 	And the second incentive payment is not generated for provider & employer
 
 Examples:
-	| start_date | planned_end_date | agreed_price | training_code | age |
-	| 2022-08-01 | 2022-10-29       | 15,000       | 614           | 17	 |
-	| 2022-08-01 | 2023-07-30       | 15,000       | 614           | 17	 |
+	| start_date      | planned_end_date | agreed_price | training_code | age |
+	| currentAY-08-01 | currentAY-10-29  | 15,000       | 614           | 17  |
+	| currentAY-08-01 | currentAY-07-30  | 15,000       | 614           | 17  |
 
 
 @regression
@@ -52,5 +52,5 @@ Scenario: 16-18 Incentive Earnings & Payments (duration too short for either pay
 	And the second incentive payment is not generated for provider & employer
 
 Examples:
-	| start_date | planned_end_date | agreed_price | training_code | age |
-	| 2022-08-01 | 2022-10-28       | 15,000       | 614           | 17	 |
+	| start_date      | planned_end_date | agreed_price | training_code | age |
+	| currentAY-08-01 | currentAY-10-28  | 15,000       | 614           | 17  |
