@@ -52,7 +52,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 				filteredPeriodPayments = filteredPeriodPayments.Where(x => x.EarningsProfileId == periodExpectation.Expectation.EarningsProfileId);
 			}
 
-			Assert.That(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
+            if (periodExpectation.Expectation.ProviderIncentiveAmount != null)
+            {
+                errorMessage += $" with an Amount of {periodExpectation.Expectation.ProviderIncentiveAmount},";
+                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.ProviderIncentiveAmount && x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString());
+            }
+
+            if (periodExpectation.Expectation.EmployerIncentiveAmount != null)
+            {
+                errorMessage += $" with an Amount of {periodExpectation.Expectation.EmployerIncentiveAmount},";
+                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.EmployerIncentiveAmount && x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString());
+            }
+
+            Assert.That(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
 		}
 
 		public static void AssertAgainstEventPayments(this PaymentDeliveryPeriodExpectation periodExpectation, IEnumerable<Payment> payments)
@@ -61,7 +73,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 				x.AcademicYear == periodExpectation.DeliveryPeriod.AcademicYear &&
 				x.DeliveryPeriod == periodExpectation.DeliveryPeriod.PeriodValue);
 
-			var errorMessage = $"Expected a payment on the ENTITY for delivery period {periodExpectation.DeliveryPeriod.AcademicYear}-{periodExpectation.DeliveryPeriod.PeriodValue}";
+			var errorMessage = $"Expected a payment on the EVENT for delivery period {periodExpectation.DeliveryPeriod.AcademicYear}-{periodExpectation.DeliveryPeriod.PeriodValue}";
 
 			Assert.That(periodPayments.Any(), $"{errorMessage}, but found no payments.");
 
@@ -75,7 +87,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 				filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.Amount);
 			}
 
-			Assert.That(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
+            if (periodExpectation.Expectation.ProviderIncentiveAmount != null)
+            {
+                errorMessage += $" with a ProviderIncentiveAmount of {periodExpectation.Expectation.ProviderIncentiveAmount},";
+                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.ProviderIncentiveAmount && x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString());
+            }
+
+            if (periodExpectation.Expectation.EmployerIncentiveAmount != null)
+            {
+                errorMessage += $" with a EmployerIncentiveAmount of {periodExpectation.Expectation.EmployerIncentiveAmount},";
+                filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.EmployerIncentiveAmount && x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString());
+            }
+
+            Assert.That(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
 		}
 	}
 }

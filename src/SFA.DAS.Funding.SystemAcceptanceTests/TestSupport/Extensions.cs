@@ -24,9 +24,9 @@ public static class Extensions
         }
     }
 
-    public static void ShouldHaveCorrectPaymentsGenerated(this List<Payment> actual, List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short CollectionYear, byte CollectionPeriod)> expected)
+    public static void ShouldHaveCorrectPaymentsGenerated(this List<Payment> actual, List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short CollectionYear, byte CollectionPeriod)> expected, string paymentType = "OnProgramme")
     {
-        actual.Count.Should().Be(expected.Count);
+        actual.Count(x => x.PaymentType == paymentType).Should().Be(expected.Count);
 
         for (var i = 0; i < expected.Count; i++)
         {
@@ -36,5 +36,10 @@ public static class Extensions
             actual[i].CollectionYear.Should().Be(expected[i].CollectionYear, $"Expected CollectionYear #{i+1} to be {expected[i].CollectionYear} but found {actual[i].CollectionYear}");
             actual[i].CollectionPeriod.Should().Be(expected[i].CollectionPeriod, $"Expected CollectionPeriod #{i+1} to be {expected[i].CollectionPeriod} but found {actual[i].CollectionPeriod}");
         }
+    }
+
+    public static IEnumerable<DeliveryPeriod> FilterByOnProg(this IEnumerable<DeliveryPeriod> deliveryPeriods)
+    {
+        return deliveryPeriods.Where(x => x.InstalmentType == "OnProgramme");
     }
 }

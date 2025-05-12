@@ -40,7 +40,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public void VerifyInstalmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal instalmentAmount)
         {
             var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
-            deliveryPeriods.ForEach(dp => dp.LearningAmount.Should().Be(instalmentAmount));
+            deliveryPeriods.FilterByOnProg().ToList().ForEach(dp => dp.LearningAmount.Should().Be(instalmentAmount));
         }
 
         [Given(@"the planned number of months must be the number of months from the start date to the planned end date (.*)")]
@@ -48,7 +48,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public void VerifyThePlannedDurationMonthsWithinTheEarningsGenerated(short numberOfInstalments)
         {
             var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
-            deliveryPeriods.Should().HaveCount(numberOfInstalments);
+            deliveryPeriods.FilterByOnProg().Should().HaveCount(numberOfInstalments);
         }
 
         [Given(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
@@ -56,7 +56,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public void ThenTheDeliveryPeriodForEachInstalmentMustBeTheDeliveryPeriodFromTheCollectionCalendarWithAMatchingCalendarMonthYear(Table table)
         {
             var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
-            deliveryPeriods.ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
+            deliveryPeriods.FilterByOnProg().ToList().ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
         }
 
         [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]
@@ -74,7 +74,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             Assert.AreEqual(_apprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {_apprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship}");
             
             var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
-            deliveryPeriods.ShouldHaveCorrectFundingLineType(fundingLineType);
+            deliveryPeriods.FilterByOnProg().ToList().ShouldHaveCorrectFundingLineType(fundingLineType);
         }
     }
 }

@@ -4,4 +4,5 @@ internal static class ContextKeys
 {
     public const string ApprenticeshipKey = "ApprenticeshipKey";
     public const string InitialEarningsProfileId = "InitialEarningsProfileId";
+    public const string InitialEarningsApprenticeshipModel = "InitialEarningsApprenticeshipModel";
 }

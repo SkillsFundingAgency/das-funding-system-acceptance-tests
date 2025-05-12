@@ -1,7 +1,9 @@
-﻿using System.Text.Json;
+﻿using System.Reflection;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
+using TechTalk.SpecFlow.CommonModels;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests
 {
@@ -46,7 +48,29 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
                 iConfig.Bind(_builtConfiguration);
             }
 
+            LogConfigurationValidationWarnings();
+
             return _builtConfiguration;
+        }
+
+        private static void LogConfigurationValidationWarnings()
+        {
+            var defaultedProperties = new List<string>();
+            foreach (var prop in typeof(FundingConfig).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (prop.CanRead && prop.PropertyType == typeof(string))
+                {
+                    var value = (string)prop.GetValue(_builtConfiguration);
+                    if (value == FundingConfig.NotSet)
+                    {
+                        defaultedProperties.Add(prop.Name);
+                    }
+                }
+            }
+
+            LoggerHelper.WriteLog(defaultedProperties.Any()
+                ? $"The following FundingConfig configuration properties are still set to the default value ('{FundingConfig.NotSet}'): {string.Join(", ", defaultedProperties)}"
+                : "All configuration properties are set.");
         }
         private static IConfigurationRoot GetIConfigurationRoot()
         {
