@@ -48,11 +48,11 @@ public static class TableExtensions
 
     public static string GetAcademicYear(string stringDate)
     {
-        var date = stringDate == TokenisableDateTime.CurrentDate ? DateTime.Now
-            : stringDate == TokenisableDateTime.CurrentAyToken ? DateTime.Now
-            : stringDate == TokenisableDateTime.NextAyToken ? DateTime.Now.AddYears(1)
-            : stringDate == TokenisableDateTime.PreviousAyToken ? DateTime.Now.AddYears(-1)
-            : stringDate == TokenisableDateTime.CurrentAyPlusTwoToken ? DateTime.Now.AddYears(2)
+        var date = stringDate == TokenisableYearConstants.CurrentDate ? DateTime.Now
+            : stringDate == TokenisableYearConstants.CurrentAyToken ? DateTime.Now
+            : stringDate == TokenisableYearConstants.NextAyToken ? DateTime.Now.AddYears(1)
+            : stringDate == TokenisableYearConstants.PreviousAyToken ? DateTime.Now.AddYears(-1)
+            : stringDate == TokenisableYearConstants.CurrentAyPlusTwoToken ? DateTime.Now.AddYears(2)
             : default;
 
         return CalculateAcademicYear("0", date);

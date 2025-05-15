@@ -5,13 +5,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 [TypeConverter(typeof(TokenisableDateTimeConverter))]
 public class TokenisableDateTime
 {
-    public const string CurrentAyToken = "currentAY";
-    public const string PreviousAyToken = "previousAY";
-    public const string NextAyToken = "nextAY";
-    public const string CurrentAyPlusTwoToken = "currentAYPlusTwo";
-    public const string CurrentDate = "currentDate";
-	public const string NextMonthFirstDay = "nextMonthFirstDay";
-	public const string LastDayOfCurrentMonth = "lastDayOfCurrentMonth";
+    
 
     public TokenisableDateTime(DateTime value)
 	{
@@ -27,19 +21,19 @@ public class TokenisableDateTime
 			return new TokenisableDateTime(parseResult);
 		}
 
-        if (value.ToLower() == CurrentDate.ToLower())
+        if (value.ToLower() == TokenisableYearConstants.CurrentDate.ToLower())
         {
             return new TokenisableDateTime(DateTime.Now);
         }
 
-        if (value.ToLower() == NextMonthFirstDay.ToLower())
+        if (value.ToLower() == TokenisableYearConstants.NextMonthFirstDay.ToLower())
         {
             var nextMonth = DateTime.Now.AddMonths(1);
             var firstDayOfNextMonth = new DateTime(nextMonth.Year, nextMonth.Month, 1);
             return new TokenisableDateTime(firstDayOfNextMonth);
         }
 
-        if (value.ToLower() == LastDayOfCurrentMonth.ToLower())
+        if (value.ToLower() == TokenisableYearConstants.LastDayOfCurrentMonth.ToLower())
         {
             var firstDayOfNextMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1);
             var lastDayOfCurrentMonth = firstDayOfNextMonth.AddDays(-1);
@@ -48,22 +42,22 @@ public class TokenisableDateTime
 
         var dateComponents = value.Split('-');
 
-        if (dateComponents[0].ToLower() == CurrentAyToken.ToLower())
+        if (dateComponents[0].ToLower() == TokenisableYearConstants.CurrentAyToken.ToLower())
 		{
 			return new TokenisableDateTime(GetDateForCurrentAcademicYear(dateComponents));
 		}
 
-		if (dateComponents[0].ToLower() == PreviousAyToken.ToLower())
+		if (dateComponents[0].ToLower() == TokenisableYearConstants.PreviousAyToken.ToLower())
 		{
 			return new TokenisableDateTime(GetDateForCurrentAcademicYear(dateComponents).AddYears(-1));
 		}
 
-		if (dateComponents[0].ToLower() == NextAyToken.ToLower())
+		if (dateComponents[0].ToLower() == TokenisableYearConstants.NextAyToken.ToLower())
 		{
 			return new TokenisableDateTime(GetDateForCurrentAcademicYear(dateComponents).AddYears(1));
 		}
 
-        if (dateComponents[0].ToLower() == CurrentAyPlusTwoToken.ToLower())
+        if (dateComponents[0].ToLower() == TokenisableYearConstants.CurrentAyPlusTwoToken.ToLower())
         {
             return new TokenisableDateTime(GetDateForCurrentAcademicYear(dateComponents).AddYears(2));
         }
