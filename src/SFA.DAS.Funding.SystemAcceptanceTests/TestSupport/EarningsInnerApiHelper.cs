@@ -18,4 +18,10 @@ public class EarningsInnerApiHelper
         var response = await _apiClient.SaveCareDetails(apprenticeshipKey, request);
         response.EnsureSuccessStatusCode();
     }
+
+    public async Task SetLearningSupportPayments(Guid apprenticeshipKey, List<EarningsInnerApiClient.LearningSupportPaymentDetail> learningSupportDetails)
+    {
+        var response = await _apiClient.SaveLearningSupport(apprenticeshipKey, learningSupportDetails);
+        response.EnsureSuccessStatusCode();
+    }
 }
