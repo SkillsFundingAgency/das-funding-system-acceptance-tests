@@ -1,4 +1,5 @@
 using SFA.DAS.Apprenticeships.Types;
+using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -66,30 +67,28 @@ public class LearningSupportAssertionsStepDefinitions
     [Then(@"learning support payments are generated from periods (.*) to (.*)")]
     public async Task VerifyLearningSupportPayments(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
     {
-        //PaymentsApprenticeshipModel? paymentsApprenticeshipModel = null;
+        PaymentsApprenticeshipModel? paymentsApprenticeshipModel = null;
 
-        //await WaitHelper.WaitForIt(() =>
-        //{
-        //    paymentsApprenticeshipModel = new PaymentsSqlClient().GetPaymentsModel(_context);
-        //    return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == _earningsProfileId);
-        //}, "Failed to find updated payments entity.");
+        await WaitHelper.WaitForIt(() =>
+        {
+            paymentsApprenticeshipModel = new PaymentsSqlClient().GetPaymentsModel(_context);
+            return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == _earningsProfileId);
+        }, "Failed to find updated payments entity.");
 
-        //var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent>();
+        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
+        await _paymentsMessageHandler.ReceivePaymentsEvent(apprenticeshipKey);
 
-        //var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
-        //await _paymentsMessageHandler.ReceivePaymentsEvent(apprenticeshipKey);
+        var paymentsGeneratedEvent = _context.Get<PaymentsGeneratedEvent>();
 
-        //var paymentsGeneratedEvent = _context.Get<PaymentsGeneratedEvent>();
+        while (learningSupportStart.Value.AcademicYear < learningSupportEnd.Value.AcademicYear || learningSupportStart.Value.AcademicYear >= learningSupportEnd.Value.AcademicYear && learningSupportStart.Value.PeriodValue <= learningSupportEnd.Value.PeriodValue)
+        {
+            paymentsGeneratedEvent.Payments.Should().Contain(x =>
+                    x.PaymentType == AdditionalPaymentType.LearningSupport.ToString()
+                    && x.Amount == 150
+                    && x.AcademicYear == learningSupportStart.Value.AcademicYear
+                    && x.DeliveryPeriod == learningSupportStart.Value.PeriodValue, $"Expected learning support earning for {learningSupportStart.Value.ToCollectionPeriodString()}");
 
-        //while (learningSupportStart.Value.AcademicYear < learningSupportEnd.Value.AcademicYear || learningSupportStart.Value.AcademicYear >= learningSupportEnd.Value.AcademicYear && learningSupportStart.Value.PeriodValue <= learningSupportEnd.Value.PeriodValue)
-        //{
-        //    paymentsGeneratedEvent.Payments.Should().Contain(x =>
-        //            x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport
-        //            && x.Amount == 150
-        //            && x.AcademicYear == learningSupportStart.Value.AcademicYear
-        //            && x.DeliveryPeriod == learningSupportStart.Value.PeriodValue, $"Expected learning support earning for {learningSupportStart.Value.ToCollectionPeriodString()}");
-
-        //    learningSupportStart.Value = learningSupportStart.Value.GetNextPeriod();
-        //}
+            learningSupportStart.Value = learningSupportStart.Value.GetNextPeriod();
+        }
     }
 }
