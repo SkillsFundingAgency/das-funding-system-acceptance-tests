@@ -86,5 +86,6 @@ public class AdditionalPaymentsModel : InstalmentModelBase
 public enum AdditionalPaymentType
 {
     ProviderIncentive,
-    EmployerIncentive
+    EmployerIncentive,
+    LearningSupport
 }

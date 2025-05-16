@@ -25,4 +25,9 @@ public static class PeriodExtensions
 			return new Period(period.AcademicYear.GetNextAcademicYear(), 1);
 		}
 	}
+
+    public static string ToCollectionPeriodString(this Period period)
+    {
+        return $"{period.AcademicYear}-R{period.PeriodValue:D2}";
+    }
 }

@@ -46,6 +46,29 @@ public class EarningsInnerApiClient
         return response;
     }
 
+    /// <summary>
+    /// Sends a PATCH request to the earnings inner API to save learning support data for an apprenticeship.
+    /// </summary>
+    public async Task<HttpResponseMessage> SaveLearningSupport(Guid apprenticeshipKey, List<LearningSupportPaymentDetail> request)
+    {
+        var url = $"apprenticeship/{apprenticeshipKey}/learningSupport";
+
+        var jsonContent = new StringContent(
+            JsonSerializer.Serialize(request),
+            System.Text.Encoding.UTF8,
+            "application/json");
+
+        var requestMessage = new HttpRequestMessage(HttpMethod.Patch, url)
+        {
+            Content = jsonContent
+        };
+
+        await EnsureBearerToken();
+        await EnsureAzureToken();
+        var response = await _httpClient.SendAsync(requestMessage);
+        return response;
+    }
+
     private async Task EnsureAzureToken()
     {
         if (string.IsNullOrEmpty(_azureToken))
@@ -92,5 +115,11 @@ public class EarningsInnerApiClient
         public bool HasEHCP { get; set; }
         public bool IsCareLeaver { get; set; }
         public bool CareLeaverEmployerConsentGiven { get; set; }
+    }
+
+    public class LearningSupportPaymentDetail
+    {
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 }
