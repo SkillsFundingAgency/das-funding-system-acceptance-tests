@@ -1,15 +1,8 @@
-﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 
-public class EarningsRecalculatedEventHelper
+internal static class EarningsRecalculatedEventHelper
 {
-    private ScenarioContext _context;
-
-    public EarningsRecalculatedEventHelper(ScenarioContext context)
-    {
-        _context = context;
-    }
-
-    public async Task ReceiveEarningsRecalculatedEvent(Guid apprenticeshipKey)
+    internal static async Task ReceiveEarningsRecalculatedEvent(this ScenarioContext context, Guid apprenticeshipKey)
     {
         await WaitHelper.WaitForIt(() =>
         {
@@ -18,7 +11,7 @@ public class EarningsRecalculatedEventHelper
 
             if (earningsRecalculatedEvent != null)
             {
-                _context.Set(earningsRecalculatedEvent);
+                context.Set(earningsRecalculatedEvent);
                 return true;
             }
             return false;

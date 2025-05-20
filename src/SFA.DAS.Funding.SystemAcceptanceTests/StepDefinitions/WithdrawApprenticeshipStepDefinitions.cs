@@ -5,6 +5,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -13,12 +14,10 @@ internal class WithdrawApprenticeshipStepDefinitions
 {
     private readonly ScenarioContext _context;
     private Helpers.Sql.Apprenticeship? apprenticeship;
-    private readonly EarningsRecalculatedEventHelper _earningsRecalculatedEventHelper;
     private PaymentsGeneratedEvent paymentsGeneratedEvent;
     private EarningsApprenticeshipModel? _earningsApprenticeshipModel;
     private PaymentsApprenticeshipModel? _paymentsApprenticeshipModel; 
     private ApprenticeshipEarningsRecalculatedEvent _recalculatedEarningsEvent;
-    private readonly PaymentsMessageHandler _paymentsMessageHelper;
     private readonly byte _currentCollectionPeriod;
     private readonly string _currentCollectionYear;
     private DateTime _lastDayOfLearning;
@@ -26,8 +25,6 @@ internal class WithdrawApprenticeshipStepDefinitions
     public WithdrawApprenticeshipStepDefinitions(ScenarioContext context)
     {
         _context = context;
-        _earningsRecalculatedEventHelper = new EarningsRecalculatedEventHelper(_context);
-        _paymentsMessageHelper = new PaymentsMessageHandler(context);
         _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
         _currentCollectionYear = TableExtensions.CalculateAcademicYear("0");
     }
@@ -99,7 +96,7 @@ internal class WithdrawApprenticeshipStepDefinitions
     {
         var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
 
-        await _earningsRecalculatedEventHelper.ReceiveEarningsRecalculatedEvent(apprenticeshipKey);
+        await _context.ReceiveEarningsRecalculatedEvent(apprenticeshipKey);
 
         _recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
 
@@ -112,7 +109,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
 
         // Receive the updated PaymentsGeneratedEvent
-        await _paymentsMessageHelper.ReceivePaymentsEvent(apprenticeshipKey);
+        await _context.ReceivePaymentsEvent(apprenticeshipKey);
 
         _paymentsApprenticeshipModel = new PaymentsSqlClient().GetPaymentsModel(_context);
     }

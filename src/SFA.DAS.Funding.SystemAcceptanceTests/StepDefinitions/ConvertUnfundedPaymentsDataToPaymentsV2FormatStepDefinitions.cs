@@ -1,12 +1,10 @@
 ﻿using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
-using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using SFA.DAS.Payments.Model.Core.Entities;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+using SFA.DAS.Payments.FundingSource.Messages.Commands;
 using SFA.DAS.Payments.Model.Core.OnProgramme;
 using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
-using System.Reflection;
-using SFA.DAS.Payments.FundingSource.Messages.Commands;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -14,7 +12,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     public class ConvertUnfundedPaymentsDataToPaymentsV2FormatStepDefinitions
     {
         private readonly ScenarioContext _context;
-        private readonly AdaptorMessageHandler _adaptorMessageHelper;
         private List<FinalisedOnProgammeLearningPaymentEvent> _finalisedPaymentsList;
         private List<CalculateOnProgrammePayment> _calculatedRequiredLevyAmountList;
         private short _currentAcademicYear;
@@ -22,7 +19,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public ConvertUnfundedPaymentsDataToPaymentsV2FormatStepDefinitions(ScenarioContext context)
         {
             _context = context;
-            _adaptorMessageHelper = new AdaptorMessageHandler(_context);
             _currentAcademicYear = short.Parse(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
         }
 
@@ -36,7 +32,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 .OrderBy(x => x.ApprenticeshipEarning.DeliveryPeriod)
                 .ToList();
 
-            await _adaptorMessageHelper.ReceiveCalculateOnProgrammePaymentEvent(_context.Get<ApprenticeshipCreatedEvent>().Uln, numberOfEvents);
+            await _context.ReceiveCalculateOnProgrammePaymentEvent(_context.Get<ApprenticeshipCreatedEvent>().Uln, numberOfEvents);
 
             _calculatedRequiredLevyAmountList = _context.Get<List<CalculateOnProgrammePayment>>()
                 .OrderBy(x => x.DeliveryPeriod)

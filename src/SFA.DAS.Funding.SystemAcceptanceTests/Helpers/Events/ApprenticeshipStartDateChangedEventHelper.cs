@@ -1,19 +1,13 @@
 ﻿using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 
-internal class ApprenticeshipStartDateChangedEventHelper
+internal static class ApprenticeshipStartDateChangedEventHelper
 {
-    private readonly ScenarioContext _context;
-
-    public ApprenticeshipStartDateChangedEventHelper(ScenarioContext context)
+    internal static ApprenticeshipStartDateChangedEvent CreateStartDateChangedMessageWithCustomValues(ScenarioContext context, DateTime actualStartDate, DateTime plannedEndDate, DateTime approvedDate)
     {
-        _context = context;
-    }
-    public ApprenticeshipStartDateChangedEvent CreateStartDateChangedMessageWithCustomValues(DateTime actualStartDate, DateTime plannedEndDate, DateTime approvedDate)
-    {
-        var apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
+        var apprenticeshipCreatedEvent = context.Get<ApprenticeshipCreatedEvent>();
 
         var fixture = new Fixture();
         return fixture.Build<ApprenticeshipStartDateChangedEvent>()
@@ -45,7 +39,7 @@ internal class ApprenticeshipStartDateChangedEventHelper
             .Create();
     }
 
-    public async Task PublishApprenticeshipStartDateChangedEvent(ApprenticeshipStartDateChangedEvent startDateChangedEvent)
+    internal static async Task PublishApprenticeshipStartDateChangedEvent(ApprenticeshipStartDateChangedEvent startDateChangedEvent)
     {
         await TestServiceBus.Das.SendStartDateChangedMessage(startDateChangedEvent);
     }

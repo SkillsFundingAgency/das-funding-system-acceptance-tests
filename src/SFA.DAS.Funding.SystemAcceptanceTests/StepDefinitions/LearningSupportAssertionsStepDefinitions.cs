@@ -1,5 +1,6 @@
 using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -10,7 +11,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 public class LearningSupportAssertionsStepDefinitions
 {
     private readonly ScenarioContext _context;
-    private readonly PaymentsMessageHandler _paymentsMessageHandler;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
     private Guid _earningsProfileId;
     private bool _learningSupportAdded = false;
@@ -19,7 +19,6 @@ public class LearningSupportAssertionsStepDefinitions
     {
         _context = context;
         _earningsEntitySqlClient = earningsEntitySqlClient;
-        _paymentsMessageHandler = new PaymentsMessageHandler(context);
     }
 
     [When(@"learning support is recorded from (.*) to (.*)")]
@@ -76,7 +75,7 @@ public class LearningSupportAssertionsStepDefinitions
         }, "Failed to find updated payments entity.");
 
         var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
-        await _paymentsMessageHandler.ReceivePaymentsEvent(apprenticeshipKey);
+        await _context.ReceivePaymentsEvent(apprenticeshipKey);
 
         var paymentsGeneratedEvent = _context.Get<PaymentsGeneratedEvent>();
 

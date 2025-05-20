@@ -1,6 +1,7 @@
 ﻿using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -12,7 +13,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     {
         private readonly ScenarioContext _context;
         private List<Payment> _payments;
-        private readonly PaymentsMessageHandler _paymentsMessageHelper;
         private ReleasePaymentsCommand _releasePaymentsCommand;
         private List<FinalisedOnProgammeLearningPaymentEvent> _finalisedPaymentsList;
         private List<TestSupport.Payments> _paymentEntity;
@@ -23,7 +23,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context)
         {
             _context = context;
-            _paymentsMessageHelper = new PaymentsMessageHandler(context);
             _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
             _currentCollectionYear = TableExtensions.CalculateAcademicYear("0");
             _paymentsFunctionsClient = new PaymentsFunctionsClient();
@@ -33,7 +32,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When(@"the Unfunded Payments for the remainder of the apprenticeship are determined")]
         public async Task UnfundedPaymentsForTheRemainderOfTheApprenticeshipAreDetermined()
         {
-            await _paymentsMessageHelper.ReceivePaymentsEvent(_context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
+            await _context.ReceivePaymentsEvent(_context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
 
             _payments = _context.Get<PaymentsGeneratedEvent>().Payments;
         }

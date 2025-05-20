@@ -1,6 +1,7 @@
 using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -10,7 +11,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 public class IncentivesAssertionsStepDefinitions
 {
     private readonly ScenarioContext _context;
-    private readonly PaymentsMessageHandler _paymentsMessageHandler;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
     private Guid _earningsProfileId;
     private bool _markedAsCareLeaver = false;
@@ -19,7 +19,6 @@ public class IncentivesAssertionsStepDefinitions
     {
         _context = context;
         _earningsEntitySqlClient = earningsEntitySqlClient;
-        _paymentsMessageHandler = new PaymentsMessageHandler(context);
     }
 
     [When(@"the apprentice is marked as a care leaver")]
@@ -97,7 +96,7 @@ public class IncentivesAssertionsStepDefinitions
         var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent>();
 
         var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
-        await _paymentsMessageHandler.ReceivePaymentsEvent(apprenticeshipKey);
+        await _context.ReceivePaymentsEvent(apprenticeshipKey);
 
         var paymentsGeneratedEvent = _context.Get<PaymentsGeneratedEvent>();
         

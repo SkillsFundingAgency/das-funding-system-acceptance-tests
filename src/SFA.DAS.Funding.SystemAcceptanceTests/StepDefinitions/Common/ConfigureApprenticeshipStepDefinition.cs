@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
@@ -11,12 +12,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
 public class ConfigureApprenticeshipStepDefinition
 {
     private readonly ScenarioContext _context;
-    private readonly ApprenticeshipMessageHandler _messageHelper;
 
     public ConfigureApprenticeshipStepDefinition(ScenarioContext context)
     {
         _context = context;
-        _messageHelper = new ApprenticeshipMessageHandler(_context);
     }
 
     [Given(@"there is an apprenticeship")]
@@ -27,14 +26,14 @@ public class ConfigureApprenticeshipStepDefinition
         var agreedPrice = 15000;
         var trainingCode = "2";
 
-        var commitmentsApprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
+        var commitmentsApprenticeshipCreatedEvent = ApprenticeshipEventHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
         _context.Set(commitmentsApprenticeshipCreatedEvent);
     }
 
     [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
     public void ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice, string trainingCode)
     {
-        var commitmentsApprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
+        var commitmentsApprenticeshipCreatedEvent = ApprenticeshipEventHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
         _context.Set(commitmentsApprenticeshipCreatedEvent);
     }
 
@@ -45,7 +44,7 @@ public class ConfigureApprenticeshipStepDefinition
         var startDate = new DateTime(today.Year, today.Month, 1).AddMonths(-monthsSinceStart);
         var plannedEndDate = startDate.AddMonths(duration).AddDays(-1);
 
-        var commitmentsApprenticeshipCreatedEvent = _messageHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
+        var commitmentsApprenticeshipCreatedEvent = ApprenticeshipEventHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
         _context.Set(commitmentsApprenticeshipCreatedEvent);
     }
 
@@ -66,7 +65,7 @@ public class ConfigureApprenticeshipStepDefinition
     {
         var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
 
-        _messageHelper.UpdateApprenticeshipCreatedMessageWithDoB(commitmentsApprenticeshipCreatedEvent, dob);
+        ApprenticeshipEventHelper.UpdateApprenticeshipCreatedMessageWithDoB(commitmentsApprenticeshipCreatedEvent, dob);
     }
 
     [Given("the age at the start of the apprenticeship is (.*)")]
@@ -76,7 +75,7 @@ public class ConfigureApprenticeshipStepDefinition
 
         var dob = commitmentsApprenticeshipCreatedEvent.ActualStartDate.Value.AddYears(-age);
 
-        _messageHelper.UpdateApprenticeshipCreatedMessageWithDoB(commitmentsApprenticeshipCreatedEvent, dob);
+        ApprenticeshipEventHelper.UpdateApprenticeshipCreatedMessageWithDoB(commitmentsApprenticeshipCreatedEvent, dob);
     }
 
     [Given("the learner is aged (.*) at the start of the apprenticeship")]
@@ -86,7 +85,7 @@ public class ConfigureApprenticeshipStepDefinition
 
         var dob = commitmentsApprenticeshipCreatedEvent.ActualStartDate.Value.AddYears(-(age+1)).AddMonths(1);
 
-        _messageHelper.UpdateApprenticeshipCreatedMessageWithDoB(commitmentsApprenticeshipCreatedEvent, dob);
+        ApprenticeshipEventHelper.UpdateApprenticeshipCreatedMessageWithDoB(commitmentsApprenticeshipCreatedEvent, dob);
     }
 
 
@@ -101,7 +100,7 @@ public class ConfigureApprenticeshipStepDefinition
         if (condition == "below")
             dob = dob.AddDays(+1);
 
-        _messageHelper.UpdateApprenticeshipCreatedMessageWithDoB(commitmentsApprenticeshipCreatedEvent, dob);
+        ApprenticeshipEventHelper.UpdateApprenticeshipCreatedMessageWithDoB(commitmentsApprenticeshipCreatedEvent, dob);
     }
 
     [Given(@"apprenticeship employer type is (Levy|NonLevy)")]
@@ -111,6 +110,6 @@ public class ConfigureApprenticeshipStepDefinition
 
         var employer = employerType == "Levy" ? CommitmentsV2.Types.ApprenticeshipEmployerType.Levy : CommitmentsV2.Types.ApprenticeshipEmployerType.NonLevy;
 
-        _messageHelper.UpdateApprenticeshipCreatedMessageWithEmployerType(commitmentsApprenticeshipCreatedEvent, employer);
+        ApprenticeshipEventHelper.UpdateApprenticeshipCreatedMessageWithEmployerType(commitmentsApprenticeshipCreatedEvent, employer);
     }
 }
