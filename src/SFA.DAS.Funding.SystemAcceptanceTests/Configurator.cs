@@ -5,6 +5,8 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using TechTalk.SpecFlow.CommonModels;
 
+//[assembly: Parallelizable(ParallelScope.All)]// TODO-PARALLEL - uncomment
+
 namespace SFA.DAS.Funding.SystemAcceptanceTests
 {
     public static class Configurator

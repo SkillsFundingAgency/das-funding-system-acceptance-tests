@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -17,13 +18,11 @@ public class ApproveApprenticeshipStepDefinition
 {
 
     private readonly ScenarioContext _context;
-    private readonly ApprenticeshipMessageHandler _messageHelper;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
 
     public ApproveApprenticeshipStepDefinition(ScenarioContext context)
     {
         _context = context;
-        _messageHelper = new ApprenticeshipMessageHandler(_context);
         _earningsEntitySqlClient = new EarningsSqlClient();
     }
 
@@ -32,7 +31,7 @@ public class ApproveApprenticeshipStepDefinition
     public async Task TheApprenticeshipCommitmentIsApproved()
     {
         var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
-        await _messageHelper.PublishApprenticeshipApprovedMessage(commitmentsApprenticeshipCreatedEvent);
+        await _context.PublishApprenticeshipApprovedMessage(commitmentsApprenticeshipCreatedEvent);
 
         await MockLearnerDataResponse();
 

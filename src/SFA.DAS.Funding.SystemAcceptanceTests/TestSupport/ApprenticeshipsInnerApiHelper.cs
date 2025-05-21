@@ -1,44 +1,43 @@
 ﻿using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
+namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+
+public class ApprenticeshipsInnerApiHelper()
 {
-    public class ApprenticeshipsInnerApiHelper(ScenarioContext context)
+    private readonly ApprenticeshipsInnerApiClient _apiClient = new();
+
+    public async Task CreatePriceChangeRequest(ScenarioContext context, decimal trainingPrice, decimal assessmentPrice, DateTime effectiveFromDate)
     {
-        private readonly ApprenticeshipsInnerApiClient _apiClient = new();
+        var apprenticeshipCreatedEvent = context.Get<ApprenticeshipCreatedEvent>();
 
-        public async Task CreatePriceChangeRequest(decimal trainingPrice, decimal assessmentPrice, DateTime effectiveFromDate)
+        var requestBody = new ApprenticeshipsInnerApiClient.CreateApprenticeshipPriceChangeRequest
         {
-            var apprenticeshipCreatedEvent = context.Get<ApprenticeshipCreatedEvent>();
+            TrainingPrice = trainingPrice,
+            AssessmentPrice = assessmentPrice,
+            TotalPrice = trainingPrice + assessmentPrice,
+            EffectiveFromDate = effectiveFromDate,
+            Reason = "",
+            Initiator = "Employer",
+            UserId = "SystemAcceptanceTests",
+        };
 
-            var requestBody = new ApprenticeshipsInnerApiClient.CreateApprenticeshipPriceChangeRequest
-            {
-                TrainingPrice = trainingPrice,
-                AssessmentPrice = assessmentPrice,
-                TotalPrice = trainingPrice + assessmentPrice,
-                EffectiveFromDate = effectiveFromDate,
-                Reason = "",
-                Initiator = "Employer",
-                UserId = "SystemAcceptanceTests",
-            };
+        var response = await _apiClient.PostAsync($"{apprenticeshipCreatedEvent.ApprenticeshipKey}/priceHistory", requestBody);
+        response.EnsureSuccessStatusCode();
+    }
 
-            var response = await _apiClient.PostAsync($"{apprenticeshipCreatedEvent.ApprenticeshipKey}/priceHistory", requestBody);
-            response.EnsureSuccessStatusCode();
-        }
+    public async Task ApprovePendingPriceChangeRequest(ScenarioContext context, decimal trainingPrice, decimal assessmentPrice, DateTime approvedDate)
+    {
+        var apprenticeshipCreatedEvent = context.Get<ApprenticeshipCreatedEvent>();
 
-        public async Task ApprovePendingPriceChangeRequest(decimal trainingPrice, decimal assessmentPrice, DateTime approvedDate)
+        var requestBody = new ApprenticeshipsInnerApiClient.ApprovePriceChangeRequest
         {
-            var apprenticeshipCreatedEvent = context.Get<ApprenticeshipCreatedEvent>();
+            TrainingPrice = trainingPrice,
+            AssessmentPrice = assessmentPrice,
+            UserId = "SystemAcceptanceTests",
+        };
 
-            var requestBody = new ApprenticeshipsInnerApiClient.ApprovePriceChangeRequest
-            {
-                TrainingPrice = trainingPrice,
-                AssessmentPrice = assessmentPrice,
-                UserId = "SystemAcceptanceTests",
-            };
-
-            var response = await _apiClient.PatchAsync($"{apprenticeshipCreatedEvent.ApprenticeshipKey}/priceHistory/pending", requestBody);
-            response.EnsureSuccessStatusCode();
-        }
+        var response = await _apiClient.PatchAsync($"{apprenticeshipCreatedEvent.ApprenticeshipKey}/priceHistory/pending", requestBody);
+        response.EnsureSuccessStatusCode();
     }
 }

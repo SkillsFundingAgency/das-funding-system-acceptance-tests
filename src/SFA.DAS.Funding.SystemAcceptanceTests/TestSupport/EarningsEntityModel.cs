@@ -1,6 +1,4 @@
 ﻿using SFA.DAS.Apprenticeships.Types;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 

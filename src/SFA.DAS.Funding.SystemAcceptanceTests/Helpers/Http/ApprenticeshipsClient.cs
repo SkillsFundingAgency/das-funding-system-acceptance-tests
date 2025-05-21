@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System.Net;
 using System.Text;
-using System.Text.Json;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
