@@ -12,24 +12,20 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     private readonly ScenarioContext _context;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
     
-    private CommitmentsMessages.ApprenticeshipCreatedEvent _commitmentsApprenticeshipCreatedEvent;
-    private ApprenticeshipsMessages.ApprenticeshipCreatedEvent _apprenticeshipCreatedEvent;
-
     public CalculateEarningsForLearningPaymentsStepDefinitions(ScenarioContext context)
     {
         _context = context;
         _earningsEntitySqlClient = new EarningsSqlClient();
     }
 
-
     [When(@"the agreed price is (below|above) the funding band maximum for the selected course")]
     public void VerifyFundingBandMaxValue(string condition)
     {
-        _commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
-        _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
+        var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+        var apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
 
-        if (condition == "below") Assert.Less(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, _apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
-        else Assert.Greater(_commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, _apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
+        if (condition == "below") Assert.Less(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
+        else Assert.Greater(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
     }
 
     [Then(@"80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months (.*)")]
@@ -68,8 +64,8 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     [Then(@"the leaners age (.*) at the start of the course and funding line type (.*) must be calculated")]
     public void ValidateAgeAndFundingLineTypeCalculated(int age, string fundingLineType)
     {
-        _apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
-        Assert.AreEqual(_apprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {_apprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship}");
+        var apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
+        Assert.AreEqual(apprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {apprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship}");
         
         var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
         deliveryPeriods.FilterByOnProg().ToList().ShouldHaveCorrectFundingLineType(fundingLineType);

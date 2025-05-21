@@ -1,8 +1,7 @@
 ﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
-using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
 
@@ -10,7 +9,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
 public class ReleasePaymentsStepDefinitions
 {
     private readonly ScenarioContext _context;
-    private readonly EarningsSqlClient _earningsEntitySqlClient;
     private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
 
     public ReleasePaymentsStepDefinitions(ScenarioContext context)

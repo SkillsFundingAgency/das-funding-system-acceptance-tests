@@ -13,10 +13,7 @@ public class ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions
     private readonly ScenarioContext _context;
     private PaymentsFrozenEvent _paymentsFrozenEvent;
     private PaymentsUnfrozenEvent _paymentsUnfrozenEvent;
-    private TestSupport.Payments[] _paymentEntity;
     private readonly PaymentsSqlClient _paymentsApiClient;
-    private byte _currentCollectionPeriod;
-    private string _currentCollectionYear;
     private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
 
     public ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions(ScenarioContext context)
@@ -53,15 +50,14 @@ public class ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions
     [Then(@"the scheduler triggers Unfunded Payment processing for following collection period")]
     public async Task SchedulerTriggersUnfundedPaymentProcessingForFollowingCollectionPeriod()
     {
-        _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.AddMonths(1).ToString("MMMM")];
-        _currentCollectionYear = TableExtensions.CalculateAcademicYear("1");
+        var collectionPeriod = TableExtensions.Period[DateTime.Now.AddMonths(1).ToString("MMMM")];
+        var collectionYear = TableExtensions.CalculateAcademicYear("1");
 
-        var _releasePaymentsCommand = new ReleasePaymentsCommand();
-        _releasePaymentsCommand.CollectionPeriod = _currentCollectionPeriod;
-        _releasePaymentsCommand.CollectionYear = short.Parse(_currentCollectionYear);
+        _context.Set(collectionYear, ContextKeys.CurrentCollectionYear);
+        _context.Set(collectionPeriod, ContextKeys.CurrentCollectionPeriod);
 
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_currentCollectionPeriod,
-            Convert.ToInt16(_currentCollectionYear));
+        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(collectionPeriod,
+            Convert.ToInt16(collectionYear));
     }
 
     [Then(@"do not make an on-programme payment to the training provider for that apprentice")]
@@ -87,6 +83,9 @@ public class ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions
     [Then(@"make any on-programme payments to the provider that were not paid whilst the payment status was Inactive")]
     public async Task MakeAnyOn_ProgrammePaymentsToTheProviderThatWereNotPaidWhilstThePaymentStatusWasInactive()
     {
+        var currentCollectionYear = _context.Get<string>(ContextKeys.CurrentCollectionYear);
+        var currentCollectionPeriod = _context.Get<byte>(ContextKeys.CurrentCollectionPeriod);
+
         await WaitHelper.WaitForIt(() =>
         {
             var paymentModel = _paymentsApiClient.GetPaymentsModel(_context);
@@ -99,11 +98,11 @@ public class ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions
         {
             var paymentModel = _paymentsApiClient.GetPaymentsModel(_context);
 
-            var payments = paymentModel.Payments.Where(p => p.CollectionPeriod <= _currentCollectionPeriod
-            && p.CollectionYear == short.Parse(_currentCollectionYear));
+            var payments = paymentModel.Payments.Where(p => p.CollectionPeriod <= currentCollectionPeriod
+            && p.CollectionYear == short.Parse(currentCollectionYear));
 
-            return paymentModel.Payments.Where(p => p.CollectionPeriod <= _currentCollectionPeriod
-            && p.CollectionYear == short.Parse(_currentCollectionYear)).All(p => p.SentForPayment);
+            return paymentModel.Payments.Where(p => p.CollectionPeriod <= currentCollectionPeriod
+            && p.CollectionYear == short.Parse(currentCollectionYear)).All(p => p.SentForPayment);
         }, "Some or all expected payments were not sent for payment after provider payment status was unfrozen!");
     }
 }

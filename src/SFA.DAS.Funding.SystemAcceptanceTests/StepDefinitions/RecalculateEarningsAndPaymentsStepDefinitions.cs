@@ -2,6 +2,7 @@
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -13,8 +14,6 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
 {
     private readonly ScenarioContext _context;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
-    private readonly CalculateUnfundedPaymentsStepDefinitions _calculateUnfundedPaymentsStepDefinitions;
-    private ApprenticeshipPriceChangedEvent _apprenticeshipPriceChangedEvent;
     private EarningsApprenticeshipModel? _earningsApprenticeshipModel;
     private readonly ApprenticeshipsInnerApiHelper _apprenticeshipsInnerApiHelper;
     private DateTime _priceChangeEffectiveFrom;
@@ -28,32 +27,33 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     private decimal _newEarningsAmount;
     private decimal _previousEarningsAmount;
     private decimal _fundingBandMax;
-    private decimal _difference;
     private Guid _initialEarningsProfileId;
     private DateTime _startDateChangeApprovedDate;
     private DateTime _newStartDate;
     private DateTime _newEndDate;
     private DateTime? _plannedEndDate;
     private DateTime? _originalStartDate;
+    private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
 
     public RecalculateEarningsAndPaymentsStepDefinitions(ScenarioContext context)
     {
         _context = context;
         _earningsEntitySqlClient = new EarningsSqlClient();
-        _calculateUnfundedPaymentsStepDefinitions = new CalculateUnfundedPaymentsStepDefinitions(context);
         _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
         _currentCollectionYear = TableExtensions.CalculateAcademicYear("0");
         _apprenticeshipsInnerApiHelper = new ApprenticeshipsInnerApiHelper();
+        _paymentsFunctionsClient = new PaymentsFunctionsClient();
     }
 
     [Given(@"payments have been paid for an apprenticeship with (.*), (.*)")]
     public async Task GivenPaymentsHaveBeenCalculatedForAnApprenticeshipWithAnd(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate)
     {
-        await _calculateUnfundedPaymentsStepDefinitions.UnfundedPaymentsForTheRemainderOfTheApprenticeshipAreDetermined();
+        await _context.ReceivePaymentsEvent(_context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
 
-        _calculateUnfundedPaymentsStepDefinitions.UserWantsToProcessPaymentsForTheCurrentCollectionPeriod();
+        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_currentCollectionPeriod,
+            Convert.ToInt16(_currentCollectionYear));
 
-        await _calculateUnfundedPaymentsStepDefinitions.SchedulerTriggersUnfundedPaymentProcessing();
+        await Task.Delay(10000);
 
         var startDatePeriod = TableExtensions.Period[startDate.Value.ToString("MMMM")];
         var startDateYear = TableExtensions.CalculateAcademicYear("0", startDate.Value);
@@ -64,7 +64,8 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
         var firstDeliveryPeriod = short.Parse(startDateYear) < short.Parse(_currentCollectionYear) ? TableExtensions.Period["August"] : startDatePeriod;
 
 
-        await _calculateUnfundedPaymentsStepDefinitions.UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(_currentCollectionPeriod - firstDeliveryPeriod);
+        await _context.UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(_currentCollectionPeriod - firstDeliveryPeriod);
+
     }
 
 
