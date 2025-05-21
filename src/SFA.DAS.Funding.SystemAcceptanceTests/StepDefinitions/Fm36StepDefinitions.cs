@@ -647,7 +647,7 @@ public class Fm36StepDefinitions
             $"Episode 1 TNP1 mismatch. Expected: {episode1Tnp1Expected}, Actual: {episode1.PriceEpisodeValues.TNP1}");
         Assert.AreEqual(episode1Tnp2Expected, episode1.PriceEpisodeValues.TNP2,
             $"Episode 1 TNP2 mismatch. Expected: {episode1Tnp2Expected}, Actual: {episode1.PriceEpisodeValues.TNP2}");
-        Assert.AreEqual(episode1Tnp1Expected/totalInstalments, episode1.PriceEpisodeValues.PriceEpisodeTotalEarnings, "Incorrect PriceEpisodeTotalEarnings found for first price episode");
+        Assert.AreEqual(episode1Tnp1Expected / totalInstalments, episode1.PriceEpisodeValues.PriceEpisodeTotalEarnings, "Incorrect PriceEpisodeTotalEarnings found for first price episode");
 
         // Validate Episode 2
         Assert.AreEqual(newEpisodeStartDate.Value.Date, episode2.PriceEpisodeValues.EpisodeStartDate,
@@ -722,6 +722,34 @@ public class Fm36StepDefinitions
 
         Assert.AreEqual(firstIncentiveThresholdDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.FirstIncentiveThresholdDate, "Unexpected FirstIncentiveThresholdDate found!");
 
-        if(expectedSecondIncentive) Assert.AreEqual(secondIncentiveThresholdDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.SecondIncentiveThresholdDate, "Unexpected SecondIncentiveThresholdDate found!");
+        if (expectedSecondIncentive) Assert.AreEqual(secondIncentiveThresholdDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.SecondIncentiveThresholdDate, "Unexpected SecondIncentiveThresholdDate found!");
+    }
+
+    [Then("learning support amounts and periods from (.*) to (.*) are updated in the fm36 response")]
+    public void LearningSupportAmountsAndPeriodsFromCurrentAY_RToCurrentAY_RAreUpdatedInTheFmResponse(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
+    {
+        // learner has to be eligible for incentive earnings 
+
+        var fm36 = _context.Get<List<FM36Learner>>();
+        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+
+        // get your learner data 
+
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+
+        for (var i = learningSupportStart.Value.PeriodValue; i <= learningSupportEnd.Value.PeriodValue; i++)
+        {
+            fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
+            .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLSFCash).SingleOrDefault(x => x.PeriodNumber == i).Value
+            .Should().Be(150, $"{PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLSFCash} value for period {i} is not 150");
+
+            fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnSuppFund).SingleOrDefault(x => x.PeriodNumber == i).Value
+                .Should().Be(1, $"{LearningDeliveryPeriodisedValuesAttributeNames.LearnSuppFund} value for period {i} is not 1");
+
+            fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedValues
+                .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnSuppFundCash).SingleOrDefault(x => x.PeriodNumber == i).Value
+                .Should().Be(150, $"{LearningDeliveryPeriodisedValuesAttributeNames.LearnDelFirstProv1618Pay} value for period {i} is not 150");
+        }
     }
 }
