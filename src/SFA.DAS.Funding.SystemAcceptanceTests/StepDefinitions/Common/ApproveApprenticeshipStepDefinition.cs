@@ -35,8 +35,7 @@ public class ApproveApprenticeshipStepDefinition
 
         await MockLearnerDataResponse();
 
-        var earnings = _context.Get<EarningsGeneratedEvent>();
-        var deliveryPeriods = earnings.DeliveryPeriods;
+        var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
         _context.Set(deliveryPeriods);
 
         EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
@@ -54,7 +53,7 @@ public class ApproveApprenticeshipStepDefinition
         _context.Set(earningsApprenticeshipModel, ContextKeys.InitialEarningsApprenticeshipModel);
         var initialEarningsProfileId = earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId;
         _context.Set(initialEarningsProfileId, ContextKeys.InitialEarningsProfileId);
-        testData.ApprenticeshipKey = earnings.ApprenticeshipKey;
+        testData.ApprenticeshipKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
     }
 
     private async Task MockLearnerDataResponse()

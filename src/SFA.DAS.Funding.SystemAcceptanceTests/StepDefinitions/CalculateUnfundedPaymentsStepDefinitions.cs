@@ -26,7 +26,8 @@ public class CalculateUnfundedPaymentsStepDefinitions
     [When(@"the Unfunded Payments for the remainder of the apprenticeship are determined")]
     public async Task UnfundedPaymentsForTheRemainderOfTheApprenticeshipAreDetermined()
     {
-        await _context.ReceivePaymentsEvent(_context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
+        var testData = _context.Get<TestData>();
+        await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
     }
 
     [Then(@"the Unfunded Payments for every earning is created")]
@@ -140,9 +141,10 @@ public class CalculateUnfundedPaymentsStepDefinitions
     [Then(@"the unfunded payments that have already been sent to Payments BAU are not sent to be paid again")]
     public async Task ThenTheUnfundedPaymentsThatHaveAlreadyBeenSentToPaymentsBAUAreNotSentToBePaidAgain()
     {
+        var testData = _context.Get<TestData>();
         await WaitHelper.WaitForUnexpected(() =>
         {
-            _finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).Select(x => x.message).ToList();
+            _finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x => x.message).ToList();
 
             return _finalisedPaymentsList.Count != 0;
         }, "Unexpected published Finalised On Programme Learning Payment events found");

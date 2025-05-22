@@ -6,7 +6,8 @@ internal static class DcLearnerDataHelper
 {
     internal static Learner GetLearner(this ScenarioContext context)
     {
-        var apprenticeshipCreatedEvent = context.Get<ApprenticeshipCreatedEvent>();
+        var testData = context.Get<TestData>();
+        var apprenticeshipCreatedEvent = testData.ApprenticeshipCreatedEvent;
         return new Learner
         {
             Ukprn = apprenticeshipCreatedEvent.Episode.Ukprn,

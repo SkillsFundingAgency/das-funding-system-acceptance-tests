@@ -22,7 +22,7 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     {
         var testData = _context.Get<TestData>();
         var commitmentsApprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
-        var apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
+        var apprenticeshipCreatedEvent = testData.ApprenticeshipCreatedEvent;
 
         if (condition == "below") Assert.Less(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
         else Assert.Greater(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
@@ -64,8 +64,8 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     [Then(@"the leaners age (.*) at the start of the course and funding line type (.*) must be calculated")]
     public void ValidateAgeAndFundingLineTypeCalculated(int age, string fundingLineType)
     {
-        var apprenticeshipCreatedEvent = _context.Get<ApprenticeshipsMessages.ApprenticeshipCreatedEvent>();
-        Assert.AreEqual(apprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {apprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship}");
+        var testData = _context.Get<TestData>();
+        Assert.AreEqual(testData.ApprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {testData.ApprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship}");
         
         var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
         deliveryPeriods.FilterByOnProg().ToList().ShouldHaveCorrectFundingLineType(fundingLineType);

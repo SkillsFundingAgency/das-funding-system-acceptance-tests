@@ -23,9 +23,10 @@ public class IncentivesAssertionsStepDefinitions
     [When(@"the apprentice is marked as a care leaver")]
     public async Task MarkAsCareLeaver()
     {
+        var testData = _context.Get<TestData>();
         PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
         var helper = new EarningsInnerApiHelper();
-        await helper.MarkAsCareLeaver(_context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
+        await helper.MarkAsCareLeaver(testData.ApprenticeshipKey);
         _markedAsCareLeaver = true;
     }
 

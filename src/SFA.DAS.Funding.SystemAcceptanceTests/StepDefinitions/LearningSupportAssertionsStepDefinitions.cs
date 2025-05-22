@@ -24,9 +24,10 @@ public class LearningSupportAssertionsStepDefinitions
     [When(@"learning support is recorded from (.*) to (.*)")]
     public async Task AddLearningSupport(TokenisableDateTime learningSupportStart, TokenisableDateTime learningSupportEnd)
     {
+        var testData = _context.Get<TestData>();
         PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
         var helper = new EarningsInnerApiHelper();
-        await helper.SetLearningSupportPayments(_context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey,
+        await helper.SetLearningSupportPayments(testData.ApprenticeshipKey,
             [new EarningsInnerApiClient.LearningSupportPaymentDetail() { StartDate = learningSupportStart.Value, EndDate = learningSupportEnd.Value }]);
         _learningSupportAdded = true;
     }

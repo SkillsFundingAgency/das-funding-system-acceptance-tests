@@ -25,13 +25,12 @@ internal class WithdrawApprenticeshipStepDefinitions
     public async Task WithdrawApprenticeship()
     {
         var testData = _context.Get<TestData>();
-        var apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
 
         var apprenticeshipsClient = new ApprenticeshipsClient();
         var body = new WithdrawApprenticeshipRequestBody
         {
-            UKPRN = apprenticeshipCreatedEvent.Episode.Ukprn,
-            ULN = apprenticeshipCreatedEvent.Uln,
+            UKPRN = testData.ApprenticeshipCreatedEvent.Episode.Ukprn,
+            ULN = testData.ApprenticeshipCreatedEvent.Uln,
             Reason = "WithdrawFromBeta",
             ReasonText = "",
             LastDayOfLearning = testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate!.Value.AddDays(1),
@@ -44,18 +43,18 @@ internal class WithdrawApprenticeshipStepDefinitions
     [When("a Withdrawal request is recorded with a reason (.*) and last day of delivery (.*)")]
     public async Task WithdrawalRequestIsRecordedWithAReasonWithdrawDuringLearningAndLastDayOfDelivery(string reason, TokenisableDateTime lastDayOfDelivery)
     {
+        var testData = _context.Get<TestData>();
+
         // clear previous PaymentsGeneratedEvent before triggering the withdrawal
         PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
 
         _lastDayOfLearning = lastDayOfDelivery.Value;
 
-        var apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
-
         var apprenticeshipsClient = new ApprenticeshipsClient();
         var body = new WithdrawApprenticeshipRequestBody
         {
-            UKPRN = apprenticeshipCreatedEvent.Episode.Ukprn,
-            ULN = apprenticeshipCreatedEvent.Uln,
+            UKPRN = testData.ApprenticeshipCreatedEvent.Episode.Ukprn,
+            ULN = testData.ApprenticeshipCreatedEvent.Uln,
             Reason = reason,
             ReasonText = "",
             LastDayOfLearning = _lastDayOfLearning,
@@ -143,13 +142,12 @@ internal class WithdrawApprenticeshipStepDefinitions
     public void NewPaymentsWithAmountSinceDeliveryPeriodAndAcademicYearAreMarkedAsNotSentForPaymentClawedBack(decimal amount)
     {
         var testData = _context.Get<TestData>();
-        var earningsGeneratedEvent = _context.Get<EarningsGeneratedEvent>();
 
         var lastDayOfLearningPeriod = TableExtensions.Period[_lastDayOfLearning.ToString("MMMM")];
         var lastDayOfLearningAcademicYear = short.Parse(TableExtensions.CalculateAcademicYear("0", _lastDayOfLearning));
 
         //var startDatePeriod = TableExtensions.Period[earningsGeneratedEvent.StartDate.ToString("MMMM")];
-        var startDateAcademicYear = short.Parse(TableExtensions.CalculateAcademicYear("0", earningsGeneratedEvent.StartDate));
+        var startDateAcademicYear = short.Parse(TableExtensions.CalculateAcademicYear("0", testData.EarningsGeneratedEvent.StartDate));
 
         var firstDeliveryPeriod = startDateAcademicYear < short.Parse(testData.CurrentCollectionYear) ? TableExtensions.Period["August"] : lastDayOfLearningPeriod;
 

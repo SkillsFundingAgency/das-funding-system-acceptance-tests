@@ -12,4 +12,6 @@ internal class TestData
     internal PaymentsGeneratedEvent PaymentsGeneratedEvent { get; set; }
     internal EarningsApprenticeshipModel? EarningsApprenticeshipModel { get; set; }
     internal CommitmentsMessages.ApprenticeshipCreatedEvent CommitmentsApprenticeshipCreatedEvent { get; set; }
+    internal Apprenticeships.Types.ApprenticeshipCreatedEvent ApprenticeshipCreatedEvent { get; set; }
+    internal EarningsGeneratedEvent EarningsGeneratedEvent { get; set; }
 }

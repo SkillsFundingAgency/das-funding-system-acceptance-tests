@@ -9,7 +9,7 @@ public class ApprenticeshipsInnerApiHelper()
 
     public async Task CreatePriceChangeRequest(ScenarioContext context, decimal trainingPrice, decimal assessmentPrice, DateTime effectiveFromDate)
     {
-        var apprenticeshipCreatedEvent = context.Get<ApprenticeshipCreatedEvent>();
+        var testData = context.Get<TestData>();
 
         var requestBody = new ApprenticeshipsInnerApiClient.CreateApprenticeshipPriceChangeRequest
         {
@@ -22,13 +22,13 @@ public class ApprenticeshipsInnerApiHelper()
             UserId = "SystemAcceptanceTests",
         };
 
-        var response = await _apiClient.PostAsync($"{apprenticeshipCreatedEvent.ApprenticeshipKey}/priceHistory", requestBody);
+        var response = await _apiClient.PostAsync($"{testData.ApprenticeshipKey}/priceHistory", requestBody);
         response.EnsureSuccessStatusCode();
     }
 
     public async Task ApprovePendingPriceChangeRequest(ScenarioContext context, decimal trainingPrice, decimal assessmentPrice, DateTime approvedDate)
     {
-        var apprenticeshipCreatedEvent = context.Get<ApprenticeshipCreatedEvent>();
+        var testData = context.Get<TestData>();
 
         var requestBody = new ApprenticeshipsInnerApiClient.ApprovePriceChangeRequest
         {
@@ -37,7 +37,7 @@ public class ApprenticeshipsInnerApiHelper()
             UserId = "SystemAcceptanceTests",
         };
 
-        var response = await _apiClient.PatchAsync($"{apprenticeshipCreatedEvent.ApprenticeshipKey}/priceHistory/pending", requestBody);
+        var response = await _apiClient.PatchAsync($"{testData.ApprenticeshipKey}/priceHistory/pending", requestBody);
         response.EnsureSuccessStatusCode();
     }
 }

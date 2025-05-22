@@ -48,7 +48,8 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     [Given(@"payments have been paid for an apprenticeship with (.*), (.*)")]
     public async Task GivenPaymentsHaveBeenCalculatedForAnApprenticeshipWithAnd(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate)
     {
-        await _context.ReceivePaymentsEvent(_context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
+        var testData = _context.Get<TestData>();
+        await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
 
         await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_currentCollectionPeriod,
             Convert.ToInt16(_currentCollectionYear));
@@ -106,6 +107,7 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     [When(@"the price change is approved")]
     public async Task PriceChangeIsApproved()
     {
+        var testData = _context.Get<TestData>();
         // clear previous PaymentsGeneratedEvent before publishing PriceChangeApproved Event 
         PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
 
@@ -113,7 +115,7 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
         await _apprenticeshipsInnerApiHelper.ApprovePendingPriceChangeRequest(_context, _newTrainingPrice, _newAssessmentPrice, _priceChangeApprovedDate);
 
         // Receive updated PaymentsGeneratedEvent after publishing PriceChangeApproved Event 
-        await _context.ReceivePaymentsEvent(_context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
+        await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
     }
 
     [When(@"the start date change is approved")]
@@ -133,11 +135,10 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     [Then(@"the earnings are recalculated based on the new instalment amount of (.*) from (.*) and (.*)")]
     public async Task EarningsAreRecalculatedBasedOnTheNewInstalmentAmountOfFromAnd(decimal newInstalmentAmount, int deliveryPeriod, string academicYearString)
     {
+        var testData = _context.Get<TestData>();
         var academicYear = TableExtensions.GetAcademicYear(academicYearString);
 
-        var apprenticeshipCreatedEvent = _context.Get<ApprenticeshipCreatedEvent>();
-
-        await _context.ReceiveEarningsRecalculatedEvent(apprenticeshipCreatedEvent.ApprenticeshipKey);
+        await _context.ReceiveEarningsRecalculatedEvent(testData.ApprenticeshipCreatedEvent.ApprenticeshipKey);
 
         ApprenticeshipEarningsRecalculatedEvent recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
 
@@ -147,7 +148,9 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     [Then(@"the earnings are recalculated based on the new expected earnings (.*)")]
     public async Task EarningsAreRecalculatedBasedOnTheNewExpectedEarnings(decimal newInstalmentAmount)
     {
-        await _context.ReceiveEarningsRecalculatedEvent(_context.Get<EarningsGeneratedEvent>().ApprenticeshipKey);
+        var testData = _context.Get<TestData>();
+
+        await _context.ReceiveEarningsRecalculatedEvent(testData.ApprenticeshipKey);
 
         ApprenticeshipEarningsRecalculatedEvent recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
 
@@ -224,7 +227,8 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     [Then(@"for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new and old earnings")]
     public void NewPaymentsEntriesAreCreatedAndMarkedAsNotSentForPaymentInTheDurableEntityWithTheDifferenceBetweenNewAndOldEarnings()
     {
-        var earningsGeneratedEvent = _context.Get<EarningsGeneratedEvent>();
+        var testData = _context.Get<TestData>();
+        var earningsGeneratedEvent = testData.EarningsGeneratedEvent;
 
         var proposedNewTotalPrice = _newTrainingPrice + _newAssessmentPrice;
 
@@ -254,11 +258,11 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     [Then(@"for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new earnings (.*) and old earnings")]
     public void NewPaymentsEntriesAreCreatedAndMarkedAsNotSentForPaymentInTheDurableEntityWithTheDifferenceBetweenNewEarningsAndOldEarnings(int expectedNewEarningAmount)
     {
-        var earningsGeneratedEvent = _context.Get<EarningsGeneratedEvent>();
+        var testData = _context.Get<TestData>();
 
         _newEarningsAmount = expectedNewEarningAmount;
 
-        _previousEarningsAmount = earningsGeneratedEvent.DeliveryPeriods[0].LearningAmount;
+        _previousEarningsAmount = testData.EarningsGeneratedEvent.DeliveryPeriods[0].LearningAmount;
 
         var newStartDateCollectionPeriod = TableExtensions.Period[_newStartDate.ToString("MMMM")];
         var newStartDateCollectionYear = TableExtensions.CalculateAcademicYear("0", _newStartDate);

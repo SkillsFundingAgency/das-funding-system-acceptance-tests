@@ -39,8 +39,9 @@ public class Fm36StepDefinitions
     [Given(@"the apprentice is marked as a care leaver")]
     public async Task GivenTheApprenticeIsMarkedAsACareLeaver()
     {
+        var testData = _context.Get<TestData>();
         var helper = new EarningsInnerApiHelper();
-        await helper.MarkAsCareLeaver(_context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey);
+        await helper.MarkAsCareLeaver(testData.ApprenticeshipKey);
     }
 
     [Then("incentives earnings are generated for learners aged 15")]

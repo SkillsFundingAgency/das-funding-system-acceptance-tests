@@ -24,13 +24,13 @@ public class ConvertUnfundedPaymentsDataToPaymentsV2FormatStepDefinitions
     {
         var testData = _context.Get<TestData>();
         var finalisedPaymentsList =
-            FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).Select(x => x.message).ToList();
+            FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x => x.message).ToList();
 
         _finalisedPaymentsList = finalisedPaymentsList
             .OrderBy(x => x.ApprenticeshipEarning.DeliveryPeriod)
             .ToList();
 
-        await _context.ReceiveCalculateOnProgrammePaymentEvent(_context.Get<ApprenticeshipCreatedEvent>().Uln, numberOfEvents);
+        await _context.ReceiveCalculateOnProgrammePaymentEvent(testData.ApprenticeshipCreatedEvent.Uln, numberOfEvents);
 
         _calculatedRequiredLevyAmountList = _context.Get<List<CalculateOnProgrammePayment>>()
             .OrderBy(x => x.DeliveryPeriod)
@@ -39,7 +39,6 @@ public class ConvertUnfundedPaymentsDataToPaymentsV2FormatStepDefinitions
         Assert.That(_finalisedPaymentsList.Count, Is.EqualTo(_calculatedRequiredLevyAmountList.Count),
             "The count for FinalisedOnProgrammeLearningPaymentEvent does not match with CalculateOnProgrammePayment.");
 
-        var earnings = _context.Get <EarningsGeneratedEvent>();
 
         for (int i = 0; i < _calculatedRequiredLevyAmountList.Count; i++)
         {
@@ -63,11 +62,11 @@ public class ConvertUnfundedPaymentsDataToPaymentsV2FormatStepDefinitions
                 Assert.That(_calculatedRequiredLevyAmountList[i].PlannedEndDate, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.PlannedEndDate), "Incorrect Planned End Date found");
                 Assert.That(_calculatedRequiredLevyAmountList[i].LearningStartDate, Is.EqualTo(_finalisedPaymentsList[i].Apprenticeship.StartDate), "Incorrect Learnings Start Date found");
                 Assert.That(_calculatedRequiredLevyAmountList[i].Learner.Uln, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.Uln), "Incorrect ULN found");
-                Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.FundingLineType, Is.EqualTo(earnings.DeliveryPeriods[0].FundingLineType), "Incorrect Learning Aim - Funding Line Type found");
+                Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.FundingLineType, Is.EqualTo(testData.EarningsGeneratedEvent.DeliveryPeriods[0].FundingLineType), "Incorrect Learning Aim - Funding Line Type found");
                 Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.StartDate, Is.EqualTo(_finalisedPaymentsList[i].Apprenticeship.StartDate), "Incorrect Learning Aim - Start Date found");
                 Assert.That(_calculatedRequiredLevyAmountList[i].CollectionPeriod.AcademicYear, Is.EqualTo(_finalisedPaymentsList[i].CollectionYear), "Incorrect Collection Period - Acadmic Year found");
                 Assert.That(_calculatedRequiredLevyAmountList[i].CollectionPeriod.Period, Is.EqualTo(_finalisedPaymentsList[i].CollectionPeriod), "Incorrect Collection Period - Period found");
-                Assert.That(_calculatedRequiredLevyAmountList[i].SfaContributionPercentage, Is.EqualTo(CalculateGovernmentContributionPercentage(earnings)), "Incorrect Sfa Contribution Percentage found");
+                Assert.That(_calculatedRequiredLevyAmountList[i].SfaContributionPercentage, Is.EqualTo(CalculateGovernmentContributionPercentage(testData.EarningsGeneratedEvent)), "Incorrect Sfa Contribution Percentage found");
                 Assert.That(_calculatedRequiredLevyAmountList[i].TransferSenderAccountId, Is.EqualTo(testData.CommitmentsApprenticeshipCreatedEvent.AccountId), "Incorrect Transfer Sender Account Id found");
                 Assert.That(_calculatedRequiredLevyAmountList[i].InstalmentAmount, Is.EqualTo(_finalisedPaymentsList[i].Amount), "Incorrect Instalment Amount found");
                 Assert.That(_calculatedRequiredLevyAmountList[i].NumberOfInstalments, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.NumberOfInstalments), "Incorrect Number of Installments found");
