@@ -1,11 +1,10 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
-using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
-using SFA.DAS.Apprenticeships.Types;
+﻿using SFA.DAS.Apprenticeships.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
-using SFA.DAS.Funding.ApprenticeshipPayments.Types;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -14,19 +13,14 @@ internal class WithdrawApprenticeshipStepDefinitions
 {
     private readonly ScenarioContext _context;
     private Helpers.Sql.Apprenticeship? apprenticeship;
-    private PaymentsGeneratedEvent paymentsGeneratedEvent;
     private EarningsApprenticeshipModel? _earningsApprenticeshipModel;
     private PaymentsApprenticeshipModel? _paymentsApprenticeshipModel; 
     private ApprenticeshipEarningsRecalculatedEvent _recalculatedEarningsEvent;
-    private readonly byte _currentCollectionPeriod;
-    private readonly string _currentCollectionYear;
     private DateTime _lastDayOfLearning;
 
     public WithdrawApprenticeshipStepDefinitions(ScenarioContext context)
     {
         _context = context;
-        _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
-        _currentCollectionYear = TableExtensions.CalculateAcademicYear("0");
     }
 
     [When(@"the apprenticeship is withdrawn")]
@@ -147,6 +141,7 @@ internal class WithdrawApprenticeshipStepDefinitions
     [Then("new payments with amount (.*) are marked as Not sent for payment and clawed back")]
     public void NewPaymentsWithAmountSinceDeliveryPeriodAndAcademicYearAreMarkedAsNotSentForPaymentClawedBack(decimal amount)
     {
+        var testData = _context.Get<TestData>();
         var earningsGeneratedEvent = _context.Get<EarningsGeneratedEvent>();
 
         var lastDayOfLearningPeriod = TableExtensions.Period[_lastDayOfLearning.ToString("MMMM")];
@@ -155,21 +150,19 @@ internal class WithdrawApprenticeshipStepDefinitions
         //var startDatePeriod = TableExtensions.Period[earningsGeneratedEvent.StartDate.ToString("MMMM")];
         var startDateAcademicYear = short.Parse(TableExtensions.CalculateAcademicYear("0", earningsGeneratedEvent.StartDate));
 
-        var firstDeliveryPeriod = startDateAcademicYear < short.Parse(_currentCollectionYear) ? TableExtensions.Period["August"] : lastDayOfLearningPeriod;
+        var firstDeliveryPeriod = startDateAcademicYear < short.Parse(testData.CurrentCollectionYear) ? TableExtensions.Period["August"] : lastDayOfLearningPeriod;
 
            var expectedPaymentPeriods = PaymentDeliveryPeriodExpectationBuilder.BuildForDeliveryPeriodRange(
-           new Period(short.Parse(_currentCollectionYear), firstDeliveryPeriod),
-           new Period(short.Parse(_currentCollectionYear), _currentCollectionPeriod),
+           new Period(short.Parse(testData.CurrentCollectionYear), firstDeliveryPeriod),
+           new Period(short.Parse(testData.CurrentCollectionYear), testData.CurrentCollectionPeriod),
            new PaymentExpectation
            {
                Amount = -amount,
                SentForPayment = false
            });
 
-            paymentsGeneratedEvent = _context.Get<PaymentsGeneratedEvent>();
-
             // Validate PaymentsGenerateEvent & Payments Entity
-            expectedPaymentPeriods.AssertAgainstEventPayments(paymentsGeneratedEvent.Payments);
+            expectedPaymentPeriods.AssertAgainstEventPayments(testData.PaymentsGeneratedEvent.Payments);
 
             expectedPaymentPeriods.AssertAgainstEntityArray(_paymentsApprenticeshipModel.Payments);
     }
@@ -177,16 +170,17 @@ internal class WithdrawApprenticeshipStepDefinitions
     [Then("all the payments from delivery periods after last payment made are deleted")]
     public void ThenAllThePaymentsFromDeliveryPeriodsAfterLastPaymentMadeAreDeleted()
     {
-        bool futurePaymentsDeletedFromEvent = paymentsGeneratedEvent.Payments
-        .All(x => x.AcademicYear < short.Parse(_currentCollectionYear)
-            || (x.AcademicYear == Convert.ToInt16(_currentCollectionYear) && x.DeliveryPeriod <= Convert.ToInt16(_currentCollectionPeriod)));
+        var testData = _context.Get<TestData>();
+        bool futurePaymentsDeletedFromEvent = testData.PaymentsGeneratedEvent.Payments
+        .All(x => x.AcademicYear < short.Parse(testData.CurrentCollectionYear)
+            || (x.AcademicYear == Convert.ToInt16(testData.CurrentCollectionYear) && x.DeliveryPeriod <= Convert.ToInt16(testData.CurrentCollectionPeriod)));
 
-        Assert.IsTrue(futurePaymentsDeletedFromEvent, $"Some instalments have a delivery period > {_currentCollectionPeriod} and academic year > {_currentCollectionYear} in recalculated payments event.");
+        Assert.IsTrue(futurePaymentsDeletedFromEvent, $"Some instalments have a delivery period > {testData.CurrentCollectionPeriod} and academic year > {testData.CurrentCollectionYear} in recalculated payments event.");
 
-        bool isValidPaymentsInDb = _paymentsApprenticeshipModel.Payments.All(i => i.AcademicYear < Convert.ToInt16(_currentCollectionYear)
-               || (i.AcademicYear == Convert.ToInt16(_currentCollectionYear) && i.DeliveryPeriod <= Convert.ToInt16(_currentCollectionPeriod)));
+        bool isValidPaymentsInDb = _paymentsApprenticeshipModel.Payments.All(i => i.AcademicYear < Convert.ToInt16(testData.CurrentCollectionYear)
+               || (i.AcademicYear == Convert.ToInt16(testData.CurrentCollectionYear) && i.DeliveryPeriod <= Convert.ToInt16(testData.CurrentCollectionPeriod)));
 
-        Assert.IsTrue(isValidPaymentsInDb, $"Some instalments have a delivery period > {_currentCollectionPeriod} and academic year > {_currentCollectionYear} in payments db.");
+        Assert.IsTrue(isValidPaymentsInDb, $"Some instalments have a delivery period > {testData.CurrentCollectionPeriod} and academic year > {testData.CurrentCollectionYear} in payments db.");
 
     }
 }

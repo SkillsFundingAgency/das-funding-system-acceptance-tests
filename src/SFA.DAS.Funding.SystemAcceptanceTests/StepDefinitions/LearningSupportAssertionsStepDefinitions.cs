@@ -66,6 +66,7 @@ public class LearningSupportAssertionsStepDefinitions
     [Then(@"learning support payments are generated from periods (.*) to (.*)")]
     public async Task VerifyLearningSupportPayments(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
     {
+        var testData = _context.Get<TestData>();
         PaymentsApprenticeshipModel? paymentsApprenticeshipModel = null;
 
         await WaitHelper.WaitForIt(() =>
@@ -77,11 +78,10 @@ public class LearningSupportAssertionsStepDefinitions
         var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
         await _context.ReceivePaymentsEvent(apprenticeshipKey);
 
-        var paymentsGeneratedEvent = _context.Get<PaymentsGeneratedEvent>();
 
         while (learningSupportStart.Value.AcademicYear < learningSupportEnd.Value.AcademicYear || learningSupportStart.Value.AcademicYear >= learningSupportEnd.Value.AcademicYear && learningSupportStart.Value.PeriodValue <= learningSupportEnd.Value.PeriodValue)
         {
-            paymentsGeneratedEvent.Payments.Should().Contain(x =>
+            testData.PaymentsGeneratedEvent.Payments.Should().Contain(x =>
                     x.PaymentType == AdditionalPaymentType.LearningSupport.ToString()
                     && x.Amount == 150
                     && x.AcademicYear == learningSupportStart.Value.AcademicYear

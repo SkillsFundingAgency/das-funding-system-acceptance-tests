@@ -159,7 +159,8 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     [Then(@"for all the past census periods since (.*), where the payment has already been made, the amount is still same as previous earnings (.*) and are flagged as sent for payment")]
     public void ThenForAllThePastCensusPeriodsWhereThePaymentHasAlreadyBeenMadeTheAmountIsStillSameAsPreviousEarningsAndAreFlaggedAsSentForPayment(TokenisableDateTime startDate, double oldEarnings)
     {
-        _paymentsEventList = _context.Get<PaymentsGeneratedEvent>().Payments;
+        var testData = _context.Get<TestData>();
+        _paymentsEventList = testData.PaymentsGeneratedEvent.Payments;
 
         // validate PaymentsGenerateEvent
 

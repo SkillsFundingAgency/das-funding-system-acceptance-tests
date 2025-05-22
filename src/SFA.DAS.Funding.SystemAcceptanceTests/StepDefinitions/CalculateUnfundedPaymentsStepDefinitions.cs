@@ -32,14 +32,16 @@ public class CalculateUnfundedPaymentsStepDefinitions
     [Then(@"the Unfunded Payments for every earning is created")]
     public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table)
     {
-        var payments = _context.Get<PaymentsGeneratedEvent>().Payments;
+        var testData = _context.Get<TestData>();
+        var payments = testData.PaymentsGeneratedEvent.Payments;
         payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedPayments());
     }
 
     [Then(@"Unfunded Payments for the apprenticeship including rollup payments are calculated as below")]
     public void UnfundedPaymentsForTheApprenticeshipIncludingRollupPaymentsAreCalculated(Table table)
     {
-        var payments = _context.Get<PaymentsGeneratedEvent>().Payments;
+        var testData = _context.Get<TestData>();
+        var payments = testData.PaymentsGeneratedEvent.Payments;
         payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedRollupPayments());
     }
 

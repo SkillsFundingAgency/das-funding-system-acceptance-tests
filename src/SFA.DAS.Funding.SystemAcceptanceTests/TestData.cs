@@ -1,7 +1,10 @@
-﻿namespace SFA.DAS.Funding.SystemAcceptanceTests;
+﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+
+namespace SFA.DAS.Funding.SystemAcceptanceTests;
 
 internal class TestData
 {
-    public string CurrentCollectionYear { get; set; }
-    public byte CurrentCollectionPeriod { get; set; }
+    internal string CurrentCollectionYear { get; set; }
+    internal byte CurrentCollectionPeriod { get; set; }
+    internal PaymentsGeneratedEvent PaymentsGeneratedEvent { get; set; }
 }

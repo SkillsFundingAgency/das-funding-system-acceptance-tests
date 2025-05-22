@@ -82,6 +82,8 @@ public class IncentivesAssertionsStepDefinitions
     [Then(@"the (first|second) incentive payment (is|is not) generated for provider & employer")]
     public async Task VerifyIncentivePayments(string incentiveEarningNumber, string outcome)
     {
+        var testData = _context.Get<TestData>();
+
         if (incentiveEarningNumber is not ("first" or "second"))
             throw new Exception("This step only supports incentive payments 'first' or 'second'");
 
@@ -98,9 +100,8 @@ public class IncentivesAssertionsStepDefinitions
         var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
         await _context.ReceivePaymentsEvent(apprenticeshipKey);
 
-        var paymentsGeneratedEvent = _context.Get<PaymentsGeneratedEvent>();
+        var paymentsGeneratedEvent = testData.PaymentsGeneratedEvent;
         
-
         switch (outcome)
         {
             case "is":

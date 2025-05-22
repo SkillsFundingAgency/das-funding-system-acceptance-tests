@@ -2,7 +2,6 @@
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 
-
 internal static class PaymentsEventHelper
 {
     internal static async Task ReceivePaymentsEvent(this ScenarioContext context, Guid apprenticeshipKey)
@@ -14,7 +13,8 @@ internal static class PaymentsEventHelper
 
             if (paymentsEvent != null)
             {
-                context.Set(paymentsEvent);
+                var testData = context.Get<TestData>();
+                testData.PaymentsGeneratedEvent = paymentsEvent;
                 return true;
             }
             return false;
