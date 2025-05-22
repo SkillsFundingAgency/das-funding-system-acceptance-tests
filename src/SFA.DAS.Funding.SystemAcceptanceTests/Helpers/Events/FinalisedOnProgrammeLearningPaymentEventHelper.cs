@@ -6,7 +6,7 @@ internal static class FinalisedOnProgrammeLearningPaymentEventHelper
 {
     internal static async Task UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(this ScenarioContext context, int numberOfRollupPayments)
     {
-        var currentCollectionPeriod = context.Get<byte>(ContextKeys.CurrentCollectionPeriod);
+        var testData = context.Get<TestData>();
 
         await WaitHelper.WaitForIt(() =>
         {
@@ -17,7 +17,7 @@ internal static class FinalisedOnProgrammeLearningPaymentEventHelper
 
             context.Set(finalisedPaymentsList);
             
-            return finalisedPaymentsList.All(x => x.CollectionPeriod == currentCollectionPeriod);
+            return finalisedPaymentsList.All(x => x.CollectionPeriod == testData.CurrentCollectionPeriod);
         }, "Failed to find published Finalised On Programme Learning Payment event");
     }
 }

@@ -5,7 +5,6 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using SFA.DAS.Payments.Model.Core.OnProgramme;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -57,19 +56,19 @@ public class CalculateUnfundedPaymentsStepDefinitions
     [Given(@"the user wants to process payments for the current collection Period")]
     public void UserWantsToProcessPaymentsForTheCurrentCollectionPeriod()
     {
-        _context.Set(TableExtensions.CalculateAcademicYear("0"), ContextKeys.CurrentCollectionYear);
-        _context.Set(TableExtensions.Period[DateTime.Now.ToString("MMMM")], ContextKeys.CurrentCollectionPeriod);
+        var testData = _context.Get<TestData>();
+        testData.CurrentCollectionYear = TableExtensions.CalculateAcademicYear("0");
+        testData.CurrentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
     }
 
     [When(@"the scheduler triggers Unfunded Payment processing")]
     [Then(@"the scheduler triggers Unfunded Payment processing")]
     public async Task SchedulerTriggersUnfundedPaymentProcessing()
     {
-        var currentCollectionYear = _context.Get<string>(ContextKeys.CurrentCollectionYear);
-        var currentCollectionPeriod = _context.Get<byte>(ContextKeys.CurrentCollectionPeriod);
+        var testData = _context.Get<TestData>();
 
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(currentCollectionPeriod,
-            Convert.ToInt16(currentCollectionYear));
+        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
+            Convert.ToInt16(testData.CurrentCollectionYear));
 
         await Task.Delay(10000);
     }
@@ -77,21 +76,19 @@ public class CalculateUnfundedPaymentsStepDefinitions
     [Given(@"fire command")]
     public async Task FireCommand()
     {
-        var currentCollectionYear = _context.Get<string>(ContextKeys.CurrentCollectionYear);
-        var currentCollectionPeriod = _context.Get<byte>(ContextKeys.CurrentCollectionPeriod);
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(currentCollectionPeriod,
-            Convert.ToInt16(currentCollectionYear));
+        var testData = _context.Get<TestData>();
+        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
+            Convert.ToInt16(testData.CurrentCollectionYear));
     }
 
     [When(@"the Release Payments command is published again")]
     public async Task WhenTheReleasePaymentsCommandIsPublishedAgain()
     {
         FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Clear();
-        var currentCollectionYear = _context.Get<string>(ContextKeys.CurrentCollectionYear);
-        var currentCollectionPeriod = _context.Get<byte>(ContextKeys.CurrentCollectionPeriod);
+        var testData = _context.Get<TestData>();
 
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(currentCollectionPeriod,
-            Convert.ToInt16(currentCollectionYear));
+        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
+            Convert.ToInt16(testData.CurrentCollectionYear));
     }
 
     [When(@"the unpaid unfunded payments for the current Collection Month and (.*) rollup payments are sent to be paid")]
@@ -121,9 +118,9 @@ public class CalculateUnfundedPaymentsStepDefinitions
 
         _paymentEntity = apiClient.GetPaymentsModel(_context).Payments;
 
-        var currentCollectionPeriod = _context.Get<byte>(ContextKeys.CurrentCollectionPeriod);
+        var testData = _context.Get<TestData>();
 
-        Assert.IsTrue(_paymentEntity.Where(p => p.CollectionPeriod == currentCollectionPeriod).All(p => p.SentForPayment));
+        Assert.IsTrue(_paymentEntity.Where(p => p.CollectionPeriod == testData.CurrentCollectionPeriod).All(p => p.SentForPayment));
     }
 
     [Then(@"all payments for the following collection periods are marked as not sent to payments BAU")]
@@ -131,10 +128,10 @@ public class CalculateUnfundedPaymentsStepDefinitions
     {
         var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
 
-        var currentCollectionPeriod = _context.Get<byte>(ContextKeys.CurrentCollectionPeriod);
+        var testData = _context.Get<TestData>();
 
         Assert.IsFalse(_paymentEntity.Where(p => (p.CollectionYear > currentAcademicYear) ||
-                                      (p.CollectionYear == currentAcademicYear && p.CollectionPeriod > currentCollectionPeriod))
+                                      (p.CollectionYear == currentAcademicYear && p.CollectionPeriod > testData.CurrentCollectionPeriod))
                                       .All(p => p.SentForPayment));
     }
 

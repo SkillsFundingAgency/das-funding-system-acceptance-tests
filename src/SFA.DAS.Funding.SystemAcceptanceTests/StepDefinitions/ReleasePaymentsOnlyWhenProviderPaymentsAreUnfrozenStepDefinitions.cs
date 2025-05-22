@@ -53,8 +53,9 @@ public class ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions
         var collectionPeriod = TableExtensions.Period[DateTime.Now.AddMonths(1).ToString("MMMM")];
         var collectionYear = TableExtensions.CalculateAcademicYear("1");
 
-        _context.Set(collectionYear, ContextKeys.CurrentCollectionYear);
-        _context.Set(collectionPeriod, ContextKeys.CurrentCollectionPeriod);
+        var testData = _context.Get<TestData>();
+        testData.CurrentCollectionYear = collectionYear;
+        testData.CurrentCollectionPeriod = collectionPeriod;
 
         await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(collectionPeriod,
             Convert.ToInt16(collectionYear));
@@ -83,8 +84,7 @@ public class ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions
     [Then(@"make any on-programme payments to the provider that were not paid whilst the payment status was Inactive")]
     public async Task MakeAnyOn_ProgrammePaymentsToTheProviderThatWereNotPaidWhilstThePaymentStatusWasInactive()
     {
-        var currentCollectionYear = _context.Get<string>(ContextKeys.CurrentCollectionYear);
-        var currentCollectionPeriod = _context.Get<byte>(ContextKeys.CurrentCollectionPeriod);
+        var testData = _context.Get<TestData>();
 
         await WaitHelper.WaitForIt(() =>
         {
@@ -98,11 +98,11 @@ public class ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions
         {
             var paymentModel = _paymentsApiClient.GetPaymentsModel(_context);
 
-            var payments = paymentModel.Payments.Where(p => p.CollectionPeriod <= currentCollectionPeriod
-            && p.CollectionYear == short.Parse(currentCollectionYear));
+            var payments = paymentModel.Payments.Where(p => p.CollectionPeriod <= testData.CurrentCollectionPeriod
+            && p.CollectionYear == short.Parse(testData.CurrentCollectionYear));
 
-            return paymentModel.Payments.Where(p => p.CollectionPeriod <= currentCollectionPeriod
-            && p.CollectionYear == short.Parse(currentCollectionYear)).All(p => p.SentForPayment);
+            return paymentModel.Payments.Where(p => p.CollectionPeriod <= testData.CurrentCollectionPeriod
+            && p.CollectionYear == short.Parse(testData.CurrentCollectionYear)).All(p => p.SentForPayment);
         }, "Some or all expected payments were not sent for payment after provider payment status was unfrozen!");
     }
 }
