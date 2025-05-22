@@ -22,6 +22,7 @@ public class ConvertUnfundedPaymentsDataToPaymentsV2FormatStepDefinitions
     [Then(@"(.*) Calculated Required Levy Amount event is published with required values")]
     public async Task CalculatedRequiredLevyAmountEventIsPublishedWithRequiredValues(int numberOfEvents)
     {
+        var testData = _context.Get<TestData>();
         var finalisedPaymentsList =
             FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == _context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey).Select(x => x.message).ToList();
 
@@ -37,8 +38,6 @@ public class ConvertUnfundedPaymentsDataToPaymentsV2FormatStepDefinitions
 
         Assert.That(_finalisedPaymentsList.Count, Is.EqualTo(_calculatedRequiredLevyAmountList.Count),
             "The count for FinalisedOnProgrammeLearningPaymentEvent does not match with CalculateOnProgrammePayment.");
-
-        var cmt_apprenticeshipCreatedEvent = _context.Get<CMT.ApprenticeshipCreatedEvent>();
 
         var earnings = _context.Get <EarningsGeneratedEvent>();
 
@@ -69,12 +68,12 @@ public class ConvertUnfundedPaymentsDataToPaymentsV2FormatStepDefinitions
                 Assert.That(_calculatedRequiredLevyAmountList[i].CollectionPeriod.AcademicYear, Is.EqualTo(_finalisedPaymentsList[i].CollectionYear), "Incorrect Collection Period - Acadmic Year found");
                 Assert.That(_calculatedRequiredLevyAmountList[i].CollectionPeriod.Period, Is.EqualTo(_finalisedPaymentsList[i].CollectionPeriod), "Incorrect Collection Period - Period found");
                 Assert.That(_calculatedRequiredLevyAmountList[i].SfaContributionPercentage, Is.EqualTo(CalculateGovernmentContributionPercentage(earnings)), "Incorrect Sfa Contribution Percentage found");
-                Assert.That(_calculatedRequiredLevyAmountList[i].TransferSenderAccountId, Is.EqualTo(cmt_apprenticeshipCreatedEvent.AccountId), "Incorrect Transfer Sender Account Id found");
+                Assert.That(_calculatedRequiredLevyAmountList[i].TransferSenderAccountId, Is.EqualTo(testData.CommitmentsApprenticeshipCreatedEvent.AccountId), "Incorrect Transfer Sender Account Id found");
                 Assert.That(_calculatedRequiredLevyAmountList[i].InstalmentAmount, Is.EqualTo(_finalisedPaymentsList[i].Amount), "Incorrect Instalment Amount found");
                 Assert.That(_calculatedRequiredLevyAmountList[i].NumberOfInstalments, Is.EqualTo(_finalisedPaymentsList[i].ApprenticeshipEarning.NumberOfInstalments), "Incorrect Number of Installments found");
-                Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipId, Is.EqualTo(cmt_apprenticeshipCreatedEvent.ApprenticeshipId), "Incorrect Apprenticeship Id found");
-                Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipEmployerType.ToString(), Is.EqualTo(cmt_apprenticeshipCreatedEvent.ApprenticeshipEmployerTypeOnApproval.ToString()), "Incorrect Apprenticeship Employer Type found");
-                Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.StandardCode, Is.EqualTo(Convert.ToInt16(cmt_apprenticeshipCreatedEvent.TrainingCode)), "Incorrect Learning Aim - Standard Code found");
+                Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipId, Is.EqualTo(testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId), "Incorrect Apprenticeship Id found");
+                Assert.That(_calculatedRequiredLevyAmountList[i].ApprenticeshipEmployerType.ToString(), Is.EqualTo(testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipEmployerTypeOnApproval.ToString()), "Incorrect Apprenticeship Employer Type found");
+                Assert.That(_calculatedRequiredLevyAmountList[i].LearningAim.StandardCode, Is.EqualTo(Convert.ToInt16(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode)), "Incorrect Learning Aim - Standard Code found");
             });
         }
     }

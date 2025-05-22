@@ -75,8 +75,7 @@ public class LearningSupportAssertionsStepDefinitions
             return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == _earningsProfileId);
         }, "Failed to find updated payments entity.");
 
-        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
-        await _context.ReceivePaymentsEvent(apprenticeshipKey);
+        await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
 
 
         while (learningSupportStart.Value.AcademicYear < learningSupportEnd.Value.AcademicYear || learningSupportStart.Value.AcademicYear >= learningSupportEnd.Value.AcademicYear && learningSupportStart.Value.PeriodValue <= learningSupportEnd.Value.PeriodValue)

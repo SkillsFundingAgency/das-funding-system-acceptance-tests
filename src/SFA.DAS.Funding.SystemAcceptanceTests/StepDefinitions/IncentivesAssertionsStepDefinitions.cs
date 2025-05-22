@@ -1,5 +1,4 @@
 using SFA.DAS.Apprenticeships.Types;
-using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -34,7 +33,7 @@ public class IncentivesAssertionsStepDefinitions
     [Then(@"the (first|second) incentive earning (is|is not) generated for provider & employer")]
     public async Task VerifyIncentiveEarnings(string incentiveEarningNumber, string outcome)
     {
-        var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent>();
+        var testData = _context.Get<TestData>();
 
         EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
 
@@ -60,18 +59,18 @@ public class IncentivesAssertionsStepDefinitions
         {
             case "first":
                 additionalPayments!
-                    .IncentiveEarningExists(commitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.ProviderIncentive)
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.ProviderIncentive)
                     .Should().Be(incentiveExpected, $"First Incentive Earning {expectation} For Provider");
                 additionalPayments!
-                    .IncentiveEarningExists(commitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.EmployerIncentive)
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.EmployerIncentive)
                     .Should().Be(incentiveExpected,$"First Incentive Earning {expectation} For Employer");
                 break;
             case "second":
                 additionalPayments!
-                    .IncentiveEarningExists(commitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.ProviderIncentive)
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.ProviderIncentive)
                     .Should().Be(incentiveExpected, $"Second Incentive Earning {expectation} For Provider");
                 additionalPayments!
-                    .IncentiveEarningExists(commitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.EmployerIncentive)
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.EmployerIncentive)
                     .Should().Be(incentiveExpected, $"Second Incentive Earning {expectation} For Employer");
                 break;
             default:
@@ -95,10 +94,7 @@ public class IncentivesAssertionsStepDefinitions
             return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == _earningsProfileId);
         }, "Failed to find updated payments entity.");
 
-        var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent>();
-
-        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
-        await _context.ReceivePaymentsEvent(apprenticeshipKey);
+        await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
 
         var paymentsGeneratedEvent = testData.PaymentsGeneratedEvent;
         
@@ -109,11 +105,11 @@ public class IncentivesAssertionsStepDefinitions
                 var expectedPaymentPeriods = new List<PaymentDeliveryPeriodExpectation>
                 {
                     PaymentDeliveryPeriodExpectationBuilder.BuildForIncentive(
-                        commitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(),
+                        testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(),
                         incentiveEarningNumber == "first" ? (byte)1 : (byte)2,
                         AdditionalPaymentType.ProviderIncentive),
                     PaymentDeliveryPeriodExpectationBuilder.BuildForIncentive(
-                        commitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(),
+                        testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(),
                         incentiveEarningNumber == "first" ? (byte)1 : (byte)2,
                         AdditionalPaymentType.EmployerIncentive)
                 };
@@ -126,8 +122,8 @@ public class IncentivesAssertionsStepDefinitions
             }
             case "is not":
                 var expectedPeriod = incentiveEarningNumber == "first"
-                    ? commitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault().AddDays(89).ToAcademicYearAndPeriod() // 90th day of learning
-                    : commitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault().AddDays(364).ToAcademicYearAndPeriod(); // 365th day of learning
+                    ? testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault().AddDays(89).ToAcademicYearAndPeriod() // 90th day of learning
+                    : testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault().AddDays(364).ToAcademicYearAndPeriod(); // 365th day of learning
 
                 paymentsGeneratedEvent.Payments.Should().NotContain(x => x.Amount > 0 && x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString() && x.AcademicYear == expectedPeriod.AcademicYear && x.DeliveryPeriod == expectedPeriod.Period);
                 paymentsGeneratedEvent.Payments.Should().NotContain(x => x.Amount > 0 && x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString() && x.AcademicYear == expectedPeriod.AcademicYear && x.DeliveryPeriod == expectedPeriod.Period);

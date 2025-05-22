@@ -4,7 +4,6 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -27,11 +26,11 @@ public class Fm36StepDefinitions
     [Then(@"the fm36 data is retrieved for (.*)")]
     public async Task GetFm36Data(TokenisableDateTime searchDate)
     {
-        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+        var testData = _context.Get<TestData>();
         var collectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", searchDate.Value));
         var collectionPeriod = TableExtensions.Period[searchDate.Value.ToString("MMMM")];
 
-        var fm36 = await _earningsOuterClient.GetFm36Block(apprenticeshipCreatedEvent.ProviderId, collectionYear,
+        var fm36 = await _earningsOuterClient.GetFm36Block(testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, collectionYear,
             collectionPeriod);
 
         _context.Set(fm36);
@@ -48,15 +47,14 @@ public class Fm36StepDefinitions
     [Then(@"fm36 data exists for that apprenticeship")]
     public async Task Fm36DataExists()
     {
+        var testData = _context.Get<TestData>();
         var fm36 = _context.Get<List<FM36Learner>>();
-        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
+        var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
         var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
         var earningsSqlClient = new EarningsSqlClient();
 
-        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
-
-        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
         _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
 
         // get your learner data 
@@ -510,20 +508,18 @@ public class Fm36StepDefinitions
     [Then(@"fm36 data does not exist for that apprenticeship")]
     public async Task Fm36DataDoesNotExist()
     {
+        var testData = _context.Get<TestData>();
         var fm36 = _context.Get<List<FM36Learner>>();
-        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
 
         var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
         var earningsSqlClient = new EarningsSqlClient();
 
-        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
-
-        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
         _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
 
         // get your learner data 
 
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         fm36Learner.Should().BeNull();
     }
@@ -531,12 +527,12 @@ public class Fm36StepDefinitions
     [Then("learner is returned in the fm36 response")]
     public void ThenLearnerIsReturnedInTheFmResponse()
     {
+        var testData = _context.Get<TestData>();
         var fm36 = _context.Get<List<FM36Learner>>();
-        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
 
         // get your learner data 
 
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         fm36Learner.Should().NotBeNull();
     }
@@ -545,20 +541,18 @@ public class Fm36StepDefinitions
     [Then(@"fm36 FundStart value is (.*)")]
     public void ThenFm36FundStartValueIsFalse(bool expectedValue)
     {
+        var testData = _context.Get<TestData>();
         var fm36 = _context.Get<List<FM36Learner>>();
-        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
 
         var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
         var earningsSqlClient = new EarningsSqlClient();
 
-        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
-
-        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
         _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
 
         // get your learner data 
 
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         Assert.AreEqual(expectedValue,
             fm36Learner.LearningDeliveries.First().LearningDeliveryValues.FundStart, "Unexpected FundStart found!");
@@ -567,20 +561,18 @@ public class Fm36StepDefinitions
     [Then(@"fm36 ThresholdDays value is (.*)")]
     public void ThenFm36ThresholdDaysValueIs(int expectedValue)
     {
+        var testData = _context.Get<TestData>();
         var fm36 = _context.Get<List<FM36Learner>>();
-        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
 
         var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
         var earningsSqlClient = new EarningsSqlClient();
 
-        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
-
-        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
         _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
 
         // get your learner data 
 
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         Assert.AreEqual(expectedValue,
             fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ThresholdDays, "Unexpected ThresholdDays value found!");
@@ -589,20 +581,18 @@ public class Fm36StepDefinitions
     [Then(@"fm36 ActualDaysIL value is (.*)")]
     public void ThenFm36ActualDaysInLearningValueIs(int expectedValue)
     {
+        var testData = _context.Get<TestData>();
         var fm36 = _context.Get<List<FM36Learner>>();
-        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
 
         var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
         var earningsSqlClient = new EarningsSqlClient();
 
-        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
-
-        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
         _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
 
         // get your learner data 
 
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         Assert.AreEqual(expectedValue,
             fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected FundStart found!");
@@ -611,16 +601,17 @@ public class Fm36StepDefinitions
     [Then(@"fm36 block contains a new price episode starting (.*) with episode 1 tnp of (.*) and episode 2 tnp of (.*)")]
     public void ThenFm36BlockContainsANewPriceEpisodeStarting(TokenisableDateTime newEpisodeStartDate, decimal expectedEpisode1Tnp, decimal expectedEpisode2Tnp)
     {
+        var testData = _context.Get<TestData>();
+
         // Retrieve necessary data from the context
         var fm36Learners = _context.Get<List<FM36Learner>>();
-        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
-        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
+        var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
         // Fetch apprenticeship and earnings data
         var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
         var earningsSqlClient = new EarningsSqlClient();
 
-        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(apprenticeshipKey);
+        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
         _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
 
         // Get the learner associated with the apprenticeship
@@ -671,19 +662,18 @@ public class Fm36StepDefinitions
     [Then(@"the fm36 PriceEpisodeInstalmentValue is (.*)")]
     public void ThenTheFmPriceEpisodeInstalmentValueIs(int priceEpisodeInstalmentValue)
     {
+        var testData = _context.Get<TestData>();
         var fm36 = _context.Get<List<FM36Learner>>();
-        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
         Assert.AreEqual(priceEpisodeInstalmentValue, fm36Learner!.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeInstalmentValue);
     }
 
     [Then("Incentive periods and dates are updated in the fm36 response")]
     public void IncentivePeriodsAndDatesAreUpdatedInTheFm36Response()
     {
+        var testData = _context.Get<TestData>();
         // learner has to be eligible for incentive earnings 
-
         var fm36 = _context.Get<List<FM36Learner>>();
-        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
 
         var earningsSqlClient = new EarningsSqlClient();
 
@@ -691,7 +681,7 @@ public class Fm36StepDefinitions
 
         // get your learner data 
 
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         var firstIncentivePeriod = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DeliveryPeriod;
         var firstIncentiveThresholdDate = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DueDate;
@@ -728,14 +718,13 @@ public class Fm36StepDefinitions
     [Then("learning support amounts and periods from (.*) to (.*) are updated in the fm36 response")]
     public void LearningSupportAmountsAndPeriodsFromCurrentAY_RToCurrentAY_RAreUpdatedInTheFmResponse(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
     {
-        // learner has to be eligible for incentive earnings 
+        var testData = _context.Get<TestData>();
 
+        // learner has to be eligible for incentive earnings 
         var fm36 = _context.Get<List<FM36Learner>>();
-        var apprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
 
         // get your learner data 
-
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         for (var i = learningSupportStart.Value.PeriodValue; i <= learningSupportEnd.Value.PeriodValue; i++)
         {

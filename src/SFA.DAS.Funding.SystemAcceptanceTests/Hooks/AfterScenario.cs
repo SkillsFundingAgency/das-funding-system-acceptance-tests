@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+﻿using Microsoft.IdentityModel.Tokens;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
@@ -32,19 +33,18 @@ internal class AfterScenario
 
     private void PurgeCreatedRecords()
     {
-        if (!_context.ContainsKey(ContextKeys.ApprenticeshipKey))
+        var testData = _context.Get<TestData>();
+        if (testData.ApprenticeshipKey == Guid.Empty)
             return;
 
-        var apprenticeshipKey = _context.Get<Guid>(ContextKeys.ApprenticeshipKey);
-
         var paymentsSqlClient = new PaymentsSqlClient();
-        paymentsSqlClient.DeletePayments(apprenticeshipKey);
+        paymentsSqlClient.DeletePayments(testData.ApprenticeshipKey);
 
         var earningsSqlClient = new EarningsSqlClient();
-        earningsSqlClient.DeleteEarnings(apprenticeshipKey);
+        earningsSqlClient.DeleteEarnings(testData.ApprenticeshipKey);
 
         var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
-        apprenticeshipSqlClient.DeleteApprenticeship(apprenticeshipKey);
+        apprenticeshipSqlClient.DeleteApprenticeship(testData.ApprenticeshipKey);
     }
 
     private void OutputTestDataToFile()

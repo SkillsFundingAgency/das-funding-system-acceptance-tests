@@ -4,7 +4,6 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using static SFA.DAS.Funding.SystemAcceptanceTests.TestSupport.DcLearnerDataHelper;
-using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
 
 [Binding]
@@ -30,8 +29,9 @@ public class ApproveApprenticeshipStepDefinition
     [When(@"the apprenticeship commitment is approved")]
     public async Task TheApprenticeshipCommitmentIsApproved()
     {
-        var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
-        await _context.PublishApprenticeshipApprovedMessage(commitmentsApprenticeshipCreatedEvent);
+        var testData = _context.Get<TestData>();
+
+        await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
 
         await MockLearnerDataResponse();
 
@@ -54,7 +54,7 @@ public class ApproveApprenticeshipStepDefinition
         _context.Set(earningsApprenticeshipModel, ContextKeys.InitialEarningsApprenticeshipModel);
         var initialEarningsProfileId = earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId;
         _context.Set(initialEarningsProfileId, ContextKeys.InitialEarningsProfileId);
-        _context.Set(earnings.ApprenticeshipKey, ContextKeys.ApprenticeshipKey);
+        testData.ApprenticeshipKey = earnings.ApprenticeshipKey;
     }
 
     private async Task MockLearnerDataResponse()
