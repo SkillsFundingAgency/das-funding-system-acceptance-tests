@@ -106,9 +106,6 @@ internal static class ApprenticeshipEventHelper
             return false;
         }, "Failed to find published event in Earnings");
 
-
-        context.Set("Uln", apprenticeshipCreatedEvent.Uln);
-        context.Set("ApprenticeshipId", apprenticeshipCreatedEvent.ApprenticeshipId.ToString());
         testData.ApprenticeshipKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
 
     }

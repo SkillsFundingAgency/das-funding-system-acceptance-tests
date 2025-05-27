@@ -28,7 +28,7 @@ public class ConvertUnfundedPaymentsDataToPaymentsV2FormatStepDefinitions
 
         await _context.ReceiveCalculateOnProgrammePaymentEvent(testData.ApprenticeshipCreatedEvent.Uln, numberOfEvents);
 
-        var calculatedRequiredLevyAmountList = _context.Get<List<CalculateOnProgrammePayment>>()
+        var calculatedRequiredLevyAmountList = testData.CalculatedOnProgrammePaymentList
             .OrderBy(x => x.DeliveryPeriod)
             .ToList();
 

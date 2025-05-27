@@ -1,7 +1,6 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using ApprenticeshipsMessages = SFA.DAS.Apprenticeships.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -24,8 +23,8 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         var commitmentsApprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
         var apprenticeshipCreatedEvent = testData.ApprenticeshipCreatedEvent;
 
-        if (condition == "below") Assert.Less(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
-        else Assert.Greater(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate).Cost, apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate).FundingBandMaximum);
+        if (condition == "below") Assert.Less(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost, apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate)!.FundingBandMaximum);
+        else Assert.Greater(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost, apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate)!.FundingBandMaximum);
     }
 
     [Then(@"80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months (.*)")]
@@ -33,7 +32,8 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     [Then(@"Funding band maximum price is used to calculate the on-program earnings which is divided equally into number of planned months (.*)")]
     public void VerifyInstalmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal instalmentAmount)
     {
-        var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
+        var testData = _context.Get<TestData>();
+        var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
         deliveryPeriods.FilterByOnProg().ToList().ForEach(dp => dp.LearningAmount.Should().Be(instalmentAmount));
     }
 
@@ -41,7 +41,8 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     [Then(@"the planned number of months must be the number of months from the start date to the planned end date (.*)")]
     public void VerifyThePlannedDurationMonthsWithinTheEarningsGenerated(short numberOfInstalments)
     {
-        var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
+        var testData = _context.Get<TestData>();
+        var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
         deliveryPeriods.FilterByOnProg().Should().HaveCount(numberOfInstalments);
     }
 
@@ -49,7 +50,8 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     [Then(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
     public void ThenTheDeliveryPeriodForEachInstalmentMustBeTheDeliveryPeriodFromTheCollectionCalendarWithAMatchingCalendarMonthYear(Table table)
     {
-        var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
+        var testData = _context.Get<TestData>();
+        var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
         deliveryPeriods.FilterByOnProg().ToList().ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
     }
 
@@ -58,7 +60,7 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     {
         var apprenticeshipEntity = _earningsSqlClient.GetEarningsEntityModel(_context);
 
-        Assert.AreEqual(completionAmount, apprenticeshipEntity?.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.CompletionPayment);
+        Assert.AreEqual(completionAmount, apprenticeshipEntity!.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)!.StartDate)!.EarningsProfile.CompletionPayment);
     }
 
     [Then(@"the leaners age (.*) at the start of the course and funding line type (.*) must be calculated")]
@@ -66,8 +68,8 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     {
         var testData = _context.Get<TestData>();
         Assert.AreEqual(testData.ApprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {testData.ApprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship}");
-        
-        var deliveryPeriods = _context.Get<List<DeliveryPeriod>>();
+
+        var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
         deliveryPeriods.FilterByOnProg().ToList().ShouldHaveCorrectFundingLineType(fundingLineType);
     }
 }

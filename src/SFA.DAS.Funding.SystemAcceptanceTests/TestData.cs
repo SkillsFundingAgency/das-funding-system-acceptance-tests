@@ -1,5 +1,7 @@
-﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
+using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Payments.FundingSource.Messages.Commands;
 using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests;
@@ -28,6 +30,7 @@ internal class TestData
     internal DateTime? PlannedEndDate { get; set; }
     internal DateTime? OriginalStartDate { get; set; }
     internal List<TestSupport.Payments> PaymentDbRecords { get; set; } 
+    internal List<FM36Learner> FM36Learners { get; set; }
     internal EarningsApprenticeshipModel? EarningsApprenticeshipModel { get; set; }
     internal PaymentsApprenticeshipModel? PaymentsApprenticeshipModel { get; set; }
     internal ApprenticeshipEarningsRecalculatedEvent? ApprenticeshipEarningsRecalculatedEvent { get; set; }
@@ -35,5 +38,6 @@ internal class TestData
     internal CommitmentsMessages.ApprenticeshipCreatedEvent CommitmentsApprenticeshipCreatedEvent { get; set; }
     internal Apprenticeships.Types.ApprenticeshipCreatedEvent ApprenticeshipCreatedEvent { get; set; }
     internal EarningsGeneratedEvent EarningsGeneratedEvent { get; set; }
+    internal List<CalculateOnProgrammePayment> CalculatedOnProgrammePaymentList { get; set; }
 }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

@@ -7,12 +7,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 public class EarningsInnerApiClient
 {
     private readonly HttpClient _httpClient;
-    private string _cachedBearerToken;
-    private DateTime _bearerTokenExpiry;
     private readonly FundingConfig _fundingConfig;
-    private string? _azureToken;
     private readonly AzureTokenHelper _azureTokenHelper;
-
+    private DateTime _bearerTokenExpiry;
+    private string? _azureToken;
+    private string? _cachedBearerToken;
+    
     public EarningsInnerApiClient()
     {
         _fundingConfig = Configurator.GetConfiguration();
@@ -40,7 +40,7 @@ public class EarningsInnerApiClient
             Content = jsonContent
         };
 
-        await EnsureBearerToken();
+        EnsureBearerToken();
         await EnsureAzureToken();
         var response = await _httpClient.SendAsync(requestMessage);
         return response;
@@ -63,7 +63,7 @@ public class EarningsInnerApiClient
             Content = jsonContent
         };
 
-        await EnsureBearerToken();
+        EnsureBearerToken();
         await EnsureAzureToken();
         var response = await _httpClient.SendAsync(requestMessage);
         return response;
@@ -78,15 +78,15 @@ public class EarningsInnerApiClient
         }
     }
 
-    private async Task EnsureBearerToken()
+    private void EnsureBearerToken()
     {
         if (string.IsNullOrEmpty(_cachedBearerToken) || DateTime.UtcNow >= _bearerTokenExpiry)
         {
-            await AddBearerToken();
+            AddBearerToken();
         }
     }
 
-    private async Task AddBearerToken()
+    private void AddBearerToken()
     {
         var claims = GetClaims();
         var signingKey = _fundingConfig.ApprenticeshipServiceBearerTokenSigningKey;

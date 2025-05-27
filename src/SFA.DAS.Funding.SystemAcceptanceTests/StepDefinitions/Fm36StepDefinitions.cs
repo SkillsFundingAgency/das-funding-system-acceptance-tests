@@ -38,10 +38,9 @@ public class Fm36StepDefinitions
         var collectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", searchDate.Value));
         var collectionPeriod = TableExtensions.Period[searchDate.Value.ToString("MMMM")];
 
-        var fm36 = await _earningsOuterClient.GetFm36Block(testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, collectionYear,
+        testData.FM36Learners = await _earningsOuterClient.GetFm36Block(testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, collectionYear,
             collectionPeriod);
 
-        _context.Set(fm36);
     }
 
     [Given(@"the apprentice is marked as a care leaver")]
@@ -53,10 +52,9 @@ public class Fm36StepDefinitions
 
     [Then("incentives earnings are generated for learners aged 15")]
     [Then(@"fm36 data exists for that apprenticeship")]
-    public async Task Fm36DataExists()
+    public void Fm36DataExists()
     {
         var testData = _context.Get<TestData>();
-        var fm36 = _context.Get<List<FM36Learner>>();
         var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
         var apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
@@ -68,7 +66,7 @@ public class Fm36StepDefinitions
 
         // get your learner data 
 
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
         if (fm36Learner == null)
         {
             throw new Exception($"No FM36 data found for ULN {apprenticeshipCreatedEvent.Uln}");
@@ -519,11 +517,10 @@ public class Fm36StepDefinitions
     }
 
     [Then(@"fm36 data does not exist for that apprenticeship")]
-    public async Task Fm36DataDoesNotExist()
+    public void Fm36DataDoesNotExist()
     {
         var testData = _context.Get<TestData>();
-        var fm36 = _context.Get<List<FM36Learner>>();
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
         fm36Learner.Should().BeNull();
     }
 
@@ -531,8 +528,7 @@ public class Fm36StepDefinitions
     public void ThenLearnerIsReturnedInTheFmResponse()
     {
         var testData = _context.Get<TestData>();
-        var fm36 = _context.Get<List<FM36Learner>>();
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
         fm36Learner.Should().NotBeNull();
     }
 
@@ -541,32 +537,29 @@ public class Fm36StepDefinitions
     public void ThenFm36FundStartValueIsFalse(bool expectedValue)
     {
         var testData = _context.Get<TestData>();
-        var fm36 = _context.Get<List<FM36Learner>>();
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
         Assert.AreEqual(expectedValue,
-            fm36Learner.LearningDeliveries.First().LearningDeliveryValues.FundStart, "Unexpected FundStart found!");
+            fm36Learner!.LearningDeliveries.First().LearningDeliveryValues.FundStart, "Unexpected FundStart found!");
     }
 
     [Then(@"fm36 ThresholdDays value is (.*)")]
     public void ThenFm36ThresholdDaysValueIs(int expectedValue)
     {
         var testData = _context.Get<TestData>();
-        var fm36 = _context.Get<List<FM36Learner>>();
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         Assert.AreEqual(expectedValue,
-            fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ThresholdDays, "Unexpected ThresholdDays value found!");
+            fm36Learner!.LearningDeliveries.First().LearningDeliveryValues.ThresholdDays, "Unexpected ThresholdDays value found!");
     }
 
     [Then(@"fm36 ActualDaysIL value is (.*)")]
     public void ThenFm36ActualDaysInLearningValueIs(int expectedValue)
     {
         var testData = _context.Get<TestData>();
-        var fm36 = _context.Get<List<FM36Learner>>();
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         Assert.AreEqual(expectedValue,
-            fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected FundStart found!");
+            fm36Learner!.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected FundStart found!");
     }
 
     [Then(@"fm36 block contains a new price episode starting (.*) with episode 1 tnp of (.*) and episode 2 tnp of (.*)")]
@@ -575,22 +568,21 @@ public class Fm36StepDefinitions
         var testData = _context.Get<TestData>();
 
         // Retrieve necessary data from the context
-        var fm36Learners = _context.Get<List<FM36Learner>>();
         var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
         // Fetch earnings data
         var earnings = _earningsSqlClient.GetEarningsEntityModel(_context);
 
         // Get the learner associated with the apprenticeship
-        var fm36Learner = fm36Learners.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
         Assert.IsNotNull(fm36Learner, $"Expected FM36 learner ULN {apprenticeshipCreatedEvent.Uln} not found.");
 
         // Ensure there are exactly 2 price episodes
-        Assert.AreEqual(2, fm36Learner.PriceEpisodes.Count,
+        Assert.AreEqual(2, fm36Learner!.PriceEpisodes.Count,
             $"Expected 2 price episodes but found {fm36Learner?.PriceEpisodes?.Count}.");
 
         // Extract price episodes
-        var episode1 = fm36Learner.PriceEpisodes[0];
+        var episode1 = fm36Learner!.PriceEpisodes[0];
         var episode2 = fm36Learner.PriceEpisodes[1];
 
         // Validate Episode 1
@@ -622,7 +614,7 @@ public class Fm36StepDefinitions
         var totalPaidInFirstPriceEpisode = episode1Tnp1Expected / totalInstalments;
         var totalToBePaidInSecondPriceEpisode = episode2Tnp1Expected - totalPaidInFirstPriceEpisode;
 
-        Assert.AreEqual(Math.Round((decimal)totalToBePaidInSecondPriceEpisode), Math.Round((decimal)episode2.PriceEpisodeValues.PriceEpisodeTotalEarnings), "Incorrect PriceEpisodeTotalEarnings found for second price episode");
+        Assert.AreEqual(Math.Round((decimal)totalToBePaidInSecondPriceEpisode!), Math.Round((decimal)episode2.PriceEpisodeValues.PriceEpisodeTotalEarnings!), "Incorrect PriceEpisodeTotalEarnings found for second price episode");
 
     }
 
@@ -630,8 +622,7 @@ public class Fm36StepDefinitions
     public void ThenTheFmPriceEpisodeInstalmentValueIs(int priceEpisodeInstalmentValue)
     {
         var testData = _context.Get<TestData>();
-        var fm36 = _context.Get<List<FM36Learner>>();
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
         Assert.AreEqual(priceEpisodeInstalmentValue, fm36Learner!.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeInstalmentValue);
     }
 
@@ -640,12 +631,11 @@ public class Fm36StepDefinitions
     {
         var testData = _context.Get<TestData>();
         // learner has to be eligible for incentive earnings 
-        var fm36 = _context.Get<List<FM36Learner>>();
         var earnings = _earningsSqlClient.GetEarningsEntityModel(_context);
 
         // get your learner data 
 
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         var firstIncentivePeriod = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DeliveryPeriod;
         var firstIncentiveThresholdDate = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DueDate;
@@ -654,7 +644,7 @@ public class Fm36StepDefinitions
 
         var expectedSecondIncentive = secondIncentivePeriod != firstIncentivePeriod;
 
-        fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDel1618AtStart.Should().BeTrue();
+        fm36Learner!.LearningDeliveries.First().LearningDeliveryValues.LearnDel1618AtStart.Should().BeTrue();
         fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelApplicProv1618Incentive.Should().Be(expectedSecondIncentive ? 1000 : 500);
         fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelApplicEmp1618Incentive.Should().Be(expectedSecondIncentive ? 1000 : 500);
 
@@ -684,15 +674,11 @@ public class Fm36StepDefinitions
     {
         var testData = _context.Get<TestData>();
 
-        // learner has to be eligible for incentive earnings 
-        var fm36 = _context.Get<List<FM36Learner>>();
-
-        // get your learner data 
-        var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         for (var i = learningSupportStart.Value.PeriodValue; i <= learningSupportEnd.Value.PeriodValue; i++)
         {
-            fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
+            fm36Learner!.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
             .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLSFCash).SingleOrDefault(x => x.PeriodNumber == i).Value
             .Should().Be(150, $"{PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeLSFCash} value for period {i} is not 150");
 
