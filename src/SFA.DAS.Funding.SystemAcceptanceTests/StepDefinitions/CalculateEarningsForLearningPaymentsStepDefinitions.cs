@@ -9,12 +9,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 public class CalculateEarningsForLearningPaymentsStepDefinitions
 {
     private readonly ScenarioContext _context;
-    private readonly EarningsSqlClient _earningsEntitySqlClient;
+    private readonly EarningsSqlClient _earningsSqlClient;
     
-    public CalculateEarningsForLearningPaymentsStepDefinitions(ScenarioContext context)
+    public CalculateEarningsForLearningPaymentsStepDefinitions(ScenarioContext context, EarningsSqlClient earningsSqlClient)
     {
         _context = context;
-        _earningsEntitySqlClient = new EarningsSqlClient();
+        _earningsSqlClient = earningsSqlClient;
     }
 
     [When(@"the agreed price is (below|above) the funding band maximum for the selected course")]
@@ -56,7 +56,7 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]
     public void VerifyCompletionAmountIsCalculatedCorrectly(decimal completionAmount)
     {
-        var apprenticeshipEntity = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+        var apprenticeshipEntity = _earningsSqlClient.GetEarningsEntityModel(_context);
 
         Assert.AreEqual(completionAmount, apprenticeshipEntity?.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.CompletionPayment);
     }

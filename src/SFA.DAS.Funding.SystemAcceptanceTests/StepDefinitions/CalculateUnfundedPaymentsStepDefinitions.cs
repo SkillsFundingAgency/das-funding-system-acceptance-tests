@@ -12,14 +12,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 public class CalculateUnfundedPaymentsStepDefinitions
 {
     private readonly ScenarioContext _context;
-    private List<FinalisedOnProgammeLearningPaymentEvent> _finalisedPaymentsList;
-    private List<TestSupport.Payments> _paymentEntity;
     private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
+    private readonly PaymentsSqlClient _paymentsSqlClient;
 
-    public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context)
+    public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context, PaymentsFunctionsClient paymentsFunctionsClient, PaymentsSqlClient paymentsSqlClient)
     {
         _context = context;
-        _paymentsFunctionsClient = new PaymentsFunctionsClient();
+        _paymentsFunctionsClient = paymentsFunctionsClient;
+        _paymentsSqlClient = paymentsSqlClient;
     }
 
     [Given(@"the Unfunded Payments for the remainder of the apprenticeship are determined")]
@@ -49,9 +49,7 @@ public class CalculateUnfundedPaymentsStepDefinitions
     [Then(@"the newly calculated Unfunded Payments are marked as not sent to payments BAU")]
     public void NewlyCalculatedUnfundedPaymentsAreMarkedAsNotSentToPaymentsBAU()
     {
-        var apiClient = new PaymentsSqlClient();
-
-        var payments = apiClient.GetPaymentsModel(_context).Payments;
+        var payments = _paymentsSqlClient.GetPaymentsModel(_context).Payments;
 
         Assert.IsTrue(payments.All(x => !x.SentForPayment));
     }
@@ -117,13 +115,9 @@ public class CalculateUnfundedPaymentsStepDefinitions
     [Then(@"the relevant payments entities are marked as sent to payments BAU")]
     public void PaymentsEntitiesAreMarkedAsSentToPaymentsBAU()
     {
-        var apiClient = new PaymentsSqlClient();
-
-        _paymentEntity = apiClient.GetPaymentsModel(_context).Payments;
-
+        var payments = _paymentsSqlClient.GetPaymentsModel(_context).Payments;
         var testData = _context.Get<TestData>();
-
-        Assert.IsTrue(_paymentEntity.Where(p => p.CollectionPeriod == testData.CurrentCollectionPeriod).All(p => p.SentForPayment));
+        Assert.IsTrue(payments.Where(p => p.CollectionPeriod == testData.CurrentCollectionPeriod).All(p => p.SentForPayment));
     }
 
     [Then(@"all payments for the following collection periods are marked as not sent to payments BAU")]
@@ -132,8 +126,9 @@ public class CalculateUnfundedPaymentsStepDefinitions
         var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
 
         var testData = _context.Get<TestData>();
+        var payments = _paymentsSqlClient.GetPaymentsModel(_context).Payments;
 
-        Assert.IsFalse(_paymentEntity.Where(p => (p.CollectionYear > currentAcademicYear) ||
+        Assert.IsFalse(payments.Where(p => (p.CollectionYear > currentAcademicYear) ||
                                       (p.CollectionYear == currentAcademicYear && p.CollectionPeriod > testData.CurrentCollectionPeriod))
                                       .All(p => p.SentForPayment));
     }
@@ -142,11 +137,12 @@ public class CalculateUnfundedPaymentsStepDefinitions
     public async Task ThenTheUnfundedPaymentsThatHaveAlreadyBeenSentToPaymentsBAUAreNotSentToBePaidAgain()
     {
         var testData = _context.Get<TestData>();
+
         await WaitHelper.WaitForUnexpected(() =>
         {
-            _finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x => x.message).ToList();
+            var finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x => x.message).ToList();
 
-            return _finalisedPaymentsList.Count != 0;
+            return finalisedPaymentsList.Count != 0;
         }, "Unexpected published Finalised On Programme Learning Payment events found");
     }
 }

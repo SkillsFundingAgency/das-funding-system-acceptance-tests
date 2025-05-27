@@ -37,10 +37,10 @@ internal class AfterScenario
         if (testData.ApprenticeshipKey == Guid.Empty)
             return;
 
-        var paymentsSqlClient = new PaymentsSqlClient();
+        var paymentsSqlClient = _context.ScenarioContainer.Resolve<PaymentsSqlClient>();
         paymentsSqlClient.DeletePayments(testData.ApprenticeshipKey);
 
-        var earningsSqlClient = new EarningsSqlClient();
+        var earningsSqlClient = _context.ScenarioContainer.Resolve<EarningsSqlClient>();
         earningsSqlClient.DeleteEarnings(testData.ApprenticeshipKey);
 
         var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();

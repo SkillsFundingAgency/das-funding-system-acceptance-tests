@@ -14,6 +14,7 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
 {
     private readonly ScenarioContext _context;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
+    private readonly PaymentsSqlClient _paymentsSqlClient;
     private EarningsApprenticeshipModel? _earningsApprenticeshipModel;
     private readonly ApprenticeshipsInnerApiHelper _apprenticeshipsInnerApiHelper;
     private DateTime _priceChangeEffectiveFrom;
@@ -35,14 +36,19 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     private DateTime? _originalStartDate;
     private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
 
-    public RecalculateEarningsAndPaymentsStepDefinitions(ScenarioContext context)
+    public RecalculateEarningsAndPaymentsStepDefinitions(
+        ScenarioContext context, 
+        PaymentsFunctionsClient paymentsFunctionsClient, 
+        PaymentsSqlClient paymentsSqlClient,
+        EarningsSqlClient earningsSqlClient)
     {
         _context = context;
-        _earningsEntitySqlClient = new EarningsSqlClient();
+        _earningsEntitySqlClient = earningsSqlClient;
+        _paymentsSqlClient = paymentsSqlClient;
         _currentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
         _currentCollectionYear = TableExtensions.CalculateAcademicYear("0");
         _apprenticeshipsInnerApiHelper = new ApprenticeshipsInnerApiHelper();
-        _paymentsFunctionsClient = new PaymentsFunctionsClient();
+        _paymentsFunctionsClient = paymentsFunctionsClient;
     }
 
     [Given(@"payments have been paid for an apprenticeship with (.*), (.*)")]
@@ -184,9 +190,7 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
 
         // Validate Payments Entity
 
-        var paymentsApiClient = new PaymentsSqlClient();
-
-        _paymentDbRecords = paymentsApiClient.GetPaymentsModel(_context).Payments;
+        _paymentDbRecords = _paymentsSqlClient.GetPaymentsModel(_context).Payments;
 
         _paymentDbRecords = _paymentDbRecords.Where(x => x.AcademicYear >= Convert.ToInt16(_currentCollectionYear)).ToList();
 

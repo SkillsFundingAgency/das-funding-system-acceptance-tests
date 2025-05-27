@@ -11,14 +11,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 internal class WithdrawApprenticeshipStepDefinitions
 {
     private readonly ScenarioContext _context;
+    private readonly PaymentsSqlClient _paymentsSqlClient;
+    private readonly EarningsSqlClient _earningsSqlClient;
     private Helpers.Sql.Apprenticeship? apprenticeship;
     private PaymentsApprenticeshipModel? _paymentsApprenticeshipModel; 
     private ApprenticeshipEarningsRecalculatedEvent _recalculatedEarningsEvent;
     private DateTime _lastDayOfLearning;
 
-    public WithdrawApprenticeshipStepDefinitions(ScenarioContext context)
+    public WithdrawApprenticeshipStepDefinitions(ScenarioContext context, PaymentsSqlClient paymentsSqlClient, EarningsSqlClient earningsSqlClient)
     {
         _context = context;
+        _paymentsSqlClient = paymentsSqlClient;
+        _earningsSqlClient = earningsSqlClient;
     }
 
     [When(@"the apprenticeship is withdrawn")]
@@ -90,7 +94,7 @@ internal class WithdrawApprenticeshipStepDefinitions
 
         _recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
 
-        testData.EarningsApprenticeshipModel = new EarningsSqlClient().GetEarningsEntityModel(_context);
+        testData.EarningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
     }
 
     [Then("payments are recalculated")]
@@ -101,7 +105,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         // Receive the updated PaymentsGeneratedEvent
         await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
 
-        _paymentsApprenticeshipModel = new PaymentsSqlClient().GetPaymentsModel(_context);
+        _paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
     }
 
 

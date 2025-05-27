@@ -1,5 +1,4 @@
 ﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
-using SFA.DAS.Apprenticeships.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -11,14 +10,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 public class Fm36StepDefinitions
 {
     private readonly ScenarioContext _context;
+    private readonly EarningsSqlClient _earningsSqlClient;
     private readonly EarningsOuterClient _earningsOuterClient;
-    private Helpers.Sql.Apprenticeship? _apprenticeship;
-    private EarningsApprenticeshipModel? _earnings;
 
-    public Fm36StepDefinitions(ScenarioContext context)
+    public Fm36StepDefinitions(ScenarioContext context, EarningsSqlClient earningsSqlClient, EarningsOuterClient earningsOuterClient)
     {
         _context = context;
-        _earningsOuterClient = new EarningsOuterClient();
+        _earningsSqlClient = earningsSqlClient;
+        _earningsOuterClient = earningsOuterClient;
     }
 
     [Given(@"the fm36 data is retrieved for (.*)")]
@@ -53,10 +52,9 @@ public class Fm36StepDefinitions
         var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
         var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
-        var earningsSqlClient = new EarningsSqlClient();
 
-        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
-        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
+        var apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
+        var earnings = _earningsSqlClient.GetEarningsEntityModel(_context);
 
         // get your learner data 
 
@@ -68,12 +66,12 @@ public class Fm36StepDefinitions
                                                  DateTime.Today <= apprenticeshipCreatedEvent.EndDate)
             ? 1
             : 0;
-        var totalPrice = _earnings?.Episodes.FirstOrDefault()?.Prices.FirstOrDefault()?.AgreedPrice;
-        var onProgPayment = _earnings?.Episodes.FirstOrDefault()?.EarningsProfile.OnProgramTotal;
-        var completionPayment = _earnings?.Episodes.FirstOrDefault()?.EarningsProfile.CompletionPayment;
-        var fundingBandMax = _apprenticeship.Episodes.First().Prices.FirstOrDefault()?.FundingBandMaximum;
+        var totalPrice = earnings?.Episodes.FirstOrDefault()?.Prices.FirstOrDefault()?.AgreedPrice;
+        var onProgPayment = earnings?.Episodes.FirstOrDefault()?.EarningsProfile.OnProgramTotal;
+        var completionPayment = earnings?.Episodes.FirstOrDefault()?.EarningsProfile.CompletionPayment;
+        var fundingBandMax = apprenticeship.Episodes.First().Prices.FirstOrDefault()?.FundingBandMaximum;
         var instalmentAmount =
-            _earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.FirstOrDefault()?.Amount;
+            earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.FirstOrDefault()?.Amount;
         var currentPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
 
         int daysInLearning =
@@ -81,13 +79,13 @@ public class Fm36StepDefinitions
 
         int daysInLearningThisAY = 1 + (TokenisableDateTime.FromString("currentAY-07-31").Value - apprenticeshipCreatedEvent.StartDate.Date).Days; ;
         int plannedTotalDaysInLearning = 1 + (apprenticeshipCreatedEvent.EndDate.Date - apprenticeshipCreatedEvent.StartDate.Date).Days;
-        var ageAtStartOfApprenticeship = _earnings?.Episodes.FirstOrDefault()?.AgeAtStartOfApprenticeship;
+        var ageAtStartOfApprenticeship = earnings?.Episodes.FirstOrDefault()?.AgeAtStartOfApprenticeship;
         var fundLineType = ageAtStartOfApprenticeship > 18 ? "19+ Apprenticeship (Employer on App Service)" : "16-18 Apprenticeship (Employer on App Service)";
 
-        var firstIncentivePeriod = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DeliveryPeriod;
-        var secondIncentivePeriod = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DeliveryPeriod;
-        var firstIncentiveThresholdDate = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DueDate;
-        var secondIncentiveThresholdDate = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DueDate;
+        var firstIncentivePeriod = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DeliveryPeriod;
+        var secondIncentivePeriod = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DeliveryPeriod;
+        var firstIncentiveThresholdDate = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DueDate;
+        var secondIncentiveThresholdDate = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DueDate;
 
 
         Assert.Multiple(() =>
@@ -115,7 +113,7 @@ public class Fm36StepDefinitions
             Assert.AreEqual(null, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeActualEndDate, "Unexpected PriceEpisodeActualEndDate found!");
             Assert.AreEqual(totalPrice, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeTotalTNPPrice, "Unexpected PriceEpisodeTotalTNPPrice value found!");
             Assert.AreEqual(EarningsFM36Constants.PriceEpisodeUpperLimitAdjustment, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeUpperLimitAdjustment, "Unexpected PriceEpisodeUpperLimitAdjustment value found!");
-            Assert.AreEqual(_earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.Count, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodePlannedInstalments, "Unexpected PriceEpisodePlannedInstalments value found!");
+            Assert.AreEqual(earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.Count, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodePlannedInstalments, "Unexpected PriceEpisodePlannedInstalments value found!");
             Assert.AreEqual(0, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeActualInstalments, "Unexpected PriceEpisodeActualInstalments value found!");
             Assert.AreEqual(priceEpisodeInstalmentsThisPeriod, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeInstalmentsThisPeriod, "Unexpected PriceEpisodeInstalmentsThisPeriod value found!");
             Assert.AreEqual(completionPayment, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeCompletionElement, "Unexpected PriceEpisodeCompletionElement value found!");
@@ -296,7 +294,7 @@ public class Fm36StepDefinitions
             Assert.AreEqual(EarningsFM36Constants.ActualDaysIL, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected ActualDaysIL found!");
             Assert.AreEqual(null, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualNumInstalm, "Unexpected ActualNumInstalm found!");
             Assert.AreEqual(apprenticeshipCreatedEvent.ActualStartDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AdjStartDate, "Unexpected AdjStartDate found!");
-            Assert.AreEqual(_earnings.Episodes.FirstOrDefault()?.AgeAtStartOfApprenticeship, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AgeAtProgStart, "Unexpected AgeAtProgStart found!");
+            Assert.AreEqual(earnings.Episodes.FirstOrDefault()?.AgeAtStartOfApprenticeship, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AgeAtProgStart, "Unexpected AgeAtProgStart found!");
             Assert.AreEqual(apprenticeshipCreatedEvent.ActualStartDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AppAdjLearnStartDate, "Unexpected AppAdjLearnStartDate found!");
             Assert.AreEqual(apprenticeshipCreatedEvent.ActualStartDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AppAdjLearnStartDateMatchPathway, "Unexpected AppAdjLearnStartDateMatchPathway found!");
             Assert.AreEqual(EarningsFM36Constants.ApplicCompDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ApplicCompDate, "Unexpected ApplicCompDate found!");
@@ -328,7 +326,7 @@ public class Fm36StepDefinitions
             Assert.AreEqual(EarningsFM36Constants.LearnDelNonLevyProcured, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelNonLevyProcured, "Unexpected LearnDelNonLevyProcured found!");
             Assert.AreEqual(EarningsFM36Constants.MathEngAimValue, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.MathEngAimValue, "Unexpected MathEngAimValue found!");
             Assert.AreEqual(EarningsFM36Constants.OutstandNumOnProgInstalm, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.OutstandNumOnProgInstalm, "Unexpected OutstandNumOnProgInstalm found!");
-            Assert.AreEqual(_earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.Count, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.PlannedNumOnProgInstalm, "Unexpected PlannedNumOnProgInstalm found!");
+            Assert.AreEqual(earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.Count, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.PlannedNumOnProgInstalm, "Unexpected PlannedNumOnProgInstalm found!");
             Assert.AreEqual(plannedTotalDaysInLearning, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.PlannedTotalDaysIL, "Unexpected PlannedTotalDaysIL found!");
             Assert.AreEqual(EarningsFM36Constants.ProgType, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ProgType, "Unexpected ProgType found!");
             Assert.AreEqual(EarningsFM36Constants.PwayCode, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.PwayCode, "Unexpected PwayCode found!");
@@ -511,17 +509,7 @@ public class Fm36StepDefinitions
     {
         var testData = _context.Get<TestData>();
         var fm36 = _context.Get<List<FM36Learner>>();
-
-        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
-        var earningsSqlClient = new EarningsSqlClient();
-
-        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
-        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
-
-        // get your learner data 
-
         var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
-
         fm36Learner.Should().BeNull();
     }
 
@@ -530,11 +518,7 @@ public class Fm36StepDefinitions
     {
         var testData = _context.Get<TestData>();
         var fm36 = _context.Get<List<FM36Learner>>();
-
-        // get your learner data 
-
         var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
-
         fm36Learner.Should().NotBeNull();
     }
 
@@ -544,17 +528,7 @@ public class Fm36StepDefinitions
     {
         var testData = _context.Get<TestData>();
         var fm36 = _context.Get<List<FM36Learner>>();
-
-        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
-        var earningsSqlClient = new EarningsSqlClient();
-
-        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
-        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
-
-        // get your learner data 
-
         var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
-
         Assert.AreEqual(expectedValue,
             fm36Learner.LearningDeliveries.First().LearningDeliveryValues.FundStart, "Unexpected FundStart found!");
     }
@@ -564,15 +538,6 @@ public class Fm36StepDefinitions
     {
         var testData = _context.Get<TestData>();
         var fm36 = _context.Get<List<FM36Learner>>();
-
-        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
-        var earningsSqlClient = new EarningsSqlClient();
-
-        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
-        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
-
-        // get your learner data 
-
         var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         Assert.AreEqual(expectedValue,
@@ -584,15 +549,6 @@ public class Fm36StepDefinitions
     {
         var testData = _context.Get<TestData>();
         var fm36 = _context.Get<List<FM36Learner>>();
-
-        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
-        var earningsSqlClient = new EarningsSqlClient();
-
-        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
-        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
-
-        // get your learner data 
-
         var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
         Assert.AreEqual(expectedValue,
@@ -608,12 +564,8 @@ public class Fm36StepDefinitions
         var fm36Learners = _context.Get<List<FM36Learner>>();
         var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
-        // Fetch apprenticeship and earnings data
-        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
-        var earningsSqlClient = new EarningsSqlClient();
-
-        _apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
-        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
+        // Fetch earnings data
+        var earnings = _earningsSqlClient.GetEarningsEntityModel(_context);
 
         // Get the learner associated with the apprenticeship
         var fm36Learner = fm36Learners.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
@@ -633,7 +585,7 @@ public class Fm36StepDefinitions
 
         var episode1Tnp1Expected = expectedEpisode1Tnp * 0.8m;
         var episode1Tnp2Expected = expectedEpisode1Tnp * 0.2m;
-        var totalInstalments = _earnings?.Episodes[0].EarningsProfile.Instalments.Count;
+        var totalInstalments = earnings?.Episodes[0].EarningsProfile.Instalments.Count;
 
         Assert.AreEqual(episode1Tnp1Expected, episode1.PriceEpisodeValues.TNP1,
             $"Episode 1 TNP1 mismatch. Expected: {episode1Tnp1Expected}, Actual: {episode1.PriceEpisodeValues.TNP1}");
@@ -675,19 +627,16 @@ public class Fm36StepDefinitions
         var testData = _context.Get<TestData>();
         // learner has to be eligible for incentive earnings 
         var fm36 = _context.Get<List<FM36Learner>>();
-
-        var earningsSqlClient = new EarningsSqlClient();
-
-        _earnings = earningsSqlClient.GetEarningsEntityModel(_context);
+        var earnings = _earningsSqlClient.GetEarningsEntityModel(_context);
 
         // get your learner data 
 
         var fm36Learner = fm36.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
 
-        var firstIncentivePeriod = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DeliveryPeriod;
-        var firstIncentiveThresholdDate = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DueDate;
-        var secondIncentivePeriod = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DeliveryPeriod;
-        var secondIncentiveThresholdDate = _earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DueDate;
+        var firstIncentivePeriod = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DeliveryPeriod;
+        var firstIncentiveThresholdDate = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DueDate;
+        var secondIncentivePeriod = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DeliveryPeriod;
+        var secondIncentiveThresholdDate = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DueDate;
 
         var expectedSecondIncentive = secondIncentivePeriod != firstIncentivePeriod;
 

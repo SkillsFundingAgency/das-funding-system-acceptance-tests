@@ -16,11 +16,11 @@ public class ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions
     private readonly PaymentsSqlClient _paymentsApiClient;
     private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
 
-    public ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions(ScenarioContext context)
+    public ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions(ScenarioContext context, PaymentsSqlClient paymentsSqlClient, PaymentsFunctionsClient paymentsFunctionsClient)
     {
         _context = context;
-        _paymentsApiClient = new PaymentsSqlClient();
-        _paymentsFunctionsClient = new PaymentsFunctionsClient();
+        _paymentsApiClient = paymentsSqlClient;
+        _paymentsFunctionsClient = paymentsFunctionsClient;
     }
 
     [When(@"Employer has frozen provider payments")]

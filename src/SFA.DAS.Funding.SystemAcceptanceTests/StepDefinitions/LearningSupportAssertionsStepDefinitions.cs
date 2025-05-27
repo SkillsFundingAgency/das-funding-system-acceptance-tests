@@ -12,13 +12,15 @@ public class LearningSupportAssertionsStepDefinitions
 {
     private readonly ScenarioContext _context;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
+    private readonly PaymentsSqlClient _paymentsSqlClient;
     private Guid _earningsProfileId;
     private bool _learningSupportAdded = false;
 
-    public LearningSupportAssertionsStepDefinitions(ScenarioContext context, EarningsSqlClient earningsEntitySqlClient)
+    public LearningSupportAssertionsStepDefinitions(ScenarioContext context, EarningsSqlClient earningsEntitySqlClient, PaymentsSqlClient paymentsSqlClient)
     {
         _context = context;
         _earningsEntitySqlClient = earningsEntitySqlClient;
+        _paymentsSqlClient = paymentsSqlClient;
     }
 
     [When(@"learning support is recorded from (.*) to (.*)")]
@@ -72,7 +74,7 @@ public class LearningSupportAssertionsStepDefinitions
 
         await WaitHelper.WaitForIt(() =>
         {
-            paymentsApprenticeshipModel = new PaymentsSqlClient().GetPaymentsModel(_context);
+            paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
             return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == _earningsProfileId);
         }, "Failed to find updated payments entity.");
 

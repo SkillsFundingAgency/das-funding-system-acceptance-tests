@@ -17,12 +17,12 @@ public class ApproveApprenticeshipStepDefinition
 {
 
     private readonly ScenarioContext _context;
-    private readonly EarningsSqlClient _earningsEntitySqlClient;
+    private readonly EarningsSqlClient _earningsSqlClient;
 
-    public ApproveApprenticeshipStepDefinition(ScenarioContext context)
+    public ApproveApprenticeshipStepDefinition(ScenarioContext context, EarningsSqlClient earningsSqlClient)
     {
         _context = context;
-        _earningsEntitySqlClient = new EarningsSqlClient();
+        _earningsSqlClient = earningsSqlClient;
     }
 
     [Given(@"the apprenticeship commitment is approved")]
@@ -42,7 +42,7 @@ public class ApproveApprenticeshipStepDefinition
 
         await WaitHelper.WaitForIt(() =>
         {
-            earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+            earningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
             if (earningsApprenticeshipModel != null)
             {
                 return true;
