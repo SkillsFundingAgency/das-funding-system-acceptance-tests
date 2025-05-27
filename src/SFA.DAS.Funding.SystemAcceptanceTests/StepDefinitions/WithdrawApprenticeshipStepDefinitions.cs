@@ -1,5 +1,4 @@
-﻿using SFA.DAS.Apprenticeships.Types;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -11,18 +10,23 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 internal class WithdrawApprenticeshipStepDefinitions
 {
     private readonly ScenarioContext _context;
-    private readonly PaymentsSqlClient _paymentsSqlClient;
+    private readonly ApprenticeshipsClient _apprenticeshipsClient;
+    private readonly ApprenticeshipsSqlClient _apprenticeshipSqlClient;
     private readonly EarningsSqlClient _earningsSqlClient;
-    private Helpers.Sql.Apprenticeship? apprenticeship;
-    private PaymentsApprenticeshipModel? _paymentsApprenticeshipModel; 
-    private ApprenticeshipEarningsRecalculatedEvent _recalculatedEarningsEvent;
-    private DateTime _lastDayOfLearning;
+    private readonly PaymentsSqlClient _paymentsSqlClient;
 
-    public WithdrawApprenticeshipStepDefinitions(ScenarioContext context, PaymentsSqlClient paymentsSqlClient, EarningsSqlClient earningsSqlClient)
+    public WithdrawApprenticeshipStepDefinitions(
+        ScenarioContext context,
+        ApprenticeshipsClient apprenticeshipsClient,
+        ApprenticeshipsSqlClient apprenticeshipSqlClient,
+        EarningsSqlClient earningsSqlClient,
+        PaymentsSqlClient paymentsSqlClient)
     {
         _context = context;
-        _paymentsSqlClient = paymentsSqlClient;
+        _apprenticeshipsClient = apprenticeshipsClient;
+        _apprenticeshipSqlClient = apprenticeshipSqlClient;
         _earningsSqlClient = earningsSqlClient;
+        _paymentsSqlClient = paymentsSqlClient;
     }
 
     [When(@"the apprenticeship is withdrawn")]
@@ -30,7 +34,6 @@ internal class WithdrawApprenticeshipStepDefinitions
     {
         var testData = _context.Get<TestData>();
 
-        var apprenticeshipsClient = new ApprenticeshipsClient();
         var body = new WithdrawApprenticeshipRequestBody
         {
             UKPRN = testData.ApprenticeshipCreatedEvent.Episode.Ukprn,
@@ -41,7 +44,7 @@ internal class WithdrawApprenticeshipStepDefinitions
             ProviderApprovedBy = "SystemAcceptanceTest"
         };
 
-        await apprenticeshipsClient.WithdrawApprenticeship(body);
+        await _apprenticeshipsClient.WithdrawApprenticeship(body);
     }
 
     [When("a Withdrawal request is recorded with a reason (.*) and last day of delivery (.*)")]
@@ -52,20 +55,19 @@ internal class WithdrawApprenticeshipStepDefinitions
         // clear previous PaymentsGeneratedEvent before triggering the withdrawal
         PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
 
-        _lastDayOfLearning = lastDayOfDelivery.Value;
+        testData.LastDayOfLearning = lastDayOfDelivery.Value;
 
-        var apprenticeshipsClient = new ApprenticeshipsClient();
         var body = new WithdrawApprenticeshipRequestBody
         {
             UKPRN = testData.ApprenticeshipCreatedEvent.Episode.Ukprn,
             ULN = testData.ApprenticeshipCreatedEvent.Uln,
             Reason = reason,
             ReasonText = "",
-            LastDayOfLearning = _lastDayOfLearning,
+            LastDayOfLearning = testData.LastDayOfLearning,
             ProviderApprovedBy = "SystemAcceptanceTest"
         };
 
-        await apprenticeshipsClient.WithdrawApprenticeship(body);
+        await _apprenticeshipsClient.WithdrawApprenticeship(body);
     }
 
 
@@ -73,11 +75,11 @@ internal class WithdrawApprenticeshipStepDefinitions
     public async Task ApprenticeshipIsMarkedAsWithdrawn()
     {
         var testData = _context.Get<TestData>();
-        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
+        SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.Apprenticeship? apprenticeship = null;
 
         await WaitHelper.WaitForIt(() =>
         {
-            apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
+            apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
 
             return apprenticeship.Episodes.First().LearningStatus == "Withdrawn";
         }, "LearningStatus did not change to 'Withdrawn' in time.");
@@ -89,11 +91,7 @@ internal class WithdrawApprenticeshipStepDefinitions
     public async Task EarningsAreRecalculated()
     {
         var testData = _context.Get<TestData>();
-
         await _context.ReceiveEarningsRecalculatedEvent(testData.ApprenticeshipKey);
-
-        _recalculatedEarningsEvent = _context.Get<ApprenticeshipEarningsRecalculatedEvent>();
-
         testData.EarningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
     }
 
@@ -105,7 +103,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         // Receive the updated PaymentsGeneratedEvent
         await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
 
-        _paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
+        testData.PaymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
     }
 
 
@@ -114,7 +112,7 @@ internal class WithdrawApprenticeshipStepDefinitions
     {
         var testData = _context.Get<TestData>();
 
-        Assert.AreEqual(expectedInstalmentsNumber, _recalculatedEarningsEvent.DeliveryPeriods.Count, "Unexpected number of instalments in earnings recalculated event");
+        Assert.AreEqual(expectedInstalmentsNumber, testData.ApprenticeshipEarningsRecalculatedEvent.DeliveryPeriods.Count, "Unexpected number of instalments in earnings recalculated event");
 
         var actualInstalmentsNumber = testData.EarningsApprenticeshipModel?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.Count ?? 0;
         Assert.AreEqual(expectedInstalmentsNumber, actualInstalmentsNumber, "Unexpected number of instalments after withdrawal has been recorded in earnings db!");
@@ -127,7 +125,7 @@ internal class WithdrawApprenticeshipStepDefinitions
 
         if (deliveryPeriod != null && academicYear != null)
         {
-            bool isValidRecalculatedEarnings = _recalculatedEarningsEvent.DeliveryPeriods?
+            bool isValidRecalculatedEarnings = testData.ApprenticeshipEarningsRecalculatedEvent.DeliveryPeriods?
                 .All(Dp => Dp.AcademicYear < Convert.ToInt16(academicYear) 
                 || (Dp.AcademicYear == Convert.ToInt16(academicYear) && Dp.Period <= Convert.ToInt16(deliveryPeriod))) ?? true;
 
@@ -147,8 +145,8 @@ internal class WithdrawApprenticeshipStepDefinitions
     {
         var testData = _context.Get<TestData>();
 
-        var lastDayOfLearningPeriod = TableExtensions.Period[_lastDayOfLearning.ToString("MMMM")];
-        var lastDayOfLearningAcademicYear = short.Parse(TableExtensions.CalculateAcademicYear("0", _lastDayOfLearning));
+        var lastDayOfLearningPeriod = TableExtensions.Period[testData.LastDayOfLearning.ToString("MMMM")];
+        var lastDayOfLearningAcademicYear = short.Parse(TableExtensions.CalculateAcademicYear("0", testData.LastDayOfLearning));
 
         //var startDatePeriod = TableExtensions.Period[earningsGeneratedEvent.StartDate.ToString("MMMM")];
         var startDateAcademicYear = short.Parse(TableExtensions.CalculateAcademicYear("0", testData.EarningsGeneratedEvent.StartDate));
@@ -167,7 +165,7 @@ internal class WithdrawApprenticeshipStepDefinitions
             // Validate PaymentsGenerateEvent & Payments Entity
             expectedPaymentPeriods.AssertAgainstEventPayments(testData.PaymentsGeneratedEvent.Payments);
 
-            expectedPaymentPeriods.AssertAgainstEntityArray(_paymentsApprenticeshipModel.Payments);
+            expectedPaymentPeriods.AssertAgainstEntityArray(testData.PaymentsApprenticeshipModel.Payments);
     }
 
     [Then("all the payments from delivery periods after last payment made are deleted")]
@@ -180,7 +178,7 @@ internal class WithdrawApprenticeshipStepDefinitions
 
         Assert.IsTrue(futurePaymentsDeletedFromEvent, $"Some instalments have a delivery period > {testData.CurrentCollectionPeriod} and academic year > {testData.CurrentCollectionYear} in recalculated payments event.");
 
-        bool isValidPaymentsInDb = _paymentsApprenticeshipModel.Payments.All(i => i.AcademicYear < Convert.ToInt16(testData.CurrentCollectionYear)
+        bool isValidPaymentsInDb = testData.PaymentsApprenticeshipModel.Payments.All(i => i.AcademicYear < Convert.ToInt16(testData.CurrentCollectionYear)
                || (i.AcademicYear == Convert.ToInt16(testData.CurrentCollectionYear) && i.DeliveryPeriod <= Convert.ToInt16(testData.CurrentCollectionPeriod)));
 
         Assert.IsTrue(isValidPaymentsInDb, $"Some instalments have a delivery period > {testData.CurrentCollectionPeriod} and academic year > {testData.CurrentCollectionYear} in payments db.");

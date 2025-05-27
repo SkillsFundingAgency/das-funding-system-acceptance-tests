@@ -49,7 +49,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             accessToken = BearerTokenHelper.AddClaimsToBearerToken(accessToken, claims, signingKey);
 
             _cachedToken = accessToken;
-            _tokenExpiry = DateTime.UtcNow.AddMinutes(20);
+            _tokenExpiry = DateTime.UtcNow.AddSeconds(100);
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _cachedToken);
         }

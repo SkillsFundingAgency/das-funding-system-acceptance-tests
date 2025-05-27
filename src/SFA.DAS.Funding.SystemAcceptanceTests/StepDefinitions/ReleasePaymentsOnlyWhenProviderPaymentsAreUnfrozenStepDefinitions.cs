@@ -11,8 +11,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 public class ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions
 {
     private readonly ScenarioContext _context;
-    private PaymentsFrozenEvent _paymentsFrozenEvent;
-    private PaymentsUnfrozenEvent _paymentsUnfrozenEvent;
     private readonly PaymentsSqlClient _paymentsApiClient;
     private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
 
@@ -26,15 +24,15 @@ public class ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions
     [When(@"Employer has frozen provider payments")]
     public async Task EmployerHasFrozenProviderPayments()
     {
-        _paymentsFrozenEvent = _context.CreatePaymentsFrozenMessage();
-        await PaymentsFrozenEventHelper.PublishPaymentsFrozenEvent(_paymentsFrozenEvent);
+        var paymentsFrozenEvent = _context.CreatePaymentsFrozenMessage();
+        await PaymentsFrozenEventHelper.PublishPaymentsFrozenEvent(paymentsFrozenEvent);
     }
 
     [Then(@"Employer has unfrozen provider payments")]
     public async Task EmployerHasUnfrozenProviderPayments()
     {
-        _paymentsUnfrozenEvent = _context.CreatePaymentsUnfrozenMessage();
-        await PaymentsUnfrozenEventHelper.PublishPaymentsUnfrozenEvent(_paymentsUnfrozenEvent);
+        var paymentsUnfrozenEvent = _context.CreatePaymentsUnfrozenMessage();
+        await PaymentsUnfrozenEventHelper.PublishPaymentsUnfrozenEvent(paymentsUnfrozenEvent);
     }
 
     [Then(@"validate payments are not frozen in the payments entity")]

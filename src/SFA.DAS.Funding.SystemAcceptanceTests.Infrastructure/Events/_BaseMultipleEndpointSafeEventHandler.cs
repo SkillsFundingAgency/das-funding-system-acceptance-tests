@@ -4,6 +4,7 @@ using NServiceBus;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Events;
 
+#pragma warning disable CS8620 // Ingore nullability warning for generic type T, as this is a base class for event handlers that can handle any type of message.
 public class MultipleEndpointSafeEventHandler<T> : IHandleMessages<T>
 {
     public static ConcurrentBag<(string messageId, T message)> ReceivedEvents { get; set; } = new();
@@ -18,3 +19,4 @@ public class MultipleEndpointSafeEventHandler<T> : IHandleMessages<T>
         return Task.CompletedTask;
     }
 }
+#pragma warning restore CS8620 // Ingore nullability warning for generic type T, as this is a base class for event handlers that can handle any type of message.

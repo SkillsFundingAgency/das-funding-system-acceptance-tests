@@ -71,6 +71,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
                 ? $"The following FundingConfig configuration properties are still set to the default value ('{FundingConfig.NotSet}'): {string.Join(", ", defaultedProperties)}"
                 : "All configuration properties are set.");
         }
+
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             return new ConfigurationBuilder()

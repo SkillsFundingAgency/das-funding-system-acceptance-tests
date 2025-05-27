@@ -10,14 +10,23 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 public class Fm36StepDefinitions
 {
     private readonly ScenarioContext _context;
-    private readonly EarningsSqlClient _earningsSqlClient;
     private readonly EarningsOuterClient _earningsOuterClient;
+    private readonly ApprenticeshipsSqlClient _apprenticeshipSqlClient;
+    private readonly EarningsSqlClient _earningsSqlClient;
+    private readonly EarningsInnerApiHelper _earningsInnerApiHelper;
 
-    public Fm36StepDefinitions(ScenarioContext context, EarningsSqlClient earningsSqlClient, EarningsOuterClient earningsOuterClient)
+    public Fm36StepDefinitions(
+        ScenarioContext context,
+        EarningsOuterClient earningsOuterClient,
+        ApprenticeshipsSqlClient apprenticeshipSqlClient,
+        EarningsSqlClient earningsSqlClient,
+        EarningsInnerApiHelper earningsInnerApiHelper)
     {
         _context = context;
-        _earningsSqlClient = earningsSqlClient;
         _earningsOuterClient = earningsOuterClient;
+        _apprenticeshipSqlClient = apprenticeshipSqlClient;
+        _earningsSqlClient = earningsSqlClient;
+        _earningsInnerApiHelper = earningsInnerApiHelper;
     }
 
     [Given(@"the fm36 data is retrieved for (.*)")]
@@ -39,8 +48,7 @@ public class Fm36StepDefinitions
     public async Task GivenTheApprenticeIsMarkedAsACareLeaver()
     {
         var testData = _context.Get<TestData>();
-        var helper = new EarningsInnerApiHelper();
-        await helper.MarkAsCareLeaver(testData.ApprenticeshipKey);
+        await _earningsInnerApiHelper.MarkAsCareLeaver(testData.ApprenticeshipKey);
     }
 
     [Then("incentives earnings are generated for learners aged 15")]
@@ -51,14 +59,20 @@ public class Fm36StepDefinitions
         var fm36 = _context.Get<List<FM36Learner>>();
         var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
-        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
-
-        var apprenticeship = apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
+        var apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
         var earnings = _earningsSqlClient.GetEarningsEntityModel(_context);
+        if(earnings == null)
+        {
+            throw new Exception("Earnings data not found for the apprenticeship.");
+        }
 
         // get your learner data 
 
         var fm36Learner = fm36.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        if (fm36Learner == null)
+        {
+            throw new Exception($"No FM36 data found for ULN {apprenticeshipCreatedEvent.Uln}");
+        }
 
         var expectedPriceEpisodeIdentifier = "25-" + apprenticeshipCreatedEvent.TrainingCode + "-" +
                                              apprenticeshipCreatedEvent.ActualStartDate?.ToString("dd/MM/yyyy");
@@ -294,7 +308,7 @@ public class Fm36StepDefinitions
             Assert.AreEqual(EarningsFM36Constants.ActualDaysIL, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected ActualDaysIL found!");
             Assert.AreEqual(null, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualNumInstalm, "Unexpected ActualNumInstalm found!");
             Assert.AreEqual(apprenticeshipCreatedEvent.ActualStartDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AdjStartDate, "Unexpected AdjStartDate found!");
-            Assert.AreEqual(earnings.Episodes.FirstOrDefault()?.AgeAtStartOfApprenticeship, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AgeAtProgStart, "Unexpected AgeAtProgStart found!");
+            Assert.AreEqual(earnings!.Episodes.FirstOrDefault()?.AgeAtStartOfApprenticeship, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AgeAtProgStart, "Unexpected AgeAtProgStart found!");
             Assert.AreEqual(apprenticeshipCreatedEvent.ActualStartDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AppAdjLearnStartDate, "Unexpected AppAdjLearnStartDate found!");
             Assert.AreEqual(apprenticeshipCreatedEvent.ActualStartDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AppAdjLearnStartDateMatchPathway, "Unexpected AppAdjLearnStartDateMatchPathway found!");
             Assert.AreEqual(EarningsFM36Constants.ApplicCompDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ApplicCompDate, "Unexpected ApplicCompDate found!");

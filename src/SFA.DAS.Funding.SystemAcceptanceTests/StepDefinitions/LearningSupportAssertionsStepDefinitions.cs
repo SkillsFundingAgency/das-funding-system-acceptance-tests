@@ -13,14 +13,18 @@ public class LearningSupportAssertionsStepDefinitions
     private readonly ScenarioContext _context;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
     private readonly PaymentsSqlClient _paymentsSqlClient;
-    private Guid _earningsProfileId;
-    private bool _learningSupportAdded = false;
+    private readonly EarningsInnerApiHelper _earningsInnerApiHelper;
 
-    public LearningSupportAssertionsStepDefinitions(ScenarioContext context, EarningsSqlClient earningsEntitySqlClient, PaymentsSqlClient paymentsSqlClient)
+    public LearningSupportAssertionsStepDefinitions(
+        ScenarioContext context,
+        EarningsSqlClient earningsEntitySqlClient, 
+        PaymentsSqlClient paymentsSqlClient,
+        EarningsInnerApiHelper earningsInnerApiHelper)
     {
         _context = context;
         _earningsEntitySqlClient = earningsEntitySqlClient;
         _paymentsSqlClient = paymentsSqlClient;
+        _earningsInnerApiHelper = earningsInnerApiHelper;
     }
 
     [When(@"learning support is recorded from (.*) to (.*)")]
@@ -28,21 +32,21 @@ public class LearningSupportAssertionsStepDefinitions
     {
         var testData = _context.Get<TestData>();
         PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
-        var helper = new EarningsInnerApiHelper();
-        await helper.SetLearningSupportPayments(testData.ApprenticeshipKey,
+        await _earningsInnerApiHelper.SetLearningSupportPayments(testData.ApprenticeshipKey,
             [new EarningsInnerApiClient.LearningSupportPaymentDetail() { StartDate = learningSupportStart.Value, EndDate = learningSupportEnd.Value }]);
-        _learningSupportAdded = true;
+        testData.IsLearningSupportAdded = true;
     }
 
     [Then(@"learning support earnings are generated from periods (.*) to (.*)")]
     public async Task VerifyLearningSupportEarnings(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
     {
+        var testData = _context.Get<TestData>();
         EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
 
         await WaitHelper.WaitForIt(() =>
         {
             earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
-            return !_learningSupportAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
+            return !testData.IsLearningSupportAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
         var additionalPayments = earningsApprenticeshipModel
@@ -50,7 +54,7 @@ public class LearningSupportAssertionsStepDefinitions
             .SingleOrDefault()
             ?.AdditionalPayments;
 
-        _earningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId;
+        testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId;
 
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
@@ -75,7 +79,7 @@ public class LearningSupportAssertionsStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
-            return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == _earningsProfileId);
+            return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
         }, "Failed to find updated payments entity.");
 
         await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);

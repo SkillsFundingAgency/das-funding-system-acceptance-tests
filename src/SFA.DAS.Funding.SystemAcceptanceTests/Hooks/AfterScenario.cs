@@ -43,7 +43,7 @@ internal class AfterScenario
         var earningsSqlClient = _context.ScenarioContainer.Resolve<EarningsSqlClient>();
         earningsSqlClient.DeleteEarnings(testData.ApprenticeshipKey);
 
-        var apprenticeshipSqlClient = new ApprenticeshipsSqlClient();
+        var apprenticeshipSqlClient = _context.ScenarioContainer.Resolve<ApprenticeshipsSqlClient>();
         apprenticeshipSqlClient.DeleteApprenticeship(testData.ApprenticeshipKey);
     }
 

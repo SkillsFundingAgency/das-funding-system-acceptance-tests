@@ -12,14 +12,18 @@ public class IncentivesAssertionsStepDefinitions
     private readonly ScenarioContext _context;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
     private readonly PaymentsSqlClient _paymentsSqlClient;
-    private Guid _earningsProfileId;
-    private bool _markedAsCareLeaver = false;
+    private readonly EarningsInnerApiHelper _earningsInnerApiHelper;
 
-    public IncentivesAssertionsStepDefinitions(ScenarioContext context, EarningsSqlClient earningsEntitySqlClient, PaymentsSqlClient paymentsSqlClient)
+    public IncentivesAssertionsStepDefinitions(
+        ScenarioContext context, 
+        EarningsSqlClient earningsEntitySqlClient, 
+        PaymentsSqlClient paymentsSqlClient,
+        EarningsInnerApiHelper earningsInnerApiHelper)
     {
         _context = context;
         _earningsEntitySqlClient = earningsEntitySqlClient;
         _paymentsSqlClient = paymentsSqlClient;
+        _earningsInnerApiHelper = earningsInnerApiHelper;
     }
 
     [When(@"the apprentice is marked as a care leaver")]
@@ -27,9 +31,8 @@ public class IncentivesAssertionsStepDefinitions
     {
         var testData = _context.Get<TestData>();
         PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
-        var helper = new EarningsInnerApiHelper();
-        await helper.MarkAsCareLeaver(testData.ApprenticeshipKey);
-        _markedAsCareLeaver = true;
+        await _earningsInnerApiHelper.MarkAsCareLeaver(testData.ApprenticeshipKey);
+        testData.IsMarkedAsCareLeaver = true;
     }
 
 
@@ -43,7 +46,7 @@ public class IncentivesAssertionsStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
-            return !_markedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
+            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
         var additionalPayments = earningsApprenticeshipModel
@@ -51,7 +54,7 @@ public class IncentivesAssertionsStepDefinitions
             .SingleOrDefault()
             ?.AdditionalPayments;
 
-        _earningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId;
+        testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId;
 
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
@@ -94,7 +97,7 @@ public class IncentivesAssertionsStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
-            return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == _earningsProfileId);
+            return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
         }, "Failed to find updated payments entity.");
 
         await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
