@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.Apprenticeships.Types;
+using System.Collections.Specialized;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -25,6 +26,8 @@ public class EpisodeModel
     public EarningsProfileModel EarningsProfile { get; set; }
     public List<EarningsProfileHistoryModel> EarningsProfileHistory { get; set; }
     public List<AdditionalPaymentsModel> AdditionalPayments { get; set; }
+    public List<MathsAndEnglishModel> MathsAndEnglish { get; set; }
+    public List<MathsAndEnglishInstalment> MathsAndEnglishInstalments { get; set; }
 }
 
 public class EpisodePriceModel
@@ -79,6 +82,21 @@ public class AdditionalPaymentsModel : InstalmentModelBase
 {
     public AdditionalPaymentType AdditionalPaymentType { get; set; }
     public DateTime DueDate { get; set; }
+}
+
+public class MathsAndEnglishModel
+{
+    public Guid Key { get; set; }
+    public Guid EarningsProfileId { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public string Course { get; set; } = null!; 
+    public decimal Amount { get; set; }
+}
+
+public class MathsAndEnglishInstalment : InstalmentModelBase
+{
+    public Guid MathsAndEnglishKey { get; set; }
 }
 
 public enum AdditionalPaymentType
