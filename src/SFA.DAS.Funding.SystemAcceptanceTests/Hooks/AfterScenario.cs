@@ -8,12 +8,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 internal class AfterScenario
 {
     private ScenarioContext _context;
-    private readonly string _outputFile;
+    private const string OutputFile = "OutputFile";
 
     public AfterScenario(ScenarioContext context)
     {
         _context = context;
-        _outputFile = $"TESTDATA_{DateTime.Now:HH-mm-ss-fffff}.txt";
+        var testData = _context.Get<TestData>();
+        _context.Set($"TESTDATA_{testData.Uln}_{DateTime.Now:HH-mm-ss-fffff}.txt", OutputFile);
     }
 
     [AfterStep(Order = 10)]
@@ -51,6 +52,7 @@ internal class AfterScenario
     private void OutputTestDataToFile()
     {
         var testData = _context.Get<TestData>();
+        var outputFile = _context.Get<string>(OutputFile);
         var hasError = _context.TestError != null;
 
         string StepOutcome() => hasError ? "ERROR" : "Done";
@@ -67,7 +69,7 @@ internal class AfterScenario
             testLogs[kvp.Key] = valueString;
         }
 
-        using (StreamWriter writer = File.CreateText(_outputFile))
+        using (StreamWriter writer = File.CreateText(outputFile))
         {
             writer.WriteLine($"Test: {_context.ScenarioInfo.Title}");
 
@@ -85,6 +87,6 @@ internal class AfterScenario
         }
 
         // Attach the test data file to the test output
-        TestContext.AddTestAttachment(_outputFile);
+        TestContext.AddTestAttachment(outputFile);
     }
 }
