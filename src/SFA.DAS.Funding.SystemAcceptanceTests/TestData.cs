@@ -10,6 +10,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests;
 
 internal class TestData
 {
+    internal string Uln { get; }
     internal Guid ApprenticeshipKey { get; set; } = Guid.Empty;
     internal Guid InitialEarningsProfileId { get; set; } = Guid.Empty;
     internal Guid EarningsProfileId { get; set; } = Guid.Empty;
@@ -40,5 +41,10 @@ internal class TestData
     internal EarningsGeneratedEvent EarningsGeneratedEvent { get; set; }
     internal List<FinalisedOnProgammeLearningPaymentEvent> FinalisedPaymentsList { get; set; }
     internal List<CalculateOnProgrammePayment> CalculatedOnProgrammePaymentList { get; set; }
+
+    public TestData(string uln)
+    {
+        Uln = uln;
+    }
 }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

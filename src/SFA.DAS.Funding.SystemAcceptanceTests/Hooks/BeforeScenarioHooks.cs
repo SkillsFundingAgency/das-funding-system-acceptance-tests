@@ -39,7 +39,7 @@ public class BeforeScenarioHooks
 
     private static void PopulateContextTestData(ScenarioContext context)
     {
-        var testData = new TestData();
+        var testData = new TestData(TestUlnProvider.GetNext());
         testData.CurrentCollectionYear = TableExtensions.CalculateAcademicYear("0");
         testData.CurrentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
         context.Set(testData);

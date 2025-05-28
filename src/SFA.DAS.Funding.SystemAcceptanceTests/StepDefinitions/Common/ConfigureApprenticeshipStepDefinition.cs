@@ -26,7 +26,7 @@ public class ConfigureApprenticeshipStepDefinition
         var agreedPrice = 15000;
         var trainingCode = "2";
 
-        testData.CommitmentsApprenticeshipCreatedEvent = ApprenticeshipEventHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
+        testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
 
     }
 
@@ -34,7 +34,7 @@ public class ConfigureApprenticeshipStepDefinition
     public void ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice, string trainingCode)
     {
         var testData = _context.Get<TestData>();
-        testData.CommitmentsApprenticeshipCreatedEvent = ApprenticeshipEventHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
+        testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
     }
 
     [Given(@"an apprenticeship with start date over (.*) months ago and duration of (.*) months and an agreed price of (.*), and a training code (.*)")]
@@ -45,7 +45,7 @@ public class ConfigureApprenticeshipStepDefinition
         var startDate = new DateTime(today.Year, today.Month, 1).AddMonths(-monthsSinceStart);
         var plannedEndDate = startDate.AddMonths(duration).AddDays(-1);
 
-        testData.CommitmentsApprenticeshipCreatedEvent = ApprenticeshipEventHelper.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
+        testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
     }
 
     [Given(@"an apprenticeship has a start date in the current month with a duration of (.*) months")]
@@ -87,8 +87,6 @@ public class ConfigureApprenticeshipStepDefinition
 
         ApprenticeshipEventHelper.UpdateApprenticeshipCreatedMessageWithDoB(testData.CommitmentsApprenticeshipCreatedEvent, dob);
     }
-
-
 
     [Given(@"the apprenticeship learner's age is (below|at) (.*)")]
     public void ApprenticeshipLearnersAgeIsBelowOrAt(string condition, int age)

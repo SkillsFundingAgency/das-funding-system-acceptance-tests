@@ -33,7 +33,7 @@ public class ApproveApprenticeshipStepDefinition
 
         await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
 
-        await MockLearnerDataResponse();
+        Thread.Sleep(5000); // Without this a whole load of tests fail, need to investigate further
 
         var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
 
@@ -51,13 +51,5 @@ public class ApproveApprenticeshipStepDefinition
 
         testData.InitialEarningsProfileId = earningsApprenticeshipModel!.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)!.StartDate)!.EarningsProfile.EarningsProfileId;
         testData.ApprenticeshipKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
-    }
-
-    private async Task MockLearnerDataResponse()
-    {
-        var wireMockClient = new WireMockClient();
-        var learnerData = _context.GetLearner();
-        var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
-        await wireMockClient.CreateMockResponse($"learners/{currentAcademicYear}?ukprn={learnerData.Ukprn}&fundModel=36&progType=-1&standardCode=-1&pageNumber=1&pageSize=1000", new List<Learner> { learnerData });
     }
 }

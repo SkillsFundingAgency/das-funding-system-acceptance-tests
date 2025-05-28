@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+using System.Text.Json;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
@@ -49,23 +50,35 @@ internal class AfterScenario
 
     private void OutputTestDataToFile()
     {
-        string StepOutcome() => _context.TestError != null ? "ERROR" : "Done";
+        var testData = _context.Get<TestData>();
+        var hasError = _context.TestError != null;
+
+        string StepOutcome() => hasError ? "ERROR" : "Done";
 
         var stepInfo = _context.StepContext.StepInfo;
 
         _context.Set($"-> {StepOutcome()}: {stepInfo.StepDefinitionType} {stepInfo.Text}");
 
-        IDictionary<string, string> testData = new Dictionary<string, string>();
+        IDictionary<string, string> testLogs = new Dictionary<string, string>();
 
         foreach (KeyValuePair<string, object> kvp in _context)
         {
             string valueString = kvp.Value != null ? kvp.Value.ToString() : null;
-            testData[kvp.Key] = valueString;
+            testLogs[kvp.Key] = valueString;
         }
 
         using (StreamWriter writer = File.CreateText(_outputFile))
         {
-            foreach (KeyValuePair<string, string> kvp in testData)
+            writer.WriteLine($"Test: {_context.ScenarioInfo.Title}");
+
+            if (hasError)
+            {
+                writer.WriteLine($"Uln: {testData.Uln}");
+                writer.WriteLine("PaymentsGeneratedEvent");
+                writer.WriteLine(JsonSerializer.Serialize(testData.PaymentsGeneratedEvent, new JsonSerializerOptions { WriteIndented = true }));
+            }
+
+            foreach (KeyValuePair<string, string> kvp in testLogs)
             {
                 writer.WriteLine($"{kvp.Key}: {kvp.Value}");
             }

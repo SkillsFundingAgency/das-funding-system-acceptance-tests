@@ -79,21 +79,31 @@ public class LearningSupportAssertionsStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
+            if (paymentsApprenticeshipModel == null || paymentsApprenticeshipModel.Earnings == null)
+            {
+                return false;
+            }
             return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
         }, "Failed to find updated payments entity.");
 
         await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
 
-
-        while (learningSupportStart.Value.AcademicYear < learningSupportEnd.Value.AcademicYear || learningSupportStart.Value.AcademicYear >= learningSupportEnd.Value.AcademicYear && learningSupportStart.Value.PeriodValue <= learningSupportEnd.Value.PeriodValue)
+        try
         {
-            testData.PaymentsGeneratedEvent.Payments.Should().Contain(x =>
-                    x.PaymentType == AdditionalPaymentType.LearningSupport.ToString()
-                    && x.Amount == 150
-                    && x.AcademicYear == learningSupportStart.Value.AcademicYear
-                    && x.DeliveryPeriod == learningSupportStart.Value.PeriodValue, $"Expected learning support earning for {learningSupportStart.Value.ToCollectionPeriodString()}");
+            while (learningSupportStart.Value.AcademicYear < learningSupportEnd.Value.AcademicYear || learningSupportStart.Value.AcademicYear >= learningSupportEnd.Value.AcademicYear && learningSupportStart.Value.PeriodValue <= learningSupportEnd.Value.PeriodValue)
+            {
+                testData.PaymentsGeneratedEvent.Payments.Should().Contain(x =>
+                        x.PaymentType == AdditionalPaymentType.LearningSupport.ToString()
+                        && x.Amount == 150
+                        && x.AcademicYear == learningSupportStart.Value.AcademicYear
+                        && x.DeliveryPeriod == learningSupportStart.Value.PeriodValue, $"Expected learning support earning for {learningSupportStart.Value.ToCollectionPeriodString()}");
 
-            learningSupportStart.Value = learningSupportStart.Value.GetNextPeriod();
+                learningSupportStart.Value = learningSupportStart.Value.GetNextPeriod();
+            }
+        }
+        catch(Exception ex)
+        {
+            throw new Exception($"Failed to verify learning support payments. {ex.Message}");
         }
     }
 }
