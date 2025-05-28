@@ -11,7 +11,7 @@ Scenario: Calculate Math and English earnings
 	When the apprenticeship commitment is approved
 	And Maths and English learning is recorded from <start_date> to <end_date> with course <course> and amount <amount>
 	Then Maths and English earnings are generated from periods <expected_first_payment_period> to <expected_last_payment_period> with instalment amount <instalment>
-
+	And Maths and English payments are generated from periods <expected_first_payment_period> to <expected_last_payment_period> with amount <instalment>
 
 Examples:
 	| start_date      | end_date        | course                           | amount | expected_first_payment_period | expected_last_payment_period | instalment |

@@ -1,12 +1,8 @@
 ﻿using SFA.DAS.Apprenticeships.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -14,13 +10,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     public class MathAndEnglishAssertionsStepDefinitions
     {
         private readonly ScenarioContext _context;
-        private readonly EarningsSqlClient _earningsEntitySqlClient;
+        private readonly EarningsSqlClient _earningsSqlClient;
+        private readonly PaymentsSqlClient _paymentsSqlClient;
 
 
-        public MathAndEnglishAssertionsStepDefinitions(ScenarioContext context, EarningsSqlClient earningsEntitySqlClient)
+        public MathAndEnglishAssertionsStepDefinitions(ScenarioContext context, EarningsSqlClient earningsEntitySqlClient, PaymentsSqlClient paymentsEntitySqlClient)
         {
             _context = context;
-            _earningsEntitySqlClient = earningsEntitySqlClient;
+            _earningsSqlClient = earningsEntitySqlClient;
+            _paymentsSqlClient = paymentsEntitySqlClient;
         }
 
         [When("Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*)")]
@@ -35,14 +33,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Then("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*)")]
-        public async Task VerifyMathsAndEnglishEarnings(TokenisablePeriod MathsAndEnglishStartPeriod, TokenisablePeriod MathsAndEnglishEndPeriod, decimal instalment)
+        public async Task VerifyMathsAndEnglishEarnings(TokenisablePeriod mathsAndEnglishStartPeriod, TokenisablePeriod mathsAndEnglishEndPeriod, decimal Amount)
         {
             var testData = _context.Get<TestData>();
             EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
 
             await WaitHelper.WaitForIt(() =>
             {
-                earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+                earningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
                 return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
             }, "Failed to find updated earnings entity.");
 
@@ -55,14 +53,41 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             mathsAndEnglishInstalments.Should().NotBeNull("No Maths and English instalment data found on earnings apprenticeship model");
 
-            while (MathsAndEnglishStartPeriod.Value.AcademicYear < MathsAndEnglishEndPeriod.Value.AcademicYear || MathsAndEnglishStartPeriod.Value.AcademicYear >= MathsAndEnglishEndPeriod.Value.AcademicYear && MathsAndEnglishStartPeriod.Value.PeriodValue <= MathsAndEnglishEndPeriod.Value.PeriodValue)
+            while (mathsAndEnglishStartPeriod.Value.AcademicYear < mathsAndEnglishEndPeriod.Value.AcademicYear || mathsAndEnglishStartPeriod.Value.AcademicYear >= mathsAndEnglishEndPeriod.Value.AcademicYear && mathsAndEnglishStartPeriod.Value.PeriodValue <= mathsAndEnglishEndPeriod.Value.PeriodValue)
             {
                 mathsAndEnglishInstalments.Should().Contain(x =>
-                        x.Amount == instalment
-                        && x.AcademicYear == MathsAndEnglishStartPeriod.Value.AcademicYear
-                        && x.DeliveryPeriod == MathsAndEnglishStartPeriod.Value.PeriodValue, $"Expected Maths and English earning for {MathsAndEnglishStartPeriod.Value.ToCollectionPeriodString()}");
+                        x.Amount == Amount
+                        && x.AcademicYear == mathsAndEnglishStartPeriod.Value.AcademicYear
+                        && x.DeliveryPeriod == mathsAndEnglishStartPeriod.Value.PeriodValue, $"Expected Maths and English earning for {mathsAndEnglishStartPeriod.Value.ToCollectionPeriodString()}");
 
-                MathsAndEnglishStartPeriod.Value = MathsAndEnglishStartPeriod.Value.GetNextPeriod();
+                mathsAndEnglishStartPeriod.Value = mathsAndEnglishStartPeriod.Value.GetNextPeriod();
+            }
+        }
+
+        [Then(@"Maths and English payments are generated from periods (.*) to (.*) with amount (.*)")]
+        public async Task VerifyMathsAndEnglishPayments(TokenisablePeriod mathsAndEnglishStartPeriod, TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount)
+        {
+            var testData = _context.Get<TestData>();
+            PaymentsApprenticeshipModel? paymentsApprenticeshipModel = null;
+
+            await WaitHelper.WaitForIt(() =>
+            {
+                paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
+                return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
+            }, "Failed to find updated payments entity.");
+
+            await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
+
+
+            while (mathsAndEnglishStartPeriod.Value.AcademicYear < mathsAndEnglishEndPeriod.Value.AcademicYear || mathsAndEnglishStartPeriod.Value.AcademicYear >= mathsAndEnglishEndPeriod.Value.AcademicYear && mathsAndEnglishStartPeriod.Value.PeriodValue <= mathsAndEnglishEndPeriod.Value.PeriodValue)
+            {
+                testData.PaymentsGeneratedEvent.Payments.Should().Contain(x =>
+                        x.PaymentType == AdditionalPaymentType.MathsAndEnglish.ToString()
+                        && x.Amount == 150
+                        && x.AcademicYear == mathsAndEnglishStartPeriod.Value.AcademicYear
+                        && x.DeliveryPeriod == mathsAndEnglishStartPeriod.Value.PeriodValue, $"Expected Maths and English payments for {mathsAndEnglishStartPeriod.Value.ToCollectionPeriodString()}");
+
+                mathsAndEnglishStartPeriod.Value = mathsAndEnglishStartPeriod.Value.GetNextPeriod();
             }
         }
     }
