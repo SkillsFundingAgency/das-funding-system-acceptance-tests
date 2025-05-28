@@ -1,6 +1,4 @@
-﻿using SFA.DAS.Apprenticeships.Types;
-
-namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 
 internal static class FinalisedOnProgrammeLearningPaymentEventHelper
 {
@@ -15,7 +13,7 @@ internal static class FinalisedOnProgrammeLearningPaymentEventHelper
 
             if (finalisedPaymentsList.Count != numberOfRollupPayments + 1) return false;
 
-            context.Set(finalisedPaymentsList);
+            testData.FinalisedPaymentsList = finalisedPaymentsList;
             
             return finalisedPaymentsList.All(x => x.CollectionPeriod == testData.CurrentCollectionPeriod);
         }, "Failed to find published Finalised On Programme Learning Payment event");

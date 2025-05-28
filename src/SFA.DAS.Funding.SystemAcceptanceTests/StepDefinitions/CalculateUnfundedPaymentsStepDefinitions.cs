@@ -49,8 +49,7 @@ public class CalculateUnfundedPaymentsStepDefinitions
     [Then(@"the newly calculated Unfunded Payments are marked as not sent to payments BAU")]
     public void NewlyCalculatedUnfundedPaymentsAreMarkedAsNotSentToPaymentsBAU()
     {
-        var payments = _paymentsSqlClient.GetPaymentsModel(_context).Payments;
-
+        var payments = _paymentsSqlClient.GetPayments(_context);
         Assert.IsTrue(payments.All(x => !x.SentForPayment));
     }
 
@@ -102,7 +101,8 @@ public class CalculateUnfundedPaymentsStepDefinitions
     [Then(@"the amount of (.*) is sent to be paid for each payment in the curent Collection Month")]
     public void AmountIsSentToBePaidForEachPaymentInTheCurentCollectionMonth(decimal Amount)
     {
-        var finalisedPaymentsList = _context.Get<List<FinalisedOnProgammeLearningPaymentEvent>>();
+        var testData = _context.Get<TestData>();
+        var finalisedPaymentsList = testData.FinalisedPaymentsList;
         Assert.Multiple(() =>
         {
             Assert.IsTrue(finalisedPaymentsList.All(x => x.Amount == Amount), "Incorrect Amount found in FinalisedOnProgrammeLearningPaymentEvent");
@@ -115,7 +115,7 @@ public class CalculateUnfundedPaymentsStepDefinitions
     [Then(@"the relevant payments entities are marked as sent to payments BAU")]
     public void PaymentsEntitiesAreMarkedAsSentToPaymentsBAU()
     {
-        var payments = _paymentsSqlClient.GetPaymentsModel(_context).Payments;
+        var payments = _paymentsSqlClient.GetPayments(_context);
         var testData = _context.Get<TestData>();
         Assert.IsTrue(payments.Where(p => p.CollectionPeriod == testData.CurrentCollectionPeriod).All(p => p.SentForPayment));
     }
@@ -126,7 +126,7 @@ public class CalculateUnfundedPaymentsStepDefinitions
         var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
 
         var testData = _context.Get<TestData>();
-        var payments = _paymentsSqlClient.GetPaymentsModel(_context).Payments;
+        var payments = _paymentsSqlClient.GetPayments(_context);
 
         Assert.IsFalse(payments.Where(p => (p.CollectionYear > currentAcademicYear) ||
                                       (p.CollectionYear == currentAcademicYear && p.CollectionPeriod > testData.CurrentCollectionPeriod))

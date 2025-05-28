@@ -39,3 +39,16 @@ public class PaymentsSqlClient
         _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
     }
 }
+
+public static class PaymentsSqlClientExtensions
+{
+    public static List<TestSupport.Payments> GetPayments(this PaymentsSqlClient paymentsSqlClient, ScenarioContext context)
+    {
+        var paymentModel = paymentsSqlClient.GetPaymentsModel(context);
+
+        if (paymentModel == null)
+            Assert.Fail("Payments model is null");
+
+        return paymentModel!.Payments;
+    }
+}

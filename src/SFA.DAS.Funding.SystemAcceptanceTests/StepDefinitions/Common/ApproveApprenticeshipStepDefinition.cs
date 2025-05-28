@@ -49,8 +49,7 @@ public class ApproveApprenticeshipStepDefinition
             return false;
         }, "Failed to find Earnings Entity");
 
-        //_context.Set(earningsApprenticeshipModel, ContextKeys.InitialEarningsApprenticeshipModel); TODO
-        testData.InitialEarningsProfileId = earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)!.StartDate)!.EarningsProfile.EarningsProfileId;
+        testData.InitialEarningsProfileId = earningsApprenticeshipModel!.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)!.StartDate)!.EarningsProfile.EarningsProfileId;
         testData.ApprenticeshipKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
     }
 
