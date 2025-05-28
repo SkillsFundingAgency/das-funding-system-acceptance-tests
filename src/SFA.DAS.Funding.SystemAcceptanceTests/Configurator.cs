@@ -1,12 +1,9 @@
-﻿using System.Reflection;
-using System.Text.Json;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using TechTalk.SpecFlow.CommonModels;
+using System.Reflection;
 
-//[assembly: Parallelizable(ParallelScope.All)]// TODO-PARALLEL - uncomment
-
+//[assembly: Parallelizable(ParallelScope.Fixtures)]// TODO-PARALLEL - uncomment
 namespace SFA.DAS.Funding.SystemAcceptanceTests
 {
     public static class Configurator
@@ -74,6 +71,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
                 ? $"The following FundingConfig configuration properties are still set to the default value ('{FundingConfig.NotSet}'): {string.Join(", ", defaultedProperties)}"
                 : "All configuration properties are set.");
         }
+
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             return new ConfigurationBuilder()

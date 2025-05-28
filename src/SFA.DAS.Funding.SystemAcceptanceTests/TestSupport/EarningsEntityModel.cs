@@ -2,13 +2,13 @@
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
-
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 public class EarningsApprenticeshipModel // In the earnings repo this is called ApprenticeshipModel, but to avoid confusion with other tests Its prefixed with Earnings
 {
     public Guid Key { get; set; }
     public long ApprovalsApprenticeshipId { get; set; }
     public string Uln { get; set; }
-    public List<EpisodeModel> Episodes { get; set; } = null;
+    public List<EpisodeModel> Episodes { get; set; }
 }
 
 public class EpisodeModel
@@ -87,3 +87,4 @@ public enum AdditionalPaymentType
     EmployerIncentive,
     LearningSupport
 }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

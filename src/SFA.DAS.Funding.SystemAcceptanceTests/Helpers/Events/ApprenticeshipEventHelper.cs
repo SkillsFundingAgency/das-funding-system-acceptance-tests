@@ -78,6 +78,8 @@ internal static class ApprenticeshipEventHelper
 
     internal static async Task PublishApprenticeshipApprovedMessage(this ScenarioContext context, CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
     {
+        var testData = context.Get<TestData>();
+
         await TestServiceBus.Das.SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
 
         await WaitHelper.WaitForIt(() =>
@@ -86,7 +88,7 @@ internal static class ApprenticeshipEventHelper
                 ApprenticeshipsTypesEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.Uln == apprenticeshipCreatedEvent.Uln).message;
             if (apprenticeshipEvent != null)
             {
-                context.Set(apprenticeshipEvent);
+                testData.ApprenticeshipCreatedEvent = apprenticeshipEvent;
                 return true;
             }
             return false;
@@ -98,16 +100,13 @@ internal static class ApprenticeshipEventHelper
                 EarningsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.Uln == apprenticeshipCreatedEvent.Uln).message;
             if (earningsEvent != null)
             {
-                context.Set(earningsEvent);
+                testData.EarningsGeneratedEvent = earningsEvent;
                 return true;
             }
             return false;
         }, "Failed to find published event in Earnings");
 
-
-        context.Set("Uln", apprenticeshipCreatedEvent.Uln);
-        context.Set("ApprenticeshipId", apprenticeshipCreatedEvent.ApprenticeshipId.ToString());
-        context.Set("ApprenticeshipKey", context.Get<EarningsGeneratedEvent>().ApprenticeshipKey.ToString());
+        testData.ApprenticeshipKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
 
     }
 }

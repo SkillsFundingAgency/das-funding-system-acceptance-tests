@@ -7,7 +7,8 @@ internal static class ApprenticeshipStartDateChangedEventHelper
 {
     internal static ApprenticeshipStartDateChangedEvent CreateStartDateChangedMessageWithCustomValues(ScenarioContext context, DateTime actualStartDate, DateTime plannedEndDate, DateTime approvedDate)
     {
-        var apprenticeshipCreatedEvent = context.Get<ApprenticeshipCreatedEvent>();
+        var testData = context.Get<TestData>();
+        var apprenticeshipCreatedEvent = testData.ApprenticeshipCreatedEvent;
 
         var fixture = new Fixture();
         return fixture.Build<ApprenticeshipStartDateChangedEvent>()

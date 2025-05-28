@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
-internal class ApprenticeshipsSqlClient
+public class ApprenticeshipsSqlClient
 {
     private readonly SqlServerClient _sqlServerClient;
 

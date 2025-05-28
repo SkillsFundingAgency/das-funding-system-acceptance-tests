@@ -4,6 +4,8 @@ internal static class EarningsRecalculatedEventHelper
 {
     internal static async Task ReceiveEarningsRecalculatedEvent(this ScenarioContext context, Guid apprenticeshipKey)
     {
+        var testData = context.Get<TestData>();
+
         await WaitHelper.WaitForIt(() =>
         {
             ApprenticeshipEarningsRecalculatedEvent? earningsRecalculatedEvent =
@@ -11,7 +13,7 @@ internal static class EarningsRecalculatedEventHelper
 
             if (earningsRecalculatedEvent != null)
             {
-                context.Set(earningsRecalculatedEvent);
+                testData.ApprenticeshipEarningsRecalculatedEvent = earningsRecalculatedEvent;
                 return true;
             }
             return false;

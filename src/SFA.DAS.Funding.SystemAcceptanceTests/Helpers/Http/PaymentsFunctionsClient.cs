@@ -1,6 +1,6 @@
 ﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
-internal class PaymentsFunctionsClient
+public class PaymentsFunctionsClient
 {
     private readonly HttpClient _apiClient;
     private readonly string _code;

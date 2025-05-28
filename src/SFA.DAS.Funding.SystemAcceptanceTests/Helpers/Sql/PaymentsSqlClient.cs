@@ -8,8 +8,8 @@ public class PaymentsSqlClient
 
     public PaymentsApprenticeshipModel? GetPaymentsModel(ScenarioContext context)
     {
-        var earningsEvent = context.Get<EarningsGeneratedEvent>();
-        var apprenticeshipKey = earningsEvent.ApprenticeshipKey;
+        var testData = context.Get<TestData>();
+        var apprenticeshipKey = testData.ApprenticeshipKey;
 
         var apprenticeship = _sqlServerClient.GetList<PaymentsApprenticeshipModel>($"SELECT * FROM [Domain].[Apprenticeship] Where [ApprenticeshipKey] ='{apprenticeshipKey}'").Single();
 
@@ -37,5 +37,18 @@ public class PaymentsSqlClient
     {
         var connectionString = Configurator.GetConfiguration().PaymentsDbConnectionString;
         _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
+    }
+}
+
+public static class PaymentsSqlClientExtensions
+{
+    public static List<TestSupport.Payments> GetPayments(this PaymentsSqlClient paymentsSqlClient, ScenarioContext context)
+    {
+        var paymentModel = paymentsSqlClient.GetPaymentsModel(context);
+
+        if (paymentModel == null)
+            Assert.Fail("Payments model is null");
+
+        return paymentModel!.Payments;
     }
 }

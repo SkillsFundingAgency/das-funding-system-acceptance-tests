@@ -11,10 +11,10 @@ public class ReleasePaymentsStepDefinitions
     private readonly ScenarioContext _context;
     private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
 
-    public ReleasePaymentsStepDefinitions(ScenarioContext context)
+    public ReleasePaymentsStepDefinitions(ScenarioContext context, PaymentsFunctionsClient paymentsFunctionsClient)
     {
         _context = context;
-        _paymentsFunctionsClient = new PaymentsFunctionsClient();
+        _paymentsFunctionsClient = paymentsFunctionsClient;
     }
 
     [Given(@"payments are released for (.*)")]

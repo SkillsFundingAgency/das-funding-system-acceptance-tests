@@ -4,7 +4,7 @@ using System.Net;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
-internal class EarningsOuterClient
+public class EarningsOuterClient
 {
     private HttpClient _apiClient;
     private readonly string _subscriptionKey;

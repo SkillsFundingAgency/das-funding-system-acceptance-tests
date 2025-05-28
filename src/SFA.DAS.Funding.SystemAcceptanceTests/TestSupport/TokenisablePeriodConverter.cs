@@ -2,6 +2,7 @@
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
+#pragma warning disable CS8765, CS8603
 public class TokenisablePeriodConverter : TypeConverter
 {
     public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
@@ -18,3 +19,4 @@ public class TokenisablePeriodConverter : TypeConverter
         return base.ConvertFrom(context, culture, value);
     }
 }
+#pragma warning restore CS8765, CS8603

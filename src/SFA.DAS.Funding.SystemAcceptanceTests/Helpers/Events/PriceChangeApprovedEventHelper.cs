@@ -7,7 +7,8 @@ internal static class PriceChangeApprovedEventHelper
 {
     internal static ApprenticeshipPriceChangedEvent CreatePriceChangeApprovedMessageWithCustomValues(this ScenarioContext context, decimal trainingPrice, decimal assessmentPrice, DateTime effectiveFromDate, DateTime approvedDate)
     {
-        var apprenticeshipCreatedEvent = context.Get<ApprenticeshipCreatedEvent>();
+        var testData = context.Get<TestData>();
+        var apprenticeshipCreatedEvent = testData.ApprenticeshipCreatedEvent;
 
         var fixture = new Fixture();
         return fixture.Build<ApprenticeshipPriceChangedEvent>()

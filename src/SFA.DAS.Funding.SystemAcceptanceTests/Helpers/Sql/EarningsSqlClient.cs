@@ -1,5 +1,4 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
@@ -15,8 +14,8 @@ public class EarningsSqlClient
 
     public EarningsApprenticeshipModel? GetEarningsEntityModel(ScenarioContext context)
     {
-        var earningsEvent = context.Get<EarningsGeneratedEvent>();
-        var apprenticeshipKey = earningsEvent.ApprenticeshipKey;
+        var testData = context.Get<TestData>();
+        var apprenticeshipKey = testData.ApprenticeshipKey;
 
         var apprenticeship = _sqlServerClient.GetList<EarningsApprenticeshipModel>($"SELECT * FROM [Domain].[Apprenticeship] Where [key] ='{apprenticeshipKey}'").Single();
         var apprenticeshipEpisodes = _sqlServerClient.GetList<EpisodeModel>($"SELECT * FROM [Domain].[Episode] Where ApprenticeshipKey ='{apprenticeshipKey}'");

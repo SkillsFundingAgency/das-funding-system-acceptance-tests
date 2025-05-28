@@ -4,7 +4,6 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using static SFA.DAS.Funding.SystemAcceptanceTests.TestSupport.DcLearnerDataHelper;
-using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
 
 [Binding]
@@ -18,32 +17,31 @@ public class ApproveApprenticeshipStepDefinition
 {
 
     private readonly ScenarioContext _context;
-    private readonly EarningsSqlClient _earningsEntitySqlClient;
+    private readonly EarningsSqlClient _earningsSqlClient;
 
-    public ApproveApprenticeshipStepDefinition(ScenarioContext context)
+    public ApproveApprenticeshipStepDefinition(ScenarioContext context, EarningsSqlClient earningsSqlClient)
     {
         _context = context;
-        _earningsEntitySqlClient = new EarningsSqlClient();
+        _earningsSqlClient = earningsSqlClient;
     }
 
     [Given(@"the apprenticeship commitment is approved")]
     [When(@"the apprenticeship commitment is approved")]
     public async Task TheApprenticeshipCommitmentIsApproved()
     {
-        var commitmentsApprenticeshipCreatedEvent = _context.Get<CommitmentsMessages.ApprenticeshipCreatedEvent>();
-        await _context.PublishApprenticeshipApprovedMessage(commitmentsApprenticeshipCreatedEvent);
+        var testData = _context.Get<TestData>();
+
+        await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
 
         await MockLearnerDataResponse();
 
-        var earnings = _context.Get<EarningsGeneratedEvent>();
-        var deliveryPeriods = earnings.DeliveryPeriods;
-        _context.Set(deliveryPeriods);
+        var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
 
         EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
 
         await WaitHelper.WaitForIt(() =>
         {
-            earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+            earningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
             if (earningsApprenticeshipModel != null)
             {
                 return true;
@@ -51,10 +49,8 @@ public class ApproveApprenticeshipStepDefinition
             return false;
         }, "Failed to find Earnings Entity");
 
-        _context.Set(earningsApprenticeshipModel, ContextKeys.InitialEarningsApprenticeshipModel);
-        var initialEarningsProfileId = earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId;
-        _context.Set(initialEarningsProfileId, ContextKeys.InitialEarningsProfileId);
-        _context.Set(earnings.ApprenticeshipKey, ContextKeys.ApprenticeshipKey);
+        testData.InitialEarningsProfileId = earningsApprenticeshipModel!.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)!.StartDate)!.EarningsProfile.EarningsProfileId;
+        testData.ApprenticeshipKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
     }
 
     private async Task MockLearnerDataResponse()

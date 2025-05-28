@@ -6,13 +6,15 @@ internal static class AdaptorEventHelper
 {
     internal static async Task ReceiveCalculateOnProgrammePaymentEvent(this ScenarioContext context, string ULN, int expectedCount)
     {
+        var testData = context.Get<TestData>();
+
         await WaitHelper.WaitForItAsync(async () =>
         {
             var calculatedOnProgrammePaymentList = await CalculateOnProgrammePaymentEventHandler.ReceivedEvents<CalculateOnProgrammePayment>(x => x.Learner.Uln.ToString() == ULN);
 
             if (calculatedOnProgrammePaymentList.Count != expectedCount) return false;
 
-            context.Set(calculatedOnProgrammePaymentList);
+            testData.CalculatedOnProgrammePaymentList = calculatedOnProgrammePaymentList;
 
             return calculatedOnProgrammePaymentList.All(x => x.Learner.Uln.ToString() == ULN);
 

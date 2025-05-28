@@ -8,11 +8,11 @@ internal static class PaymentsFrozenEventHelper
 
     internal static PaymentsFrozenEvent CreatePaymentsFrozenMessage(this ScenarioContext context)
     {
-        var apprenticeshipCreatedEvent = context.Get<ApprenticeshipCreatedEvent>();
+        var testData = context.Get<TestData>();
 
         var fixture = new Fixture();
         return fixture.Build<PaymentsFrozenEvent>()
-            .With(_ => _.ApprenticeshipKey, apprenticeshipCreatedEvent.ApprenticeshipKey)
+            .With(_ => _.ApprenticeshipKey, testData.ApprenticeshipKey)
             .Create();
     }
 
