@@ -20,7 +20,7 @@ internal class AfterScenario
     [AfterStep(Order = 10)]
     public void AfterStep()
     {
-        OutputTestDataToFile();// TODO-PARALLEL - must be adapted to run in parallel
+        OutputTestDataToFile();
     }
 
     [AfterScenario(Order = 10)]
