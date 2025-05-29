@@ -22,13 +22,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [When("Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*)")]
-        public async Task AddMathsAndEnglishLearning(TokenisableDateTime StartDate, TokenisableDateTime EndDate, string course, decimal amount)
+        public async Task AddMathsAndEnglishLearning(TokenisableDateTime StartDate, TokenisableDateTime EndDate,
+            string course, decimal amount)
         {
             var testData = _context.Get<TestData>();
             PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
             var helper = new EarningsInnerApiHelper();
-            await helper.SetMathAndEnglishLearning(_context.Get<ApprenticeshipCreatedEvent>().ApprenticeshipKey,
-                new EarningsInnerApiClient.MathAndEnglishDetails() { StartDate = StartDate.Value, EndDate = EndDate.Value, Amount = amount, Course = course });
+            await helper.SetMathAndEnglishLearning(testData.ApprenticeshipKey,
+            [
+                new EarningsInnerApiClient.MathAndEnglishDetails
+                    { StartDate = StartDate.Value, EndDate = EndDate.Value, Amount = amount, Course = course }
+            ]);
+        
             testData.IsMathsAndEnglishAdded = true;
         }
 
@@ -83,7 +88,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             {
                 testData.PaymentsGeneratedEvent.Payments.Should().Contain(x =>
                         x.PaymentType == AdditionalPaymentType.MathsAndEnglish.ToString()
-                        && x.Amount == 150
+                        && x.Amount == amount
                         && x.AcademicYear == mathsAndEnglishStartPeriod.Value.AcademicYear
                         && x.DeliveryPeriod == mathsAndEnglishStartPeriod.Value.PeriodValue, $"Expected Maths and English payments for {mathsAndEnglishStartPeriod.Value.ToCollectionPeriodString()}");
 

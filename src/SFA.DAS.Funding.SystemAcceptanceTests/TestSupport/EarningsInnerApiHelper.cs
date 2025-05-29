@@ -25,7 +25,7 @@ public class EarningsInnerApiHelper
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task SetMathAndEnglishLearning(Guid apprenticeshipKey, EarningsInnerApiClient.MathAndEnglishDetails mathAndEnglishDetails)
+    public async Task SetMathAndEnglishLearning(Guid apprenticeshipKey, List<EarningsInnerApiClient.MathAndEnglishDetails> mathAndEnglishDetails)
     {
         var response = await _apiClient.SaveMathAndEnglishDetails(apprenticeshipKey, mathAndEnglishDetails);
         response.EnsureSuccessStatusCode();

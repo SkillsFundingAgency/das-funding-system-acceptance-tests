@@ -73,7 +73,7 @@ public class EarningsInnerApiClient
     /// Sends a PATCH request to the earnings inner API to save Maths and English data for an apprenticeship.
     /// </summary>
 
-    public async Task<HttpResponseMessage> SaveMathAndEnglishDetails(Guid apprenticeshipKey, MathAndEnglishDetails request)
+    public async Task<HttpResponseMessage> SaveMathAndEnglishDetails(Guid apprenticeshipKey, List<MathAndEnglishDetails> request)
     {
         var url = $"apprenticeship/{apprenticeshipKey}/mathsAndEnglish";
 
