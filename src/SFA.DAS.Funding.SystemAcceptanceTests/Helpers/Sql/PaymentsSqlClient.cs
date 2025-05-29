@@ -11,7 +11,7 @@ public class PaymentsSqlClient
         var testData = context.Get<TestData>();
         var apprenticeshipKey = testData.ApprenticeshipKey;
 
-        var apprenticeship = _sqlServerClient.GetList<PaymentsApprenticeshipModel>($"SELECT * FROM [Domain].[Apprenticeship] Where [ApprenticeshipKey] ='{apprenticeshipKey}'").Single();
+        var apprenticeship = _sqlServerClient.GetList<PaymentsApprenticeshipModel>($"SELECT * FROM [Domain].[Apprenticeship] Where [ApprenticeshipKey] ='{apprenticeshipKey}'").SingleOrDefault();
 
         if (apprenticeship != null)
         {

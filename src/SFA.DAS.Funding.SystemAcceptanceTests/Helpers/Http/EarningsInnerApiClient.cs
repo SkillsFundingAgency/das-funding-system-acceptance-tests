@@ -105,7 +105,7 @@ public class EarningsInnerApiClient
     {
         return new Dictionary<string, string>
         {
-            { "http://schemas.portal.com/ukprn", "88888888" },
+            { "http://schemas.portal.com/ukprn", $"{Constants.UkPrn}" },
             { "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", "tester" }
         };
     }

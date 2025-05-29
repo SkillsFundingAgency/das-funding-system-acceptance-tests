@@ -61,36 +61,6 @@ public class CalculateUnfundedPaymentsStepDefinitions
         testData.CurrentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
     }
 
-    [When(@"the scheduler triggers Unfunded Payment processing")]
-    [Then(@"the scheduler triggers Unfunded Payment processing")]
-    public async Task SchedulerTriggersUnfundedPaymentProcessing()
-    {
-        var testData = _context.Get<TestData>();
-
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
-            Convert.ToInt16(testData.CurrentCollectionYear));
-
-        await Task.Delay(10000);
-    }
-
-    [Given(@"fire command")]
-    public async Task FireCommand()
-    {
-        var testData = _context.Get<TestData>();
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
-            Convert.ToInt16(testData.CurrentCollectionYear));
-    }
-
-    [When(@"the Release Payments command is published again")]
-    public async Task WhenTheReleasePaymentsCommandIsPublishedAgain()
-    {
-        FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Clear();
-        var testData = _context.Get<TestData>();
-
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
-            Convert.ToInt16(testData.CurrentCollectionYear));
-    }
-
     [When(@"the unpaid unfunded payments for the current Collection Month and (.*) rollup payments are sent to be paid")]
     public async Task UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(int numberOfRollupPayments)
     {

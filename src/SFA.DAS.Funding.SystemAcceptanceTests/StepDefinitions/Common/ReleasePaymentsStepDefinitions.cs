@@ -17,15 +17,15 @@ public class ReleasePaymentsStepDefinitions
         _paymentsFunctionsClient = paymentsFunctionsClient;
     }
 
-    [Given(@"payments are released for (.*)")]
-    [When(@"payments are released for (.*)")]
-    public async Task ReleasePayments(TokenisableDateTime searchDate)
+    [When(@"the scheduler triggers Unfunded Payment processing")]
+    [Then(@"the scheduler triggers Unfunded Payment processing")]
+    public async Task ReleasePayments()
     {
-        var releasePaymentsCommand = new ReleasePaymentsCommand();
+        var testData = _context.Get<TestData>();
 
-        var period = TableExtensions.Period[searchDate.Value.ToString("MMMM")];
-        var year = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", searchDate.Value));
+        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
+            Convert.ToInt16(testData.CurrentCollectionYear));
 
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(period, year);
+        await Task.Delay(10000);
     }
 }
