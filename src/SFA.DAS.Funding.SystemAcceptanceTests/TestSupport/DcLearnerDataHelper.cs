@@ -18,8 +18,6 @@ internal static class DcLearnerDataHelper
 
     public class Learner
     {
-
-
         public long Ukprn { get; set; }
         public string LearnRefNumber { get; set; }
         public long Uln { get; set; }
