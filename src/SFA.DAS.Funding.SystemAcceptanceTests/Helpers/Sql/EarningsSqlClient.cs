@@ -34,6 +34,13 @@ public class EarningsSqlClient
             }
 
             episode.AdditionalPayments = _sqlServerClient.GetList<AdditionalPaymentsModel>($"SELECT * FROM [Domain].[AdditionalPayment] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
+
+            episode.MathsAndEnglish = _sqlServerClient.GetList<MathsAndEnglishModel>($"SELECT * FROM [Domain].[MathsAndEnglish] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
+
+            foreach (var learning in episode.MathsAndEnglish)
+            {
+                episode.MathsAndEnglishInstalments = _sqlServerClient.GetList<MathsAndEnglishInstalment>($"SELECT * FROM [Domain].[MathsAndEnglishInstalment] Where MathsAndEnglishKey  ='{learning.Key}'");
+            }
         }
 
         apprenticeship.Episodes = apprenticeshipEpisodes;
