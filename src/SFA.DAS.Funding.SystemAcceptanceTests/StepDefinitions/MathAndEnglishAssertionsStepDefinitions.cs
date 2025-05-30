@@ -1,5 +1,4 @@
-﻿using SFA.DAS.Apprenticeships.Types;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -58,7 +57,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             mathsAndEnglishInstalments.Should().NotBeNull("No Maths and English instalment data found on earnings apprenticeship model");
 
-            while (mathsAndEnglishStartPeriod.Value.AcademicYear < mathsAndEnglishEndPeriod.Value.AcademicYear || mathsAndEnglishStartPeriod.Value.AcademicYear >= mathsAndEnglishEndPeriod.Value.AcademicYear && mathsAndEnglishStartPeriod.Value.PeriodValue <= mathsAndEnglishEndPeriod.Value.PeriodValue)
+            while (mathsAndEnglishStartPeriod.Value.AcademicYear < mathsAndEnglishEndPeriod.Value.AcademicYear || (mathsAndEnglishStartPeriod.Value.AcademicYear == mathsAndEnglishEndPeriod.Value.AcademicYear && mathsAndEnglishStartPeriod.Value.PeriodValue <= mathsAndEnglishEndPeriod.Value.PeriodValue))
             {
                 mathsAndEnglishInstalments.Should().Contain(x =>
                         x.Amount == Amount
@@ -83,8 +82,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
 
-
-            while (mathsAndEnglishStartPeriod.Value.AcademicYear < mathsAndEnglishEndPeriod.Value.AcademicYear || mathsAndEnglishStartPeriod.Value.AcademicYear >= mathsAndEnglishEndPeriod.Value.AcademicYear && mathsAndEnglishStartPeriod.Value.PeriodValue <= mathsAndEnglishEndPeriod.Value.PeriodValue)
+            while (mathsAndEnglishStartPeriod.Value.AcademicYear < mathsAndEnglishEndPeriod.Value.AcademicYear || (mathsAndEnglishStartPeriod.Value.AcademicYear == mathsAndEnglishEndPeriod.Value.AcademicYear && mathsAndEnglishStartPeriod.Value.PeriodValue <= mathsAndEnglishEndPeriod.Value.PeriodValue))
             {
                 testData.PaymentsGeneratedEvent.Payments.Should().Contain(x =>
                         x.PaymentType == AdditionalPaymentType.MathsAndEnglish.ToString()
