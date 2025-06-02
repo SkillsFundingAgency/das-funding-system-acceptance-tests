@@ -1,5 +1,3 @@
-using SFA.DAS.Apprenticeships.Types;
-using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -58,7 +56,7 @@ public class LearningSupportAssertionsStepDefinitions
 
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
-        while (learningSupportStart.Value.AcademicYear < learningSupportEnd.Value.AcademicYear || learningSupportStart.Value.AcademicYear >= learningSupportEnd.Value.AcademicYear && learningSupportStart.Value.PeriodValue <= learningSupportEnd.Value.PeriodValue)
+        while (learningSupportStart.Value.AcademicYear < learningSupportEnd.Value.AcademicYear || (learningSupportStart.Value.AcademicYear == learningSupportEnd.Value.AcademicYear && learningSupportStart.Value.PeriodValue <= learningSupportEnd.Value.PeriodValue))
         {
             additionalPayments.Should().Contain(x =>
                     x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport
@@ -84,8 +82,7 @@ public class LearningSupportAssertionsStepDefinitions
 
         await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
 
-
-        while (learningSupportStart.Value.AcademicYear < learningSupportEnd.Value.AcademicYear || learningSupportStart.Value.AcademicYear >= learningSupportEnd.Value.AcademicYear && learningSupportStart.Value.PeriodValue <= learningSupportEnd.Value.PeriodValue)
+        while (learningSupportStart.Value.AcademicYear < learningSupportEnd.Value.AcademicYear || (learningSupportStart.Value.AcademicYear == learningSupportEnd.Value.AcademicYear && learningSupportStart.Value.PeriodValue <= learningSupportEnd.Value.PeriodValue))
         {
             testData.PaymentsGeneratedEvent.Payments.Should().Contain(x =>
                     x.PaymentType == AdditionalPaymentType.LearningSupport.ToString()
