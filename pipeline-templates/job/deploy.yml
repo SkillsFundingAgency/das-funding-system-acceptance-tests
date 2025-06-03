@@ -69,6 +69,7 @@ jobs:
         - task: DotNetCoreCLI@2
           env:
             NServiceBusLicense: $(NServiceBusLicense)
+            AppRegistrationTemporaryClientSecret: $(AppRegistrationTemporaryClientSecret)
             AZURE_CLIENT_ID: $(SCAzureClientId)
             AZURE_TENANT_ID: $(TenantId)
             AZURE_CLIENT_SECRET: $(SCAzureClientSecret)
