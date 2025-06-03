@@ -7,9 +7,8 @@ public class AzureTokenHelper
 {
     public async Task<string> GetAccessTokenAsync(string scope)
     {
-        var credential = new DefaultAzureCredential();
-        var token = await credential.GetTokenAsync(new TokenRequestContext(
-            new[] { $"{scope}/.default" }));
+        var credential = new AzureCliCredential();
+        var token = await credential.GetTokenAsync(new TokenRequestContext([scope]));
         return token.Token;
     }
 }

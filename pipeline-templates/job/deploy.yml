@@ -68,10 +68,8 @@ jobs:
 
         - task: DotNetCoreCLI@2
           env:
-            AZURE_CLIENT_ID: $(AZURE_CLIENT_ID)
-            AZURE_TENANT_ID: $(AZURE_TENANT_ID)
-            AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
             NServiceBusLicense: $(NServiceBusLicense)
+            AppRegistrationTemporaryClientSecret: $(AppRegistrationTemporaryClientSecret)
             EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
             PaymentsFunctionKey: $(PaymentsFunctionKey)
             ApprenticeshipsDbConnectionString: $(ApprenticeshipsDbConnectionString)
