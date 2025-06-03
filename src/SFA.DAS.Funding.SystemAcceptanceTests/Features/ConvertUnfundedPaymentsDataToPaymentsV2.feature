@@ -21,7 +21,7 @@ Scenario: Set values required for payments v2 to make a payment - 1 payment for 
 	And the apprenticeship learner's age is at 22
 	And apprenticeship employer type is NonLevy
 	And the apprenticeship commitment is approved
-	And the Unfunded Payments for the remainder of the apprenticeship are determined
+	And Payments Generated Events are published
 	And the user wants to process payments for the current collection Period
 	When the scheduler triggers Unfunded Payment processing
 	And the unpaid unfunded payments for the current Collection Month and 0 rollup payments are sent to be paid
@@ -33,7 +33,7 @@ Scenario: Set values required for payments v2 to make a payment - 3 payments for
 	And the apprenticeship learner's age is below 22
 	And apprenticeship employer type is Levy
 	And the apprenticeship commitment is approved
-	And the Unfunded Payments for the remainder of the apprenticeship are determined
+	And Payments Generated Events are published
 	And the user wants to process payments for the current collection Period
 	When the scheduler triggers Unfunded Payment processing
 	And the unpaid unfunded payments for the current Collection Month and 2 rollup payments are sent to be paid

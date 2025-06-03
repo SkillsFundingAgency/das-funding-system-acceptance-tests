@@ -73,11 +73,20 @@ internal class AfterScenario
         {
             writer.WriteLine($"Test: {_context.ScenarioInfo.Title}");
 
+            writer.WriteLine($"ApprenticeshipKey: {testData.ApprenticeshipKey}");
+            writer.WriteLine($"Uln: {testData.Uln}");
+            if(testData.ApprenticeshipCreatedEvent != null)
+            {
+                writer.WriteLine($"ApprenticeshipId: {testData.ApprenticeshipCreatedEvent.ApprovalsApprenticeshipId}");
+            }
+
             if (hasError)
             {
-                writer.WriteLine($"Uln: {testData.Uln}");
                 writer.WriteLine("PaymentsGeneratedEvent");
                 writer.WriteLine(JsonSerializer.Serialize(testData.PaymentsGeneratedEvent, new JsonSerializerOptions { WriteIndented = true }));
+
+                writer.WriteLine("EarningsGeneratedEvent");
+                writer.WriteLine(JsonSerializer.Serialize(testData.EarningsGeneratedEvent, new JsonSerializerOptions { WriteIndented = true }));
             }
 
             foreach (KeyValuePair<string, string> kvp in testLogs)

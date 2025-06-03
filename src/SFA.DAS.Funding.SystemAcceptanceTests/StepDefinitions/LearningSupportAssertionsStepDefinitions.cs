@@ -31,7 +31,7 @@ public class LearningSupportAssertionsStepDefinitions
     public async Task AddLearningSupport(TokenisableDateTime learningSupportStart, TokenisableDateTime learningSupportEnd)
     {
         var testData = _context.Get<TestData>();
-        PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
+        PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
         await _earningsInnerApiHelper.SetLearningSupportPayments(testData.ApprenticeshipKey,
             [new EarningsInnerApiClient.LearningSupportPaymentDetail() { StartDate = learningSupportStart.Value, EndDate = learningSupportEnd.Value }]);
         testData.IsLearningSupportAdded = true;
@@ -85,8 +85,6 @@ public class LearningSupportAssertionsStepDefinitions
             }
             return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
         }, "Failed to find updated payments entity.");
-
-        await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
 
         try
         {

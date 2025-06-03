@@ -22,14 +22,6 @@ public class CalculateUnfundedPaymentsStepDefinitions
         _paymentsSqlClient = paymentsSqlClient;
     }
 
-    [Given(@"the Unfunded Payments for the remainder of the apprenticeship are determined")]
-    [When(@"the Unfunded Payments for the remainder of the apprenticeship are determined")]
-    public async Task UnfundedPaymentsForTheRemainderOfTheApprenticeshipAreDetermined()
-    {
-        var testData = _context.Get<TestData>();
-        await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
-    }
-
     [Then(@"the Unfunded Payments for every earning is created")]
     public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table)
     {
@@ -110,7 +102,7 @@ public class CalculateUnfundedPaymentsStepDefinitions
 
         await WaitHelper.WaitForUnexpected(() =>
         {
-            var finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x => x.message).ToList();
+            var finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.Message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x=>x.Message).ToList();
 
             return finalisedPaymentsList.Count != 0;
         }, "Unexpected published Finalised On Programme Learning Payment events found");

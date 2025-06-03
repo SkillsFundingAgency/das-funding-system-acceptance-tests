@@ -15,11 +15,13 @@ Example 4: Price Rise in year 2 - New price at Funding Band Max
 Scenario: Price change approved; recalc payments
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
+	And Payments Generated Events are published
 	And payments have been paid for an apprenticeship with <start_date>, <end_date>
 	And a price change request was sent on <pc_from_date>
 	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>
 	And funding band max <funding_band_max> is determined for the training code
 	When the price change is approved
+	And Payments Generated Events are published
 	Then for all the past census periods since <start_date>, where the payment has already been made, the amount is still same as previous earnings <previous_earnings> and are flagged as sent for payment
 	And for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new and old earnings
 	And for all payments for future collection periods are equal to the new earnings

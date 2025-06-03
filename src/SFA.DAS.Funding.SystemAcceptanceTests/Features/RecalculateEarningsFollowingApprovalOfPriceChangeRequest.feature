@@ -22,6 +22,7 @@ Scenario: Price change approved; recalc earnings
 	And a price change request was sent on <pc_from_date>
 	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>
 	When the price change is approved
+	And Payments Generated Events are published
 	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
 	And earnings prior to <delivery_period> and <academic_year_string> are frozen with <old_inst_amount>
 	And the history of old earnings is maintained with <old_inst_amount>

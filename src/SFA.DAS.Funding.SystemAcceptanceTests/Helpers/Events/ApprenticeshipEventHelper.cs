@@ -51,7 +51,7 @@ internal static class ApprenticeshipEventHelper
         await WaitHelper.WaitForIt(() =>
         {
             APR.ApprenticeshipCreatedEvent? apprenticeshipEvent =
-                ApprenticeshipsTypesEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.Uln == apprenticeshipCreatedEvent.Uln).message;
+                ApprenticeshipsTypesEventHandler.GetMessage(x => x.Uln == apprenticeshipCreatedEvent.Uln);
             if (apprenticeshipEvent != null)
             {
                 testData.ApprenticeshipCreatedEvent = apprenticeshipEvent;
@@ -63,7 +63,7 @@ internal static class ApprenticeshipEventHelper
         await WaitHelper.WaitForIt(() =>
         {
             EarningsGeneratedEvent? earningsEvent =
-                EarningsGeneratedEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.Uln == apprenticeshipCreatedEvent.Uln).message;
+                EarningsGeneratedEventHandler.GetMessage(x => x.Uln == apprenticeshipCreatedEvent.Uln);
             if (earningsEvent != null)
             {
                 testData.EarningsGeneratedEvent = earningsEvent;

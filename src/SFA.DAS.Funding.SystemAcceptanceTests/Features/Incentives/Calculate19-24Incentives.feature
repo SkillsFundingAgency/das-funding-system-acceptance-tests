@@ -14,6 +14,7 @@ Scenario: 19-24 Incentive Earnings & Payments
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
 	And the apprentice is marked as a care leaver
+	And Payments Generated Events are published
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 	And the first incentive payment is generated for provider & employer
@@ -32,6 +33,7 @@ Scenario: 19-24 Incentive Earnings & Payments (duration only long enough for fir
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
 	And the apprentice is marked as a care leaver
+	And Payments Generated Events are published
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is not generated for provider & employer
 	And the first incentive payment is generated for provider & employer
@@ -49,6 +51,7 @@ Scenario: 19-24 Incentive Earnings & Payments (duration too short for either pay
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
 	And the apprentice is marked as a care leaver
+	And Payments Generated Events are published
 	Then the first incentive earning is not generated for provider & employer
 	And the second incentive earning is not generated for provider & employer
 	And the first incentive payment is not generated for provider & employer

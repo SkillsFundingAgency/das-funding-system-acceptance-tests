@@ -2,7 +2,7 @@
 using Azure.Messaging.ServiceBus;
 using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using SFA.DAS.Payments.FundingSource.Messages.Commands;
+using System.Collections.Generic;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Events;
 
@@ -44,13 +44,25 @@ public abstract class BaseQueueReciever
 
     private static async Task<List<T>> GetMessages<T>(ServiceBusReceiver receiver, Func<T, bool> predicate)
     {
-        var events = await receiver.ReceiveMessagesAsync(10000);
+        var returnList = new List<T>();
 
-        var deserializedMessages = events.Select(x => SafeParse<T>(x)).Where(x => x != null).ToList();
-        var matchingMessages = deserializedMessages.Where(x => predicate(x!.Message)).ToList();
+        while (true)
+        {
+            var events = await receiver.ReceiveMessagesAsync(
+                maxMessages: 100,
+                maxWaitTime: TimeSpan.FromSeconds(30));
 
-        matchingMessages.ForEach(x => receiver.CompleteMessageAsync(x!.EventMessage));
-        return matchingMessages.Select(x => x!.Message).ToList();
+            if (events.Count == 0)
+                break;
+
+            var deserializedMessages = events.Select(x => SafeParse<T>(x)).Where(x => x != null).ToList();
+            var matchingMessages = deserializedMessages.Where(x => predicate(x!.Message)).ToList();
+
+            matchingMessages.ForEach(x => receiver.CompleteMessageAsync(x!.EventMessage));
+            returnList.AddRange(matchingMessages.Select(x => x!.Message));
+        }
+
+        return returnList;
     }
 
     /// <summary>

@@ -35,7 +35,6 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     public async Task GivenPaymentsHaveBeenCalculatedForAnApprenticeshipWithAnd(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate)
     {
         var testData = _context.Get<TestData>();
-        await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
 
         await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
             Convert.ToInt16(testData.CurrentCollectionYear));
@@ -99,13 +98,10 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     {
         var testData = _context.Get<TestData>();
         // clear previous PaymentsGeneratedEvent before publishing PriceChangeApproved Event 
-        PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
+        PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
 
         await _apprenticeshipsInnerApiHelper.CreatePriceChangeRequest(_context, testData.NewTrainingPrice, testData.NewAssessmentPrice, testData.PriceChangeEffectiveFrom);
         await _apprenticeshipsInnerApiHelper.ApprovePendingPriceChangeRequest(_context, testData.NewTrainingPrice, testData.NewAssessmentPrice, testData.PriceChangeApprovedDate);
-
-        // Receive updated PaymentsGeneratedEvent after publishing PriceChangeApproved Event 
-        await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
     }
 
     [When(@"the start date change is approved")]
@@ -113,14 +109,11 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     {
         var testData = _context.Get<TestData>();
         // clear previous PaymentsGeneratedEvent before publishing StartDateChangeApproved Event 
-        PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
+        PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
 
         var startDateChangedEvent = ApprenticeshipStartDateChangedEventHelper.CreateStartDateChangedMessageWithCustomValues(_context, testData.NewStartDate, testData.NewEndDate, testData.StartDateChangeApprovedDate);
 
         await ApprenticeshipStartDateChangedEventHelper.PublishApprenticeshipStartDateChangedEvent(startDateChangedEvent);
-
-        // Receive the update PaymentsGeneratedEvent
-        await _context.ReceivePaymentsEvent(startDateChangedEvent.ApprenticeshipKey);
     }
 
     [Then(@"the earnings are recalculated based on the new instalment amount of (.*) from (.*) and (.*)")]
