@@ -39,8 +39,6 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
         await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
             Convert.ToInt16(testData.CurrentCollectionYear));
 
-        await Task.Delay(10000);
-
         var startDatePeriod = TableExtensions.Period[startDate.Value.ToString("MMMM")];
         var startDateYear = TableExtensions.CalculateAcademicYear("0", startDate.Value);
 

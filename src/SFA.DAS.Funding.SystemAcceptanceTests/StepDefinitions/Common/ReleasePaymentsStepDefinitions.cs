@@ -25,7 +25,5 @@ public class ReleasePaymentsStepDefinitions
 
         await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
             Convert.ToInt16(testData.CurrentCollectionYear));
-
-        await Task.Delay(10000);
     }
 }
