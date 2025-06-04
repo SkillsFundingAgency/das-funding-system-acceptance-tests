@@ -69,6 +69,31 @@ public class EarningsInnerApiClient
         return response;
     }
 
+    /// <summary>
+    /// Sends a PATCH request to the earnings inner API to save Maths and English data for an apprenticeship.
+    /// </summary>
+
+    public async Task<HttpResponseMessage> SaveMathAndEnglishDetails(Guid apprenticeshipKey, List<MathAndEnglishDetails> request)
+    {
+        var url = $"apprenticeship/{apprenticeshipKey}/mathsAndEnglish";
+
+        var jsonContent = new StringContent(
+            JsonSerializer.Serialize(request),
+            System.Text.Encoding.UTF8,
+            "application/json");
+
+        var requestMessage = new HttpRequestMessage(HttpMethod.Patch, url)
+        {
+            Content = jsonContent
+        };
+
+        EnsureBearerToken();
+        await EnsureAzureToken();
+        var response = await _httpClient.SendAsync(requestMessage);
+        return response;
+    }
+
+
     private async Task EnsureAzureToken()
     {
         if (string.IsNullOrEmpty(_azureToken))
@@ -122,4 +147,13 @@ public class EarningsInnerApiClient
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
     }
+
+    public class MathAndEnglishDetails
+    {
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string Course { get; set; } = null!;
+        public decimal Amount { get; set; }
+    }
+
 }
