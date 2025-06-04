@@ -77,7 +77,7 @@ public class LearningSupportAssertionsStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
-            return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
+            return paymentsApprenticeshipModel?.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId) ?? false;
         }, "Failed to find updated payments entity.");
 
         await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);

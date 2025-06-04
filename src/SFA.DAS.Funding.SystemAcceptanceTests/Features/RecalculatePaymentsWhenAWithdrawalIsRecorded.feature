@@ -23,10 +23,10 @@ Scenario: Withdrawal is recorded; recalc payments
 	And all the payments from delivery periods after last payment made are deleted
 
 Examples:
-	| start_date | end_date   | agreed_price | training_code | reason                 | last_day_of_delivery | previous_earnings_amount |
-	| 2024-11-01 | 2025-11-23 | 15000        | 2             | WithdrawDuringLearning | 2024-12-15           | 1000                     | 
-	| 2024-11-15 | 2025-11-20 | 24000        | 254           | WithdrawDuringLearning | 2024-12-26           | 1600                     | 
-	| 2024-12-05 | 2025-12-20 | 15000        | 91            | WithdrawFromStart      | 2024-12-05           | 1000                     |
-	| 2023-10-05 | 2025-06-10 | 18000        | 2             | WithdrawDuringLearning | 2024-06-02           | 720                      |
-	| 2023-10-05 | 2025-06-10 | 18000        | 91            | WithdrawFromStart      | 2023-10-05           | 720                      | 
+	| start_date       | end_date     | agreed_price | training_code | reason                 | last_day_of_delivery | previous_earnings_amount |
+	| currentAY-11-01  | nextAY-11-23 | 15000        | 2             | WithdrawDuringLearning | currentAY-12-15      | 1000                     |
+	| currentAY-11-15  | nextAY-11-20 | 24000        | 254           | WithdrawDuringLearning | currentAY-12-26      | 1600                     |
+	| currentAY-12-05  | nextAY-12-20 | 15000        | 91            | WithdrawFromStart      | currentAY-12-05      | 1000                     |
+	| previousAY-10-05 | nextAY-06-10 | 18000        | 2             | WithdrawDuringLearning | previousAY-06-02     | 450                      |
+	| previousAY-10-05 | nextAY-06-10 | 18000        | 91            | WithdrawFromStart      | previousAY-10-05     | 450                      |
 

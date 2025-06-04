@@ -25,9 +25,11 @@ Scenario: Learning Support for Maths and English Earnings
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
 	And Maths and English learning is recorded from <start_date> to <maths_and_english_end_date> with course <course> and amount 12000
+	And the payments event is disregarded
 	And learning support is recorded from <start_date> to <maths_and_english_end_date>
-	Then learning support earnings are generated from periods <expected_first_payment_period> to <expected_last_payment_period>
+	Then learning support earnings are generated from periods <expected_first_earning_period> to <expected_last_earning_period>
+	And learning support payments are generated from periods <expected_first_payment_period> to <expected_last_payment_period>
 
 Examples:
-	| start_date       | end_date        | maths_and_english_end_date | course                           | expected_first_payment_period | expected_last_payment_period |
-	| previousAY-08-01 | currentAY-01-31 | currentAY-07-31            | Entry level English and/or Maths | previousAY-R01                | currentAY-R12                |
+	| start_date       | end_date        | maths_and_english_end_date | course                           | expected_first_earning_period | expected_last_earning_period | expected_first_payment_period | expected_last_payment_period |
+	| previousAY-08-01 | currentAY-01-31 | currentAY-07-31            | Entry level English and/or Maths | previousAY-R01                | currentAY-R12                | currentAY-R01                 | currentAY-R12                |
