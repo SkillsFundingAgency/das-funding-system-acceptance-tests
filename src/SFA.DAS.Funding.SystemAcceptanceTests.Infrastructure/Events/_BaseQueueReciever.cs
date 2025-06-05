@@ -10,6 +10,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Events;
 public abstract class BaseQueueReciever
 {
     protected static FundingConfig _fundingConfig;
+    private static readonly SemaphoreSlim _queueLock = new(1, 1);
 
     public static void SetConfig(FundingConfig fundingConfig)
     {
@@ -22,8 +23,8 @@ public abstract class BaseQueueReciever
 
         var client = new ServiceBusClient(azureServiceBusNamespace, new DefaultAzureCredential());
 
+        await _queueLock.WaitAsync();
         var receiver = client.CreateReceiver(queueName);
-
         try
         {
             matchingMessages = await GetMessages(receiver, predicate);
@@ -36,6 +37,7 @@ public abstract class BaseQueueReciever
         {
             await receiver.DisposeAsync();
             await client.DisposeAsync();
+            _queueLock.Release();
         }
 
         return matchingMessages;
