@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+﻿using System.Collections.Concurrent;
+
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
 
 /// <summary>
@@ -6,20 +8,14 @@
 /// </summary>
 internal static class HttpClientProvider
 {
-    private static Dictionary<string, HttpClient> _apiClients = new Dictionary<string, HttpClient>();
+    private static readonly ConcurrentDictionary<string, HttpClient> _apiClients = new();
 
     internal static HttpClient GetClient(string baseUrl)
     {
-        if (_apiClients.TryGetValue(baseUrl, out var client))
+        return _apiClients.GetOrAdd(baseUrl, url =>
         {
+            var client = new HttpClient { BaseAddress = new Uri(url) };
             return client;
-        }
-
-        var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri(baseUrl);
-
-        _apiClients.Add(baseUrl, httpClient);
-
-        return httpClient;
+        });
     }
 }

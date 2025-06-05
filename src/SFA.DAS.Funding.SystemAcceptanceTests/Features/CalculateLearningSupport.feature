@@ -10,6 +10,7 @@ Scenario: Learning Support Earnings & Payments
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
 	And learning support is recorded from <learning_support_start> to <learning_support_end>
+	And Payments Generated Events are published
 	Then learning support earnings are generated from periods <expected_first_payment_period> to <expected_last_payment_period>
 	And learning support payments are generated from periods <expected_first_payment_period> to <expected_last_payment_period>
 

@@ -53,7 +53,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         var testData = _context.Get<TestData>();
 
         // clear previous PaymentsGeneratedEvent before triggering the withdrawal
-        PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
+        PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
 
         testData.LastDayOfLearning = lastDayOfDelivery.Value;
 
@@ -99,10 +99,6 @@ internal class WithdrawApprenticeshipStepDefinitions
     public async Task PaymentsAreRecalculated()
     {
         var testData = _context.Get<TestData>();
-
-        // Receive the updated PaymentsGeneratedEvent
-        await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
-
         testData.PaymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
     }
 

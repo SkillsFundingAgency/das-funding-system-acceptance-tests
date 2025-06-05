@@ -20,13 +20,13 @@ public class ConvertUnfundedPaymentsDataToPaymentsV2FormatStepDefinitions
     {
         var testData = _context.Get<TestData>();
         var finalisedPaymentsList =
-            FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x => x.message).ToList();
+            FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.Message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x => x.Message).ToList();
 
         var orderedFinalisedPaymentsList = finalisedPaymentsList
             .OrderBy(x => x.ApprenticeshipEarning.DeliveryPeriod)
             .ToList();
 
-        await _context.ReceiveCalculateOnProgrammePaymentEvent(testData.ApprenticeshipCreatedEvent.Uln, numberOfEvents);
+        await _context.ReceiveCalculateOnProgrammePaymentEvent(testData.Uln, numberOfEvents);
 
         var calculatedRequiredLevyAmountList = testData.CalculatedOnProgrammePaymentList
             .OrderBy(x => x.DeliveryPeriod)

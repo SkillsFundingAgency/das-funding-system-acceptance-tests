@@ -30,7 +30,7 @@ public class IncentivesAssertionsStepDefinitions
     public async Task MarkAsCareLeaver()
     {
         var testData = _context.Get<TestData>();
-        PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
+        PaymentsGeneratedEventHandler.Clear(x=> x.ApprenticeshipKey == testData.ApprenticeshipKey);
         await _earningsInnerApiHelper.MarkAsCareLeaver(testData.ApprenticeshipKey);
         testData.IsMarkedAsCareLeaver = true;
     }
@@ -99,8 +99,6 @@ public class IncentivesAssertionsStepDefinitions
             paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
             return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
         }, "Failed to find updated payments entity.");
-
-        await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
 
         var paymentsGeneratedEvent = testData.PaymentsGeneratedEvent;
         

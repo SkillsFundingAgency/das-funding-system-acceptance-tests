@@ -22,14 +22,6 @@ public class CalculateUnfundedPaymentsStepDefinitions
         _paymentsSqlClient = paymentsSqlClient;
     }
 
-    [Given(@"the Unfunded Payments for the remainder of the apprenticeship are determined")]
-    [When(@"the Unfunded Payments for the remainder of the apprenticeship are determined")]
-    public async Task UnfundedPaymentsForTheRemainderOfTheApprenticeshipAreDetermined()
-    {
-        var testData = _context.Get<TestData>();
-        await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
-    }
-
     [Then(@"the Unfunded Payments for every earning is created")]
     public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table)
     {
@@ -59,36 +51,6 @@ public class CalculateUnfundedPaymentsStepDefinitions
         var testData = _context.Get<TestData>();
         testData.CurrentCollectionYear = TableExtensions.CalculateAcademicYear("0");
         testData.CurrentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
-    }
-
-    [When(@"the scheduler triggers Unfunded Payment processing")]
-    [Then(@"the scheduler triggers Unfunded Payment processing")]
-    public async Task SchedulerTriggersUnfundedPaymentProcessing()
-    {
-        var testData = _context.Get<TestData>();
-
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
-            Convert.ToInt16(testData.CurrentCollectionYear));
-
-        await Task.Delay(10000);
-    }
-
-    [Given(@"fire command")]
-    public async Task FireCommand()
-    {
-        var testData = _context.Get<TestData>();
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
-            Convert.ToInt16(testData.CurrentCollectionYear));
-    }
-
-    [When(@"the Release Payments command is published again")]
-    public async Task WhenTheReleasePaymentsCommandIsPublishedAgain()
-    {
-        FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Clear();
-        var testData = _context.Get<TestData>();
-
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
-            Convert.ToInt16(testData.CurrentCollectionYear));
     }
 
     [When(@"the unpaid unfunded payments for the current Collection Month and (.*) rollup payments are sent to be paid")]
@@ -140,7 +102,7 @@ public class CalculateUnfundedPaymentsStepDefinitions
 
         await WaitHelper.WaitForUnexpected(() =>
         {
-            var finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x => x.message).ToList();
+            var finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.Message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x=>x.Message).ToList();
 
             return finalisedPaymentsList.Count != 0;
         }, "Unexpected published Finalised On Programme Learning Payment events found");

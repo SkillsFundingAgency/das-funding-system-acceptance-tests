@@ -16,6 +16,8 @@ public class BeforeScenarioHooks
     private static PaymentsSqlClient? _paymentsSqlClient;
     private static ApprenticeshipsInnerApiHelper? _apprenticeshipsInnerApiHelper;
     private static EarningsInnerApiHelper? _earningsInnerApiHelper;
+    private static bool _clientsAssigned = false;
+    private static readonly object _lock = new();
 
     [BeforeScenario(Order = 1)]
     public void BeforeScenarioHook(ScenarioContext context)
@@ -39,7 +41,7 @@ public class BeforeScenarioHooks
 
     private static void PopulateContextTestData(ScenarioContext context)
     {
-        var testData = new TestData();
+        var testData = new TestData(TestUlnProvider.GetNext());
         testData.CurrentCollectionYear = TableExtensions.CalculateAcademicYear("0");
         testData.CurrentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
         context.Set(testData);
@@ -47,29 +49,27 @@ public class BeforeScenarioHooks
 
     private static void RegisterDependencies(ScenarioContext context)
     {
-        if(_apprenticeshipsClient == null)
-            _apprenticeshipsClient = new ApprenticeshipsClient();
+        if (!_clientsAssigned)
+        {
+            lock (_lock)
+            {
+                if (!_clientsAssigned)
+                {
+                    // The status of clientsAssigned is checked again after acquiring the lock to ensure thread safety.
+                    _apprenticeshipsClient = new ApprenticeshipsClient();
+                    _earningsOuterClient = new EarningsOuterClient();
+                    _paymentsFunctionsClient = new PaymentsFunctionsClient();
+                    _apprenticeshipsSqlClient = new ApprenticeshipsSqlClient();
+                    _earningsSqlClient = new EarningsSqlClient();
+                    _paymentsSqlClient = new PaymentsSqlClient();
+                    _apprenticeshipsInnerApiHelper = new ApprenticeshipsInnerApiHelper();
+                    _earningsInnerApiHelper = new EarningsInnerApiHelper();
 
-        if (_earningsOuterClient == null)
-            _earningsOuterClient = new EarningsOuterClient();
+                    _clientsAssigned = true;
+                }
+            }
+        }
 
-        if (_paymentsFunctionsClient == null)
-            _paymentsFunctionsClient = new PaymentsFunctionsClient();
-
-        if (_apprenticeshipsSqlClient == null)
-            _apprenticeshipsSqlClient = new ApprenticeshipsSqlClient();
-
-        if (_earningsSqlClient == null)
-            _earningsSqlClient = new EarningsSqlClient();
-
-        if (_paymentsSqlClient == null)
-            _paymentsSqlClient = new PaymentsSqlClient();
-
-        if(_apprenticeshipsInnerApiHelper == null)
-            _apprenticeshipsInnerApiHelper = new ApprenticeshipsInnerApiHelper();
-
-        if (_earningsInnerApiHelper == null)
-            _earningsInnerApiHelper = new EarningsInnerApiHelper();
 
         var container = context.ScenarioContainer;
         container.RegisterInstanceAs(_apprenticeshipsClient);
