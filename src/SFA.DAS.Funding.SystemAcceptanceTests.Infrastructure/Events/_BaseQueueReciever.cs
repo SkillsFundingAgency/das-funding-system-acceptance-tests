@@ -2,7 +2,6 @@
 using Azure.Messaging.ServiceBus;
 using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using System.Collections.Generic;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Events;
 

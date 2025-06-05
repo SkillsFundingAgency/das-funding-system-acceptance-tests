@@ -17,13 +17,30 @@ public class ReleasePaymentsStepDefinitions
         _paymentsFunctionsClient = paymentsFunctionsClient;
     }
 
+    [Given(@"pause (.*) seconds")]
+    public async Task Pause(int seconds)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(seconds));
+    }
+
+    [Given("Payments are released")]
     [When(@"the scheduler triggers Unfunded Payment processing")]
     [Then(@"the scheduler triggers Unfunded Payment processing")]
     public async Task ReleasePayments()
     {
         var testData = _context.Get<TestData>();
 
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(testData.CurrentCollectionPeriod,
+        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_context, testData.CurrentCollectionPeriod,
+            Convert.ToInt16(testData.CurrentCollectionYear));
+    }
+
+    [When(@"the Release Payments command is published again")]
+    public async Task ReleasePaymentsAgain()
+    {
+        var testData = _context.Get<TestData>();
+        FinalisedOnProgrammeLearningPaymentEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
+
+        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_context, testData.CurrentCollectionPeriod,
             Convert.ToInt16(testData.CurrentCollectionYear));
     }
 }

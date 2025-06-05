@@ -55,7 +55,7 @@ public class ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions
         testData.CurrentCollectionYear = collectionYear;
         testData.CurrentCollectionPeriod = collectionPeriod;
 
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(collectionPeriod,
+        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_context, collectionPeriod,
             Convert.ToInt16(collectionYear));
     }
 

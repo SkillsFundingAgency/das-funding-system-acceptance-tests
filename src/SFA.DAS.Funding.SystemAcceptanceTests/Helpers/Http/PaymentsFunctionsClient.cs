@@ -10,7 +10,7 @@ public class PaymentsFunctionsClient
     private readonly string _code;
 
     private static readonly ConcurrentDictionary<string, TimedReleaseGate> _gates = new();
-    private static readonly TimeSpan DebounceWindow = TimeSpan.FromSeconds(15);//TODO: increase time when we start batching releases
+    private static readonly TimeSpan DebounceWindow = TimeSpan.FromSeconds(45);//TODO: increase time when we start batching releases
 
     public PaymentsFunctionsClient()
     {
@@ -20,8 +20,11 @@ public class PaymentsFunctionsClient
         _code = config.PaymentsFunctionKey;
     }
 
-    public Task InvokeReleasePaymentsHttpTrigger(byte collectionPeriod, short collectionYear)
+    public Task InvokeReleasePaymentsHttpTrigger(ScenarioContext context, byte collectionPeriod, short collectionYear)
     {
+        if (!context.ScenarioInfo.Tags.Contains("releasesPayments"))
+            throw new InvalidOperationException("This step can only be used in scenarios tagged with 'releasesPayments'");
+        
         var key = $"{collectionYear}-{collectionPeriod}";
 
         var gate = _gates.GetOrAdd(key, _ =>
@@ -30,7 +33,7 @@ public class PaymentsFunctionsClient
                 () => InternalInvokeReleasePaymentsHttpTrigger(collectionPeriod, collectionYear)
             ));
 
-        return gate.WaitAndReleaseAsync();
+        return gate.WaitAndReleaseAsync(context.ScenarioInfo.Title);
     }
 
     private async Task InternalInvokeReleasePaymentsHttpTrigger(byte collectionPeriod, short collectionYear)
@@ -40,12 +43,16 @@ public class PaymentsFunctionsClient
         var path = $"/api/releasePayments/{collectionYear}/{collectionPeriod}";
         var response = await _apiClient.PostAsync($"{path}?code={_code}", null);
 
+        Console.WriteLine($"TimedReleaseGate - Payment Release Started {DateTime.UtcNow}");
+
         if (!response.IsSuccessStatusCode)
         {
             throw new Exception($"Payments Http Trigger failed. {response.StatusCode} -  {response.ReasonPhrase}\nBaseUrl: {_apiClient.BaseAddress}\nPath:{path}");
         }
 
         await WaitUntilPaymentReleaseHasFinishedAsync(collectionPeriod, collectionYear); // wait for the new payment release to finish
+
+        Console.WriteLine($"TimedReleaseGate - Payment Release Completed {DateTime.UtcNow}");
     }
 
     private async Task WaitUntilPaymentReleaseHasFinishedAsync(
@@ -125,7 +132,7 @@ internal class TimedReleaseGate
     private bool _isExecuting = false;
     private DateTime _windowStart = DateTime.MinValue;
     private Task _executionTask = Task.CompletedTask;
-    private readonly List<TaskCompletionSource<bool>> _waiters = new();
+    private readonly List<Waiter> _waiters = new();
 
     public TimedReleaseGate(TimeSpan waitWindow, Func<Task> releaseAction)
     {
@@ -133,13 +140,13 @@ internal class TimedReleaseGate
         _releaseAction = releaseAction;
     }
 
-    public Task WaitAndReleaseAsync()
+    public Task WaitAndReleaseAsync(string scenario)
     {
         var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
+        Console.WriteLine($"TimedReleaseGate - Adding waiter for scenario: {scenario} at {DateTime.UtcNow}");
         lock (_lock)
         {
-            _waiters.Add(tcs);
+            _waiters.Add(new Waiter(tcs,scenario));
 
             if (!_isExecuting)
             {
@@ -178,12 +185,29 @@ internal class TimedReleaseGate
             foreach (var waiter in _waiters)
             {
                 if (success)
-                    waiter.TrySetResult(true);
+                {
+                    Console.WriteLine($"TimedReleaseGate - Completing waiter for scenario: {waiter.Scenario} at {DateTime.UtcNow}");
+                    waiter.TaskCompletionSource.TrySetResult(true);
+                }
                 else
-                    waiter.TrySetException(error!);
+                {
+                    Console.WriteLine($"TimedReleaseGate - Completing waiter for scenario: {waiter.Scenario} with error at {DateTime.UtcNow}");
+                    waiter.TaskCompletionSource.TrySetException(error!);
+                }
             }
 
             _waiters.Clear();
+        }
+    }
+
+    internal class Waiter
+    {
+        internal TaskCompletionSource<bool> TaskCompletionSource { get; set; }
+        internal string Scenario { get; set; }
+        internal Waiter(TaskCompletionSource<bool> tcs, string scenario)
+        {
+            TaskCompletionSource = tcs;
+            Scenario = scenario;
         }
     }
 }

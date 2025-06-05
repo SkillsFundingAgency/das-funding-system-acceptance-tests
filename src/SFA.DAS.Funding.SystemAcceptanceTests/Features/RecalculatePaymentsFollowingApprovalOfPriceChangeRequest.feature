@@ -16,6 +16,7 @@ Scenario: Price change approved; recalc payments
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
 	And Payments Generated Events are published
+	And Payments are released
 	And payments have been paid for an apprenticeship with <start_date>, <end_date>
 	And a price change request was sent on <pc_from_date>
 	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>

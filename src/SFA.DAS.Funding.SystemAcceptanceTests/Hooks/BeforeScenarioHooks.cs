@@ -8,7 +8,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 [Binding]
 public class BeforeScenarioHooks
 {
-
     [BeforeScenario(Order = 1)]
     public void BeforeScenarioHook(ScenarioContext context)
     {
