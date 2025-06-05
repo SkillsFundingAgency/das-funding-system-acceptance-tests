@@ -43,16 +43,12 @@ public class PaymentsFunctionsClient
         var path = $"/api/releasePayments/{collectionYear}/{collectionPeriod}";
         var response = await _apiClient.PostAsync($"{path}?code={_code}", null);
 
-        Console.WriteLine($"TimedReleaseGate - Payment Release Started {DateTime.UtcNow}");
-
         if (!response.IsSuccessStatusCode)
         {
             throw new Exception($"Payments Http Trigger failed. {response.StatusCode} -  {response.ReasonPhrase}\nBaseUrl: {_apiClient.BaseAddress}\nPath:{path}");
         }
 
         await WaitUntilPaymentReleaseHasFinishedAsync(collectionPeriod, collectionYear); // wait for the new payment release to finish
-
-        Console.WriteLine($"TimedReleaseGate - Payment Release Completed {DateTime.UtcNow}");
     }
 
     private async Task WaitUntilPaymentReleaseHasFinishedAsync(
@@ -130,7 +126,7 @@ internal class TimedReleaseGate
     private readonly object _lock = new();
 
     private bool _isExecuting = false;
-    private DateTime _windowStart = DateTime.MinValue;
+    //private DateTime _windowStart = DateTime.MinValue;
     private Task _executionTask = Task.CompletedTask;
     private readonly List<Waiter> _waiters = new();
 
@@ -143,7 +139,7 @@ internal class TimedReleaseGate
     public Task WaitAndReleaseAsync(string scenario)
     {
         var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        Console.WriteLine($"TimedReleaseGate - Adding waiter for scenario: {scenario} at {DateTime.UtcNow}");
+       
         lock (_lock)
         {
             _waiters.Add(new Waiter(tcs,scenario));
@@ -151,7 +147,7 @@ internal class TimedReleaseGate
             if (!_isExecuting)
             {
                 _isExecuting = true;
-                _windowStart = DateTime.UtcNow;
+                //_windowStart = DateTime.UtcNow;
 
                 _executionTask = Task.Run(async () =>
                 {
@@ -186,12 +182,10 @@ internal class TimedReleaseGate
             {
                 if (success)
                 {
-                    Console.WriteLine($"TimedReleaseGate - Completing waiter for scenario: {waiter.Scenario} at {DateTime.UtcNow}");
                     waiter.TaskCompletionSource.TrySetResult(true);
                 }
                 else
                 {
-                    Console.WriteLine($"TimedReleaseGate - Completing waiter for scenario: {waiter.Scenario} with error at {DateTime.UtcNow}");
                     waiter.TaskCompletionSource.TrySetException(error!);
                 }
             }
