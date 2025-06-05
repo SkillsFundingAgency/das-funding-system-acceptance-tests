@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using System.ComponentModel.DataAnnotations;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
@@ -37,9 +38,19 @@ public class EarningsSqlClient
 
             episode.MathsAndEnglish = _sqlServerClient.GetList<MathsAndEnglishModel>($"SELECT * FROM [Domain].[MathsAndEnglish] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
 
+            if (episode.MathsAndEnglishInstalments == null)
+            {
+                episode.MathsAndEnglishInstalments = new List<MathsAndEnglishInstalment>();
+            }
+
             foreach (var learning in episode.MathsAndEnglish)
             {
-                episode.MathsAndEnglishInstalments = _sqlServerClient.GetList<MathsAndEnglishInstalment>($"SELECT * FROM [Domain].[MathsAndEnglishInstalment] Where MathsAndEnglishKey  ='{learning.Key}'");
+                var instalments = _sqlServerClient.GetList<MathsAndEnglishInstalment>($"SELECT * FROM [Domain].[MathsAndEnglishInstalment] WHERE MathsAndEnglishKey = '{learning.Key}'");
+
+                if (instalments != null)
+                {
+                    episode.MathsAndEnglishInstalments.AddRange(instalments);
+                }
             }
         }
 

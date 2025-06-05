@@ -1,5 +1,4 @@
-﻿using NUnit.Framework.Interfaces;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -38,9 +37,29 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
-        [Then("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*)")]
+        [When("the first course is recorded from (.*) to (.*) with course (.*) and amount (.*) and the second course from (.*) to (.*) with course (.*) and amount (.*)")]
+        public async Task AddMultipleMathsAndEnglishLearnings(TokenisableDateTime Course1StartDate, TokenisableDateTime Course1EndDate,
+            string Course1Name, decimal Course1Amount, TokenisableDateTime Course2StartDate, TokenisableDateTime Course2EndDate, string Course2Name, decimal Course2Amount)
+        {
+            var testData = _context.Get<TestData>();
+            PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
+            var helper = new EarningsInnerApiHelper();
+            await helper.SetMathAndEnglishLearning(testData.ApprenticeshipKey,
+            [
+                new EarningsInnerApiClient.MathAndEnglishDetails
+                    { StartDate = Course1StartDate.Value, EndDate = Course1EndDate.Value, Amount = Course1Amount, Course = Course1Name },
+                new  EarningsInnerApiClient.MathAndEnglishDetails
+                    { StartDate = Course2StartDate.Value, EndDate = Course2EndDate.Value, Amount = Course2Amount, Course = Course2Name }
+            ]     
+            );
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+
+        [Then("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for course (.*)")]
         public async Task VerifyMathsAndEnglishEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
-            TokenisablePeriod mathsAndEnglishEndPeriod, decimal Amount)
+            TokenisablePeriod mathsAndEnglishEndPeriod, decimal Amount, string course)
         {
             var testData = _context.Get<TestData>();
             EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
@@ -52,10 +71,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     .EarningsProfileHistory.Any();
             }, "Failed to find updated earnings entity.");
 
+            var mathsAndEnglish = earningsApprenticeshipModel
+                .Episodes
+                .SingleOrDefault()
+                ?.MathsAndEnglish;
+
+            var mathsAndEnglishKey = mathsAndEnglish.Where(x => x.Course.Contains(course)).FirstOrDefault().Key;
+
             var mathsAndEnglishInstalments = earningsApprenticeshipModel
                 .Episodes
                 .SingleOrDefault()
-                ?.MathsAndEnglishInstalments;
+                ?.MathsAndEnglishInstalments.Where(x => x.MathsAndEnglishKey == mathsAndEnglishKey);
 
             testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile
                 .EarningsProfileId;
@@ -68,7 +94,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     mathsAndEnglishStartPeriod.Value.PeriodValue <= mathsAndEnglishEndPeriod.Value.PeriodValue))
             {
                 mathsAndEnglishInstalments.Should().Contain(x =>
-                        x.Amount == Amount
+                        x.MathsAndEnglishKey == mathsAndEnglishKey
+                        && x.Amount == Amount
                         && x.AcademicYear == mathsAndEnglishStartPeriod.Value.AcademicYear
                         && x.DeliveryPeriod == mathsAndEnglishStartPeriod.Value.PeriodValue,
                     $"Expected Maths and English earning for {mathsAndEnglishStartPeriod.Value.ToCollectionPeriodString()}");
