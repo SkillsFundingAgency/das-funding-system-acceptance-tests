@@ -9,6 +9,7 @@ Scenario: Learning Support Earnings & Payments
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
+	And Payments Generated Events are published
 	And learning support is recorded from <learning_support_start> to <learning_support_end>
 	And Payments Generated Events are published
 	Then learning support earnings are generated from periods <expected_first_payment_period> to <expected_last_payment_period>

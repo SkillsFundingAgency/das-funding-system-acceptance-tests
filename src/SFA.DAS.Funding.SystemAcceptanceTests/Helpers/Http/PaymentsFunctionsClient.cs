@@ -33,7 +33,7 @@ public class PaymentsFunctionsClient
                 () => InternalInvokeReleasePaymentsHttpTrigger(collectionPeriod, collectionYear)
             ));
 
-        return gate.WaitAndReleaseAsync(context.ScenarioInfo.Title);
+        return gate.WaitAndReleaseAsync();
     }
 
     private async Task InternalInvokeReleasePaymentsHttpTrigger(byte collectionPeriod, short collectionYear)
@@ -118,7 +118,6 @@ public class CollectionDetails
     public int CollectionYear { get; set; }
 }
 
-
 internal class TimedReleaseGate
 {
     private readonly TimeSpan _waitWindow;
@@ -126,8 +125,7 @@ internal class TimedReleaseGate
     private readonly object _lock = new();
 
     private bool _isExecuting = false;
-    //private DateTime _windowStart = DateTime.MinValue;
-    private Task _executionTask = Task.CompletedTask;
+    private Task _executionTask = Task.CompletedTask; // although this appears not to be used, it is necessary hold a reference to the task to ensure it is not garbage collected before completion.
     private readonly List<Waiter> _waiters = new();
 
     public TimedReleaseGate(TimeSpan waitWindow, Func<Task> releaseAction)
@@ -136,18 +134,17 @@ internal class TimedReleaseGate
         _releaseAction = releaseAction;
     }
 
-    public Task WaitAndReleaseAsync(string scenario)
+    public Task WaitAndReleaseAsync()
     {
         var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
        
         lock (_lock)
         {
-            _waiters.Add(new Waiter(tcs,scenario));
+            _waiters.Add(new Waiter(tcs));
 
             if (!_isExecuting)
             {
                 _isExecuting = true;
-                //_windowStart = DateTime.UtcNow;
 
                 _executionTask = Task.Run(async () =>
                 {
@@ -197,11 +194,9 @@ internal class TimedReleaseGate
     internal class Waiter
     {
         internal TaskCompletionSource<bool> TaskCompletionSource { get; set; }
-        internal string Scenario { get; set; }
-        internal Waiter(TaskCompletionSource<bool> tcs, string scenario)
+        internal Waiter(TaskCompletionSource<bool> tcs)
         {
             TaskCompletionSource = tcs;
-            Scenario = scenario;
         }
     }
 }
