@@ -59,7 +59,6 @@ public class CalculateUnfundedPaymentsStepDefinitions
         await _context.UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(numberOfRollupPayments);
     }
 
-
     [Then(@"the amount of (.*) is sent to be paid for each payment in the curent Collection Month")]
     public void AmountIsSentToBePaidForEachPaymentInTheCurentCollectionMonth(decimal Amount)
     {

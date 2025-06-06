@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using WireMock.Server;
@@ -9,7 +10,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 [Binding]
 public class TestRunHooks
 {
-    private static WireMockServer? _wireMockServer;
+
 
     [BeforeTestRun(Order = 1)]
     public static void StartLocalWireMockServer()
@@ -20,7 +21,7 @@ public class TestRunHooks
             if (localWireMockUrl.Host != "localhost")
                 throw new ArgumentException("WireMockBaseUrl must be localhost when running tests against local environment.");
 
-            _wireMockServer = WireMockServer.Start(localWireMockUrl.Port);
+            StaticObjects.WireMockServer = WireMockServer.Start(localWireMockUrl.Port);
         }
     }
 
@@ -64,10 +65,24 @@ public class TestRunHooks
         await wireMockClient.CreateMockResponse($"learners/{currentAcademicYear}?ukprn={Constants.UkPrn}&fundModel=36&progType=-1&standardCode=-1&pageNumber=1&pageSize=1000", testLearners);
     }
 
+    [BeforeTestRun(Order = 5)]
+    public static void RegisterSingletons()
+    {
+        StaticObjects.ApprenticeshipsClient = new ApprenticeshipsClient();
+        StaticObjects.EarningsOuterClient = new EarningsOuterClient();
+        StaticObjects.PaymentsFunctionsClient = new PaymentsFunctionsClient();
+        StaticObjects.ApprenticeshipsSqlClient = new ApprenticeshipsSqlClient();
+        StaticObjects.EarningsSqlClient = new EarningsSqlClient();
+        StaticObjects.PaymentsSqlClient = new PaymentsSqlClient();
+        StaticObjects.ApprenticeshipsInnerApiHelper = new ApprenticeshipsInnerApiHelper();
+        StaticObjects.EarningsInnerApiHelper = new EarningsInnerApiHelper();
+    }
+
+
     [AfterTestRun(Order = 1)]
     public static void StopLocalWireMockServer()
     {
-        _wireMockServer?.Stop();
+        StaticObjects.WireMockServer?.Stop();
     }
 
     [AfterTestRun(Order = 2)]
