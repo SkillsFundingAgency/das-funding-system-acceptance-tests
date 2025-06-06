@@ -10,7 +10,7 @@ public class PaymentsFunctionsClient
     private readonly string _code;
 
     private static readonly ConcurrentDictionary<string, TimedReleaseGate> _gates = new();
-    private static readonly TimeSpan DebounceWindow = TimeSpan.FromSeconds(45);//TODO: increase time when we start batching releases
+    private static readonly TimeSpan DebounceWindow = TimeSpan.FromSeconds(40);
 
     public PaymentsFunctionsClient()
     {
