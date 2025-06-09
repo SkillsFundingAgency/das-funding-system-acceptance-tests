@@ -43,6 +43,11 @@ public class TokenisablePeriod
             return new TokenisablePeriod(new Period(GetAcademicYear(2), period));
         }
 
+        if (yearPortion.ToLower() == TokenisableYearConstants.TwoYearsAgoAYToken.ToLower())
+        {
+            return new TokenisablePeriod(new Period(GetAcademicYear(-2), period));
+        }
+
         throw new ArgumentException("Invalid string format for TokenisablePeriod.");
     }
 
