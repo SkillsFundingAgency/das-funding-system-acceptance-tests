@@ -8,17 +8,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 [Binding]
 public class BeforeScenarioHooks
 {
-    private static ApprenticeshipsClient? _apprenticeshipsClient;
-    private static EarningsOuterClient? _earningsOuterClient;
-    private static PaymentsFunctionsClient? _paymentsFunctionsClient;
-    private static ApprenticeshipsSqlClient? _apprenticeshipsSqlClient;
-    private static EarningsSqlClient? _earningsSqlClient;
-    private static PaymentsSqlClient? _paymentsSqlClient;
-    private static ApprenticeshipsInnerApiHelper? _apprenticeshipsInnerApiHelper;
-    private static EarningsInnerApiHelper? _earningsInnerApiHelper;
-    private static bool _clientsAssigned = false;
-    private static readonly object _lock = new();
-
     [BeforeScenario(Order = 1)]
     public void BeforeScenarioHook(ScenarioContext context)
     {
@@ -49,36 +38,14 @@ public class BeforeScenarioHooks
 
     private static void RegisterDependencies(ScenarioContext context)
     {
-        if (!_clientsAssigned)
-        {
-            lock (_lock)
-            {
-                if (!_clientsAssigned)
-                {
-                    // The status of clientsAssigned is checked again after acquiring the lock to ensure thread safety.
-                    _apprenticeshipsClient = new ApprenticeshipsClient();
-                    _earningsOuterClient = new EarningsOuterClient();
-                    _paymentsFunctionsClient = new PaymentsFunctionsClient();
-                    _apprenticeshipsSqlClient = new ApprenticeshipsSqlClient();
-                    _earningsSqlClient = new EarningsSqlClient();
-                    _paymentsSqlClient = new PaymentsSqlClient();
-                    _apprenticeshipsInnerApiHelper = new ApprenticeshipsInnerApiHelper();
-                    _earningsInnerApiHelper = new EarningsInnerApiHelper();
-
-                    _clientsAssigned = true;
-                }
-            }
-        }
-
-
         var container = context.ScenarioContainer;
-        container.RegisterInstanceAs(_apprenticeshipsClient);
-        container.RegisterInstanceAs(_earningsOuterClient);
-        container.RegisterInstanceAs(_paymentsFunctionsClient);
-        container.RegisterInstanceAs(_apprenticeshipsSqlClient);
-        container.RegisterInstanceAs(_earningsSqlClient);
-        container.RegisterInstanceAs(_paymentsSqlClient);
-        container.RegisterInstanceAs(_apprenticeshipsInnerApiHelper);
-        container.RegisterInstanceAs(_earningsInnerApiHelper);
+        container.RegisterInstanceAs(StaticObjects.ApprenticeshipsClient);
+        container.RegisterInstanceAs(StaticObjects.EarningsOuterClient);
+        container.RegisterInstanceAs(StaticObjects.PaymentsFunctionsClient);
+        container.RegisterInstanceAs(StaticObjects.ApprenticeshipsSqlClient);
+        container.RegisterInstanceAs(StaticObjects.EarningsSqlClient);
+        container.RegisterInstanceAs(StaticObjects.PaymentsSqlClient);
+        container.RegisterInstanceAs(StaticObjects.ApprenticeshipsInnerApiHelper);
+        container.RegisterInstanceAs(StaticObjects.EarningsInnerApiHelper);
     }
 }

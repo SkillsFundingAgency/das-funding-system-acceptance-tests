@@ -9,9 +9,8 @@ public class PaymentsFunctionsClient
     private readonly HttpClient _apiClient;
     private readonly string _code;
 
-    private static readonly ConcurrentDictionary<string, DebouncedExecution> _executions = new();
-
-    private static readonly TimeSpan DebounceWindow = TimeSpan.FromSeconds(3);//TODO: increase time when we start batching releases
+    private static readonly ConcurrentDictionary<string, TimedReleaseGate> _gates = new();
+    private static readonly TimeSpan DebounceWindow = TimeSpan.FromSeconds(40);
 
     public PaymentsFunctionsClient()
     {
@@ -21,12 +20,20 @@ public class PaymentsFunctionsClient
         _code = config.PaymentsFunctionKey;
     }
 
-    public Task InvokeReleasePaymentsHttpTrigger(byte collectionPeriod, short collectionYear)
+    public Task InvokeReleasePaymentsHttpTrigger(ScenarioContext context, byte collectionPeriod, short collectionYear)
     {
+        if (!context.ScenarioInfo.Tags.Contains("releasesPayments"))
+            throw new InvalidOperationException("This step can only be used in scenarios tagged with 'releasesPayments'");
+        
         var key = $"{collectionYear}-{collectionPeriod}";
 
-        var execution = _executions.GetOrAdd(key, _ => new DebouncedExecution(() => InternalInvokeReleasePaymentsHttpTrigger(collectionPeriod, collectionYear), DebounceWindow));
-        return execution.AwaitExecution();
+        var gate = _gates.GetOrAdd(key, _ =>
+            new TimedReleaseGate(
+                DebounceWindow,
+                () => InternalInvokeReleasePaymentsHttpTrigger(collectionPeriod, collectionYear)
+            ));
+
+        return gate.WaitAndReleaseAsync();
     }
 
     private async Task InternalInvokeReleasePaymentsHttpTrigger(byte collectionPeriod, short collectionYear)
@@ -111,68 +118,85 @@ public class CollectionDetails
     public int CollectionYear { get; set; }
 }
 
-
-/// <summary>
-/// Provides a debounced execution mechanism for asynchronous operations.
-/// 
-/// This class wont execute the provided action until the specified debounce window has passed without any new calls.
-/// then all calls will be executed together.
-/// </summary>
-internal class DebouncedExecution
+internal class TimedReleaseGate
 {
-    private readonly Func<Task> _action;
-    private readonly TimeSpan _debounceWindow;
+    private readonly TimeSpan _waitWindow;
+    private readonly Func<Task> _releaseAction;
     private readonly object _lock = new();
 
-    private CancellationTokenSource? _cts;
-    private TaskCompletionSource<bool> _tcs;
+    private bool _isExecuting = false;
+    private Task _executionTask = Task.CompletedTask; // although this appears not to be used, it is necessary hold a reference to the task to ensure it is not garbage collected before completion.
+    private readonly List<Waiter> _waiters = new();
 
-    public DebouncedExecution(Func<Task> action, TimeSpan debounceWindow)
+    public TimedReleaseGate(TimeSpan waitWindow, Func<Task> releaseAction)
     {
-        _action = action;
-        _debounceWindow = debounceWindow;
-        _tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _waitWindow = waitWindow;
+        _releaseAction = releaseAction;
     }
 
-    public Task AwaitExecution()
+    public Task WaitAndReleaseAsync()
+    {
+        var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+       
+        lock (_lock)
+        {
+            _waiters.Add(new Waiter(tcs));
+
+            if (!_isExecuting)
+            {
+                _isExecuting = true;
+
+                _executionTask = Task.Run(async () =>
+                {
+                    await Task.Delay(_waitWindow);
+
+                    try
+                    {
+                        await _releaseAction();
+                        CompleteAllWaiters(success: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        CompleteAllWaiters(success: false, ex);
+                    }
+
+                    lock (_lock)
+                    {
+                        _isExecuting = false;
+                    }
+                });
+            }
+        }
+
+        return tcs.Task;
+    }
+
+    private void CompleteAllWaiters(bool success, Exception? error = null)
     {
         lock (_lock)
         {
-            _cts?.Cancel(); // cancel any pending debounce timer
-
-            _cts = new CancellationTokenSource();
-            var token = _cts.Token;
-
-            // restart debounce timer
-            _ = Task.Run(async () =>
+            foreach (var waiter in _waiters)
             {
-                try
+                if (success)
                 {
-                    await Task.Delay(_debounceWindow, token);
-                    await _action();
-                    _tcs.TrySetResult(true);
+                    waiter.TaskCompletionSource.TrySetResult(true);
                 }
-                catch (OperationCanceledException)
+                else
                 {
-                    // debounce timer reset
+                    waiter.TaskCompletionSource.TrySetException(error!);
                 }
-                catch (Exception ex)
-                {
-                    _tcs.TrySetException(ex);
-                }
-                finally
-                {
-                    // reset for next batch
-                    lock (_lock)
-                    {
-                        _cts.Dispose();
-                        _cts = null;
-                        _tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                    }
-                }
-            });
+            }
 
-            return _tcs.Task;
+            _waiters.Clear();
+        }
+    }
+
+    internal class Waiter
+    {
+        internal TaskCompletionSource<bool> TaskCompletionSource { get; set; }
+        internal Waiter(TaskCompletionSource<bool> tcs)
+        {
+            TaskCompletionSource = tcs;
         }
     }
 }

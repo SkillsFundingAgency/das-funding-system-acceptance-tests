@@ -13,6 +13,7 @@ Scenario: 19-24 Incentive Earnings & Payments
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
+	And Payments Generated Events are published
 	And the apprentice is marked as a care leaver
 	And Payments Generated Events are published
 	Then the first incentive earning is generated for provider & employer
@@ -32,6 +33,7 @@ Scenario: 19-24 Incentive Earnings & Payments (duration only long enough for fir
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
+	And Payments Generated Events are published
 	And the apprentice is marked as a care leaver
 	And Payments Generated Events are published
 	Then the first incentive earning is generated for provider & employer
