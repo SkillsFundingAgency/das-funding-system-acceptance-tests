@@ -9,8 +9,10 @@ Scenario: Calculate Single Math and English earnings
 	Given an apprenticeship has a start date of currentAY-09-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
+	And Payments Generated Events are published
 	And Maths and English learning is recorded from <start_date> to <end_date> with course <course> and amount <amount>
 	Then Maths and English earnings are generated from periods <expected_first_payment_period> to <expected_last_payment_period> with instalment amount <instalment> for course <course>
+	And Payments Generated Events are published
 	And Maths and English payments are generated from periods <expected_first_payment_period> to <expected_last_payment_period> with amount <instalment>
 
 Examples:
@@ -26,9 +28,11 @@ Scenario: Calculate Multiple Math and English earnings
 	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 22
 	When the apprenticeship commitment is approved
+	And Payments Generated Events are published
 	And the first course is recorded from <course1_start_date> to <course1_end_date> with course <course1_name> and amount <course1_amount> and the second course from <course2_start_date> to <course2_end_date> with course <course2_name> and amount <course2_amount>
 	Then Maths and English earnings are generated from periods <course1_first_payment_period> to <course1_last_payment_period> with instalment amount <course1_instalment> for course <course1_name>
 	And Maths and English earnings are generated from periods <course2_first_payment_period> to <course2_last_payment_period> with instalment amount <course2_instalment> for course <course2_name>
+	And Payments Generated Events are published
 	And Maths and English payments are generated from periods <course1_first_payment_period> to <course1_last_payment_period> with amount <course1_instalment>
 	And Maths and English payments are generated from periods <course2_first_payment_period> to <course2_last_payment_period> with amount <course2_instalment>
 
@@ -39,6 +43,21 @@ Examples:
 
 
 @regression
+Scenario: Do Not calculate Maths and English payments for a hard closed academic year
+	Given an apprenticeship has a start date of TwoYearsAgoAY-08-01, a planned end date of CurrentAY-07-31, an agreed price of 15000, and a training code 614
+	And the age at the start of the apprenticeship is 19
+	When the apprenticeship commitment is approved
+	And Payments Generated Events are published
+	And Maths and English learning is recorded from <start_date> to <end_date> with course <course> and amount <amount>
+	Then Maths and English earnings are generated from periods <expected_first_payment_period> to <expected_last_payment_period> with instalment amount <instalment> for course <course>
+	And Payments Generated Events are published
+	And no Maths and English payments are generated
+
+Examples:
+	| start_date          | end_date            | course              | amount | expected_first_payment_period | expected_last_payment_period | instalment |
+	| TwoYearsAgoAY-09-25 | TwoYearsAgoAY-01-15 | Entry level English | 931    | TwoYearsAgoAY-R02             | TwoYearsAgoAY-R05            | 232.75     |
+
+@regression
 Scenario: Learning Support for Maths and English Earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19
@@ -47,6 +66,7 @@ Scenario: Learning Support for Maths and English Earnings
 	And the payments event is disregarded
 	And learning support is recorded from <start_date> to <maths_and_english_end_date>
 	Then learning support earnings are generated from periods <expected_first_earning_period> to <expected_last_earning_period>
+	And Payments Generated Events are published
 	And learning support payments are generated from periods <expected_first_payment_period> to <expected_last_payment_period>
 
 Examples:

@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+﻿using NUnit.Framework.Interfaces;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -26,7 +27,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             string course, decimal amount)
         {
             var testData = _context.Get<TestData>();
-            PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
+            PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
             var helper = new EarningsInnerApiHelper();
             await helper.SetMathAndEnglishLearning(testData.ApprenticeshipKey,
             [
@@ -42,7 +43,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             string Course1Name, decimal Course1Amount, TokenisableDateTime Course2StartDate, TokenisableDateTime Course2EndDate, string Course2Name, decimal Course2Amount)
         {
             var testData = _context.Get<TestData>();
-            PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
+            PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
             var helper = new EarningsInnerApiHelper();
             await helper.SetMathAndEnglishLearning(testData.ApprenticeshipKey,
             [
@@ -50,7 +51,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     { StartDate = Course1StartDate.Value, EndDate = Course1EndDate.Value, Amount = Course1Amount, Course = Course1Name },
                 new  EarningsInnerApiClient.MathAndEnglishDetails
                     { StartDate = Course2StartDate.Value, EndDate = Course2EndDate.Value, Amount = Course2Amount, Course = Course2Name }
-            ]     
+            ]
             );
 
             testData.IsMathsAndEnglishAdded = true;
@@ -118,8 +119,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
             }, "Failed to find updated payments entity.");
 
-            await _context.ReceivePaymentsEvent(testData.ApprenticeshipKey);
-
             while (mathsAndEnglishStartPeriod.Value.AcademicYear < mathsAndEnglishEndPeriod.Value.AcademicYear ||
                    (mathsAndEnglishStartPeriod.Value.AcademicYear == mathsAndEnglishEndPeriod.Value.AcademicYear &&
                     mathsAndEnglishStartPeriod.Value.PeriodValue <= mathsAndEnglishEndPeriod.Value.PeriodValue))
@@ -135,17 +134,31 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             }
         }
 
+        [Then("no Maths and English payments are generated")]
+        public async Task NoMathsAndEnglishPaymentsAreGenerated()
+        {
+            var testData = _context.Get<TestData>();
+
+            testData.PaymentsGeneratedEvent.Payments
+                .Where(x => x.PaymentType == "MathsAndEnglish")
+                .Should()
+                .BeEmpty("no MathsAndEnglish payments should be present");
+        }
+
+
         [When(@"the payments event is disregarded")]
         public async Task WhenThePaymentsEventIsDisregarded()
         {
+            var testData = _context.Get<TestData>();
+
             await WaitHelper.WaitForIt(() =>
                 {
-                    var e = PaymentsGeneratedEventHandler.ReceivedEvents.FirstOrDefault().message;
+                    var e = PaymentsGeneratedEventHandler.GetMessage(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
                     return e != null;
                 },
                 $"Failed to find published event in Payments");
 
-            PaymentsGeneratedEventHandler.ReceivedEvents.Clear();
+            PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
         }
     }
 }
