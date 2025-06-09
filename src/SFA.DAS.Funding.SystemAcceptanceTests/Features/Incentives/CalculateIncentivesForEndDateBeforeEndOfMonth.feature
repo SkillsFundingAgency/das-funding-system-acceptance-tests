@@ -12,6 +12,7 @@ Scenario: Incentive Earnings & Payments for learner ending after 90 days not at 
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
+	And Payments Generated Events are published
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is not generated for provider & employer
 	And the first incentive payment is generated for provider & employer
@@ -27,6 +28,7 @@ Scenario: Incentive Earnings & Payments for learner ending after 365 days not at
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
+	And Payments Generated Events are published
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 	And the first incentive payment is generated for provider & employer

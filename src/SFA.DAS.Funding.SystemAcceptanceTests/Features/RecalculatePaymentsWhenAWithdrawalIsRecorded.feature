@@ -10,13 +10,16 @@ Example 3: app never started - withdraw from start - no payments are retained - 
 Example 4: after hard close - all payments made this year are clawed back
 Example 5:  after hard close - app never started - all payments made this year are clawed back
 
-@regression
+@regression @releasesPayments
 Scenario: Withdrawal is recorded; recalc payments
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
+	And Payments Generated Events are published
+	And Payments are released
 	And payments have been paid for an apprenticeship with <start_date>, <end_date>
 	When a Withdrawal request is recorded with a reason <reason> and last day of delivery <last_day_of_delivery>
 	Then the apprenticeship is marked as withdrawn
+	And Payments Generated Events are published
 	And payments are recalculated
 	And for all the past census periods since <start_date>, where the payment has already been made, the amount is still same as previous earnings <previous_earnings_amount> and are flagged as sent for payment
 	And new payments with amount <previous_earnings_amount> are marked as Not sent for payment and clawed back

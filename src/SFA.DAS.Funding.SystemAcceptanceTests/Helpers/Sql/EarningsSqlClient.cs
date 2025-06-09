@@ -18,7 +18,10 @@ public class EarningsSqlClient
         var testData = context.Get<TestData>();
         var apprenticeshipKey = testData.ApprenticeshipKey;
 
-        var apprenticeship = _sqlServerClient.GetList<EarningsApprenticeshipModel>($"SELECT * FROM [Domain].[Apprenticeship] Where [key] ='{apprenticeshipKey}'").Single();
+        var apprenticeship = _sqlServerClient.GetList<EarningsApprenticeshipModel>($"SELECT * FROM [Domain].[Apprenticeship] Where [key] ='{apprenticeshipKey}'").SingleOrDefault();
+        if (apprenticeship == null)
+            return null;
+
         var apprenticeshipEpisodes = _sqlServerClient.GetList<EpisodeModel>($"SELECT * FROM [Domain].[Episode] Where ApprenticeshipKey ='{apprenticeshipKey}'");
 
         foreach (var episode in apprenticeshipEpisodes)

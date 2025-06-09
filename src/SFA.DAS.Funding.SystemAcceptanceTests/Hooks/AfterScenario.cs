@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+using System.Text.Json;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
@@ -7,18 +8,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 internal class AfterScenario
 {
     private ScenarioContext _context;
-    private readonly string _outputFile;
+    private const string OutputFile = "OutputFile";
 
     public AfterScenario(ScenarioContext context)
     {
         _context = context;
-        _outputFile = $"TESTDATA_{DateTime.Now:HH-mm-ss-fffff}.txt";
+        var testData = _context.Get<TestData>();
+        _context.Set($"TESTDATA_{testData.Uln}_{DateTime.Now:HH-mm-ss-fffff}.txt", OutputFile);
     }
 
     [AfterStep(Order = 10)]
     public void AfterStep()
     {
-        OutputTestDataToFile();// TODO-PARALLEL - must be adapted to run in parallel
+        OutputTestDataToFile();
     }
 
     [AfterScenario(Order = 10)]
@@ -49,29 +51,51 @@ internal class AfterScenario
 
     private void OutputTestDataToFile()
     {
-        string StepOutcome() => _context.TestError != null ? "ERROR" : "Done";
+        var testData = _context.Get<TestData>();
+        var outputFile = _context.Get<string>(OutputFile);
+        var hasError = _context.TestError != null;
+
+        string StepOutcome() => hasError ? "ERROR" : "Done";
 
         var stepInfo = _context.StepContext.StepInfo;
 
         _context.Set($"-> {StepOutcome()}: {stepInfo.StepDefinitionType} {stepInfo.Text}");
 
-        IDictionary<string, string> testData = new Dictionary<string, string>();
+        IDictionary<string, string> testLogs = new Dictionary<string, string>();
 
         foreach (KeyValuePair<string, object> kvp in _context)
         {
             string valueString = kvp.Value != null ? kvp.Value.ToString() : null;
-            testData[kvp.Key] = valueString;
+            testLogs[kvp.Key] = valueString;
         }
 
-        using (StreamWriter writer = File.CreateText(_outputFile))
+        using (StreamWriter writer = File.CreateText(outputFile))
         {
-            foreach (KeyValuePair<string, string> kvp in testData)
+            writer.WriteLine($"Test: {_context.ScenarioInfo.Title}");
+
+            writer.WriteLine($"ApprenticeshipKey: {testData.ApprenticeshipKey}");
+            writer.WriteLine($"Uln: {testData.Uln}");
+            if(testData.ApprenticeshipCreatedEvent != null)
+            {
+                writer.WriteLine($"ApprenticeshipId: {testData.ApprenticeshipCreatedEvent.ApprovalsApprenticeshipId}");
+            }
+
+            if (hasError)
+            {
+                writer.WriteLine("PaymentsGeneratedEvent");
+                writer.WriteLine(JsonSerializer.Serialize(testData.PaymentsGeneratedEvent, new JsonSerializerOptions { WriteIndented = true }));
+
+                writer.WriteLine("EarningsGeneratedEvent");
+                writer.WriteLine(JsonSerializer.Serialize(testData.EarningsGeneratedEvent, new JsonSerializerOptions { WriteIndented = true }));
+            }
+
+            foreach (KeyValuePair<string, string> kvp in testLogs)
             {
                 writer.WriteLine($"{kvp.Key}: {kvp.Value}");
             }
         }
 
         // Attach the test data file to the test output
-        TestContext.AddTestAttachment(_outputFile);
+        TestContext.AddTestAttachment(outputFile);
     }
 }

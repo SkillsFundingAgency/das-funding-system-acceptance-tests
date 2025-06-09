@@ -17,15 +17,30 @@ public class ReleasePaymentsStepDefinitions
         _paymentsFunctionsClient = paymentsFunctionsClient;
     }
 
-    [Given(@"payments are released for (.*)")]
-    [When(@"payments are released for (.*)")]
-    public async Task ReleasePayments(TokenisableDateTime searchDate)
+    [Given(@"pause (.*) seconds")]
+    public async Task Pause(int seconds)
     {
-        var releasePaymentsCommand = new ReleasePaymentsCommand();
+        await Task.Delay(TimeSpan.FromSeconds(seconds));
+    }
 
-        var period = TableExtensions.Period[searchDate.Value.ToString("MMMM")];
-        var year = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", searchDate.Value));
+    [Given("Payments are released")]
+    [When(@"the scheduler triggers Unfunded Payment processing")]
+    [Then(@"the scheduler triggers Unfunded Payment processing")]
+    public async Task ReleasePayments()
+    {
+        var testData = _context.Get<TestData>();
 
-        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(period, year);
+        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_context, testData.CurrentCollectionPeriod,
+            Convert.ToInt16(testData.CurrentCollectionYear));
+    }
+
+    [When(@"the Release Payments command is published again")]
+    public async Task ReleasePaymentsAgain()
+    {
+        var testData = _context.Get<TestData>();
+        FinalisedOnProgrammeLearningPaymentEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
+
+        await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_context, testData.CurrentCollectionPeriod,
+            Convert.ToInt16(testData.CurrentCollectionYear));
     }
 }

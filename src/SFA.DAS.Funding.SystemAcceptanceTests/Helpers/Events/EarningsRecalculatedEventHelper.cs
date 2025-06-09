@@ -9,7 +9,7 @@ internal static class EarningsRecalculatedEventHelper
         await WaitHelper.WaitForIt(() =>
         {
             ApprenticeshipEarningsRecalculatedEvent? earningsRecalculatedEvent =
-                ApprenticeshipEarningsRecalculatedEventHandler.ReceivedEvents.FirstOrDefault(x => x.message.ApprenticeshipKey == apprenticeshipKey).message;
+                ApprenticeshipEarningsRecalculatedEventHandler.GetMessage(x => x.ApprenticeshipKey == apprenticeshipKey);
 
             if (earningsRecalculatedEvent != null)
             {

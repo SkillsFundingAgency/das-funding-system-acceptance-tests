@@ -1,42 +1,18 @@
-﻿using SFA.DAS.Apprenticeships.Types;
-
-namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 internal static class DcLearnerDataHelper
 {
-    internal static Learner GetLearner(this ScenarioContext context)
+    // only uln and learner reference number are used from this endpoint, so we can use any values here
+    internal static Learner GetLearner(string uln)
     {
-        var testData = context.Get<TestData>();
-        var apprenticeshipCreatedEvent = testData.ApprenticeshipCreatedEvent;
+        var ulnLong = long.Parse(uln);
+
         return new Learner
         {
-            Ukprn = apprenticeshipCreatedEvent.Episode.Ukprn,
+            Ukprn = Constants.UkPrn, 
             LearnRefNumber = $"Learner{DateTime.UtcNow.Ticks}",
-            Uln = long.Parse(apprenticeshipCreatedEvent.Uln),
-            FamilyName = apprenticeshipCreatedEvent.LastName,
-            GivenNames = apprenticeshipCreatedEvent.FirstName,
-            DateOfBirth = apprenticeshipCreatedEvent.DateOfBirth,
+            Uln = ulnLong,
             NiNumber = $"Ni{DateTime.UtcNow.Ticks}",
-            LearningDeliveries = new List<LearningDelivery>
-            {
-                new LearningDelivery
-                {
-                    AimType = 0,
-                    LearnStartDate = apprenticeshipCreatedEvent.Episode.Prices.First().StartDate,//This may need more work in the future
-                    LearnPlanEndDate = apprenticeshipCreatedEvent.Episode.Prices.Last().EndDate,//This may need more work in the future
-                    FundModel = 0,
-                    StdCode = 0,
-                    DelLocPostCode = "string",
-                    EpaOrgID = "string",
-                    CompStatus = 0,
-                    LearnActEndDate = apprenticeshipCreatedEvent.Episode.Prices.Last().EndDate,//This may need more work in the future
-                    WithdrawReason = 0,
-                    Outcome = 0,
-                    AchDate = apprenticeshipCreatedEvent.Episode.Prices.First().StartDate,//This may need more work in the future
-                    OutGrade = "string",
-                    ProgType = 0
-                }
-            }
         };
     }
 
@@ -45,11 +21,17 @@ internal static class DcLearnerDataHelper
         public long Ukprn { get; set; }
         public string LearnRefNumber { get; set; }
         public long Uln { get; set; }
-        public string FamilyName { get; set; }
-        public string GivenNames { get; set; }
-        public DateTime DateOfBirth { get; set; }
         public string NiNumber { get; set; }
-        public List<LearningDelivery> LearningDeliveries { get; set; }
+
+        // The properties that have been commented out do actually exist in the API response
+        // however, wire mock will not allow response bodies over a certain size
+        // so we have removed them to keep the response size down, keeping only the properties
+        // that are used in the tests.
+
+        // public string FamilyName { get; set; }
+        // public string GivenNames { get; set; }
+        // public DateTime DateOfBirth { get; set; }
+        // public List<LearningDelivery> LearningDeliveries { get; set; }
     }
 
     public class LearningDelivery
