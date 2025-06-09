@@ -35,6 +35,8 @@ Scenario: Calculate Multiple Math and English earnings
 Examples:
 	| course1_start_date | course1_end_date | course1_name        | course1_amount | course2_start_date | course2_end_date | course2_name | course2_amount | course1_first_payment_period | course1_last_payment_period | course1_instalment | course2_first_payment_period | course2_last_payment_period | course2_instalment |
 	| currentAY-09-25    | currentAY-01-15  | Entry level English | 931            | currentAY-02-15    | currentAY-05-27  | GCSE Maths   | 864            | currentAY-R02                | currentAY-R05               | 232.75             | currentAY-R07                | currentAY-R09               | 288                |
+	| currentAY-09-25    | currentAY-01-15  | Entry level English | 931            | currentAY-11-15    | currentAY-02-27  | GCSE Maths   | 864            | currentAY-R02                | currentAY-R05               | 232.75             | currentAY-R04                | currentAY-R06               | 288                |
+
 
 @regression
 Scenario: Learning Support for Maths and English Earnings
