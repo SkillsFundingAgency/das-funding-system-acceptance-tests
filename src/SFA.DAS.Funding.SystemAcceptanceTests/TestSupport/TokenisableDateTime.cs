@@ -62,6 +62,11 @@ public class TokenisableDateTime
             return new TokenisableDateTime(GetDateForCurrentAcademicYear(dateComponents).AddYears(2));
         }
 
+        if (dateComponents[0].ToLower() == TokenisableYearConstants.TwoYearsAgoAYToken.ToLower())
+        {
+            return new TokenisableDateTime(GetDateForCurrentAcademicYear(dateComponents).AddYears(-2));
+        }
+
         throw new ArgumentException("Invalid date string format for TokenisableDateTime.");
 	}
 
