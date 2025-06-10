@@ -104,4 +104,15 @@ public class LearningSupportAssertionsStepDefinitions
             throw new Exception($"Failed to verify learning support payments. {ex.Message}");
         }
     }
+
+    [Then("no Maths and English learning support payments are generated")]
+    public void NoMathsAndEnglishLearningSupportPaymentsAreGenerated()
+    {
+        var testData = _context.Get<TestData>();
+
+        testData.PaymentsGeneratedEvent.Payments
+                .Where(x => x.PaymentType == AdditionalPaymentType.LearningSupport.ToString())
+                .Should()
+                .BeEmpty("No Learning Support payments should be present");
+    }
 }
