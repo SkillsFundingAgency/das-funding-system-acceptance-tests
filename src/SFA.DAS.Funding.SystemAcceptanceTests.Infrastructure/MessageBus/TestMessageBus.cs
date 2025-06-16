@@ -1,9 +1,9 @@
-﻿using NServiceBus;
+﻿using Azure.Messaging.ServiceBus;
+using NServiceBus;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
-using System.Threading;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
 {
@@ -11,11 +11,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
     {
         private IEndpointInstance _endpointInstance;
         public bool IsRunning { get; private set; }
-        public FundingConfig _config { get; set; }
+        private FundingConfig Config { get; set; } = null!;
 
-        public async Task Start(FundingConfig config, string endpointName, string connectionString)
+        public async Task Start(FundingConfig config, string endpointName)
         {
-            _config = config;
+            Config = config;
             var endpointConfiguration = new EndpointConfiguration(endpointName)
                 .UseMessageConventions()
                 .UseNewtonsoftJsonSerializer();
@@ -25,7 +25,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
             if (NotUsingLearningTransport(config))
             {
                 endpointConfiguration
-                    .UseAzureServiceBusTransport(connectionString);
+                    .UseAzureServiceBusTransport(Config.SharedServiceBusFqdn);
             }
             else
             {
@@ -53,11 +53,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
             IsRunning = false;
         }
 
-        public async Task SendApprenticeshipApprovedMessage(object message) => await Send(message, _config.ApprovalCreatedQueue);
-        public async Task SendPriceChangeApprovedMessage(object message) => await Send(message, _config.PriceChangeApprovedEventHandlersQueue);
-        public async Task SendStartDateChangedMessage(object message) => await Send(message, _config.StartDateChangeApprovedEventHandlersQueue);
-        public async Task SendPaymentsFrozenMessage(object message) => await Send(message, _config.PaymentsFrozenEventHandlersQueue);
-        public async Task SendPaymentsUnfrozenMessage(object message) => await Send(message, _config.PaymentsUnfrozenEventHandlersQueue);
+        public async Task SendApprenticeshipApprovedMessage(object message) => await Send(message, Config.ApprovalCreatedQueue);
+        public async Task SendPriceChangeApprovedMessage(object message) => await Send(message, Config.PriceChangeApprovedEventHandlersQueue);
+        public async Task SendStartDateChangedMessage(object message) => await Send(message, Config.StartDateChangeApprovedEventHandlersQueue);
+        public async Task SendPaymentsFrozenMessage(object message) => await Send(message, Config.PaymentsFrozenEventHandlersQueue);
+        public async Task SendPaymentsUnfrozenMessage(object message) => await Send(message, Config.PaymentsUnfrozenEventHandlersQueue);
 
 
         public async Task Send(object message, string queueName)
