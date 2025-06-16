@@ -128,7 +128,7 @@ public class TestRunHooks
     }
 
     [AfterTestRun(Order = 4)]
-    public static void StopEndpoints(ScenarioContext context)
+    public static void StopEndpoints()
     {
         TestServiceBus.Das?.Stop();
         // TestServiceBus.Pv2?.Stop();
