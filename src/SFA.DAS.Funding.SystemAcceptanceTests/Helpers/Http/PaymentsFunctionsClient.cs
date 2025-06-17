@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Concurrent;
+using TechTalk.SpecFlow.CommonModels;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
@@ -20,11 +21,13 @@ public class PaymentsFunctionsClient
         _code = config.PaymentsFunctionKey;
     }
 
-    public Task InvokeReleasePaymentsHttpTrigger(ScenarioContext context, byte collectionPeriod, short collectionYear)
+    public async Task InvokeReleasePaymentsHttpTrigger(ScenarioContext context, byte collectionPeriod, short collectionYear)
     {
         if (!context.ScenarioInfo.Tags.Contains("releasesPayments"))
             throw new InvalidOperationException("This step can only be used in scenarios tagged with 'releasesPayments'");
         
+        var testData = context.Get<TestData>();
+
         var key = $"{collectionYear}-{collectionPeriod}";
 
         var gate = _gates.GetOrAdd(key, _ =>
@@ -33,11 +36,13 @@ public class PaymentsFunctionsClient
                 () => InternalInvokeReleasePaymentsHttpTrigger(collectionPeriod, collectionYear)
             ));
 
-        return gate.WaitAndReleaseAsync();
+        testData.ReleasePaymentsOrchestrationId = await gate.WaitAndReleaseAsync();
     }
 
-    private async Task InternalInvokeReleasePaymentsHttpTrigger(byte collectionPeriod, short collectionYear)
+    private async Task<string> InternalInvokeReleasePaymentsHttpTrigger(byte collectionPeriod, short collectionYear)
     {
+        string instanceId = string.Empty;
+
         await WaitUntilPaymentReleaseHasFinishedAsync();// wait for any previous payment release to finish before starting a new one
 
         var path = $"/api/releasePayments/{collectionYear}/{collectionPeriod}";
@@ -48,7 +53,15 @@ public class PaymentsFunctionsClient
             throw new Exception($"Payments Http Trigger failed. {response.StatusCode} -  {response.ReasonPhrase}\nBaseUrl: {_apiClient.BaseAddress}\nPath:{path}");
         }
 
+        if(response.Headers.TryGetValues("InstanceId", out var InstanceIdHeader))
+        {
+            if(InstanceIdHeader != null && InstanceIdHeader.Any())
+                instanceId = InstanceIdHeader.FirstOrDefault()!;
+        }
+
         await WaitUntilPaymentReleaseHasFinishedAsync(collectionPeriod, collectionYear); // wait for the new payment release to finish
+
+        return instanceId;
     }
 
     private async Task WaitUntilPaymentReleaseHasFinishedAsync(
@@ -121,22 +134,22 @@ public class CollectionDetails
 internal class TimedReleaseGate
 {
     private readonly TimeSpan _waitWindow;
-    private readonly Func<Task> _releaseAction;
+    private readonly Func<Task<string>> _releaseAction;
     private readonly object _lock = new();
 
     private bool _isExecuting = false;
-    private Task _executionTask = Task.CompletedTask; // although this appears not to be used, it is necessary hold a reference to the task to ensure it is not garbage collected before completion.
+    private Task _executionTask = Task.FromResult(string.Empty); // although this appears not to be used, it is necessary hold a reference to the task to ensure it is not garbage collected before completion.
     private readonly List<Waiter> _waiters = new();
 
-    public TimedReleaseGate(TimeSpan waitWindow, Func<Task> releaseAction)
+    public TimedReleaseGate(TimeSpan waitWindow, Func<Task<string>> releaseAction)
     {
         _waitWindow = waitWindow;
         _releaseAction = releaseAction;
     }
 
-    public Task WaitAndReleaseAsync()
+    public Task<string> WaitAndReleaseAsync()
     {
-        var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var tcs = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
        
         lock (_lock)
         {
@@ -152,12 +165,12 @@ internal class TimedReleaseGate
 
                     try
                     {
-                        await _releaseAction();
-                        CompleteAllWaiters(success: true);
+                        var result = await _releaseAction();
+                        CompleteAllWaiters(result);
                     }
                     catch (Exception ex)
                     {
-                        CompleteAllWaiters(success: false, ex);
+                        CompleteAllWaiters(null, ex);
                     }
 
                     lock (_lock)
@@ -171,15 +184,15 @@ internal class TimedReleaseGate
         return tcs.Task;
     }
 
-    private void CompleteAllWaiters(bool success, Exception? error = null)
+    private void CompleteAllWaiters(string? result, Exception? error = null)
     {
         lock (_lock)
         {
             foreach (var waiter in _waiters)
             {
-                if (success)
+                if (error == null)
                 {
-                    waiter.TaskCompletionSource.TrySetResult(true);
+                    waiter.TaskCompletionSource.TrySetResult(result!);
                 }
                 else
                 {
@@ -193,8 +206,8 @@ internal class TimedReleaseGate
 
     internal class Waiter
     {
-        internal TaskCompletionSource<bool> TaskCompletionSource { get; set; }
-        internal Waiter(TaskCompletionSource<bool> tcs)
+        internal TaskCompletionSource<string> TaskCompletionSource { get; set; }
+        internal Waiter(TaskCompletionSource<string> tcs)
         {
             TaskCompletionSource = tcs;
         }

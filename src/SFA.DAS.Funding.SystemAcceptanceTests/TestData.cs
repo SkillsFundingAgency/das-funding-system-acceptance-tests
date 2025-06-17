@@ -14,6 +14,7 @@ internal class TestData
     internal Guid ApprenticeshipKey { get; set; } = Guid.Empty;
     internal Guid InitialEarningsProfileId { get; set; } = Guid.Empty;
     internal Guid EarningsProfileId { get; set; } = Guid.Empty;
+    internal string ReleasePaymentsOrchestrationId { get; set; } = string.Empty;
     internal bool IsMarkedAsCareLeaver { get; set; } = false;
     internal bool IsLearningSupportAdded { get; set; } = false;
     internal bool IsMathsAndEnglishAdded { get; set; } = false;

@@ -75,7 +75,9 @@ internal class AfterScenario
 
             writer.WriteLine($"ApprenticeshipKey: {testData.ApprenticeshipKey}");
             writer.WriteLine($"Uln: {testData.Uln}");
-            if(testData.ApprenticeshipCreatedEvent != null)
+            writer.WriteLine($"ReleasePaymentsOrchestrationId: {testData.ReleasePaymentsOrchestrationId}");
+
+            if (testData.ApprenticeshipCreatedEvent != null)
             {
                 writer.WriteLine($"ApprenticeshipId: {testData.ApprenticeshipCreatedEvent.ApprovalsApprenticeshipId}");
             }
