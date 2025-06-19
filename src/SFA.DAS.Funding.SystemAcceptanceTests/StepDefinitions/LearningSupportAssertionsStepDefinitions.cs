@@ -56,7 +56,15 @@ public class LearningSupportAssertionsStepDefinitions
 
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
-        while (learningSupportStart.Value.AcademicYear < learningSupportEnd.Value.AcademicYear || (learningSupportStart.Value.AcademicYear == learningSupportEnd.Value.AcademicYear && learningSupportStart.Value.PeriodValue <= learningSupportEnd.Value.PeriodValue))
+        additionalPayments.Should().NotContain(x =>
+                new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(learningSupportStart.Value),
+            $"Expected no Learning Support earnings before {learningSupportStart.Value.ToCollectionPeriodString()}");
+
+        additionalPayments.Should().NotContain(x =>
+                learningSupportEnd.Value.IsBefore(new Period(x.AcademicYear, x.DeliveryPeriod)),
+            $"Expected no Learning Support earnings after {learningSupportEnd.Value.ToCollectionPeriodString()}");
+
+        while (learningSupportStart.Value.IsBefore(learningSupportEnd.Value))
         {
             additionalPayments.Should().Contain(x =>
                     x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport
@@ -88,7 +96,15 @@ public class LearningSupportAssertionsStepDefinitions
 
         try
         {
-            while (learningSupportStart.Value.AcademicYear < learningSupportEnd.Value.AcademicYear || learningSupportStart.Value.AcademicYear == learningSupportEnd.Value.AcademicYear && learningSupportStart.Value.PeriodValue <= learningSupportEnd.Value.PeriodValue)
+            testData.PaymentsGeneratedEvent.Payments.Should().NotContain(x =>
+                    new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(learningSupportStart.Value),
+                $"Expected no Learning Support payments before {learningSupportStart.Value.ToCollectionPeriodString()}");
+
+            testData.PaymentsGeneratedEvent.Payments.Should().NotContain(x =>
+                    learningSupportEnd.Value.IsBefore(new Period(x.AcademicYear, x.DeliveryPeriod)),
+                $"Expected no Learning Support payments after {learningSupportEnd.Value.ToCollectionPeriodString()}");
+
+            while (learningSupportStart.Value.IsBefore(learningSupportEnd.Value))
             {
                 testData.PaymentsGeneratedEvent.Payments.Should().Contain(x =>
                         x.PaymentType == AdditionalPaymentType.LearningSupport.ToString()

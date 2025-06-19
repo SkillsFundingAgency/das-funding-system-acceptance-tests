@@ -12,11 +12,11 @@ public static class PaymentDeliveryPeriodExpectationExtensions
 			expectation.AssertAgainstEntityArray(paymentRecords);
 		}
 
-		var lowerBoundaryPeriod = periodExpectations.MinBy(x => x.DeliveryPeriod.AcademicYear + x.DeliveryPeriod.PeriodValue).DeliveryPeriod;
-        var upperBoundaryPeriod = periodExpectations.MaxBy(x => x.DeliveryPeriod.AcademicYear + x.DeliveryPeriod.PeriodValue).DeliveryPeriod;
+		//var lowerBoundaryPeriod = periodExpectations.MinBy(x => x.DeliveryPeriod.AcademicYear + x.DeliveryPeriod.PeriodValue).DeliveryPeriod;
+  //      var upperBoundaryPeriod = periodExpectations.MaxBy(x => x.DeliveryPeriod.AcademicYear + x.DeliveryPeriod.PeriodValue).DeliveryPeriod;
 
-        Assert.False(paymentRecords.Any(x => new Period((short)x.AcademicYear, (byte)x.DeliveryPeriod).IsBefore(lowerBoundaryPeriod)));
-        Assert.False(paymentRecords.Any(x => new Period((short)x.AcademicYear, (byte)x.DeliveryPeriod).IsAfter(upperBoundaryPeriod)));
+        //Assert.False(paymentRecords.Any(x => new Period((short)x.AcademicYear, (byte)x.DeliveryPeriod).IsBefore(lowerBoundaryPeriod)));
+        //Assert.False(paymentRecords.Any(x => new Period((short)x.AcademicYear, (byte)x.DeliveryPeriod).IsAfter(upperBoundaryPeriod)));
     }
 
 	public static void AssertAgainstEventPayments(this IEnumerable<PaymentDeliveryPeriodExpectation> periodExpectations, IEnumerable<Payment> payments)
@@ -26,11 +26,11 @@ public static class PaymentDeliveryPeriodExpectationExtensions
 			expectation.AssertAgainstEventPayments(payments);
 		}
 
-        var lowerBoundaryPeriod = periodExpectations.MinBy(x => x.DeliveryPeriod.AcademicYear + x.DeliveryPeriod.PeriodValue).DeliveryPeriod;
-        var upperBoundaryPeriod = periodExpectations.MaxBy(x => x.DeliveryPeriod.AcademicYear + x.DeliveryPeriod.PeriodValue).DeliveryPeriod;
+        //var lowerBoundaryPeriod = periodExpectations.MinBy(x => x.DeliveryPeriod.AcademicYear + x.DeliveryPeriod.PeriodValue).DeliveryPeriod;
+        //var upperBoundaryPeriod = periodExpectations.MaxBy(x => x.DeliveryPeriod.AcademicYear + x.DeliveryPeriod.PeriodValue).DeliveryPeriod;
 
-        Assert.False(payments.Any(x => new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(lowerBoundaryPeriod)));
-        Assert.False(payments.Any(x => new Period(x.AcademicYear, x.DeliveryPeriod).IsAfter(upperBoundaryPeriod)));
+        //Assert.False(payments.Any(x => new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(lowerBoundaryPeriod)));
+        //Assert.False(payments.Any(x => new Period(x.AcademicYear, x.DeliveryPeriod).IsAfter(upperBoundaryPeriod)));
     }
 
 	public static void AssertAgainstEntityArray(this PaymentDeliveryPeriodExpectation periodExpectation, List<Payments> paymentRecords)

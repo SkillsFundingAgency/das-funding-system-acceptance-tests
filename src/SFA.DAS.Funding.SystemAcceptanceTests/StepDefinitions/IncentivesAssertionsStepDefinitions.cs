@@ -82,6 +82,9 @@ public class IncentivesAssertionsStepDefinitions
             default:
                 throw new Exception("Step definition requires 'first' or 'second' to be specified for incentive earning");
         }
+
+        additionalPayments!.Count(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive).Should().BeLessThanOrEqualTo(2, "No more than two employer incentive payments should be made.");
+        additionalPayments!.Count(x => x.AdditionalPaymentType == AdditionalPaymentType.ProviderIncentive).Should().BeLessThanOrEqualTo(2, "No more than two provider incentive payments should be made.");
     }
 
     [Then(@"the (first|second) incentive payment (is|is not) generated for provider & employer")]
