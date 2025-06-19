@@ -97,11 +97,13 @@ public class LearningSupportAssertionsStepDefinitions
         try
         {
             testData.PaymentsGeneratedEvent.Payments.Should().NotContain(x =>
-                    new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(learningSupportStart.Value),
+                    x.PaymentType == AdditionalPaymentType.LearningSupport.ToString()
+                    && new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(learningSupportStart.Value),
                 $"Expected no Learning Support payments before {learningSupportStart.Value.ToCollectionPeriodString()}");
 
             testData.PaymentsGeneratedEvent.Payments.Should().NotContain(x =>
-                    learningSupportEnd.Value.IsBefore(new Period(x.AcademicYear, x.DeliveryPeriod)),
+                    x.PaymentType == AdditionalPaymentType.LearningSupport.ToString()
+                    && learningSupportEnd.Value.IsBefore(new Period(x.AcademicYear, x.DeliveryPeriod)),
                 $"Expected no Learning Support payments after {learningSupportEnd.Value.ToCollectionPeriodString()}");
 
             while (learningSupportStart.Value.IsBefore(learningSupportEnd.Value))
