@@ -16,12 +16,9 @@ public class BeforeScenarioHooks
         Console.WriteLine($"Begin Scenario {context.ScenarioInfo.Title}");
 
 
-        if(context.ScenarioInfo.Tags.Contains("releasesPayments"))
+        if(context.ScenarioInfo.Tags.Contains("releasesPayments") && !config.ShouldReleasePayments)
         {
-            if (config.ShouldReleasePayments == false)
-            {
-                Assert.Ignore("Skipping scenario: Release payments is disabled in test environment variables.");
-            }
+            Assert.Ignore("Skipping scenario: Release payments is disabled in test environment variables.");
         }
 
         PopulateContextTestData(context);

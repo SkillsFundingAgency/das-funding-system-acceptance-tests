@@ -35,4 +35,5 @@ public class FundingConfig
     public string ApprenticeshipsInnerApiIdentifier { get; set; } = NotSet;
     public string EarningsInnerApiClientBaseUrl { get; set; } = NotSet;
     public string EarningsInnerApiScope { get; set; } = NotSet;
+    public string EnvironmentName { get; set; } = NotSet;
 }

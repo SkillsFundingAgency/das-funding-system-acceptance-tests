@@ -11,17 +11,17 @@ Scenario: Calculate Single Math and English earnings
 	When the apprenticeship commitment is approved
 	And Payments Generated Events are published
 	And Maths and English learning is recorded from <start_date> to <end_date> with course <course> and amount <amount>
-	Then Maths and English earnings are generated from periods <expected_first_payment_period> to <expected_last_payment_period> with instalment amount <instalment> for course <course>
+	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
 	And Payments Generated Events are published
-	And Maths and English payments are generated from periods <expected_first_payment_period> to <expected_last_payment_period> with amount <instalment>
+	And Maths and English payments are generated from periods <expected_first_payment_period> to <expected_last_period> with amount <instalment>
 
 Examples:
-	| start_date       | end_date        | course              | amount | expected_first_payment_period | expected_last_payment_period | instalment |
-	| currentAY-09-25  | currentAY-01-15 | Entry level English | 931    | currentAY-R02                 | currentAY-R05                | 232.75     |
-	| currentAY-08-01  | currentAY-07-31 | Entry level Maths   | 12000  | currentAY-R01                 | currentAY-R12                | 1000       |
-	| previousAY-08-01 | currentAY-07-31 | GCSE English        | 864    | currentAY-R01                 | currentAY-R12                | 36         |
-	| currentAY-08-01  | nextAY-07-31    | GCSE Maths          | 864    | currentAY-R01                 | nextAY-R12                   | 36         |
-	| currentAY-02-01  | currentAY-02-26 | Level 2 English     | 724    | currentAY-R07                 | currentAY-R07                | 724        |
+	| start_date       | end_date        | course              | amount | expected_first_earning_period | expected_first_payment_period | expected_last_period | instalment |
+	| currentAY-09-25  | currentAY-01-15 | Entry level English | 931    | currentAY-R02                 | currentAY-R02                 | currentAY-R05        | 232.75     |
+	| currentAY-08-01  | currentAY-07-31 | Entry level Maths   | 12000  | currentAY-R01                 | currentAY-R01                 | currentAY-R12        | 1000       |
+	| previousAY-08-01 | currentAY-07-31 | GCSE English        | 864    | previousAY-R01                | currentAY-R01                 | currentAY-R12        | 36         |
+	| currentAY-08-01  | nextAY-07-31    | GCSE Maths          | 864    | currentAY-R01                 | currentAY-R01                 | nextAY-R12           | 36         |
+	| currentAY-02-01  | currentAY-02-26 | Level 2 English     | 724    | currentAY-R07                 | currentAY-R07                 | currentAY-R07        | 724        |
 
 @regression
 Scenario: Calculate Multiple Math and English earnings

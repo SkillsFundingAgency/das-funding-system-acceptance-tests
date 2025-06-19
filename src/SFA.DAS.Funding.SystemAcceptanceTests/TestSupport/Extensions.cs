@@ -6,6 +6,12 @@ public static class Extensions
 {
     public static void ShouldHaveCorrectFundingPeriods(this List<DeliveryPeriod> actual, List<(byte Period, short AcademicYear, byte Month)> expected)
     {
+        var lowerBoundaryPeriod = expected.MinBy(x => x.AcademicYear + x.Period);
+        var upperBoundaryPeriod = expected.MaxBy(x => x.AcademicYear + x.Period);
+
+        actual.Should().NotContain(x => new Period(x.AcademicYear, x.Period).IsBefore(new Period(lowerBoundaryPeriod.AcademicYear, lowerBoundaryPeriod.Period)));
+        actual.Should().NotContain(x => new Period(x.AcademicYear, x.Period).IsAfter(new Period(upperBoundaryPeriod.AcademicYear, upperBoundaryPeriod.Period)));
+
         actual.Count.Should().Be(expected.Count);
 
         for (var i = 0; i < expected.Count; i++)
@@ -26,6 +32,12 @@ public static class Extensions
 
     public static void ShouldHaveCorrectPaymentsGenerated(this List<Payment> actual, List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short CollectionYear, byte CollectionPeriod)> expected, string paymentType = "OnProgramme")
     {
+        var lowerBoundaryPeriod = expected.MinBy(x => x.AcademicYear + x.CollectionPeriod);
+        var upperBoundaryPeriod = expected.MaxBy(x => x.AcademicYear + x.CollectionPeriod);
+
+        actual.Should().NotContain(x => new Period(x.AcademicYear, x.CollectionPeriod).IsBefore(new Period(lowerBoundaryPeriod.AcademicYear, lowerBoundaryPeriod.CollectionPeriod)));
+        actual.Should().NotContain(x => new Period(x.AcademicYear, x.CollectionPeriod).IsAfter(new Period(upperBoundaryPeriod.AcademicYear, upperBoundaryPeriod.CollectionPeriod)));
+
         actual.Count(x => x.PaymentType == paymentType).Should().Be(expected.Count);
 
         for (var i = 0; i < expected.Count; i++)

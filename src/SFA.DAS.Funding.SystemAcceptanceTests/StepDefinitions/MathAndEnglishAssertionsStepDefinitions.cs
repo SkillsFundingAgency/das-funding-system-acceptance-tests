@@ -77,12 +77,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 .SingleOrDefault()
                 ?.MathsAndEnglish;
 
-            var mathsAndEnglishKey = mathsAndEnglish.Where(x => x.Course.Contains(course)).FirstOrDefault().Key;
+            var mathsAndEnglishKey = mathsAndEnglish.FirstOrDefault(x => x.Course.Contains(course)).Key;
 
             var mathsAndEnglishInstalments = earningsApprenticeshipModel
                 .Episodes
                 .SingleOrDefault()
-                ?.MathsAndEnglishInstalments.Where(x => x.MathsAndEnglishKey == mathsAndEnglishKey);
+                ?.MathsAndEnglishInstalments.Where(x => x.MathsAndEnglishKey == mathsAndEnglishKey)
+                .ToList();
 
             testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile
                 .EarningsProfileId;
@@ -90,9 +91,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             mathsAndEnglishInstalments.Should()
                 .NotBeNull("No Maths and English instalment data found on earnings apprenticeship model");
 
-            while (mathsAndEnglishStartPeriod.Value.AcademicYear < mathsAndEnglishEndPeriod.Value.AcademicYear ||
-                   (mathsAndEnglishStartPeriod.Value.AcademicYear == mathsAndEnglishEndPeriod.Value.AcademicYear &&
-                    mathsAndEnglishStartPeriod.Value.PeriodValue <= mathsAndEnglishEndPeriod.Value.PeriodValue))
+            mathsAndEnglishInstalments.Should().NotContain(x =>
+                    new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(mathsAndEnglishStartPeriod.Value),
+                $"Expected no Maths and English earnings before {mathsAndEnglishStartPeriod.Value.ToCollectionPeriodString()}");
+
+            mathsAndEnglishInstalments.Should().NotContain(x =>
+                    mathsAndEnglishEndPeriod.Value.IsBefore(new Period(x.AcademicYear, x.DeliveryPeriod)),
+                $"Expected no Maths and English earnings after {mathsAndEnglishEndPeriod.Value.ToCollectionPeriodString()}");
+
+            while (mathsAndEnglishStartPeriod.Value.IsBefore(mathsAndEnglishEndPeriod.Value))
             {
                 mathsAndEnglishInstalments.Should().Contain(x =>
                         x.MathsAndEnglishKey == mathsAndEnglishKey
@@ -119,9 +126,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
             }, "Failed to find updated payments entity.");
 
-            while (mathsAndEnglishStartPeriod.Value.AcademicYear < mathsAndEnglishEndPeriod.Value.AcademicYear ||
-                   (mathsAndEnglishStartPeriod.Value.AcademicYear == mathsAndEnglishEndPeriod.Value.AcademicYear &&
-                    mathsAndEnglishStartPeriod.Value.PeriodValue <= mathsAndEnglishEndPeriod.Value.PeriodValue))
+            testData.PaymentsGeneratedEvent.Payments.Should().NotContain(x =>
+                    x.PaymentType == AdditionalPaymentType.MathsAndEnglish.ToString()
+                    && new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(mathsAndEnglishStartPeriod.Value)
+                    && x.Amount == amount,
+                $"Expected no Maths and English payments before {mathsAndEnglishStartPeriod.Value.ToCollectionPeriodString()}");
+
+            testData.PaymentsGeneratedEvent.Payments.Should().NotContain(x =>
+                    x.PaymentType == AdditionalPaymentType.MathsAndEnglish.ToString()
+                    && mathsAndEnglishEndPeriod.Value.IsBefore(new Period(x.AcademicYear, x.DeliveryPeriod))
+                    && x.Amount == amount,
+                $"Expected no Maths and English payments after {mathsAndEnglishEndPeriod.Value.ToCollectionPeriodString()}");
+
+            while (mathsAndEnglishStartPeriod.Value.IsBefore(mathsAndEnglishEndPeriod.Value))
             {
                 testData.PaymentsGeneratedEvent.Payments.Should().Contain(x =>
                         x.PaymentType == AdditionalPaymentType.MathsAndEnglish.ToString()

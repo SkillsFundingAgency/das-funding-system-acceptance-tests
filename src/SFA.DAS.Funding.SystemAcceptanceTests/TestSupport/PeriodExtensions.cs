@@ -30,4 +30,30 @@ public static class PeriodExtensions
     {
         return $"{period.AcademicYear}-R{period.PeriodValue:D2}";
     }
+
+	public static bool IsBefore(this Period period, Period comparisonPeriod)
+    {
+        if (period.AcademicYear < comparisonPeriod.AcademicYear)
+        {
+            return true;
+        }
+        else if (period.AcademicYear == comparisonPeriod.AcademicYear)
+        {
+            return period.PeriodValue < comparisonPeriod.PeriodValue;
+        }
+        return false;
+    }
+
+	public static bool IsAfter(this Period period, Period comparisonPeriod)
+    {
+        if (period.AcademicYear > comparisonPeriod.AcademicYear)
+        {
+            return true;
+        }
+        else if (period.AcademicYear == comparisonPeriod.AcademicYear)
+        {
+            return period.PeriodValue > comparisonPeriod.PeriodValue;
+        }
+        return false;
+    }
 }

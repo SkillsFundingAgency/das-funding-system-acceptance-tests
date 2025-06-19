@@ -11,7 +11,7 @@ public static class PaymentDeliveryPeriodExpectationExtensions
 		{
 			expectation.AssertAgainstEntityArray(paymentRecords);
 		}
-	}
+    }
 
 	public static void AssertAgainstEventPayments(this IEnumerable<PaymentDeliveryPeriodExpectation> periodExpectations, IEnumerable<Payment> payments)
 	{
@@ -19,7 +19,7 @@ public static class PaymentDeliveryPeriodExpectationExtensions
 		{
 			expectation.AssertAgainstEventPayments(payments);
 		}
-	}
+    }
 
 	public static void AssertAgainstEntityArray(this PaymentDeliveryPeriodExpectation periodExpectation, List<Payments> paymentRecords)
 	{
