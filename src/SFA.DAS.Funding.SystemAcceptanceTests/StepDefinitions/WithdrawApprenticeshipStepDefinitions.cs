@@ -10,15 +10,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 internal class WithdrawApprenticeshipStepDefinitions
 {
     private readonly ScenarioContext _context;
-    private readonly ApprenticeshipsClient _apprenticeshipsClient;
-    private readonly ApprenticeshipsSqlClient _apprenticeshipSqlClient;
+    private readonly LearningClient _apprenticeshipsClient;
+    private readonly LearningSqlClient _apprenticeshipSqlClient;
     private readonly EarningsSqlClient _earningsSqlClient;
     private readonly PaymentsSqlClient _paymentsSqlClient;
 
     public WithdrawApprenticeshipStepDefinitions(
         ScenarioContext context,
-        ApprenticeshipsClient apprenticeshipsClient,
-        ApprenticeshipsSqlClient apprenticeshipSqlClient,
+        LearningClient apprenticeshipsClient,
+        LearningSqlClient apprenticeshipSqlClient,
         EarningsSqlClient earningsSqlClient,
         PaymentsSqlClient paymentsSqlClient)
     {
@@ -34,7 +34,7 @@ internal class WithdrawApprenticeshipStepDefinitions
     {
         var testData = _context.Get<TestData>();
 
-        var body = new WithdrawApprenticeshipRequestBody
+        var body = new WithdrawLearningRequestBody
         {
             UKPRN = testData.ApprenticeshipCreatedEvent.Episode.Ukprn,
             ULN = testData.ApprenticeshipCreatedEvent.Uln,
@@ -44,7 +44,7 @@ internal class WithdrawApprenticeshipStepDefinitions
             ProviderApprovedBy = "SystemAcceptanceTest"
         };
 
-        await _apprenticeshipsClient.WithdrawApprenticeship(body);
+        await _apprenticeshipsClient.WithdrawLearning(body);
     }
 
     [When("a Withdrawal request is recorded with a reason (.*) and last day of delivery (.*)")]
@@ -57,7 +57,7 @@ internal class WithdrawApprenticeshipStepDefinitions
 
         testData.LastDayOfLearning = lastDayOfDelivery.Value;
 
-        var body = new WithdrawApprenticeshipRequestBody
+        var body = new WithdrawLearningRequestBody
         {
             UKPRN = testData.ApprenticeshipCreatedEvent.Episode.Ukprn,
             ULN = testData.ApprenticeshipCreatedEvent.Uln,
@@ -67,7 +67,7 @@ internal class WithdrawApprenticeshipStepDefinitions
             ProviderApprovedBy = "SystemAcceptanceTest"
         };
 
-        await _apprenticeshipsClient.WithdrawApprenticeship(body);
+        await _apprenticeshipsClient.WithdrawLearning(body);
     }
 
 
@@ -75,7 +75,7 @@ internal class WithdrawApprenticeshipStepDefinitions
     public async Task ApprenticeshipIsMarkedAsWithdrawn()
     {
         var testData = _context.Get<TestData>();
-        SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.Apprenticeship? apprenticeship = null;
+        SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.Learning? apprenticeship = null;
 
         await WaitHelper.WaitForIt(() =>
         {

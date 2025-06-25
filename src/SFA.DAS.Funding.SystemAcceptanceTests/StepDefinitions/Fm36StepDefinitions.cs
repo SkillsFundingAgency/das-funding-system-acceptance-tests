@@ -11,14 +11,14 @@ public class Fm36StepDefinitions
 {
     private readonly ScenarioContext _context;
     private readonly EarningsOuterClient _earningsOuterClient;
-    private readonly ApprenticeshipsSqlClient _apprenticeshipSqlClient;
+    private readonly LearningSqlClient _apprenticeshipSqlClient;
     private readonly EarningsSqlClient _earningsSqlClient;
     private readonly EarningsInnerApiHelper _earningsInnerApiHelper;
 
     public Fm36StepDefinitions(
         ScenarioContext context,
         EarningsOuterClient earningsOuterClient,
-        ApprenticeshipsSqlClient apprenticeshipSqlClient,
+        LearningSqlClient apprenticeshipSqlClient,
         EarningsSqlClient earningsSqlClient,
         EarningsInnerApiHelper earningsInnerApiHelper)
     {

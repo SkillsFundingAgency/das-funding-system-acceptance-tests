@@ -58,7 +58,7 @@ internal static class ApprenticeshipEventHelper
                 return true;
             }
             return false;
-        }, "Failed to find published event in apprenticeships");
+        }, "Failed to find published event in Learning");
 
         await WaitHelper.WaitForIt(() =>
         {
