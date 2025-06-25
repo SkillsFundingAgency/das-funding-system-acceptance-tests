@@ -114,7 +114,7 @@ public class EarningsInnerApiClient
     private void AddBearerToken()
     {
         var claims = GetClaims();
-        var signingKey = _fundingConfig.ApprenticeshipServiceBearerTokenSigningKey;
+        var signingKey = _fundingConfig.LearningServiceBearerTokenSigningKey;
 
         var accessToken = ServiceBearerTokenProvider.GetServiceBearerToken(signingKey);
 

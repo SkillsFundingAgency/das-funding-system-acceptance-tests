@@ -5,13 +5,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 public class ApprenticeshipsInnerApiHelper()
 {
-    private readonly ApprenticeshipsInnerApiClient _apiClient = new();
+    private readonly LearningInnerApiClient _apiClient = new();
 
     public async Task CreatePriceChangeRequest(ScenarioContext context, decimal trainingPrice, decimal assessmentPrice, DateTime effectiveFromDate)
     {
         var testData = context.Get<TestData>();
 
-        var requestBody = new ApprenticeshipsInnerApiClient.CreateApprenticeshipPriceChangeRequest
+        var requestBody = new LearningInnerApiClient.CreateLearningPriceChangeRequest
         {
             TrainingPrice = trainingPrice,
             AssessmentPrice = assessmentPrice,
@@ -30,7 +30,7 @@ public class ApprenticeshipsInnerApiHelper()
     {
         var testData = context.Get<TestData>();
 
-        var requestBody = new ApprenticeshipsInnerApiClient.ApprovePriceChangeRequest
+        var requestBody = new LearningInnerApiClient.ApprovePriceChangeRequest
         {
             TrainingPrice = trainingPrice,
             AssessmentPrice = assessmentPrice,

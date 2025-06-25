@@ -2,25 +2,25 @@
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
-public class ApprenticeshipsSqlClient
+public class LearningSqlClient
 {
     private readonly SqlServerClient _sqlServerClient;
 
-    public ApprenticeshipsSqlClient()
+    public LearningSqlClient()
     {
-        var connectionString = Configurator.GetConfiguration().ApprenticeshipsDbConnectionString;
+        var connectionString = Configurator.GetConfiguration().LearningDbConnectionString;
         _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
     }
 
 
-    public void DeleteApprenticeship(Guid apprenticeshipKey)
+    public void DeleteApprenticeship(Guid learningKey)
     {
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[WithdrawalRequest] WHERE ApprenticeshipKey = '{apprenticeshipKey}'");
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[StartDateChange] WHERE ApprenticeshipKey = '{apprenticeshipKey}'");
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[PriceHistory] WHERE ApprenticeshipKey = '{apprenticeshipKey}'");
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[FreezeRequest] WHERE ApprenticeshipKey = '{apprenticeshipKey}'");
+        _sqlServerClient.Execute($"DELETE FROM [dbo].[WithdrawalRequest] WHERE LearningKey = '{learningKey}'");
+        _sqlServerClient.Execute($"DELETE FROM [dbo].[StartDateChange] WHERE LearningKey = '{learningKey}'");
+        _sqlServerClient.Execute($"DELETE FROM [dbo].[PriceHistory] WHERE LearningKey = '{learningKey}'");
+        _sqlServerClient.Execute($"DELETE FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learningKey}'");
 
-        var episodeKeys = _sqlServerClient.GetList<Guid>($"SELECT [Key] FROM [dbo].[Episode] WHERE ApprenticeshipKey = '{apprenticeshipKey}'");
+        var episodeKeys = _sqlServerClient.GetList<Guid>($"SELECT [Key] FROM [dbo].[Episode] WHERE LearningKey = '{learningKey}'");
 
         foreach (var episodeKey in episodeKeys)
         {
@@ -28,31 +28,31 @@ public class ApprenticeshipsSqlClient
             _sqlServerClient.Execute($"DELETE FROM [dbo].[Episode] WHERE [Key] = '{episodeKey}'");
         }
 
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[Apprenticeship] WHERE [Key] = '{apprenticeshipKey}'");
+        _sqlServerClient.Execute($"DELETE FROM [dbo].[Learning] WHERE [Key] = '{learningKey}'");
 
     }
 
-    public Apprenticeship GetApprenticeship(Guid apprenticeshipKey)
+    public Learning GetApprenticeship(Guid learningKey)
     {
-        var apprenticeship = _sqlServerClient.GetList<Apprenticeship>("SELECT * FROM [dbo].[Apprenticeship] WHERE [KEY] = @apprenticeshipKey", new {apprenticeshipKey}).FirstOrDefault(); ;
-        if (apprenticeship == null)
+        var learning = _sqlServerClient.GetList<Learning>("SELECT * FROM [dbo].[Learning] WHERE [KEY] = @learningKey", new { learningKey }).FirstOrDefault(); ;
+        if (learning == null)
         {
-            throw new InvalidOperationException("No apprenticeship found");
+            throw new InvalidOperationException("No learning found");
         }
-        apprenticeship.Episodes = _sqlServerClient.GetList<Episode>($"SELECT * FROM [dbo].[Episode] WHERE ApprenticeshipKey = '{apprenticeship.Key}'");
-        foreach (var episode in apprenticeship.Episodes)
+        learning.Episodes = _sqlServerClient.GetList<Episode>($"SELECT * FROM [dbo].[Episode] WHERE LearningKey = '{learning.Key}'");
+        foreach (var episode in learning.Episodes)
         {
             episode.Prices = _sqlServerClient.GetList<EpisodePrice>($"SELECT * FROM [dbo].[EpisodePrice] WHERE EpisodeKey = '{episode.Key}'");
         }
-        apprenticeship.PriceHistories = _sqlServerClient.GetList<PriceHistory>($"SELECT * FROM [dbo].[PriceHistory] WHERE ApprenticeshipKey = '{apprenticeship.Key}'");
-        apprenticeship.StartDateChanges = _sqlServerClient.GetList<StartDateChange>($"SELECT * FROM [dbo].[StartDateChange] WHERE ApprenticeshipKey = '{apprenticeship.Key}'");
-        apprenticeship.FreezeRequests = _sqlServerClient.GetList<FreezeRequest>($"SELECT * FROM [dbo].[FreezeRequest] WHERE ApprenticeshipKey = '{apprenticeship.Key}'");
-        apprenticeship.WithdrawalRequests = _sqlServerClient.GetList<WithdrawalRequest>($"SELECT * FROM [dbo].[WithdrawalRequest] WHERE ApprenticeshipKey = '{apprenticeship.Key}'");
-        return apprenticeship;
+        learning.PriceHistories = _sqlServerClient.GetList<PriceHistory>($"SELECT * FROM [dbo].[PriceHistory] WHERE LearningKey = '{learning.Key}'");
+        learning.StartDateChanges = _sqlServerClient.GetList<StartDateChange>($"SELECT * FROM [dbo].[StartDateChange] WHERE LearningKey = '{learning.Key}'");
+        learning.FreezeRequests = _sqlServerClient.GetList<FreezeRequest>($"SELECT * FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learning.Key}'");
+        learning.WithdrawalRequests = _sqlServerClient.GetList<WithdrawalRequest>($"SELECT * FROM [dbo].[WithdrawalRequest] WHERE LearningKey = '{learning.Key}'");
+        return learning;
     }
 }
 
-public class Apprenticeship
+public class Learning
 {
     public Guid Key { get; set; }
     public long ApprovalsApprenticeshipId { get; set; }
@@ -71,7 +71,7 @@ public class Apprenticeship
 public class Episode
 {
     public Guid Key { get; set; }
-    public Guid ApprenticeshipKey { get; set; }
+    public Guid LearningKey { get; set; }
     public long Ukprn { get; set; }
     public long EmployerAccountId { get; set; }
     public FundingType FundingType { get; set; }
@@ -104,7 +104,7 @@ public class EpisodePrice
 public class FreezeRequest
 {
     public Guid Key { get; set; }
-    public Guid ApprenticeshipKey { get; set; }
+    public Guid LearningKey { get; set; }
     public string FrozenBy { get; set; } = null!;
     public DateTime FrozenDateTime { get; set; }
     public bool Unfrozen { get; set; }
@@ -116,7 +116,7 @@ public class FreezeRequest
 public class PriceHistory
 {
     public Guid Key { get; set; }
-    public Guid ApprenticeshipKey { get; set; }
+    public Guid LearningKey { get; set; }
     public decimal? TrainingPrice { get; set; }
     public decimal? AssessmentPrice { get; set; }
     public decimal TotalPrice { get; set; }
@@ -135,7 +135,7 @@ public class PriceHistory
 public class StartDateChange
 {
     public Guid Key { get; set; }
-    public Guid ApprenticeshipKey { get; set; }
+    public Guid LearningKey { get; set; }
     public DateTime ActualStartDate { get; set; }
     public DateTime PlannedEndDate { get; set; }
     public string Reason { get; set; } = null!;
@@ -152,7 +152,7 @@ public class StartDateChange
 public class WithdrawalRequest
 {
     public Guid Key { get; set; }
-    public Guid ApprenticeshipKey { get; set; }
+    public Guid LearningKey { get; set; }
     public Guid EpisodeKey { get; set; }
     public string Reason { get; set; }
     public DateTime LastDayOfLearning { get; set; }

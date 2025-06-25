@@ -4,17 +4,17 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
-public class ApprenticeshipsInnerApiClient
+public class LearningInnerApiClient
 {
     private readonly FundingConfig _fundingConfig;
     private readonly HttpClient _httpClient;
     private string _cachedToken;
     private DateTime _tokenExpiry;
 
-    public ApprenticeshipsInnerApiClient()
+    public LearningInnerApiClient()
     {
         _fundingConfig = Configurator.GetConfiguration();
-        var baseUrl = _fundingConfig.ApprenticeshipsInnerApiClientBaseUrl;
+        var baseUrl = _fundingConfig.LearningInnerApiClientBaseUrl;
         _httpClient = HttpClientProvider.GetClient(baseUrl);
     }
 
@@ -41,7 +41,7 @@ public class ApprenticeshipsInnerApiClient
     private void AddBearerToken()
     {
         var claims = GetClaims();
-        var signingKey = _fundingConfig.ApprenticeshipServiceBearerTokenSigningKey;
+        var signingKey = _fundingConfig.LearningServiceBearerTokenSigningKey;
 
         var accessToken = ServiceBearerTokenProvider.GetServiceBearerToken(signingKey);
 
@@ -63,7 +63,7 @@ public class ApprenticeshipsInnerApiClient
     }
 
 #pragma warning disable CS8618 // Null properties
-    public class CreateApprenticeshipPriceChangeRequest
+    public class CreateLearningPriceChangeRequest
     {
         public string Initiator { get; set; }
         public string UserId { get; set; }

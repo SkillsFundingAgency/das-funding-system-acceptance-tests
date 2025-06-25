@@ -3,24 +3,24 @@ using System.Text;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
-internal class ApprenticeshipsClient
+internal class LearningClient
 {
     private HttpClient _apiClient;
     private readonly string _functionKey;
     private readonly string _signingKey;
 
-    public ApprenticeshipsClient()
+    public LearningClient()
     {
         var config = Configurator.GetConfiguration();
-        var baseUrl = config.ApprenticeshipAzureFunctionBaseUrl;
+        var baseUrl = config.LearningAzureFunctionBaseUrl;
         _apiClient = HttpClientProvider.GetClient(baseUrl);
-        _functionKey = config.ApprenticeshipAzureFunctionKey;
-        _signingKey = config.ApprenticeshipServiceBearerTokenSigningKey;
+        _functionKey = config.LearningAzureFunctionKey;
+        _signingKey = config.LearningServiceBearerTokenSigningKey;
     }
 
-    public async Task WithdrawApprenticeship(WithdrawApprenticeshipRequestBody body)
+    public async Task WithdrawLearning(WithdrawLearningRequestBody body)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, $"api/WithdrawApprenticeship?code={_functionKey}");
+        var request = new HttpRequestMessage(HttpMethod.Post, $"api/WithdrawLearning?code={_functionKey}");
         request.Headers.Add("ServiceBearerToken", ServiceBearerTokenProvider.GetServiceBearerToken(_signingKey));
         request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
         HttpResponseMessage? response = null;
@@ -35,12 +35,12 @@ internal class ApprenticeshipsClient
         }
         finally
         {
-            LoggerHelper.WriteLog($"Withdraw Apprenticeship Response Code: {response?.StatusCode}");
+            LoggerHelper.WriteLog($"Withdraw Learning Response Code: {response?.StatusCode}");
         }
     }
 }
 
-internal class WithdrawApprenticeshipRequestBody
+internal class WithdrawLearningRequestBody
 {
     public long UKPRN { get; set; }
     public string ULN { get; set; }

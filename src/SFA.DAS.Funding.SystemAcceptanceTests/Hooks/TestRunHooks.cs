@@ -70,10 +70,10 @@ public class TestRunHooks
     [BeforeTestRun(Order = 5)]
     public static void RegisterSingletons()
     {
-        StaticObjects.ApprenticeshipsClient = new ApprenticeshipsClient();
+        StaticObjects.ApprenticeshipsClient = new LearningClient();
         StaticObjects.EarningsOuterClient = new EarningsOuterClient();
         StaticObjects.PaymentsFunctionsClient = new PaymentsFunctionsClient();
-        StaticObjects.ApprenticeshipsSqlClient = new ApprenticeshipsSqlClient();
+        StaticObjects.ApprenticeshipsSqlClient = new LearningSqlClient();
         StaticObjects.EarningsSqlClient = new EarningsSqlClient();
         StaticObjects.PaymentsSqlClient = new PaymentsSqlClient();
         StaticObjects.ApprenticeshipsInnerApiHelper = new ApprenticeshipsInnerApiHelper();
