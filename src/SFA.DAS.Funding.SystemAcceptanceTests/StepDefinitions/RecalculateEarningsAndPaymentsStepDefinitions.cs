@@ -187,8 +187,8 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
         var testData = _context.Get<TestData>();
         var earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
-        Assert.AreEqual(testData.InitialEarningsProfileId, earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfileHistory.FirstOrDefault().OriginalEarningsProfileId, "Unexpected historical EarningsProfileId found");
-        Assert.AreEqual(testData.InitialEarningsProfileId, earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId, "Historical EarningsProfileId and new EarningsProfileId are the same");
+        Assert.AreEqual(testData.InitialEarningsProfileId, earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfileHistory.FirstOrDefault().OriginalEarningsProfileId, "OriginalEarningsProfileId in EarningsProfileHistory table does not match the initial EarningsProfileId");
+        Assert.AreEqual(testData.InitialEarningsProfileId, earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId, "EarningsProfileId has changed post earnings recalculation");
     }
 
     [Then(@"for all the past census periods, new payments entries are created and marked as Not sent for payment with the difference between new and old earnings")]
