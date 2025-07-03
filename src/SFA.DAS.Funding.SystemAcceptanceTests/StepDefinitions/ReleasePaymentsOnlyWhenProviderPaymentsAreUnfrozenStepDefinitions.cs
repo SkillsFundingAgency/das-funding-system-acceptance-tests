@@ -48,8 +48,11 @@ public class ReleasePaymentsOnlyWhenProviderPaymentsAreUnfrozenStepDefinitions
     [Then(@"the scheduler triggers Unfunded Payment processing for following collection period")]
     public async Task SchedulerTriggersUnfundedPaymentProcessingForFollowingCollectionPeriod()
     {
-        var collectionPeriod = TableExtensions.Period[DateTime.Now.AddMonths(1).ToString("MMMM")];
-        var collectionYear = TableExtensions.CalculateAcademicYear("1");
+
+        var numberOfMonthsToAdd = DateTime.Now.Month == 7 ? 0 : 1;
+
+        var collectionPeriod = TableExtensions.Period[DateTime.Now.AddMonths(numberOfMonthsToAdd).ToString("MMMM")];
+        var collectionYear = TableExtensions.CalculateAcademicYear(numberOfMonthsToAdd.ToString());
 
         var testData = _context.Get<TestData>();
         testData.CurrentCollectionYear = collectionYear;

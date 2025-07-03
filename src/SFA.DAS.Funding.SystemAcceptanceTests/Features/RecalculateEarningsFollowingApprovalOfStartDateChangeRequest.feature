@@ -23,7 +23,7 @@ Scenario: Start Date change approved; recalc earnings
 	Then the earnings are recalculated based on the new expected earnings <new_expected_earnings>
 	And the history of old earnings is maintained with <old_inst_amount>
 	And the ActualStartDate <new_start_date> and PlannedEndDate <new_end_date> are updated on earnings entity
-	And old earnings maintain their initial Profile Id and new earnings have a new profile id
+	And old and new earnings maintain their initial Profile Id
 
 Examples:
 	| start_date      | end_date               | agreed_price | training_code | new_start_date  | new_end_date           | sdc_approved_date | old_inst_amount | new_expected_earnings |

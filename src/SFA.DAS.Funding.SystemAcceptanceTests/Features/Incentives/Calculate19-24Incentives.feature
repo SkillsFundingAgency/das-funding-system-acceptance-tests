@@ -54,10 +54,8 @@ Scenario: 19-24 Incentive Earnings & Payments (duration too short for either pay
 	When the apprenticeship commitment is approved
 	And the apprentice is marked as a care leaver
 	And Payments Generated Events are published
-	Then the first incentive earning is not generated for provider & employer
-	And the second incentive earning is not generated for provider & employer
-	And the first incentive payment is not generated for provider & employer
-	And the second incentive payment is not generated for provider & employer
+	Then no incentive earning is generated for provider & employer
+	And no incentive payment is generated for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |

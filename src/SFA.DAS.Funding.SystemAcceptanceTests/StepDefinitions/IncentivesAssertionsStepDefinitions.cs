@@ -140,4 +140,48 @@ public class IncentivesAssertionsStepDefinitions
             default: throw new Exception("This step only supports and outcome of 'is' or 'is not'");
         }
     }
+
+    [Then("no incentive earning is generated for provider & employer")]
+    public async Task NoIncentiveEarningIsGenerated()
+    {
+        var testData = _context.Get<TestData>();
+
+        EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId == testData.EarningsProfileId;
+        }, "Failed to find earnings entity.");
+
+        var additionalPayments = earningsApprenticeshipModel
+            .Episodes
+            .SingleOrDefault()
+            ?.AdditionalPayments;
+
+        additionalPayments.Should().NotContain(x => x.AdditionalPaymentType == AdditionalPaymentType.ProviderIncentive);
+        additionalPayments.Should().NotContain(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive);
+    }
+
+    [Then("no incentive payment is generated for provider & employer")]
+    public async Task NoIncentivePaymentGenerated()
+    {
+        var testData = _context.Get<TestData>();
+
+        PaymentsApprenticeshipModel? paymentsApprenticeshipModel = null;
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
+
+            return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
+        }, "Failed to find updated payments entity.");
+
+        var paymentsGeneratedEvent = testData.PaymentsGeneratedEvent;
+
+        paymentsGeneratedEvent.Payments.Should().NotContain(x=> x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString());
+        paymentsGeneratedEvent.Payments.Should().NotContain(x => x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString());
+        paymentsApprenticeshipModel.Payments.Should().NotContain(x => x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString());
+        paymentsApprenticeshipModel.Payments.Should().NotContain(x => x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString());
+    }
 }
