@@ -27,7 +27,7 @@ Scenario: Price change approved; recalc earnings
 	And earnings prior to <delivery_period> and <academic_year_string> are frozen with <old_inst_amount>
 	And the history of old earnings is maintained with <old_inst_amount>
 	And the AgreedPrice on the earnings entity is updated to <new_total_price>
-	And old earnings maintain their initial Profile Id and new earnings have a new profile id
+	And old and new earnings maintain their initial Profile Id
 Examples:
 	| start_date      | end_date     | agreed_price | training_code | pc_from_date    | new_total_price | pc_approved_date | new_inst_amount | academic_year_string | old_inst_amount | delivery_period |
 	| currentAY-08-23 | nextAY-04-23 | 15000        | 2             | currentAY-08-29 | 18000           | currentAY-06-10  | 720             | currentAY            | 600             | 1               |

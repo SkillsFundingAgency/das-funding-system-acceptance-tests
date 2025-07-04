@@ -54,7 +54,7 @@ public class EarningsProfileModel : EarningsProfileModelBase
 
 public class EarningsProfileHistoryModel : EarningsProfileModelBase
 {
-
+    public Guid OriginalEarningsProfileId { get; set; }
     public List<InstalmentHistoryModel> Instalments { get; set; } = null!;
     public DateTime SupersededDate { get; set; }
 }
