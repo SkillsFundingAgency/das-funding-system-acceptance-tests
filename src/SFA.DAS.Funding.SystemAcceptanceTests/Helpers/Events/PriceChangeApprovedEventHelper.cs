@@ -1,24 +1,24 @@
-﻿using SFA.DAS.Apprenticeships.Types;
+﻿using SFA.DAS.Learning.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 
 internal static class PriceChangeApprovedEventHelper
 {
-    internal static ApprenticeshipPriceChangedEvent CreatePriceChangeApprovedMessageWithCustomValues(this ScenarioContext context, decimal trainingPrice, decimal assessmentPrice, DateTime effectiveFromDate, DateTime approvedDate)
+    internal static LearningPriceChangedEvent CreatePriceChangeApprovedMessageWithCustomValues(this ScenarioContext context, decimal trainingPrice, decimal assessmentPrice, DateTime effectiveFromDate, DateTime approvedDate)
     {
         var testData = context.Get<TestData>();
-        var apprenticeshipCreatedEvent = testData.ApprenticeshipCreatedEvent;
+        var apprenticeshipCreatedEvent = testData.LearningCreatedEvent;
 
         var fixture = new Fixture();
-        return fixture.Build<ApprenticeshipPriceChangedEvent>()
-        .With(_ => _.ApprenticeshipKey, apprenticeshipCreatedEvent.ApprenticeshipKey)
-        .With(_ => _.ApprenticeshipId, apprenticeshipCreatedEvent.ApprovalsApprenticeshipId)
-        .With(_ => _.Episode, new ApprenticeshipEpisode
+        return fixture.Build<LearningPriceChangedEvent>()
+        .With(_ => _.LearningKey, apprenticeshipCreatedEvent.LearningKey)
+        .With(_ => _.ApprovalsApprenticeshipId, apprenticeshipCreatedEvent.ApprovalsApprenticeshipId)
+        .With(_ => _.Episode, new LearningEpisode
         {
-            Prices = new List<ApprenticeshipEpisodePrice>()
+            Prices = new List<LearningEpisodePrice>()
             {
-                    new ApprenticeshipEpisodePrice
+                    new LearningEpisodePrice
                     {
                         TrainingPrice = apprenticeshipCreatedEvent.Episode.Prices[0].TrainingPrice,
                         EndPointAssessmentPrice = apprenticeshipCreatedEvent.Episode.Prices[0].EndPointAssessmentPrice,
@@ -29,7 +29,7 @@ internal static class PriceChangeApprovedEventHelper
                         TotalPrice = apprenticeshipCreatedEvent.Episode.Prices[0].TotalPrice,
                     },
                     {
-                        new ApprenticeshipEpisodePrice
+                        new LearningEpisodePrice
                         {
                             TrainingPrice = trainingPrice,
                             EndPointAssessmentPrice = assessmentPrice,
@@ -52,8 +52,8 @@ internal static class PriceChangeApprovedEventHelper
         .Create();
     }
 
-    internal static async Task PublishPriceChangeApprovedEvent(ApprenticeshipPriceChangedEvent apprenticeshipPriceChangedEvent)
+    internal static async Task PublishPriceChangeApprovedEvent(LearningPriceChangedEvent learningPriceChangedEvent)
     {
-        await TestServiceBus.Das.SendPriceChangeApprovedMessage(apprenticeshipPriceChangedEvent);
+        await TestServiceBus.Das.SendPriceChangeApprovedMessage(learningPriceChangedEvent);
     }
 }

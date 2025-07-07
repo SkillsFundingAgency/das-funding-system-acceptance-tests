@@ -38,7 +38,7 @@ public class ReleasePaymentsStepDefinitions
     public async Task ReleasePaymentsAgain()
     {
         var testData = _context.Get<TestData>();
-        FinalisedOnProgrammeLearningPaymentEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
+        FinalisedOnProgrammeLearningPaymentEventHandler.Clear(x => x.ApprenticeshipKey == testData.LearningKey);
 
         await _paymentsFunctionsClient.InvokeReleasePaymentsHttpTrigger(_context, testData.CurrentCollectionPeriod,
             Convert.ToInt16(testData.CurrentCollectionYear));

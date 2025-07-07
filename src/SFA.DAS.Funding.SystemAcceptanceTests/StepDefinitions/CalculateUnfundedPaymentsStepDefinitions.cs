@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Apprenticeships.Types;
+﻿using SFA.DAS.Learning.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
@@ -101,7 +101,7 @@ public class CalculateUnfundedPaymentsStepDefinitions
 
         await WaitHelper.WaitForUnexpected(() =>
         {
-            var finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.Message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x=>x.Message).ToList();
+            var finalisedPaymentsList = FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.Message.ApprenticeshipKey == testData.LearningKey).Select(x=>x.Message).ToList();
 
             return finalisedPaymentsList.Count != 0;
         }, "Unexpected published Finalised On Programme Learning Payment events found");

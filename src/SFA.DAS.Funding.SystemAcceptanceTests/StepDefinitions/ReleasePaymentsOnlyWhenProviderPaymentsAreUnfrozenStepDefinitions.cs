@@ -1,4 +1,4 @@
-using SFA.DAS.Apprenticeships.Types;
+using SFA.DAS.Learning.Types;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;

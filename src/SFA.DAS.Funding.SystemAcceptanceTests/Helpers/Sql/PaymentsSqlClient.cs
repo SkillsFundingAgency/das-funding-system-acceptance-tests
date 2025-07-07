@@ -9,7 +9,7 @@ public class PaymentsSqlClient
     public PaymentsApprenticeshipModel? GetPaymentsModel(ScenarioContext context)
     {
         var testData = context.Get<TestData>();
-        var apprenticeshipKey = testData.ApprenticeshipKey;
+        var apprenticeshipKey = testData.LearningKey;
 
         var apprenticeship = _sqlServerClient.GetList<PaymentsApprenticeshipModel>($"SELECT * FROM [Domain].[Apprenticeship] Where [ApprenticeshipKey] ='{apprenticeshipKey}'").SingleOrDefault();
 

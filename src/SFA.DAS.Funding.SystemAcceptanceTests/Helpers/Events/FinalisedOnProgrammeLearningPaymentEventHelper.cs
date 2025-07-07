@@ -9,7 +9,7 @@ internal static class FinalisedOnProgrammeLearningPaymentEventHelper
         await WaitHelper.WaitForIt(() =>
         {
             var finalisedPaymentsList =
-                FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.Message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x=>x.Message).ToList();
+                FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.Message.ApprenticeshipKey == testData.LearningKey).Select(x=>x.Message).ToList();
 
             if (finalisedPaymentsList.Count != numberOfRollupPayments + 1) return false;
 

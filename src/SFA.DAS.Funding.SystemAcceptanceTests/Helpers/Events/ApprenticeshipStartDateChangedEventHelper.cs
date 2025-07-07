@@ -1,26 +1,26 @@
-﻿using SFA.DAS.Apprenticeships.Types;
+﻿using SFA.DAS.Learning.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 
 internal static class ApprenticeshipStartDateChangedEventHelper
 {
-    internal static ApprenticeshipStartDateChangedEvent CreateStartDateChangedMessageWithCustomValues(ScenarioContext context, DateTime actualStartDate, DateTime plannedEndDate, DateTime approvedDate)
+    internal static LearningStartDateChangedEvent CreateStartDateChangedMessageWithCustomValues(ScenarioContext context, DateTime actualStartDate, DateTime plannedEndDate, DateTime approvedDate)
     {
         var testData = context.Get<TestData>();
-        var apprenticeshipCreatedEvent = testData.ApprenticeshipCreatedEvent;
+        var apprenticeshipCreatedEvent = testData.LearningCreatedEvent;
 
         var fixture = new Fixture();
-        return fixture.Build<ApprenticeshipStartDateChangedEvent>()
-            .With(_ => _.ApprenticeshipKey, apprenticeshipCreatedEvent.ApprenticeshipKey)
-            .With(_ => _.ApprenticeshipId, apprenticeshipCreatedEvent.ApprovalsApprenticeshipId)
+        return fixture.Build<LearningStartDateChangedEvent>()
+            .With(_ => _.LearningKey, apprenticeshipCreatedEvent.LearningKey)
+            .With(_ => _.ApprovalsApprenticeshipId, apprenticeshipCreatedEvent.ApprovalsApprenticeshipId)
             .With(_ => _.StartDate, actualStartDate)
             .With(_ => _.ApprovedDate, approvedDate)
-            .With(_ => _.Episode, new ApprenticeshipEpisode
+            .With(_ => _.Episode, new LearningEpisode
             {
-                Prices = new List<ApprenticeshipEpisodePrice>
+                Prices = new List<LearningEpisodePrice>
                 {
-                    new ApprenticeshipEpisodePrice
+                    new LearningEpisodePrice
                     {
                         EndDate = plannedEndDate,
                         FundingBandMaximum = apprenticeshipCreatedEvent.Episode.Prices.First().FundingBandMaximum,
@@ -40,7 +40,7 @@ internal static class ApprenticeshipStartDateChangedEventHelper
             .Create();
     }
 
-    internal static async Task PublishApprenticeshipStartDateChangedEvent(ApprenticeshipStartDateChangedEvent startDateChangedEvent)
+    internal static async Task PublishApprenticeshipStartDateChangedEvent(LearningStartDateChangedEvent startDateChangedEvent)
     {
         await TestServiceBus.Das.SendStartDateChangedMessage(startDateChangedEvent);
     }

@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Apprenticeships.Enums;
+﻿using SFA.DAS.Learning.Enums;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 

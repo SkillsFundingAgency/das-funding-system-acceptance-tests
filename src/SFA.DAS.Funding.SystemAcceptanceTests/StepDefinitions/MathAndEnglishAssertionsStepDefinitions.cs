@@ -27,9 +27,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             string course, decimal amount)
         {
             var testData = _context.Get<TestData>();
-            PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
+            PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.LearningKey);
             var helper = new EarningsInnerApiHelper();
-            await helper.SetMathAndEnglishLearning(testData.ApprenticeshipKey,
+            await helper.SetMathAndEnglishLearning(testData.LearningKey,
             [
                 new EarningsInnerApiClient.MathAndEnglishDetails
                     { StartDate = StartDate.Value, EndDate = EndDate.Value, Amount = amount, Course = course }
@@ -43,9 +43,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             string Course1Name, decimal Course1Amount, TokenisableDateTime Course2StartDate, TokenisableDateTime Course2EndDate, string Course2Name, decimal Course2Amount)
         {
             var testData = _context.Get<TestData>();
-            PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
+            PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.LearningKey);
             var helper = new EarningsInnerApiHelper();
-            await helper.SetMathAndEnglishLearning(testData.ApprenticeshipKey,
+            await helper.SetMathAndEnglishLearning(testData.LearningKey,
             [
                 new EarningsInnerApiClient.MathAndEnglishDetails
                     { StartDate = Course1StartDate.Value, EndDate = Course1EndDate.Value, Amount = Course1Amount, Course = Course1Name },
@@ -170,12 +170,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await WaitHelper.WaitForIt(() =>
                 {
-                    var e = PaymentsGeneratedEventHandler.GetMessage(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
+                    var e = PaymentsGeneratedEventHandler.GetMessage(x => x.ApprenticeshipKey == testData.LearningKey);
                     return e != null;
                 },
                 $"Failed to find published event in Payments");
 
-            PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
+            PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.LearningKey);
         }
     }
 }

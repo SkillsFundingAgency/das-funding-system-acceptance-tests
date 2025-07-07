@@ -20,7 +20,7 @@ public class ConvertUnfundedPaymentsDataToPaymentsV2FormatStepDefinitions
     {
         var testData = _context.Get<TestData>();
         var finalisedPaymentsList =
-            FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.Message.ApprenticeshipKey == testData.ApprenticeshipKey).Select(x => x.Message).ToList();
+            FinalisedOnProgrammeLearningPaymentEventHandler.ReceivedEvents.Where(x => x.Message.ApprenticeshipKey == testData.LearningKey).Select(x => x.Message).ToList();
 
         var orderedFinalisedPaymentsList = finalisedPaymentsList
             .OrderBy(x => x.ApprenticeshipEarning.DeliveryPeriod)

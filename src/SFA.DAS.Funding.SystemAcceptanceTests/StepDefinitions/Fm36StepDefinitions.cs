@@ -47,7 +47,7 @@ public class Fm36StepDefinitions
     public async Task GivenTheApprenticeIsMarkedAsACareLeaver()
     {
         var testData = _context.Get<TestData>();
-        await _earningsInnerApiHelper.MarkAsCareLeaver(testData.ApprenticeshipKey);
+        await _earningsInnerApiHelper.MarkAsCareLeaver(testData.LearningKey);
     }
 
     [Then("incentives earnings are generated for learners aged 15")]
@@ -57,7 +57,7 @@ public class Fm36StepDefinitions
         var testData = _context.Get<TestData>();
         var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
-        var apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
+        var apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
         var earnings = _earningsSqlClient.GetEarningsEntityModel(_context);
         if(earnings == null)
         {

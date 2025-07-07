@@ -36,8 +36,8 @@ internal class WithdrawApprenticeshipStepDefinitions
 
         var body = new WithdrawLearningRequestBody
         {
-            UKPRN = testData.ApprenticeshipCreatedEvent.Episode.Ukprn,
-            ULN = testData.ApprenticeshipCreatedEvent.Uln,
+            UKPRN = testData.LearningCreatedEvent.Episode.Ukprn,
+            ULN = testData.LearningCreatedEvent.Uln,
             Reason = "WithdrawFromBeta",
             ReasonText = "",
             LastDayOfLearning = testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate!.Value.AddDays(1),
@@ -53,14 +53,14 @@ internal class WithdrawApprenticeshipStepDefinitions
         var testData = _context.Get<TestData>();
 
         // clear previous PaymentsGeneratedEvent before triggering the withdrawal
-        PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
+        PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.LearningKey);
 
         testData.LastDayOfLearning = lastDayOfDelivery.Value;
 
         var body = new WithdrawLearningRequestBody
         {
-            UKPRN = testData.ApprenticeshipCreatedEvent.Episode.Ukprn,
-            ULN = testData.ApprenticeshipCreatedEvent.Uln,
+            UKPRN = testData.LearningCreatedEvent.Episode.Ukprn,
+            ULN = testData.LearningCreatedEvent.Uln,
             Reason = reason,
             ReasonText = "",
             LastDayOfLearning = testData.LastDayOfLearning,
@@ -79,7 +79,7 @@ internal class WithdrawApprenticeshipStepDefinitions
 
         await WaitHelper.WaitForIt(() =>
         {
-            apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.ApprenticeshipKey);
+            apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
 
             return apprenticeship.Episodes.First().LearningStatus == "Withdrawn";
         }, "LearningStatus did not change to 'Withdrawn' in time.");
@@ -91,7 +91,7 @@ internal class WithdrawApprenticeshipStepDefinitions
     public async Task EarningsAreRecalculated()
     {
         var testData = _context.Get<TestData>();
-        await _context.ReceiveEarningsRecalculatedEvent(testData.ApprenticeshipKey);
+        await _context.ReceiveEarningsRecalculatedEvent(testData.LearningKey);
         testData.EarningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
     }
 
