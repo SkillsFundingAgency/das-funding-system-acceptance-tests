@@ -1,6 +1,7 @@
 ﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Learning.Types;
 using SFA.DAS.Payments.FundingSource.Messages.Commands;
 using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 
@@ -11,7 +12,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests;
 internal class TestData
 {
     internal string Uln { get; }
-    internal Guid ApprenticeshipKey { get; set; } = Guid.Empty;
+    internal Guid LearningKey { get; set; } = Guid.Empty;
     internal Guid InitialEarningsProfileId { get; set; } = Guid.Empty;
     internal Guid EarningsProfileId { get; set; } = Guid.Empty;
     internal bool IsMarkedAsCareLeaver { get; set; } = false;
@@ -38,7 +39,7 @@ internal class TestData
     internal ApprenticeshipEarningsRecalculatedEvent? ApprenticeshipEarningsRecalculatedEvent { get; set; }
     internal PaymentsGeneratedEvent PaymentsGeneratedEvent { get; set; }
     internal CommitmentsMessages.ApprenticeshipCreatedEvent CommitmentsApprenticeshipCreatedEvent { get; set; }
-    internal Apprenticeships.Types.ApprenticeshipCreatedEvent ApprenticeshipCreatedEvent { get; set; }
+    internal LearningCreatedEvent LearningCreatedEvent { get; set; }
     internal EarningsGeneratedEvent EarningsGeneratedEvent { get; set; }
     internal List<FinalisedOnProgammeLearningPaymentEvent> FinalisedPaymentsList { get; set; }
     internal List<CalculateOnProgrammePayment> CalculatedOnProgrammePaymentList { get; set; }

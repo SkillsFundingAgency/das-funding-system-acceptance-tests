@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Apprenticeships.Types;
+﻿using SFA.DAS.Learning.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
@@ -12,7 +12,7 @@ internal static class PaymentsFrozenEventHelper
 
         var fixture = new Fixture();
         return fixture.Build<PaymentsFrozenEvent>()
-            .With(_ => _.ApprenticeshipKey, testData.ApprenticeshipKey)
+            .With(_ => _.LearningKey, testData.LearningKey)
             .Create();
     }
 

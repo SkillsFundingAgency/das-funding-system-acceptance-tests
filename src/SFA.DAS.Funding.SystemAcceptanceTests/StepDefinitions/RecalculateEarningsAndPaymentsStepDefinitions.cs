@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Apprenticeships.Types;
+﻿using SFA.DAS.Learning.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
@@ -93,7 +93,7 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     {
         var testData = _context.Get<TestData>();
         // clear previous PaymentsGeneratedEvent before publishing PriceChangeApproved Event 
-        PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
+        PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.LearningKey);
 
         await _apprenticeshipsInnerApiHelper.CreatePriceChangeRequest(_context, testData.NewTrainingPrice, testData.NewAssessmentPrice, testData.PriceChangeEffectiveFrom);
         await _apprenticeshipsInnerApiHelper.ApprovePendingPriceChangeRequest(_context, testData.NewTrainingPrice, testData.NewAssessmentPrice, testData.PriceChangeApprovedDate);
@@ -104,7 +104,7 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     {
         var testData = _context.Get<TestData>();
         // clear previous PaymentsGeneratedEvent before publishing StartDateChangeApproved Event 
-        PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
+        PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.LearningKey);
 
         var startDateChangedEvent = ApprenticeshipStartDateChangedEventHelper.CreateStartDateChangedMessageWithCustomValues(_context, testData.NewStartDate, testData.NewEndDate, testData.StartDateChangeApprovedDate);
 
@@ -117,7 +117,7 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
         var testData = _context.Get<TestData>();
         var academicYear = TableExtensions.GetAcademicYear(academicYearString);
 
-        await _context.ReceiveEarningsRecalculatedEvent(testData.ApprenticeshipCreatedEvent.ApprenticeshipKey);
+        await _context.ReceiveEarningsRecalculatedEvent(testData.LearningCreatedEvent.LearningKey);
 
         testData.ApprenticeshipEarningsRecalculatedEvent!.DeliveryPeriods.Where(Dp => Dp.AcademicYear == Convert.ToInt16(academicYear) && Dp.Period >= deliveryPeriod).All(p => p.LearningAmount.Should().Equals(newInstalmentAmount));
         testData.ApprenticeshipEarningsRecalculatedEvent!.DeliveryPeriods.Where(Dp => Dp.AcademicYear > Convert.ToInt16(academicYear)).All(p => p.LearningAmount.Should().Equals(newInstalmentAmount));
@@ -128,7 +128,7 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
     {
         var testData = _context.Get<TestData>();
 
-        await _context.ReceiveEarningsRecalculatedEvent(testData.ApprenticeshipKey);
+        await _context.ReceiveEarningsRecalculatedEvent(testData.LearningKey);
 
         testData.ApprenticeshipEarningsRecalculatedEvent.DeliveryPeriods.All(Dp => Dp.LearningAmount.Should().Equals(newInstalmentAmount));
     }
@@ -355,14 +355,14 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
         var testData = _context.Get<TestData>();
         var fixture = new Fixture();
 
-        var apprenticeshipPriceChangedEvent = fixture.Build<ApprenticeshipPriceChangedEvent>()
-        .With(_ => _.ApprenticeshipKey, Guid.Parse(table.Rows[0]["apprenticeship_key"]))
-        .With(_ => _.ApprenticeshipId, long.Parse(table.Rows[0]["apprenticeship_id"]))
-        .With(_ => _.Episode, new ApprenticeshipEpisode
+        var apprenticeshipPriceChangedEvent = fixture.Build<LearningPriceChangedEvent>()
+        .With(_ => _.LearningKey, Guid.Parse(table.Rows[0]["apprenticeship_key"]))
+        .With(_ => _.ApprovalsApprenticeshipId, long.Parse(table.Rows[0]["apprenticeship_id"]))
+        .With(_ => _.Episode, new LearningEpisode
         {
-            Prices = new List<ApprenticeshipEpisodePrice>
+            Prices = new List<LearningEpisodePrice>
             {
-                new ApprenticeshipEpisodePrice
+                new LearningEpisodePrice
                 {
                     EndPointAssessmentPrice = decimal.Parse(table.Rows[0]["assessment_price"]),
                     StartDate = testData.OriginalStartDate.GetValueOrDefault(),
@@ -374,7 +374,7 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
             },
             EmployerAccountId = long.Parse(table.Rows[0]["employer_account_id"]),
             Ukprn = long.Parse(table.Rows[0]["provider_id"]),
-            Key = _context.Get<Apprenticeships.Types.ApprenticeshipCreatedEvent>().Episode.Key
+            Key = _context.Get<Learning.Types.LearningCreatedEvent>().Episode.Key
         })
         .With(_ => _.EffectiveFromDate, DateTime.Parse(table.Rows[0]["effective_from_date"]))
         .With(_ => _.ApprovedDate, DateTime.Parse(table.Rows[0]["approved_date"]))

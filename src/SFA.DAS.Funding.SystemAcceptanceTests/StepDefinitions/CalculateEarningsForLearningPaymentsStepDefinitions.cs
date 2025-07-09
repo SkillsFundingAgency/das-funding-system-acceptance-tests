@@ -21,7 +21,7 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     {
         var testData = _context.Get<TestData>();
         var commitmentsApprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
-        var apprenticeshipCreatedEvent = testData.ApprenticeshipCreatedEvent;
+        var apprenticeshipCreatedEvent = testData.LearningCreatedEvent;
 
         if (condition == "below") Assert.Less(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost, apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate)!.FundingBandMaximum);
         else Assert.Greater(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost, apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate)!.FundingBandMaximum);
@@ -67,7 +67,7 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     public void ValidateAgeAndFundingLineTypeCalculated(int age, string fundingLineType)
     {
         var testData = _context.Get<TestData>();
-        Assert.AreEqual(testData.ApprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship, age, $"Expected age is: {age} but found age: {testData.ApprenticeshipCreatedEvent.Episode.AgeAtStartOfApprenticeship}");
+        Assert.AreEqual(testData.LearningCreatedEvent.Episode.AgeAtStartOfLearning, age, $"Expected age is: {age} but found age: {testData.LearningCreatedEvent.Episode.AgeAtStartOfLearning}");
 
         var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
         deliveryPeriods.FilterByOnProg().ToList().ShouldHaveCorrectFundingLineType(fundingLineType);

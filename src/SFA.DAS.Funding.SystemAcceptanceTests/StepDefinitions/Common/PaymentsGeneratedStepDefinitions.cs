@@ -25,7 +25,7 @@ public class PaymentsGeneratedStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             var paymentsEvent =
-                PaymentsGeneratedEventHandler.GetMessage(x => x.ApprenticeshipKey == testData.ApprenticeshipKey);
+                PaymentsGeneratedEventHandler.GetMessage(x => x.ApprenticeshipKey == testData.LearningKey);
 
             if (paymentsEvent != null)
             {

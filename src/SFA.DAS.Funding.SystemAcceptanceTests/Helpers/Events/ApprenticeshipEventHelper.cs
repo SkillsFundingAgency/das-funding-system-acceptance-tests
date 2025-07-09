@@ -1,8 +1,9 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.CommitmentsV2.Types;
-using APR = SFA.DAS.Apprenticeships.Types;
+using APR = SFA.DAS.Learning.Types;
 using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
+using SFA.DAS.Learning.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 
@@ -50,11 +51,11 @@ internal static class ApprenticeshipEventHelper
 
         await WaitHelper.WaitForIt(() =>
         {
-            APR.ApprenticeshipCreatedEvent? apprenticeshipEvent =
+            LearningCreatedEvent? learningEvent =
                 ApprenticeshipsTypesEventHandler.GetMessage(x => x.Uln == apprenticeshipCreatedEvent.Uln);
-            if (apprenticeshipEvent != null)
+            if (learningEvent != null)
             {
-                testData.ApprenticeshipCreatedEvent = apprenticeshipEvent;
+                testData.LearningCreatedEvent = learningEvent;
                 return true;
             }
             return false;
@@ -72,7 +73,7 @@ internal static class ApprenticeshipEventHelper
             return false;
         }, "Failed to find published event in Earnings");
 
-        testData.ApprenticeshipKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
+        testData.LearningKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
 
     }
 }

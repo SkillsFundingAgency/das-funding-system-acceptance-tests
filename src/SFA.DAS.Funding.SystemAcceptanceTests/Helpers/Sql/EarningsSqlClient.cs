@@ -16,7 +16,7 @@ public class EarningsSqlClient
     public EarningsApprenticeshipModel? GetEarningsEntityModel(ScenarioContext context)
     {
         var testData = context.Get<TestData>();
-        var apprenticeshipKey = testData.ApprenticeshipKey;
+        var apprenticeshipKey = testData.LearningKey;
 
         var apprenticeship = _sqlServerClient.GetList<EarningsApprenticeshipModel>($"SELECT * FROM [Domain].[Apprenticeship] Where [key] ='{apprenticeshipKey}'").SingleOrDefault();
         if (apprenticeship == null)

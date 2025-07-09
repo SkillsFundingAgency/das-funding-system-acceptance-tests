@@ -42,17 +42,17 @@ internal class AfterScenario
     private void PurgeCreatedRecords()
     {
         var testData = _context.Get<TestData>();
-        if (testData.ApprenticeshipKey == Guid.Empty)
+        if (testData.LearningKey == Guid.Empty)
             return;
 
         var paymentsSqlClient = _context.ScenarioContainer.Resolve<PaymentsSqlClient>();
-        paymentsSqlClient.DeletePayments(testData.ApprenticeshipKey);
+        paymentsSqlClient.DeletePayments(testData.LearningKey);
 
         var earningsSqlClient = _context.ScenarioContainer.Resolve<EarningsSqlClient>();
-        earningsSqlClient.DeleteEarnings(testData.ApprenticeshipKey);
+        earningsSqlClient.DeleteEarnings(testData.LearningKey);
 
         var apprenticeshipSqlClient = _context.ScenarioContainer.Resolve<LearningSqlClient>();
-        apprenticeshipSqlClient.DeleteApprenticeship(testData.ApprenticeshipKey);
+        apprenticeshipSqlClient.DeleteApprenticeship(testData.LearningKey);
     }
 
     private void OutputTestDataToFile()
@@ -79,11 +79,11 @@ internal class AfterScenario
         {
             writer.WriteLine($"Test: {_context.ScenarioInfo.Title}");
 
-            writer.WriteLine($"ApprenticeshipKey: {testData.ApprenticeshipKey}");
+            writer.WriteLine($"ApprenticeshipKey: {testData.LearningKey}");
             writer.WriteLine($"Uln: {testData.Uln}");
-            if(testData.ApprenticeshipCreatedEvent != null)
+            if(testData.LearningCreatedEvent != null)
             {
-                writer.WriteLine($"ApprenticeshipId: {testData.ApprenticeshipCreatedEvent.ApprovalsApprenticeshipId}");
+                writer.WriteLine($"ApprenticeshipId: {testData.LearningCreatedEvent.ApprovalsApprenticeshipId}");
             }
 
             if (hasError)

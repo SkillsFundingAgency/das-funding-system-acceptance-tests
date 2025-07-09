@@ -1,4 +1,4 @@
-using SFA.DAS.Apprenticeships.Types;
+using SFA.DAS.Learning.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -30,8 +30,8 @@ public class IncentivesAssertionsStepDefinitions
     public async Task MarkAsCareLeaver()
     {
         var testData = _context.Get<TestData>();
-        PaymentsGeneratedEventHandler.Clear(x=> x.ApprenticeshipKey == testData.ApprenticeshipKey);
-        await _earningsInnerApiHelper.MarkAsCareLeaver(testData.ApprenticeshipKey);
+        PaymentsGeneratedEventHandler.Clear(x=> x.ApprenticeshipKey == testData.LearningKey);
+        await _earningsInnerApiHelper.MarkAsCareLeaver(testData.LearningKey);
         testData.IsMarkedAsCareLeaver = true;
     }
 

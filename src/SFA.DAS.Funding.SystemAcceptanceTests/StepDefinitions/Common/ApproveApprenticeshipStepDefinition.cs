@@ -52,6 +52,6 @@ public class ApproveApprenticeshipStepDefinition
         testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId;
 
         testData.InitialEarningsProfileId = earningsApprenticeshipModel!.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)!.StartDate)!.EarningsProfile.EarningsProfileId;
-        testData.ApprenticeshipKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
+        testData.LearningKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
     }
 }

@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Apprenticeships.Types;
+﻿using SFA.DAS.Learning.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -22,7 +22,7 @@ public class ApprenticeshipsInnerApiHelper()
             UserId = "SystemAcceptanceTests",
         };
 
-        var response = await _apiClient.PostAsync($"{testData.ApprenticeshipKey}/priceHistory", requestBody);
+        var response = await _apiClient.PostAsync($"{testData.LearningKey}/priceHistory", requestBody);
         response.EnsureSuccessStatusCode();
     }
 
@@ -37,7 +37,7 @@ public class ApprenticeshipsInnerApiHelper()
             UserId = "SystemAcceptanceTests",
         };
 
-        var response = await _apiClient.PatchAsync($"{testData.ApprenticeshipKey}/priceHistory/pending", requestBody);
+        var response = await _apiClient.PatchAsync($"{testData.LearningKey}/priceHistory/pending", requestBody);
         response.EnsureSuccessStatusCode();
     }
 }
