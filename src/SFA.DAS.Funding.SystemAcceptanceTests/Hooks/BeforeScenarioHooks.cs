@@ -1,7 +1,4 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
-using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
@@ -14,13 +11,6 @@ public class BeforeScenarioHooks
         var config = Configurator.GetConfiguration();
         context.Set(config);
         Console.WriteLine($"Begin Scenario {context.ScenarioInfo.Title}");
-
-
-        if(context.ScenarioInfo.Tags.Contains("releasesPayments") && !config.ShouldReleasePayments)
-        {
-            Assert.Ignore("Skipping scenario: Release payments is disabled in test environment variables.");
-        }
-
         PopulateContextTestData(context);
         RegisterDependencies(context);
     }
@@ -38,7 +28,6 @@ public class BeforeScenarioHooks
         var container = context.ScenarioContainer;
         container.RegisterInstanceAs(StaticObjects.ApprenticeshipsClient);
         container.RegisterInstanceAs(StaticObjects.EarningsOuterClient);
-        container.RegisterInstanceAs(StaticObjects.PaymentsFunctionsClient);
         container.RegisterInstanceAs(StaticObjects.ApprenticeshipsSqlClient);
         container.RegisterInstanceAs(StaticObjects.EarningsSqlClient);
         container.RegisterInstanceAs(StaticObjects.PaymentsSqlClient);

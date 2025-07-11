@@ -1,10 +1,6 @@
-﻿using SFA.DAS.Learning.Types;
-using SFA.DAS.Funding.ApprenticeshipPayments.Types;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
-using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -12,13 +8,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 public class CalculateUnfundedPaymentsStepDefinitions
 {
     private readonly ScenarioContext _context;
-    private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
     private readonly PaymentsSqlClient _paymentsSqlClient;
 
-    public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context, PaymentsFunctionsClient paymentsFunctionsClient, PaymentsSqlClient paymentsSqlClient)
+    public CalculateUnfundedPaymentsStepDefinitions(ScenarioContext context, PaymentsSqlClient paymentsSqlClient)
     {
         _context = context;
-        _paymentsFunctionsClient = paymentsFunctionsClient;
         _paymentsSqlClient = paymentsSqlClient;
     }
 

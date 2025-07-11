@@ -1,10 +1,9 @@
-﻿using SFA.DAS.Learning.Types;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Learning.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -12,14 +11,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 public class RecalculateEarningsAndPaymentsStepDefinitions
 {
     private readonly ScenarioContext _context;
-    private readonly PaymentsFunctionsClient _paymentsFunctionsClient;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
     private readonly PaymentsSqlClient _paymentsSqlClient;
     private readonly ApprenticeshipsInnerApiHelper _apprenticeshipsInnerApiHelper;
 
     public RecalculateEarningsAndPaymentsStepDefinitions(
         ScenarioContext context, 
-        PaymentsFunctionsClient paymentsFunctionsClient, 
         PaymentsSqlClient paymentsSqlClient,
         EarningsSqlClient earningsSqlClient,
         ApprenticeshipsInnerApiHelper apprenticeshipsInnerApiHelper)
@@ -28,7 +25,6 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
         _earningsEntitySqlClient = earningsSqlClient;
         _paymentsSqlClient = paymentsSqlClient;
         _apprenticeshipsInnerApiHelper = apprenticeshipsInnerApiHelper;
-        _paymentsFunctionsClient = paymentsFunctionsClient;
     }
 
     [Given(@"payments have been paid for an apprenticeship with (.*), (.*)")]

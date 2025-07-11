@@ -13,7 +13,6 @@ internal class StaticObjects
     internal static WireMockServer? WireMockServer;
     internal static LearningClient? ApprenticeshipsClient;
     internal static EarningsOuterClient? EarningsOuterClient;
-    internal static PaymentsFunctionsClient? PaymentsFunctionsClient;
     internal static LearningSqlClient? ApprenticeshipsSqlClient;
     internal static EarningsSqlClient? EarningsSqlClient;
     internal static PaymentsSqlClient? PaymentsSqlClient;

@@ -72,7 +72,6 @@ public class TestRunHooks
     {
         StaticObjects.ApprenticeshipsClient = new LearningClient();
         StaticObjects.EarningsOuterClient = new EarningsOuterClient();
-        StaticObjects.PaymentsFunctionsClient = new PaymentsFunctionsClient();
         StaticObjects.ApprenticeshipsSqlClient = new LearningSqlClient();
         StaticObjects.EarningsSqlClient = new EarningsSqlClient();
         StaticObjects.PaymentsSqlClient = new PaymentsSqlClient();
