@@ -27,7 +27,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             string course, decimal amount)
         {
             var testData = _context.Get<TestData>();
-            PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.LearningKey);
             var helper = new EarningsInnerApiHelper();
             await helper.SetMathAndEnglishLearning(testData.LearningKey,
             [
@@ -43,7 +42,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             string Course1Name, decimal Course1Amount, TokenisableDateTime Course2StartDate, TokenisableDateTime Course2EndDate, string Course2Name, decimal Course2Amount)
         {
             var testData = _context.Get<TestData>();
-            PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.LearningKey);
             var helper = new EarningsInnerApiHelper();
             await helper.SetMathAndEnglishLearning(testData.LearningKey,
             [
@@ -110,72 +108,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
                 mathsAndEnglishStartPeriod.Value = mathsAndEnglishStartPeriod.Value.GetNextPeriod();
             }
-        }
-
-        [Then(@"Maths and English payments are generated from periods (.*) to (.*) with amount (.*)")]
-        public async Task VerifyMathsAndEnglishPayments(TokenisablePeriod mathsAndEnglishStartPeriod,
-            TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount)
-        {
-            var testData = _context.Get<TestData>();
-            PaymentsApprenticeshipModel? paymentsApprenticeshipModel = null;
-
-            await WaitHelper.WaitForIt(() =>
-            {
-                paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
-                if (paymentsApprenticeshipModel == null) return false;
-                return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
-            }, "Failed to find updated payments entity.");
-
-            testData.PaymentsGeneratedEvent.Payments.Should().NotContain(x =>
-                    x.PaymentType == AdditionalPaymentType.MathsAndEnglish.ToString()
-                    && new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(mathsAndEnglishStartPeriod.Value)
-                    && x.Amount == amount,
-                $"Expected no Maths and English payments before {mathsAndEnglishStartPeriod.Value.ToCollectionPeriodString()}");
-
-            testData.PaymentsGeneratedEvent.Payments.Should().NotContain(x =>
-                    x.PaymentType == AdditionalPaymentType.MathsAndEnglish.ToString()
-                    && mathsAndEnglishEndPeriod.Value.IsBefore(new Period(x.AcademicYear, x.DeliveryPeriod))
-                    && x.Amount == amount,
-                $"Expected no Maths and English payments after {mathsAndEnglishEndPeriod.Value.ToCollectionPeriodString()}");
-
-            while (mathsAndEnglishStartPeriod.Value.IsBefore(mathsAndEnglishEndPeriod.Value))
-            {
-                testData.PaymentsGeneratedEvent.Payments.Should().Contain(x =>
-                        x.PaymentType == AdditionalPaymentType.MathsAndEnglish.ToString()
-                        && x.Amount == amount
-                        && x.AcademicYear == mathsAndEnglishStartPeriod.Value.AcademicYear
-                        && x.DeliveryPeriod == mathsAndEnglishStartPeriod.Value.PeriodValue,
-                    $"Expected Maths and English payments for {mathsAndEnglishStartPeriod.Value.ToCollectionPeriodString()}");
-
-                mathsAndEnglishStartPeriod.Value = mathsAndEnglishStartPeriod.Value.GetNextPeriod();
-            }
-        }
-
-        [Then("no Maths and English payments are generated")]
-        public async Task NoMathsAndEnglishPaymentsAreGenerated()
-        {
-            var testData = _context.Get<TestData>();
-
-            testData.PaymentsGeneratedEvent.Payments
-                .Where(x => x.PaymentType == "MathsAndEnglish")
-                .Should()
-                .BeEmpty("no MathsAndEnglish payments should be present");
-        }
-
-
-        [When(@"the payments event is disregarded")]
-        public async Task WhenThePaymentsEventIsDisregarded()
-        {
-            var testData = _context.Get<TestData>();
-
-            await WaitHelper.WaitForIt(() =>
-                {
-                    var e = PaymentsGeneratedEventHandler.GetMessage(x => x.ApprenticeshipKey == testData.LearningKey);
-                    return e != null;
-                },
-                $"Failed to find published event in Payments");
-
-            PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.LearningKey);
         }
     }
 }

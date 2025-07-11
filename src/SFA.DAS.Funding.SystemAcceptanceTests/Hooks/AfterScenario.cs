@@ -88,9 +88,6 @@ internal class AfterScenario
 
             if (hasError)
             {
-                writer.WriteLine("PaymentsGeneratedEvent");
-                writer.WriteLine(JsonSerializer.Serialize(testData.PaymentsGeneratedEvent, new JsonSerializerOptions { WriteIndented = true }));
-
                 writer.WriteLine("EarningsGeneratedEvent");
                 writer.WriteLine(JsonSerializer.Serialize(testData.EarningsGeneratedEvent, new JsonSerializerOptions { WriteIndented = true }));
             }

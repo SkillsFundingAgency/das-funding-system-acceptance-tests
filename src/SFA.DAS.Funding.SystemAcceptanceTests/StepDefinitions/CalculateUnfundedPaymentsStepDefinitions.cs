@@ -22,22 +22,6 @@ public class CalculateUnfundedPaymentsStepDefinitions
         _paymentsSqlClient = paymentsSqlClient;
     }
 
-    [Then(@"the Unfunded Payments for every earning is created")]
-    public void UnfundedPaymentsForEveryEarningIsCreatedInTheFollowingMonth(Table table)
-    {
-        var testData = _context.Get<TestData>();
-        var payments = testData.PaymentsGeneratedEvent.Payments;
-        payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedPayments());
-    }
-
-    [Then(@"Unfunded Payments for the apprenticeship including rollup payments are calculated as below")]
-    public void UnfundedPaymentsForTheApprenticeshipIncludingRollupPaymentsAreCalculated(Table table)
-    {
-        var testData = _context.Get<TestData>();
-        var payments = testData.PaymentsGeneratedEvent.Payments;
-        payments.ShouldHaveCorrectPaymentsGenerated(table.ToExpectedRollupPayments());
-    }
-
     [Then(@"the newly calculated Unfunded Payments are marked as not sent to payments BAU")]
     public void NewlyCalculatedUnfundedPaymentsAreMarkedAsNotSentToPaymentsBAU()
     {

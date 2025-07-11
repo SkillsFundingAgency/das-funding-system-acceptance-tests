@@ -37,7 +37,6 @@ internal class TestData
     internal EarningsApprenticeshipModel? EarningsApprenticeshipModel { get; set; }
     internal PaymentsApprenticeshipModel? PaymentsApprenticeshipModel { get; set; }
     internal ApprenticeshipEarningsRecalculatedEvent? ApprenticeshipEarningsRecalculatedEvent { get; set; }
-    internal PaymentsGeneratedEvent PaymentsGeneratedEvent { get; set; }
     internal CommitmentsMessages.ApprenticeshipCreatedEvent CommitmentsApprenticeshipCreatedEvent { get; set; }
     internal LearningCreatedEvent LearningCreatedEvent { get; set; }
     internal EarningsGeneratedEvent EarningsGeneratedEvent { get; set; }

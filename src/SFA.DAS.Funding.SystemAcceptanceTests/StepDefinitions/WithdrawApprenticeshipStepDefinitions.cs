@@ -52,9 +52,6 @@ internal class WithdrawApprenticeshipStepDefinitions
     {
         var testData = _context.Get<TestData>();
 
-        // clear previous PaymentsGeneratedEvent before triggering the withdrawal
-        PaymentsGeneratedEventHandler.Clear(x => x.ApprenticeshipKey == testData.LearningKey);
-
         testData.LastDayOfLearning = lastDayOfDelivery.Value;
 
         var body = new WithdrawLearningRequestBody
@@ -134,50 +131,5 @@ internal class WithdrawApprenticeshipStepDefinitions
 
             Assert.IsTrue(isValidEarningInDb, $"Some instalments have a delivery period > {deliveryPeriod} and academic year > {academicYear} in earnings db.");
         }
-    }
-
-    [Then("new payments with amount (.*) are marked as Not sent for payment and clawed back")]
-    public void NewPaymentsWithAmountSinceDeliveryPeriodAndAcademicYearAreMarkedAsNotSentForPaymentClawedBack(decimal amount)
-    {
-        var testData = _context.Get<TestData>();
-
-        var lastDayOfLearningPeriod = TableExtensions.Period[testData.LastDayOfLearning.ToString("MMMM")];
-        var lastDayOfLearningAcademicYear = short.Parse(TableExtensions.CalculateAcademicYear("0", testData.LastDayOfLearning));
-
-        //var startDatePeriod = TableExtensions.Period[earningsGeneratedEvent.StartDate.ToString("MMMM")];
-        var startDateAcademicYear = short.Parse(TableExtensions.CalculateAcademicYear("0", testData.EarningsGeneratedEvent.StartDate));
-
-        var firstDeliveryPeriod = startDateAcademicYear < short.Parse(testData.CurrentCollectionYear) ? TableExtensions.Period["August"] : lastDayOfLearningPeriod;
-
-           var expectedPaymentPeriods = PaymentDeliveryPeriodExpectationBuilder.BuildForDeliveryPeriodRange(
-           new Period(short.Parse(testData.CurrentCollectionYear), firstDeliveryPeriod),
-           new Period(short.Parse(testData.CurrentCollectionYear), testData.CurrentCollectionPeriod),
-           new PaymentExpectation
-           {
-               Amount = -amount,
-               SentForPayment = false
-           });
-
-            // Validate PaymentsGenerateEvent & Payments Entity
-            expectedPaymentPeriods.AssertAgainstEventPayments(testData.PaymentsGeneratedEvent.Payments);
-
-            expectedPaymentPeriods.AssertAgainstEntityArray(testData.PaymentsApprenticeshipModel.Payments);
-    }
-
-    [Then("all the payments from delivery periods after last payment made are deleted")]
-    public void ThenAllThePaymentsFromDeliveryPeriodsAfterLastPaymentMadeAreDeleted()
-    {
-        var testData = _context.Get<TestData>();
-        bool futurePaymentsDeletedFromEvent = testData.PaymentsGeneratedEvent.Payments
-        .All(x => x.AcademicYear < short.Parse(testData.CurrentCollectionYear)
-            || (x.AcademicYear == Convert.ToInt16(testData.CurrentCollectionYear) && x.DeliveryPeriod <= Convert.ToInt16(testData.CurrentCollectionPeriod)));
-
-        Assert.IsTrue(futurePaymentsDeletedFromEvent, $"Some instalments have a delivery period > {testData.CurrentCollectionPeriod} and academic year > {testData.CurrentCollectionYear} in recalculated payments event.");
-
-        bool isValidPaymentsInDb = testData.PaymentsApprenticeshipModel.Payments.All(i => i.AcademicYear < Convert.ToInt16(testData.CurrentCollectionYear)
-               || (i.AcademicYear == Convert.ToInt16(testData.CurrentCollectionYear) && i.DeliveryPeriod <= Convert.ToInt16(testData.CurrentCollectionPeriod)));
-
-        Assert.IsTrue(isValidPaymentsInDb, $"Some instalments have a delivery period > {testData.CurrentCollectionPeriod} and academic year > {testData.CurrentCollectionYear} in payments db.");
-
     }
 }
