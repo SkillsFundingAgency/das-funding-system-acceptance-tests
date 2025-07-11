@@ -1,9 +1,8 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
+﻿using SFA.DAS.CommitmentsV2.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using SFA.DAS.CommitmentsV2.Types;
-using APR = SFA.DAS.Learning.Types;
-using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
 using SFA.DAS.Learning.Types;
+using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 

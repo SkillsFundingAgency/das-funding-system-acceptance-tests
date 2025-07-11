@@ -1,7 +1,4 @@
-﻿using System.Linq.Expressions;
-using System.Reflection;
-using System.Security.Claims;
-using System.Text.Json.Serialization;
+﻿using System.Security.Claims;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
@@ -33,26 +30,5 @@ public static class ClaimsHelper
     private static Claim CreateServiceAccountClaim()
     {
         return new Claim("serviceAccount", "system-acceptance-tests");
-    }
-
-    private static Claim CreateClaim<T>(this T user, Expression<Func<T, string?>> expression)
-    {
-        var value = expression.Compile().Invoke(user);
-        return new Claim(GetJsonPropertyName<T, string>(expression), value ?? string.Empty);
-    }
-
-    private static string GetJsonPropertyName<T, TValueType>(Expression<Func<T, TValueType?>> expression)
-    {
-        var memberExpression = expression.Body as MemberExpression;
-        if (memberExpression == null)
-        {
-            throw new ArgumentException("Expression must be a member expression");
-        }
-
-        var objectPropertyName = memberExpression.Member.Name;
-
-        var property = typeof(T).GetProperty(objectPropertyName);
-        var attribute = property.GetCustomAttribute<JsonPropertyNameAttribute>();
-        return attribute?.Name;
     }
 }

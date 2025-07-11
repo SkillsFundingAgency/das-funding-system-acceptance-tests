@@ -27,25 +27,6 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
         _apprenticeshipsInnerApiHelper = apprenticeshipsInnerApiHelper;
     }
 
-    [Given(@"payments have been paid for an apprenticeship with (.*), (.*)")]
-    public async Task GivenPaymentsHaveBeenCalculatedForAnApprenticeshipWithAnd(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate)
-    {
-        var testData = _context.Get<TestData>();
-
-        var startDatePeriod = TableExtensions.Period[startDate.Value.ToString("MMMM")];
-        var startDateYear = TableExtensions.CalculateAcademicYear("0", startDate.Value);
-
-        testData.OriginalStartDate = startDate.Value;
-        testData.PlannedEndDate = plannedEndDate.Value;
-
-        var firstDeliveryPeriod = short.Parse(startDateYear) < short.Parse(testData.CurrentCollectionYear) ? TableExtensions.Period["August"] : startDatePeriod;
-
-
-        await _context.UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(testData.CurrentCollectionPeriod - firstDeliveryPeriod);
-
-    }
-
-
     [Given(@"the total price is above or below or at the funding band maximum")]
     public void TotalPriceIsBelowOrAtTheFundingBandMaximum()
     {

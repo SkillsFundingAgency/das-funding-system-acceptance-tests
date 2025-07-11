@@ -31,12 +31,6 @@ public class CalculateUnfundedPaymentsStepDefinitions
         testData.CurrentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
     }
 
-    [When(@"the unpaid unfunded payments for the current Collection Month and (.*) rollup payments are sent to be paid")]
-    public async Task UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(int numberOfRollupPayments)
-    {
-        await _context.UnpaidUnfundedPaymentsForTheCurrentCollectionMonthAndRollupPaymentsAreSentToBePaid(numberOfRollupPayments);
-    }
-
     [Then(@"the amount of (.*) is sent to be paid for each payment in the curent Collection Month")]
     public void AmountIsSentToBePaidForEachPaymentInTheCurentCollectionMonth(decimal Amount)
     {
