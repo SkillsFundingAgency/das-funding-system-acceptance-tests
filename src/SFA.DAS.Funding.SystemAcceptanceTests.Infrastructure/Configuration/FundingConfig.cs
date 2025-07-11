@@ -3,8 +3,6 @@
 public class FundingConfig
 {
     public const string NotSet = "<not set>";
-
-    public bool ShouldReleasePayments { get; set; } = true;
     public bool ShouldCleanUpTestRecords { get; set; } = false;
     public string SharedServiceBusFqdn { get; set; } = NotSet;
     public string SharedServiceBusTopicEndpoint { get; set; } = NotSet;

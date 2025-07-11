@@ -1,6 +1,4 @@
-﻿using NUnit.Framework.Interfaces;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -11,15 +9,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     {
         private readonly ScenarioContext _context;
         private readonly EarningsSqlClient _earningsSqlClient;
-        private readonly PaymentsSqlClient _paymentsSqlClient;
 
 
         public MathAndEnglishAssertionsStepDefinitions(ScenarioContext context,
-            EarningsSqlClient earningsEntitySqlClient, PaymentsSqlClient paymentsEntitySqlClient)
+            EarningsSqlClient earningsEntitySqlClient)
         {
             _context = context;
             _earningsSqlClient = earningsEntitySqlClient;
-            _paymentsSqlClient = paymentsEntitySqlClient;
         }
 
         [When("Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*)")]

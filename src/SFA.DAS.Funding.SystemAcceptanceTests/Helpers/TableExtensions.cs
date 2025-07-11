@@ -12,27 +12,6 @@ public static class TableExtensions
             .ToList();
     }
 
-    public static List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short CollectionYear, byte CollectionPeriod)> ToExpectedPayments(this Table table)
-    {
-        return table.Rows.Select(row =>
-                (Convert.ToInt16(row[0]), Period[row[1]], Convert.ToDecimal(row[2]), Convert.ToInt16(row[3]), Period[row[4]]))
-            .ToList();
-    }
-
-    public static List<(short AcademicYear, byte DeliveryPeriod, decimal Amount, short CollectionYear, byte CollectionPeriod)> ToExpectedRollupPayments(this Table table)
-    {
-        return table.Rows.Select(row =>
-                (Convert.ToInt16(CalculateAcademicYear(row[0])), Period[CalculatePeriod(row[0])], Convert.ToDecimal(row[2]),
-                Convert.ToInt16(CalculateAcademicYear(row[1])), Period[CalculatePeriod(row[1])])).ToList();
-    }
-
-    private static string CalculatePeriod(string text)
-    {
-        var numberOfMonthsToAdd = new string(text.Where(c => !char.IsLetter(c)).ToArray());
-
-        return DateTime.Now.AddMonths(Convert.ToInt16(numberOfMonthsToAdd)).ToString("MMMM");
-    }
-
     public static string CalculateAcademicYear(string numberOfMonthsToAdd, DateTime date = default)
     {
         var numberOfMonths = new string(numberOfMonthsToAdd.Where(c => !char.IsLetter(c)).ToArray());

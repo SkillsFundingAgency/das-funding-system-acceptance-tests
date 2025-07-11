@@ -8,22 +8,19 @@ using SFA.DAS.Learning.Types;
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
 [Binding]
-public class RecalculateEarningsAndPaymentsStepDefinitions
+public class RecalculateEarningsStepDefinitions
 {
     private readonly ScenarioContext _context;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
-    private readonly PaymentsSqlClient _paymentsSqlClient;
     private readonly ApprenticeshipsInnerApiHelper _apprenticeshipsInnerApiHelper;
 
-    public RecalculateEarningsAndPaymentsStepDefinitions(
+    public RecalculateEarningsStepDefinitions(
         ScenarioContext context, 
-        PaymentsSqlClient paymentsSqlClient,
         EarningsSqlClient earningsSqlClient,
         ApprenticeshipsInnerApiHelper apprenticeshipsInnerApiHelper)
     {
         _context = context;
         _earningsEntitySqlClient = earningsSqlClient;
-        _paymentsSqlClient = paymentsSqlClient;
         _apprenticeshipsInnerApiHelper = apprenticeshipsInnerApiHelper;
     }
 
@@ -216,16 +213,5 @@ public class RecalculateEarningsAndPaymentsStepDefinitions
         if (endDate.Day < startDate.Day) monthsDifference--;
 
         return monthsDifference;
-    }
-
-    static decimal CalculateNewEarnings(decimal proposedNewTotalPrice, decimal fundingBandMax, int apprenticeshipDurationInMonth, decimal oldEarnings, DateTime startDate, DateTime copStartDate)
-    {
-        var priceToUse = proposedNewTotalPrice > fundingBandMax ? fundingBandMax : proposedNewTotalPrice;
-
-        var censusDatesPassedUpToCoPEffectiveFromDate = CalculateMonthsDifference(copStartDate, startDate);
-
-        var amountAlreadyPaid = censusDatesPassedUpToCoPEffectiveFromDate * oldEarnings;
-
-        return ((priceToUse * 0.8m) - amountAlreadyPaid) / (apprenticeshipDurationInMonth - censusDatesPassedUpToCoPEffectiveFromDate);
     }
 }

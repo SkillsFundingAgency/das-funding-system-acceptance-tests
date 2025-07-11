@@ -30,7 +30,6 @@ public class BeforeScenarioHooks
         container.RegisterInstanceAs(StaticObjects.EarningsOuterClient);
         container.RegisterInstanceAs(StaticObjects.ApprenticeshipsSqlClient);
         container.RegisterInstanceAs(StaticObjects.EarningsSqlClient);
-        container.RegisterInstanceAs(StaticObjects.PaymentsSqlClient);
         container.RegisterInstanceAs(StaticObjects.ApprenticeshipsInnerApiHelper);
         container.RegisterInstanceAs(StaticObjects.EarningsInnerApiHelper);
     }

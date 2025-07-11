@@ -13,20 +13,17 @@ internal class WithdrawApprenticeshipStepDefinitions
     private readonly LearningClient _apprenticeshipsClient;
     private readonly LearningSqlClient _apprenticeshipSqlClient;
     private readonly EarningsSqlClient _earningsSqlClient;
-    private readonly PaymentsSqlClient _paymentsSqlClient;
 
     public WithdrawApprenticeshipStepDefinitions(
         ScenarioContext context,
         LearningClient apprenticeshipsClient,
         LearningSqlClient apprenticeshipSqlClient,
-        EarningsSqlClient earningsSqlClient,
-        PaymentsSqlClient paymentsSqlClient)
+        EarningsSqlClient earningsSqlClient)
     {
         _context = context;
         _apprenticeshipsClient = apprenticeshipsClient;
         _apprenticeshipSqlClient = apprenticeshipSqlClient;
         _earningsSqlClient = earningsSqlClient;
-        _paymentsSqlClient = paymentsSqlClient;
     }
 
     [When(@"the apprenticeship is withdrawn")]
@@ -91,14 +88,6 @@ internal class WithdrawApprenticeshipStepDefinitions
         await _context.ReceiveEarningsRecalculatedEvent(testData.LearningKey);
         testData.EarningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
     }
-
-    [Then("payments are recalculated")]
-    public async Task PaymentsAreRecalculated()
-    {
-        var testData = _context.Get<TestData>();
-        testData.PaymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
-    }
-
 
     [Then("the expected number of earnings instalments after withdrawal are (.*)")]
     public void ExpectedNumberOfEarningsInstalmentsAfterWithdrawalIs(int expectedInstalmentsNumber)

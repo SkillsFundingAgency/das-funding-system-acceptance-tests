@@ -11,18 +11,15 @@ public class IncentivesAssertionsStepDefinitions
 {
     private readonly ScenarioContext _context;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
-    private readonly PaymentsSqlClient _paymentsSqlClient;
     private readonly EarningsInnerApiHelper _earningsInnerApiHelper;
 
     public IncentivesAssertionsStepDefinitions(
         ScenarioContext context, 
         EarningsSqlClient earningsEntitySqlClient, 
-        PaymentsSqlClient paymentsSqlClient,
         EarningsInnerApiHelper earningsInnerApiHelper)
     {
         _context = context;
         _earningsEntitySqlClient = earningsEntitySqlClient;
-        _paymentsSqlClient = paymentsSqlClient;
         _earningsInnerApiHelper = earningsInnerApiHelper;
     }
 

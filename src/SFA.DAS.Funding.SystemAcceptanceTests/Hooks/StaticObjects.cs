@@ -15,7 +15,6 @@ internal class StaticObjects
     internal static EarningsOuterClient? EarningsOuterClient;
     internal static LearningSqlClient? ApprenticeshipsSqlClient;
     internal static EarningsSqlClient? EarningsSqlClient;
-    internal static PaymentsSqlClient? PaymentsSqlClient;
     internal static ApprenticeshipsInnerApiHelper? ApprenticeshipsInnerApiHelper;
     internal static EarningsInnerApiHelper? EarningsInnerApiHelper;
 }

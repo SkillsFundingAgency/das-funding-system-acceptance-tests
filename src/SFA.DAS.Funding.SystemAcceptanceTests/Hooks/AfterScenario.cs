@@ -15,8 +15,6 @@ internal class AfterScenario
     public AfterScenario(ScenarioContext context)
     {
         _context = context;
-        if (_context.ScenarioInfo.Tags.Contains("releasesPayments") && !_config.ShouldReleasePayments) return;
-        
         
         var testData = _context.Get<TestData>();
         _context.Set($"TESTDATA_{testData.Uln}_{DateTime.Now:HH-mm-ss-fffff}.txt", OutputFile);
@@ -25,14 +23,12 @@ internal class AfterScenario
     [AfterStep(Order = 10)]
     public void AfterStep()
     {
-        if (_context.ScenarioInfo.Tags.Contains("releasesPayments") && !_config.ShouldReleasePayments) return;
         OutputTestDataToFile();
     }
 
     [AfterScenario(Order = 10)]
     public void AfterScenarioCleanup()
     {
-        if (_context.ScenarioInfo.Tags.Contains("releasesPayments") && !_config.ShouldReleasePayments) return;
         if (_config.ShouldCleanUpTestRecords)
         {
             PurgeCreatedRecords();
@@ -44,9 +40,6 @@ internal class AfterScenario
         var testData = _context.Get<TestData>();
         if (testData.LearningKey == Guid.Empty)
             return;
-
-        var paymentsSqlClient = _context.ScenarioContainer.Resolve<PaymentsSqlClient>();
-        paymentsSqlClient.DeletePayments(testData.LearningKey);
 
         var earningsSqlClient = _context.ScenarioContainer.Resolve<EarningsSqlClient>();
         earningsSqlClient.DeleteEarnings(testData.LearningKey);
