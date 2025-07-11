@@ -1,9 +1,6 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using static SFA.DAS.Funding.SystemAcceptanceTests.TestSupport.DcLearnerDataHelper;
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
 
 [Binding]
