@@ -95,36 +95,6 @@ public class TestRunHooks
         await azureClient.DeleteSubscriptionAsync(config.FundingSystemAcceptanceTestSubscription, config.SharedServiceBusTopicEndpoint, queueName);
     }
 
-    [AfterTestRun(Order = 3)]
-    public static async Task PurgePv2FundingSourceQueue()
-    {
-        var config = Configurator.GetConfiguration();
-
-        if (config.EnvironmentName != "DEMO")
-        {
-            await using var client = new ServiceBusClient(config.SharedServiceBusFqdn, new DefaultAzureCredential());
-            var receiver = client.CreateReceiver(config.Pv2FundingSourceQueue, new ServiceBusReceiverOptions
-            {
-                ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete,
-                SubQueue = SubQueue.DeadLetter
-            });
-
-            var totalMessages = 0;
-
-            while (true)
-            {
-                var messages = await receiver.ReceiveMessagesAsync(maxMessages: 100, maxWaitTime: TimeSpan.FromSeconds(5));
-                LoggerHelper.WriteLog($"Purging {messages.Count} dead-letter messages from {config.Pv2FundingSourceQueue}.");
-                totalMessages += messages.Count;
-                if (messages.Count == 0)
-                {
-                    LoggerHelper.WriteLog($"All dead-letter messages purged from {config.Pv2FundingSourceQueue}. Total {totalMessages} messages purged.");
-                    break;
-                }
-            }
-        }
-    }
-
     [AfterTestRun(Order = 4)]
     public static void StopEndpoints()
     {
