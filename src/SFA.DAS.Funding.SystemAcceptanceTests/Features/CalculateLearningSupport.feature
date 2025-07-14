@@ -1,19 +1,16 @@
-﻿Feature: Calculate learning support earnings and payments
+﻿Feature: Calculate learning support earnings
 
 As a Training provider
-I want learning support earnings & payments to be calculated
+I want learning support earnings to be calculated
 So I get paid learning support correctly
 
 @regression
-Scenario: Learning Support Earnings & Payments
+Scenario: Learning Support Earnings
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
-	And Payments Generated Events are published
 	And learning support is recorded from <learning_support_start> to <learning_support_end>
-	And Payments Generated Events are published
 	Then learning support earnings are generated from periods <expected_first_payment_period> to <expected_last_payment_period>
-	And learning support payments are generated from periods <expected_first_payment_period> to <expected_last_payment_period>
 
 Examples:
 	| learning_support_start | learning_support_end | expected_first_payment_period | expected_last_payment_period |

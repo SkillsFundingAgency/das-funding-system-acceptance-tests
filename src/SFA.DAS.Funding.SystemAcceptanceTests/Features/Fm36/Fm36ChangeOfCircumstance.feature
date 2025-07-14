@@ -10,7 +10,6 @@ Scenario: Price change approved; new price episode in FM36 block
 	And a price change request was sent on <pc_from_date>
 	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>
 	When the price change is approved
-	And Payments Generated Events are published
 	And the fm36 data is retrieved for currentDate
 	Then fm36 block contains a new price episode starting <pc_from_date> with episode 1 tnp of <agreed_price> and episode 2 tnp of <new_total_price>
 	
@@ -26,7 +25,6 @@ Scenario: Start date change approved
 	And the fm36 data is retrieved for currentDate
 	And a start date change request was sent with an approval date of <sdc_approved_date> with a new start date of <new_start_date> and end date of <new_end_date>
 	When the start date change is approved
-	And Payments Generated Events are published
 	And the fm36 data is retrieved for currentDate
 	Then the fm36 PriceEpisodeInstalmentValue is <new_expected_earnings>
 	And Incentive periods and dates are updated in the fm36 response

@@ -1,7 +1,7 @@
 ﻿Feature: Calculate incentives for 16-18 learners
 
 As a Training provider & Employer
-I want monthly 16-18 incentive earnings & payments to be calculated
+I want monthly 16-18 incentive earnings  to be calculated
 So we both get paid incentives correctly
 
 # User stories/ACs covered in this file:
@@ -9,15 +9,12 @@ So we both get paid incentives correctly
 # FLP-1036 AC1(16-18 part)
 
 @regression
-Scenario: 16-18 Incentive Earnings & Payments
+Scenario: 16-18 Incentive Earnings 
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
-	And Payments Generated Events are published
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
-	And the first incentive payment is generated for provider & employer
-	And the second incentive payment is generated for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
@@ -27,15 +24,12 @@ Examples:
 
 
 @regression
-Scenario: 16-18 Incentive Earnings & Payments (duration only long enough for first payment only)
+Scenario: 16-18 Incentive Earnings (duration only long enough for first earning only)
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
-	And Payments Generated Events are published
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is not generated for provider & employer
-	And the first incentive payment is generated for provider & employer
-	And the second incentive payment is not generated for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
@@ -44,15 +38,12 @@ Examples:
 
 
 @regression
-Scenario: 16-18 Incentive Earnings & Payments (duration too short for either payment)
+Scenario: 16-18 Incentive Earnings (duration too short)
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
-	And Payments Generated Events are published
 	Then the first incentive earning is not generated for provider & employer
 	And the second incentive earning is not generated for provider & employer
-	And the first incentive payment is not generated for provider & employer
-	And the second incentive payment is not generated for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |

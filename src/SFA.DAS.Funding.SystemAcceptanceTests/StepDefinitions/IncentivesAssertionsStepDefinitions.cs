@@ -11,18 +11,15 @@ public class IncentivesAssertionsStepDefinitions
 {
     private readonly ScenarioContext _context;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
-    private readonly PaymentsSqlClient _paymentsSqlClient;
     private readonly EarningsInnerApiHelper _earningsInnerApiHelper;
 
     public IncentivesAssertionsStepDefinitions(
         ScenarioContext context, 
         EarningsSqlClient earningsEntitySqlClient, 
-        PaymentsSqlClient paymentsSqlClient,
         EarningsInnerApiHelper earningsInnerApiHelper)
     {
         _context = context;
         _earningsEntitySqlClient = earningsEntitySqlClient;
-        _paymentsSqlClient = paymentsSqlClient;
         _earningsInnerApiHelper = earningsInnerApiHelper;
     }
 
@@ -30,7 +27,6 @@ public class IncentivesAssertionsStepDefinitions
     public async Task MarkAsCareLeaver()
     {
         var testData = _context.Get<TestData>();
-        PaymentsGeneratedEventHandler.Clear(x=> x.ApprenticeshipKey == testData.LearningKey);
         await _earningsInnerApiHelper.MarkAsCareLeaver(testData.LearningKey);
         testData.IsMarkedAsCareLeaver = true;
     }
@@ -87,60 +83,6 @@ public class IncentivesAssertionsStepDefinitions
         additionalPayments!.Count(x => x.AdditionalPaymentType == AdditionalPaymentType.ProviderIncentive).Should().BeLessThanOrEqualTo(2, "No more than two provider incentive payments should be made.");
     }
 
-    [Then(@"the (first|second) incentive payment (is|is not) generated for provider & employer")]
-    public async Task VerifyIncentivePayments(string incentiveEarningNumber, string outcome)
-    {
-        var testData = _context.Get<TestData>();
-
-        if (incentiveEarningNumber is not ("first" or "second"))
-            throw new Exception("This step only supports incentive payments 'first' or 'second'");
-
-        PaymentsApprenticeshipModel? paymentsApprenticeshipModel = null;
-
-        await WaitHelper.WaitForIt(() =>
-        {
-            paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
-            return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
-        }, "Failed to find updated payments entity.");
-
-        var paymentsGeneratedEvent = testData.PaymentsGeneratedEvent;
-        
-        switch (outcome)
-        {
-            case "is":
-            {
-                var expectedPaymentPeriods = new List<PaymentDeliveryPeriodExpectation>
-                {
-                    PaymentDeliveryPeriodExpectationBuilder.BuildForIncentive(
-                        testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(),
-                        incentiveEarningNumber == "first" ? (byte)1 : (byte)2,
-                        AdditionalPaymentType.ProviderIncentive),
-                    PaymentDeliveryPeriodExpectationBuilder.BuildForIncentive(
-                        testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(),
-                        incentiveEarningNumber == "first" ? (byte)1 : (byte)2,
-                        AdditionalPaymentType.EmployerIncentive)
-                };
-
-                // Validate PaymentsGenerateEvent & Payments Entity
-                expectedPaymentPeriods.AssertAgainstEventPayments(paymentsGeneratedEvent.Payments);
-
-                expectedPaymentPeriods.AssertAgainstEntityArray(paymentsApprenticeshipModel.Payments);
-                break;
-            }
-            case "is not":
-                var expectedPeriod = incentiveEarningNumber == "first"
-                    ? testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault().AddDays(89).ToAcademicYearAndPeriod() // 90th day of learning
-                    : testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault().AddDays(364).ToAcademicYearAndPeriod(); // 365th day of learning
-
-                paymentsGeneratedEvent.Payments.Should().NotContain(x => x.Amount > 0 && x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString() && x.AcademicYear == expectedPeriod.AcademicYear && x.DeliveryPeriod == expectedPeriod.Period);
-                paymentsGeneratedEvent.Payments.Should().NotContain(x => x.Amount > 0 && x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString() && x.AcademicYear == expectedPeriod.AcademicYear && x.DeliveryPeriod == expectedPeriod.Period);
-                paymentsApprenticeshipModel.Payments.Should().NotContain(x => x.Amount > 0 && x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString() && x.AcademicYear == expectedPeriod.AcademicYear && x.DeliveryPeriod == expectedPeriod.Period);
-                paymentsApprenticeshipModel.Payments.Should().NotContain(x => x.Amount > 0 && x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString() && x.AcademicYear == expectedPeriod.AcademicYear && x.DeliveryPeriod == expectedPeriod.Period);
-                break;
-            default: throw new Exception("This step only supports and outcome of 'is' or 'is not'");
-        }
-    }
-
     [Then("no incentive earning is generated for provider & employer")]
     public async Task NoIncentiveEarningIsGenerated()
     {
@@ -161,27 +103,5 @@ public class IncentivesAssertionsStepDefinitions
 
         additionalPayments.Should().NotContain(x => x.AdditionalPaymentType == AdditionalPaymentType.ProviderIncentive);
         additionalPayments.Should().NotContain(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive);
-    }
-
-    [Then("no incentive payment is generated for provider & employer")]
-    public async Task NoIncentivePaymentGenerated()
-    {
-        var testData = _context.Get<TestData>();
-
-        PaymentsApprenticeshipModel? paymentsApprenticeshipModel = null;
-
-        await WaitHelper.WaitForIt(() =>
-        {
-            paymentsApprenticeshipModel = _paymentsSqlClient.GetPaymentsModel(_context);
-
-            return paymentsApprenticeshipModel.Earnings.Any(x => x.EarningsProfileId == testData.EarningsProfileId);
-        }, "Failed to find updated payments entity.");
-
-        var paymentsGeneratedEvent = testData.PaymentsGeneratedEvent;
-
-        paymentsGeneratedEvent.Payments.Should().NotContain(x=> x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString());
-        paymentsGeneratedEvent.Payments.Should().NotContain(x => x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString());
-        paymentsApprenticeshipModel.Payments.Should().NotContain(x => x.PaymentType == AdditionalPaymentType.ProviderIncentive.ToString());
-        paymentsApprenticeshipModel.Payments.Should().NotContain(x => x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString());
     }
 }
