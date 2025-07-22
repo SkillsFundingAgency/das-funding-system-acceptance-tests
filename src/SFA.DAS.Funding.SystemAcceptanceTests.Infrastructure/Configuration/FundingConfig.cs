@@ -9,7 +9,7 @@ public class FundingConfig
     public string LearningTransportStorageDirectory { get; set; } = NotSet;
     public string LearningDbConnectionString { get; set; } = NotSet;
     public string EarningsDbConnectionString { get; set; } = NotSet;
-    public string LearnerDbConnectionString { get; set; } = NotSet;
+    public string LearnerDataDbConnectionString { get; set; } = NotSet;
     public string WireMockBaseUrl { get; set; } = NotSet;
     public string LearningAzureFunctionBaseUrl { get; set; } = NotSet;
     public string LearningAzureFunctionKey { get; set; } = NotSet;

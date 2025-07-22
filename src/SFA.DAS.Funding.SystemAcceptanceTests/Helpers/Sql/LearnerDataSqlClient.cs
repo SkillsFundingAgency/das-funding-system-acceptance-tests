@@ -6,7 +6,7 @@
 
         public LearnerDataSqlClient()
         {
-            var connectionString = Configurator.GetConfiguration().LearnerDbConnectionString;
+            var connectionString = Configurator.GetConfiguration().LearnerDataDbConnectionString;
             _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
         }
 
