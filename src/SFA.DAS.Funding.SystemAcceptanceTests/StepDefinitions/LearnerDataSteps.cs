@@ -19,7 +19,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             context.Set(testData);
         }
 
-        [Then(@"the learner is added to LearnerData")]
+        [Then(@"the learner's details are added to Learner Data db")]
         public async Task ThenTheLearnerIsAddedToLearnerData()
         {
             var testData = context.Get<TestData>();

@@ -1,10 +1,11 @@
-﻿Feature: AddLearnerData
+﻿Feature: Add Learner Data
 
-As the SLD
-I want to inform DAS of new Learners added via the ILR
-So that Apprenticeships can be created within Approvals
+In order to keep DAS in sync with new learners reported in the ILR
+As SLD
+I want to pass new learners data to Approvals
+So that apprenticeship can be created
 
 @regression
 Scenario: Add a Learner
 	When SLD inform us of a new Learner
-	Then the learner is added to LearnerData
+	Then the learner's details are added to Learner Data db
