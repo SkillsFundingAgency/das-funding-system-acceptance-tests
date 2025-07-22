@@ -9,7 +9,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public LearnerDataOuterApiClient() {
             var config = Configurator.GetConfiguration();
-            var baseUrl = config.EarningsOuterApiBaseUrl; //todo: make this "shared"
+            var baseUrl = config.OuterApiBaseUrl;
             _subscriptionKey = config.LearnerDataOuterApiSubscriptionKey;
             _apiClient = HttpClientProvider.GetClient(baseUrl);
         }

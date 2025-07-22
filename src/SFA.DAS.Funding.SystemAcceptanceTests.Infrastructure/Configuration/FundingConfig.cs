@@ -13,7 +13,7 @@ public class FundingConfig
     public string WireMockBaseUrl { get; set; } = NotSet;
     public string LearningAzureFunctionBaseUrl { get; set; } = NotSet;
     public string LearningAzureFunctionKey { get; set; } = NotSet;
-    public string EarningsOuterApiBaseUrl { get; set; } = NotSet;
+    public string OuterApiBaseUrl { get; set; } = NotSet;
     public string EarningsOuterSubscriptionKey { get; set; } = NotSet;
     public string EarningsFunctionKey { get; set; } = NotSet;
     public string FundingSystemAcceptanceTestQueue { get; set; } = NotSet;
