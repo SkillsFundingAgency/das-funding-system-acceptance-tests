@@ -7,17 +7,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         private readonly HttpClient _apiClient;
         private readonly string _subscriptionKey;
 
-        public LearnerDataOuterApiClient()
-        {
+        public LearnerDataOuterApiClient() {
             var config = Configurator.GetConfiguration();
-            var baseUrl = config.LearnerDataOuterApiClientBaseUrl;
+            var baseUrl = config.EarningsOuterApiBaseUrl; //todo: make this "shared"
             _subscriptionKey = config.LearnerDataOuterApiSubscriptionKey;
             _apiClient = HttpClientProvider.GetClient(baseUrl);
         }
 
         public async Task AddLearnerData(long ukprn, int academicYear, IEnumerable<LearnerDataRequest> learnerData)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, $"/provider/{ukprn}/{academicYear}/learners");
+            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/provider/{ukprn}/academicyears/{academicYear}/learners");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -29,6 +28,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
             request.Content = jsonContent;
             var response = await _apiClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                
+            }
 
             response.EnsureSuccessStatusCode();
         }

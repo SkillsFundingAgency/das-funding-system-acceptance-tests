@@ -32,6 +32,7 @@ internal class AfterScenario
         if (_config.ShouldCleanUpTestRecords)
         {
             PurgeCreatedRecords();
+            PurgeLearnerData();
         }
     }
 
@@ -46,6 +47,15 @@ internal class AfterScenario
 
         var apprenticeshipSqlClient = _context.ScenarioContainer.Resolve<LearningSqlClient>();
         apprenticeshipSqlClient.DeleteApprenticeship(testData.LearningKey);
+    }
+
+    private void PurgeLearnerData()
+    {
+        var testData = _context.Get<TestData>();
+        if (testData.LearnerData == null) return;
+
+        var learnerDataSqlClient = new LearnerDataSqlClient();
+        learnerDataSqlClient.DeleteAllLearnerData();
     }
 
     private void OutputTestDataToFile()
