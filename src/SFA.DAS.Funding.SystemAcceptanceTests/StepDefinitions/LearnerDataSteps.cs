@@ -31,13 +31,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             Assert.IsNotNull(data);
 
-            data.Should().BeEquivalentTo(testData.LearnerData, options => options
-                .ExcludingMissingMembers()
-                .WithMapping<LearnerData>(src => src.LearnerEmail, dest => dest.Email)
-                .WithMapping<LearnerData>(src => src.DateOfBirth, dest => dest.DoB)
-                .Using<DateTime>(ctx => ctx.Subject.Date.Should().Be(ctx.Expectation.Date))
-                .WhenTypeIs<DateTime>()
-            );
+            data.Should()
+                .BeEquivalentTo(testData.LearnerData,
+                    options => options
+                        .Excluding(x => x.LearnerEmail)
+                        .Excluding(x => x.DateOfBirth)
+                        .Excluding(x => x.StartDate)
+                        .Excluding(x => x.PlannedEndDate)
+                    );
+
+            data.Email.Should().Be(testData.LearnerData.LearnerEmail);
+            data.DoB.Date.Should().Be(testData.LearnerData.DateOfBirth.Date);
+            data.StartDate.Date.Should().Be(testData.LearnerData.StartDate.Date);
+            data.PlannedEndDate.Date.Should().Be(testData.LearnerData.PlannedEndDate.Date);
         }
     }
 }
