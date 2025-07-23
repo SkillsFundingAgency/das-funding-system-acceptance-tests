@@ -1,5 +1,6 @@
 ﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Learning.Types;
 using SFA.DAS.Payments.FundingSource.Messages.Commands;
@@ -42,6 +43,7 @@ internal class TestData
     internal EarningsGeneratedEvent EarningsGeneratedEvent { get; set; }
     internal List<FinalisedOnProgammeLearningPaymentEvent> FinalisedPaymentsList { get; set; }
     internal List<CalculateOnProgrammePayment> CalculatedOnProgrammePaymentList { get; set; }
+    internal LearnerDataOuterApiClient.LearnerDataRequest? LearnerData { get; set; }
 
     public TestData(string uln)
     {
