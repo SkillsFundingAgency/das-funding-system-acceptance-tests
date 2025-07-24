@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 {
@@ -38,6 +39,31 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             response.EnsureSuccessStatusCode();
         }
 
+        public async Task UpdateLearning(Guid learningKey, UpdateLearningRequest learningData)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/{learningKey}");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+
+            var jsonContent = new StringContent(
+                JsonSerializer.Serialize(learningData),
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+            request.Content = jsonContent;
+            var response = await _apiClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+
+            }
+
+            response.EnsureSuccessStatusCode();
+        }
+
+
         public class LearnerDataRequest
         {
             public long ULN { get; set; }
@@ -56,6 +82,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public int? PlannedOTJTrainingHours { get; set; }
             public int StandardCode { get; set; }
             public string ConsumerReference { get; set; }
+        }
+
+        public class UpdateLearningRequest
+        {
+            public LearnerUpdateDetails Learner { get; set; }
+        }
+
+        public class LearnerUpdateDetails
+        {
+            public DateTime? CompletionDate { get; set; }
         }
     }
 }

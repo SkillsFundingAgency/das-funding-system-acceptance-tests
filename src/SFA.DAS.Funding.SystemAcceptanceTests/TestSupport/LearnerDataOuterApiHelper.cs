@@ -7,7 +7,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
     public class LearnerDataOuterApiHelper
     {
         private readonly LearnerDataOuterApiClient _apiClient = new();
-        
+
         public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn, int academicYear)
         {
             var fixture = new Fixture();
@@ -27,6 +27,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             await _apiClient.AddLearnerData(ukprn, academicYear, learnerData);
 
             return learnerData.First();
+        }
+
+        public async Task CompleteLearning(Guid learningKey, DateTime? completionDate)
+        {
+            var requestData = new UpdateLearningRequest
+            {
+                Learner = new LearnerUpdateDetails
+                {
+                    CompletionDate = completionDate
+                }
+            };
+
+            await _apiClient.UpdateLearning(learningKey, requestData);
         }
     }
 }
