@@ -33,6 +33,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
+        [When("Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*) and completion on (.*)")]
+        public async Task AddMathsAndEnglishLearning(TokenisableDateTime StartDate, TokenisableDateTime EndDate,
+            string course, decimal amount, TokenisableDateTime completionDate)
+        {
+            var testData = _context.Get<TestData>();
+            var helper = new EarningsInnerApiHelper();
+            await helper.SetMathAndEnglishLearning(testData.LearningKey,
+            [
+                new EarningsInnerApiClient.MathAndEnglishDetails
+                    { StartDate = StartDate.Value, EndDate = EndDate.Value, Amount = amount, Course = course, CompletionDate = completionDate.Value}
+            ]);
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
         [When("the first course is recorded from (.*) to (.*) with course (.*) and amount (.*) and the second course from (.*) to (.*) with course (.*) and amount (.*)")]
         public async Task AddMultipleMathsAndEnglishLearnings(TokenisableDateTime Course1StartDate, TokenisableDateTime Course1EndDate,
             string Course1Name, decimal Course1Amount, TokenisableDateTime Course2StartDate, TokenisableDateTime Course2EndDate, string Course2Name, decimal Course2Amount)

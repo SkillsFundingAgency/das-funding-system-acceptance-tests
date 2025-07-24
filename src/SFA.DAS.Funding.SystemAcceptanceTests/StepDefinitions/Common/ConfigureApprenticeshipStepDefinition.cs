@@ -83,6 +83,7 @@ public class ConfigureApprenticeshipStepDefinition
     }
 
     [Given("the age at the start of the apprenticeship is (.*)")]
+    [Given("the age at the start of the learning is (.*)")]
     public void TheAgeAtTheStartOfTheApprenticeshipIs(int age)
     {
         var testData = _context.Get<TestData>();

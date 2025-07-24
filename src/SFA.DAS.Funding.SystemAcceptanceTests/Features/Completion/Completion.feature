@@ -5,7 +5,7 @@ Then we should roll-up future earnings into a single balancing payment
 And record the completion payment as earned
 
 @regression
-Scenario: Balancing earnings on Completion
+Scenario: Balancing and Completion earnings on Completion
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of <agreed_price>
 	When SLD inform us that the Learning Completed on <completion_date>
 	Then earnings of <expected_earning_amount> are generated from periods <expected_first_earning_period> to <expected_last_earning_period>
@@ -15,4 +15,16 @@ Scenario: Balancing earnings on Completion
 Examples:
 	| start_date      | end_date        | agreed_price | completion_date | expected_first_earning_period | expected_last_earning_period | expected_earning_amount | expected_balancing_period | expected_balancing_amount | expected_completion_period | expected_completion_amount |
 	| currentAY-08-01 | currentAY-07-31 | 15000        | currentAY-06-15 | currentAY-R01                 | currentAY-R10                | 1000                    | currentAY-R11             | 2000                      | currentAY-R11              | 3000                       |
+
+
+@regression
+Scenario: Balancing earnings for Maths and English on Completion
+	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of <agreed_price>
+	#Todo: Move this to the outer api
+	When Maths and English learning is recorded from <start_date> to <end_date> with course <course>, amount <amount> and completion on <completion_date>
+	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
+
+Examples:
+	| start_date      | end_date        | course              | completion_date | amount | expected_first_earning_period | expected_first_payment_period | expected_last_period | instalment |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English | currentAY-04-25 | 931    | currentAY-R02                 | currentAY-R02                 | currentAY-R05        | 232.75     |
 
