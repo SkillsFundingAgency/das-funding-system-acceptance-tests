@@ -25,6 +25,6 @@ Scenario: Balancing earnings for Maths and English on Completion
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
 
 Examples:
-	| start_date      | end_date        | course              | completion_date | amount | expected_first_earning_period | expected_first_payment_period | expected_last_period | instalment |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English | currentAY-04-25 | 931    | currentAY-R02                 | currentAY-R02                 | currentAY-R05        | 232.75     |
+	| start_date      | end_date        | course              | agreed_price | completion_date | amount | expected_first_earning_period | expected_last_period | instalment |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English | 5000         | currentAY-01-01 | 931    | currentAY-R02                 | currentAY-R06        | 133        |
 

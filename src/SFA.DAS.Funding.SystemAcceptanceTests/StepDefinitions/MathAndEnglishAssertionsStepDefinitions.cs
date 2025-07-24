@@ -42,7 +42,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await helper.SetMathAndEnglishLearning(testData.LearningKey,
             [
                 new EarningsInnerApiClient.MathAndEnglishDetails
-                    { StartDate = StartDate.Value, EndDate = EndDate.Value, Amount = amount, Course = course, CompletionDate = completionDate.Value}
+                    { StartDate = StartDate.Value, EndDate = EndDate.Value, Amount = amount, Course = course, ActualEndDate = completionDate.Value}
             ]);
 
             testData.IsMathsAndEnglishAdded = true;
