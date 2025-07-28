@@ -40,8 +40,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             }
         }
 
-        [Then(@"a (.*) earning of (.*) is generated for period (.*)")]
-        public async Task ThenABalancingEarningOfIsGeneratedForPeriod(string earningType, decimal amount, TokenisablePeriod period)
+        [Then(@"an earning of (.*) of type (.*) is generated for period (.*)")]
+        public async Task ThenABalancingEarningOfIsGeneratedForPeriod(decimal amount, string earningType, TokenisablePeriod period)
         {
             var earnings = earningsSqlClient.GetEarningsEntityModel(context);
             var episode = earnings.Episodes.SingleOrDefault();
