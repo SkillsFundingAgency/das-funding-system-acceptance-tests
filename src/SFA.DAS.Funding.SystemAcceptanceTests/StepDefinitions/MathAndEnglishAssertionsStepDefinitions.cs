@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+﻿using System.Diagnostics;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -48,22 +49,40 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
-        [When("Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*) and withdrawal on (.*)")]
-        public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, TokenisableDateTime endDate,
-            string course, decimal amount, TokenisableDateTime withdrawalDate)
+        //[When("Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*) and withdrawal on (.*)")]
+        //public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, TokenisableDateTime endDate,
+        //    string course, decimal amount, TokenisableDateTime withdrawalDate)
+        //{
+        //    var testData = _context.Get<TestData>();
+        //    var helper = new EarningsInnerApiHelper();
+        //    await helper.SetMathAndEnglishLearning(testData.LearningKey,
+        //    [
+        //        new EarningsInnerApiClient.MathAndEnglishDetails
+        //            { StartDate = startDate.Value, EndDate = endDate.Value, Amount = amount, Course = course, WithdrawalDate = withdrawalDate.Value}
+        //    ]);
+
+        //    testData.IsMathsAndEnglishAdded = true;
+        //}
+
+        [When("Maths and English learning is recorded from (.*) for (.*) days with course (.*), amount (.*) and withdrawal after (.*) days")]
+        public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, int duration,
+            string course, decimal amount, int withdrawalOnDay)
         {
+            var endDate = startDate.Value.AddDays(duration - 1);
+            var withdrawalDate = startDate.Value.AddDays(withdrawalOnDay - 1);
+
             var testData = _context.Get<TestData>();
             var helper = new EarningsInnerApiHelper();
             await helper.SetMathAndEnglishLearning(testData.LearningKey,
             [
                 new EarningsInnerApiClient.MathAndEnglishDetails
-                    { StartDate = startDate.Value, EndDate = endDate.Value, Amount = amount, Course = course, WithdrawalDate = withdrawalDate.Value}
+                    { StartDate = startDate.Value, EndDate = endDate, Amount = amount, Course = course, WithdrawalDate = withdrawalDate}
             ]);
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
-        [When("Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*) and prior learning adjustment percentage of (.*)")]
+        [When("Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*) and prior learning adjustment of (.*) percent")]
         public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate,
             string course, decimal amount, int? priorLearning)
         {

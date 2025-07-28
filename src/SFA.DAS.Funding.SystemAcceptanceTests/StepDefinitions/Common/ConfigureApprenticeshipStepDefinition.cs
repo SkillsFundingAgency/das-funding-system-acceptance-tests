@@ -51,6 +51,17 @@ public class ConfigureApprenticeshipStepDefinition
         await approveApprenticeshipStepDefinition.ApproveApprenticeshipCommitment();
     }
 
+
+    [Given(@"a learning has a start date of (.*), a duration of (.*) and an agreed price of (.*)")]
+    public async Task LearningHasAStartDateOfADurationAndAnAgreedPrice(TokenisableDateTime startDate, int duration, decimal agreedPrice)
+    {
+        var plannedEndDate = startDate.Value.AddDays(duration - 1);
+        var tokenised = new TokenisableDateTime(plannedEndDate);
+
+        await LearningHasAStartDateOfAPlannedEndDateOfAndAnAgreedPrice(startDate, tokenised, agreedPrice);
+    }
+
+
     [Given(@"an apprenticeship with start date over (.*) months ago and duration of (.*) months and an agreed price of (.*), and a training code (.*)")]
     public void ApprenticeshipWithStartDateOverMonthsAgoAndDurationOfMonthsAndAnAgreedPriceOfAndATrainingCode(int monthsSinceStart, int duration, decimal agreedPrice, string trainingCode)
     {
