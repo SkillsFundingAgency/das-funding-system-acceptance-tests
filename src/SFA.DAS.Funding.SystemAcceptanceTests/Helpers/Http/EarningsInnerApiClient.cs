@@ -156,6 +156,7 @@ public class EarningsInnerApiClient
         public decimal Amount { get; set; }
         public DateTime? ActualEndDate { get; set; }
         public int? PriorLearningAdjustmentPercentage { get; set; }
+        public DateTime? WithdrawalDate { get; set; }
     }
 
 }

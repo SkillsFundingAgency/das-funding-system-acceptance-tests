@@ -74,6 +74,19 @@ Examples:
 	| start_date          | end_date            | maths_and_english_end_date | course            | expected_first_earning_period | expected_last_earning_period |
 	| TwoYearsAgoAY-08-01 | TwoYearsAgoAY-01-31 | TwoYearsAgoAY-07-31        | Entry level Maths | TwoYearsAgoAY-R01             | TwoYearsAgoAY-R12            |
 
+	
+	
+@regression
+Scenario: Balancing earnings for Maths and English on Completion
+	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of <agreed_price>
+	#Todo: Move this to the outer api
+	When Maths and English learning is recorded from <start_date> to <end_date> with course <course>, amount <amount> and completion on <completion_date>
+	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
+
+Examples:
+	| start_date      | end_date        | course              | agreed_price | completion_date | amount | expected_first_earning_period | expected_last_period | instalment |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English | 5000         | currentAY-01-01 | 931    | currentAY-R02                 | currentAY-R06        | 133        |
+
 
 
 @regression
@@ -86,4 +99,38 @@ Scenario: Earnings for Maths and English with prior learning %
 Examples:
 	| start_date      | end_date        | course              | agreed_price | completion_date | amount | expected_first_earning_period | expected_last_period | instalment |
 	| currentAY-09-25 | currentAY-04-15 | Entry level English | 5000         | currentAY-01-01 | 931    | currentAY-R02                 | currentAY-R09        | 66.5       |
+
+	
+@regression
+Scenario: Earnings for Maths and English after Withdrawal after Qualifying Period
+	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of <agreed_price>
+	#Todo: Move this to the outer api
+	When Maths and English learning is recorded from <start_date> to <end_date> with course <course>, amount <amount> and withdrawal on <withdrawal_date>
+	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
+
+Examples:
+	| start_date      | end_date        | course              | agreed_price | withdrawal_date | amount | expected_first_earning_period | expected_last_period | instalment |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English | 5000         | currentAY-01-01 | 931    | currentAY-R02                 | currentAY-R05        | 133        |
+	# 42-day qualifying period for 168 days or more
+	| currentAY-09-25 | currentAY-04-15 | Entry level English | 5000         | currentAY-11-05 | 931    | currentAY-R02                 | currentAY-R03        | 133        |
+	# 14-day qualifying period for 14-167 days
+	| currentAY-09-25 | currentAY-01-02 | Entry level English | 5000         | currentAY-10-08 | 931    | currentAY-R02                 | currentAY-R02        | 133        |
+	# 1-day qualifying period for <14 days
+	| currentAY-09-25 | currentAY-10-01 | Entry level English | 5000         | currentAY-09-27 | 931    | currentAY-R02                 | currentAY-R02        | 133        |
+
+@regression
+Scenario: Earnings for Maths and English after Withdrawal during Qualifying Period
+	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of <agreed_price>
+	#Todo: Move this to the outer api
+	When Maths and English learning is recorded from <start_date> to <end_date> with course <course>, amount <amount> and withdrawal on <withdrawal_date>
+	Then Maths and English earnings for course <course> are zero
+
+Examples:
+	| start_date      | end_date        | course              | agreed_price | amount | withdrawal_date |
+	# 42-day qualifying period for 168 days or more
+	| currentAY-09-25 | currentAY-04-15 | Entry level English | 5000         | 931    | currentAY-11-04 | 
+	# 14-day qualifying period for 14-167 days
+	| currentAY-09-25 | currentAY-01-02 | Entry level English | 5000         | 931    | currentAY-10-07 | 
+
+
 

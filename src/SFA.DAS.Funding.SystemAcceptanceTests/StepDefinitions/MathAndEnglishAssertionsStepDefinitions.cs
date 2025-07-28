@@ -34,7 +34,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [When("Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*) and completion on (.*)")]
-        public async Task AddMathsAndEnglishLearning(TokenisableDateTime StartDate, TokenisableDateTime EndDate,
+        public async Task AddMathsAndEnglishLearningWithCompletion(TokenisableDateTime StartDate, TokenisableDateTime EndDate,
             string course, decimal amount, TokenisableDateTime completionDate)
         {
             var testData = _context.Get<TestData>();
@@ -43,6 +43,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             [
                 new EarningsInnerApiClient.MathAndEnglishDetails
                     { StartDate = StartDate.Value, EndDate = EndDate.Value, Amount = amount, Course = course, ActualEndDate = completionDate.Value}
+            ]);
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+        [When("Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*) and withdrawal on (.*)")]
+        public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, TokenisableDateTime endDate,
+            string course, decimal amount, TokenisableDateTime withdrawalDate)
+        {
+            var testData = _context.Get<TestData>();
+            var helper = new EarningsInnerApiHelper();
+            await helper.SetMathAndEnglishLearning(testData.LearningKey,
+            [
+                new EarningsInnerApiClient.MathAndEnglishDetails
+                    { StartDate = startDate.Value, EndDate = endDate.Value, Amount = amount, Course = course, WithdrawalDate = withdrawalDate.Value}
             ]);
 
             testData.IsMathsAndEnglishAdded = true;
@@ -134,6 +149,39 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
                 mathsAndEnglishStartPeriod.Value = mathsAndEnglishStartPeriod.Value.GetNextPeriod();
             }
+        }
+
+        [Then("Maths and English earnings for course (.*) are zero")]
+        public async Task VerifyMathsAndEnglishEarnings(string course)
+        {
+            var testData = _context.Get<TestData>();
+            EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+
+            await WaitHelper.WaitForIt(() =>
+            {
+                earningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
+                return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault()
+                    .EarningsProfileHistory.Any();
+            }, "Failed to find updated earnings entity.");
+
+            var mathsAndEnglish = earningsApprenticeshipModel
+                .Episodes
+                .SingleOrDefault()
+                ?.MathsAndEnglish;
+
+            var mathsAndEnglishKey = mathsAndEnglish.FirstOrDefault(x => x.Course.Contains(course)).Key;
+
+            var mathsAndEnglishInstalments = earningsApprenticeshipModel
+                .Episodes
+                .SingleOrDefault()
+                ?.MathsAndEnglishInstalments.Where(x => x.MathsAndEnglishKey == mathsAndEnglishKey)
+                .ToList();
+
+            testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile
+                .EarningsProfileId;
+
+            mathsAndEnglishInstalments.Should().BeEmpty("Unexpected Maths and English instalment data found on earnings apprenticeship model");
+
         }
     }
 }
