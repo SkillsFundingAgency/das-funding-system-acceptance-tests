@@ -154,7 +154,7 @@ public class EarningsInnerApiClient
         public DateTime? EndDate { get; set; }
         public string Course { get; set; } = null!;
         public decimal Amount { get; set; }
-        public DateTime? ActualEndDate { get; set; }
+        public DateTime? CompletionDate { get; set; }
         public int? PriorLearningAdjustmentPercentage { get; set; }
         public DateTime? WithdrawalDate { get; set; }
     }
