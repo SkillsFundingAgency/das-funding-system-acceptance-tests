@@ -11,13 +11,11 @@ Scenario: Balancing earnings for Maths and English on Completion
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
 	#Todo: Move this to the outer api
 	When Maths and English learning is recorded from <start_date> to <end_date> with course <course>, amount <amount> and completion on <completion_date>
-	#Todo: there is a pre-existing boundary error in the below assertion. The last instalment of 133 is in DP5, not 6. But if corrected, we need the function to
-	# ignore the subsequent balancing earning. There is no "type" to differentiate them like on the learning itself, so this is tricky.
-	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
+	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with regular instalment amount <instalment> for course <course>
 	And a Maths and English earning of <balancing_amount> is generated for course <course> for period <balancing_period>
 
 Examples:
 	| start_date      | end_date        | course              | completion_date | amount | expected_first_earning_period | expected_last_period | instalment | balancing_amount | balancing_period |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English | currentAY-01-01 | 931    | currentAY-R02                 | currentAY-R06        | 133        | 399              | currentAY-R06    |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English | currentAY-01-01 | 931    | currentAY-R02                 | currentAY-R05        | 133        | 399              | currentAY-R06    |
 
 
