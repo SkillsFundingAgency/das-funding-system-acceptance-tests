@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Net.Http.Headers;
+using System.Text.Json;
+using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
@@ -7,11 +9,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
     {
         private readonly HttpClient _apiClient;
         private readonly string _subscriptionKey;
+        private readonly FundingConfig _fundingConfig;
+        private DateTime _bearerTokenExpiry;
+        private string? _azureToken;
+        private string? _cachedBearerToken;
 
         public LearnerDataOuterApiClient() {
-            var config = Configurator.GetConfiguration();
-            var baseUrl = config.OuterApiBaseUrl;
-            _subscriptionKey = config.LearnerDataOuterApiSubscriptionKey;
+            _fundingConfig = Configurator.GetConfiguration();
+            var baseUrl = _fundingConfig.OuterApiBaseUrl;
+            _subscriptionKey = _fundingConfig.LearnerDataOuterApiSubscriptionKey;
             _apiClient = HttpClientProvider.GetClient(baseUrl);
         }
 
@@ -39,9 +45,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task UpdateLearning(Guid learningKey, UpdateLearningRequest learningData)
+        public async Task UpdateLearning(Guid learningKey, UpdateLearnerRequest learningData)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/{learningKey}");
+            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/Learners/{learningKey}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -52,15 +58,44 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
                 "application/json");
 
             request.Content = jsonContent;
+            EnsureBearerToken();
             var response = await _apiClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-
             }
 
             response.EnsureSuccessStatusCode();
+        }
+
+        private void EnsureBearerToken()
+        {
+            if (string.IsNullOrEmpty(_cachedBearerToken) || DateTime.UtcNow >= _bearerTokenExpiry)
+            {
+                AddBearerToken();
+            }
+        }
+
+        private void AddBearerToken()
+        {
+            var claims = GetClaims();
+            var signingKey = _fundingConfig.LearningServiceBearerTokenSigningKey;
+
+            var accessToken = ServiceBearerTokenProvider.GetServiceBearerToken(signingKey);
+
+            accessToken = BearerTokenHelper.AddClaimsToBearerToken(accessToken, claims, signingKey);
+
+            _cachedBearerToken = accessToken;
+            _bearerTokenExpiry = DateTime.UtcNow.AddMinutes(20);
+
+            _apiClient.DefaultRequestHeaders.Add("X-Forwarded-Authorization",
+                $"Bearer {_cachedBearerToken}");
+        }
+
+        private Dictionary<string, string> GetClaims()
+        {
+            return new Dictionary<string, string>();
         }
 
 
@@ -84,14 +119,26 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public string ConsumerReference { get; set; }
         }
 
-        public class UpdateLearningRequest
+        public class UpdateLearnerRequest
         {
-            public LearnerUpdateDetails Learner { get; set; }
+            public UpdateLearnerRequestDeliveryDetails Delivery { get; set; }
         }
-
-        public class LearnerUpdateDetails
+        public class UpdateLearnerRequestDeliveryDetails
         {
             public DateTime? CompletionDate { get; set; }
+
+            public List<MathsAndEnglish> MathsAndEnglishCourses { get; set; }
+        }
+
+        public class MathsAndEnglish
+        {
+            public string Course { get; set; }
+            public DateTime StartDate { get; set; }
+            public DateTime PlannedEndDate { get; set; }
+            public DateTime? CompletionDate { get; set; }
+            public DateTime? WithdrawalDate { get; set; }
+            public int? PriorLearningPercentage { get; set; }
+            public decimal Amount { get; set; }
         }
     }
 }

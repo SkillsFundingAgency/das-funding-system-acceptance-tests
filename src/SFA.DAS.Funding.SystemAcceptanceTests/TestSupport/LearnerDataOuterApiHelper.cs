@@ -31,11 +31,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
         public async Task CompleteLearning(Guid learningKey, DateTime? completionDate)
         {
-            var requestData = new UpdateLearningRequest
+            var requestData = new UpdateLearnerRequest()
             {
-                Learner = new LearnerUpdateDetails
+                Delivery = new UpdateLearnerRequestDeliveryDetails()
                 {
-                    CompletionDate = completionDate
+                    CompletionDate = completionDate,
+                    MathsAndEnglishCourses = []
                 }
             };
 
