@@ -20,7 +20,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var episode = earnings.Episodes.SingleOrDefault();
 
-            var regularInstalments = episode.EarningsProfile.Instalments.Where(x => x.Type == "Regular").ToList();
+            var regularInstalments = episode.EarningsProfile.Instalments.Where(x => x.Type.Trim() == "Regular").ToList();
 
             regularInstalments.Should()
                 .NotContain(x => new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(periodFrom.Value));
@@ -46,11 +46,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var earnings = earningsSqlClient.GetEarningsEntityModel(context);
             var episode = earnings.Episodes.SingleOrDefault();
 
-            var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(x => x.Type == earningType);
+            var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(x => x.Type.Trim() == earningType);
             instalment.Should().NotBeNull();
 
             var deliveryPeriod = new Period(instalment.AcademicYear, instalment.DeliveryPeriod);
-            deliveryPeriod.Should().Be(period.Value);
+            deliveryPeriod.AcademicYear.Should().Be(period.Value.AcademicYear);
+            deliveryPeriod.PeriodValue.Should().Be(period.Value.PeriodValue);
 
             instalment.Amount.Should().Be(amount);
        }
