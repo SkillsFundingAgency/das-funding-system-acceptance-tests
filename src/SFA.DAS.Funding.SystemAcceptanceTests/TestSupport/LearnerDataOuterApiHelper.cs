@@ -42,5 +42,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 
             await _apiClient.UpdateLearning(learningKey, requestData);
         }
+
+        public async Task AddMathsAndEnglish(Guid learningKey, MathsAndEnglish mathsAndEnglish)
+        {
+            var requestData = new UpdateLearnerRequest()
+            {
+                Delivery = new UpdateLearnerRequestDeliveryDetails()
+                {
+                    MathsAndEnglishCourses = new List<MathsAndEnglish>
+                    {
+                        mathsAndEnglish
+                    }
+                }
+            };
+
+            await _apiClient.UpdateLearning(learningKey, requestData);
+        }
     }
 }

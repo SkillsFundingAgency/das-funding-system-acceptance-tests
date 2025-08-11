@@ -9,11 +9,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     {
         private readonly ScenarioContext _context;
         private readonly EarningsSqlClient _earningsSqlClient;
+        private readonly LearnerDataOuterApiHelper _learnerDataOuterApiHelper;
+
         public MathAndEnglishAssertionsStepDefinitions(ScenarioContext context,
-            EarningsSqlClient earningsEntitySqlClient)
+            EarningsSqlClient earningsEntitySqlClient, LearnerDataOuterApiHelper learnerDataOuterApiHelper)
         {
             _context = context;
             _earningsSqlClient = earningsEntitySqlClient;
+            _learnerDataOuterApiHelper = learnerDataOuterApiHelper;
         }
 
         [When("Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*)")]
@@ -36,12 +39,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             string course, decimal amount, TokenisableDateTime completionDate)
         {
             var testData = _context.Get<TestData>();
-            var helper = new EarningsInnerApiHelper();
-            await helper.SetMathAndEnglishLearning(testData.LearningKey,
-            [
-                new EarningsInnerApiClient.MathAndEnglishDetails
-                    { StartDate = StartDate.Value, EndDate = EndDate.Value, Amount = amount, Course = course, CompletionDate = completionDate.Value}
-            ]);
+
+            await _learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
+                new LearnerDataOuterApiClient.MathsAndEnglish
+                {
+                    Amount = amount,
+                    CompletionDate = completionDate.Value,
+                    Course = course,
+                    StartDate = StartDate.Value,
+                    PlannedEndDate = EndDate.Value
+                });
 
             testData.IsMathsAndEnglishAdded = true;
         }
@@ -54,12 +61,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var withdrawalDate = startDate.Value.AddDays(withdrawalOnDay - 1);
 
             var testData = _context.Get<TestData>();
-            var helper = new EarningsInnerApiHelper();
-            await helper.SetMathAndEnglishLearning(testData.LearningKey,
-            [
-                new EarningsInnerApiClient.MathAndEnglishDetails
-                    { StartDate = startDate.Value, EndDate = endDate, Amount = amount, Course = course, WithdrawalDate = withdrawalDate}
-            ]);
+
+            await _learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
+                new LearnerDataOuterApiClient.MathsAndEnglish
+                {
+                    Amount = amount,
+                    Course = course,
+                    StartDate = startDate.Value,
+                    PlannedEndDate = endDate,
+                    WithdrawalDate = withdrawalDate
+                });
 
             testData.IsMathsAndEnglishAdded = true;
         }
@@ -69,12 +80,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             string course, decimal amount, int? priorLearning)
         {
             var testData = _context.Get<TestData>();
-            var helper = new EarningsInnerApiHelper();
-            await helper.SetMathAndEnglishLearning(testData.LearningKey,
-            [
-                new EarningsInnerApiClient.MathAndEnglishDetails
-                    { StartDate = startDate.Value, EndDate = endDate.Value, Amount = amount, Course = course, PriorLearningAdjustmentPercentage = priorLearning}
-            ]);
+
+            await _learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
+                new LearnerDataOuterApiClient.MathsAndEnglish
+                {
+                    Amount = amount,
+                    Course = course,
+                    StartDate = startDate.Value,
+                    PlannedEndDate = endDate.Value,
+                    PriorLearningPercentage = priorLearning
+                });
 
             testData.IsMathsAndEnglishAdded = true;
         }

@@ -9,7 +9,6 @@ When M&E is marked as "Complete", earnings for subsequent delivery periods are "
 @regression
 Scenario: Balancing earnings for Maths and English on Completion
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
-	#Todo: Move this to the outer api
 	When Maths and English learning is recorded from <start_date> to <end_date> with course <course>, amount <amount> and completion on <completion_date>
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with regular instalment amount <instalment> for course <course>
 	And a Maths and English earning of <balancing_amount> is generated for course <course> for period <balancing_period>
