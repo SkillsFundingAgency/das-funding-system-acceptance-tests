@@ -3,7 +3,7 @@
 In order to keep DAS in sync with new learners reported in the ILR
 As SLD
 I want to pass new learners data to Approvals
-So that apprenticeship can be created
+So that apprenticeships can be created
 
 @regression
 Scenario: Add a Learner

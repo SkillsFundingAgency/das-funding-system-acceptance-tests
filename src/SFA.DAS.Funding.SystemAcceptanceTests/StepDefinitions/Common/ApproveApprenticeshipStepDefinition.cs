@@ -23,8 +23,15 @@ public class ApproveApprenticeshipStepDefinition
     }
 
     [Given(@"the apprenticeship commitment is approved")]
+    [Given(@"the learning is approved")]
     [When(@"the apprenticeship commitment is approved")]
+    [When(@"the learning is approved")]
     public async Task TheApprenticeshipCommitmentIsApproved()
+    {
+        await ApproveApprenticeshipCommitment();
+    }
+
+    public async Task ApproveApprenticeshipCommitment()
     {
         var testData = _context.Get<TestData>();
 
