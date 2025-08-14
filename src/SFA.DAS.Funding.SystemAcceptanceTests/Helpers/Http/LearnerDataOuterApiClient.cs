@@ -121,13 +121,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class UpdateLearnerRequest
         {
-            public UpdateLearnerRequestDeliveryDetails Delivery { get; set; }
+            public UpdateLearnerRequestDeliveryDetails Delivery { get; set; } = new UpdateLearnerRequestDeliveryDetails();
         }
         public class UpdateLearnerRequestDeliveryDetails
         {
             public DateTime? CompletionDate { get; set; }
+            public OnProgramme OnProgramme { get; set; } = new OnProgramme();
 
             public List<MathsAndEnglish> MathsAndEnglishCourses { get; set; }
+        }
+
+        public class OnProgramme
+        {
+            public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
         }
 
         public class MathsAndEnglish
@@ -139,6 +145,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? WithdrawalDate { get; set; }
             public int? PriorLearningPercentage { get; set; }
             public decimal Amount { get; set; }
+            public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
+        }
+
+        public class LearningSupport
+        {
+            public DateTime StartDate { get; set; }
+            public DateTime EndDate { get; set; }
         }
     }
 }
