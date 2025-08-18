@@ -15,10 +15,15 @@ public class LearningSqlClient
 
     public void DeleteApprenticeship(Guid learningKey)
     {
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[WithdrawalRequest] WHERE LearningKey = '{learningKey}'");
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[StartDateChange] WHERE LearningKey = '{learningKey}'");
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[PriceHistory] WHERE LearningKey = '{learningKey}'");
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learningKey}'");
+        var sql = $@"
+            DELETE FROM [dbo].[WithdrawalRequest] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[StartDateChange] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[PriceHistory] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[MathsAndEnglish] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[LearningSupport] WHERE LearningKey = '{learningKey}';
+        ";
+        _sqlServerClient.Execute(sql);
 
         var episodeKeys = _sqlServerClient.GetList<Guid>($"SELECT [Key] FROM [dbo].[Episode] WHERE LearningKey = '{learningKey}'");
 
@@ -29,7 +34,6 @@ public class LearningSqlClient
         }
 
         _sqlServerClient.Execute($"DELETE FROM [dbo].[Learning] WHERE [Key] = '{learningKey}'");
-
     }
 
     public Learning GetApprenticeship(Guid learningKey)
