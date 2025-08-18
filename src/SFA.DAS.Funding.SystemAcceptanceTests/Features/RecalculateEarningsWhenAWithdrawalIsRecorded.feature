@@ -24,7 +24,7 @@ Scenario: Withdrawal is recorded; recalc earnings
 Examples:
 	| start_date | end_date   | agreed_price | training_code | planned_number_of_months | reason                 | last_day_of_delivery | new_num_of_instalments | delivery_period_string | academic_year_string |
 	| 2024-11-01 | 2025-11-23 | 15000        | 2             | 12                       | WithdrawDuringLearning | 2024-12-15           | 1                      | 4                      | 2425                 |
-	| 2024-11-15 | 2025-11-20 | 24000        | 254           | 12                       | WithdrawDuringLearning | 2024-12-26           | 0                      | 4                      | 2425                 |
+	| 2024-11-15 | 2025-11-20 | 24000        | 254           | 12                       | WithdrawDuringLearning | 2024-12-25           | 0                      | 4                      | 2425                 |
 	| 2024-12-05 | 2025-12-20 | 15000        | 91            | 12                       | WithdrawFromStart      | 2024-12-05           | 0                      | null                   | null                 |
 	| 2023-10-05 | 2025-06-10 | 18000        | 2             | 20                       | WithdrawDuringLearning | 2024-06-02           | 8                      | 10                     | 2324                 |
 	| 2023-10-05 | 2025-06-10 | 18000        | 91            | 20                       | WithdrawFromStart      | 2023-10-05           | 0                      | null                   | null                 |
