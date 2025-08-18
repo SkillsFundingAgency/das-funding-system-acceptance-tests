@@ -128,7 +128,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? CompletionDate { get; set; }
             public OnProgramme OnProgramme { get; set; } = new OnProgramme();
 
-            public List<MathsAndEnglish> MathsAndEnglishCourses { get; set; }
+            public List<MathsAndEnglish> MathsAndEnglishCourses { get; set; } = [];
         }
 
         public class OnProgramme

@@ -43,6 +43,29 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             await _apiClient.UpdateLearning(learningKey, requestData);
         }
 
+        public async Task AddOnProgrammeLearningSupport (Guid learningKey, DateTime startDate, DateTime endDate)
+        {
+            var requestData = new UpdateLearnerRequest()
+            {
+                Delivery = new UpdateLearnerRequestDeliveryDetails()
+                {
+                    OnProgramme = new OnProgramme()
+                    {
+                        LearningSupport = new List<LearningSupport>()
+                        {
+                            new LearningSupport
+                            {
+                                StartDate = startDate,
+                                EndDate = endDate
+                            }
+
+                        }
+                    }
+                }
+            };
+
+            await _apiClient.UpdateLearning(learningKey, requestData);
+        }
         public async Task AddMathsAndEnglish(Guid learningKey, MathsAndEnglish mathsAndEnglish)
         {
             var requestData = new UpdateLearnerRequest()
