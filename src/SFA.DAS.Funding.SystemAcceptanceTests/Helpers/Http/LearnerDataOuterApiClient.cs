@@ -89,6 +89,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             _cachedBearerToken = accessToken;
             _bearerTokenExpiry = DateTime.UtcNow.AddMinutes(20);
 
+            _apiClient.DefaultRequestHeaders.Remove("X-Forwarded-Authorization");
             _apiClient.DefaultRequestHeaders.Add("X-Forwarded-Authorization",
                 $"Bearer {_cachedBearerToken}");
         }
