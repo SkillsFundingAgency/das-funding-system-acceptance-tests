@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+﻿using AutoFixture;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -48,6 +49,31 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     Course = course,
                     StartDate = StartDate.Value,
                     PlannedEndDate = EndDate.Value
+                });
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+        [When("a Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*) and learning support from (.*) to (.*)")]
+        public async Task AddMathsAndEnglishLearningSupport(TokenisableDateTime StartDate, TokenisableDateTime EndDate,
+            string course, decimal amount, TokenisableDateTime LearningSupportStartDate, TokenisableDateTime LearningSupportEndDate)
+        {
+            var testData = _context.Get<TestData>();
+
+            await _learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
+                new LearnerDataOuterApiClient.MathsAndEnglish
+                {
+                    Amount = amount,
+                    Course = course,
+                    StartDate = StartDate.Value,
+                    PlannedEndDate = EndDate.Value,
+                    LearningSupport = new List<LearnerDataOuterApiClient.LearningSupport>
+                    {
+                        new LearnerDataOuterApiClient.LearningSupport {
+                        StartDate = LearningSupportStartDate.Value,
+                        EndDate = LearningSupportEndDate.Value
+                    }
+                    }
                 });
 
             testData.IsMathsAndEnglishAdded = true;
@@ -254,6 +280,37 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 .EarningsProfileId;
 
             mathsAndEnglishInstalments.Should().BeEmpty("Unexpected Maths and English instalment data found on earnings apprenticeship model");
+        }
+
+        [Then("Maths and English learning support are generated from (.*) to (.*)")]
+        public async Task MathsAndEnglishLearningSupportAreGenerated(TokenisablePeriod mathsAndEnglishLS_StartPeriod, TokenisablePeriod mathsAndEnglishLS_EndPeriod)
+        {
+            var testData = _context.Get<TestData>();
+            EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+
+            await WaitHelper.WaitForIt(() =>
+            {
+                earningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
+                return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault()
+                    .EarningsProfileHistory.Any();
+            }, "Failed to find updated earnings entity.");
+
+            var learningSupport = earningsApprenticeshipModel
+                .Episodes
+                .SingleOrDefault()
+                ?.AdditionalPayments
+                .Where(x => x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport);
+
+            while (mathsAndEnglishLS_StartPeriod.Value.IsBefore(mathsAndEnglishLS_EndPeriod.Value))
+            {
+                learningSupport.Should().Contain(x =>
+                    x.Amount == 150
+                    && x.AcademicYear == mathsAndEnglishLS_StartPeriod.Value.AcademicYear
+                    && x.DeliveryPeriod == mathsAndEnglishLS_StartPeriod.Value.PeriodValue,
+                    $"Expected Maths and English learning support earnings for {mathsAndEnglishLS_StartPeriod.Value.ToCollectionPeriodString()}");
+
+                mathsAndEnglishLS_StartPeriod.Value = mathsAndEnglishLS_StartPeriod.Value.GetNextPeriod();
+            }
         }
     }
 }
