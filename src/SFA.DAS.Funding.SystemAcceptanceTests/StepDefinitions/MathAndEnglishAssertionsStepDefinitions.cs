@@ -75,19 +75,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
 
         [When("Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*) and prior learning adjustment of (.*) percent")]
-        public async Task AddMathsAndEnglishLearning(
-            TokenisableDateTime startDate,
-            TokenisableDateTime endDate,
-            string course,
-            decimal amount,
-            int? priorLearning)
+        public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount, int? priorLearning)
         {
             var testData = context.Get<TestData>();
 
             var learnerBuilder = new LearnerDataBuilder()
-                .WithMathsAndEnglish(b =>
-                    b.WithCourseDetails(startDate.Value, endDate.Value, course,amount)
-                        .WithPriorLearningPercentage(priorLearning));
+                .WithMathsAndEnglish(startDate.Value, endDate.Value, course, amount, priorLearningPercentage: priorLearning);
 
             testData.LearnerDataBuilder = learnerBuilder;
 
