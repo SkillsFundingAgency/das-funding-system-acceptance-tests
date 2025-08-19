@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql
+﻿using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
+
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql
 {
     public class LearnerDataSqlClient
     {
@@ -10,15 +12,15 @@
             _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
         }
 
-        public void DeleteAllLearnerData()
+        public void DeleteLearnerData(long uln)
         {
-            _sqlServerClient.Execute($"DELETE FROM [dbo].[LearnerData]");
+            _sqlServerClient.Execute($"DELETE FROM [dbo].[LearnerData] where [ULN] = {uln}");
         }
 
         public LearnerData? GetLearnerData(long uln)
         {
             return
-                _sqlServerClient.GetList<LearnerData>($"SELECT * FROM [dbo].[LearnerData] WHERE [ULN] = {@uln}")
+                _sqlServerClient.GetList<LearnerData>($"SELECT * FROM [dbo].[LearnerData] WHERE [ULN] = {uln}")
                 .FirstOrDefault();
         }
 
