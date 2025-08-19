@@ -10,17 +10,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task WhenSLDInformUsThatTheLearningCompletedOn(TokenisableDateTime completionDate)
         {
             var testData = context.Get<TestData>();
-            await learnerDataOuterApiHelper.CompleteLearning(testData.LearningKey, completionDate.Value);
+            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, builder => 
+                builder.WithCompletionDate(completionDate.Value));
         }
 
         [When("SLD inform us of learning support request from (.*) to (.*)")]
-        public async Task SLDInformUsOfLearningSupportRequest(TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
+        public async Task SLDInformUsOfLearningSupportRequest(TokenisableDateTime startDate, TokenisableDateTime endDate)
         {
             var testData = context.Get<TestData>();
-
-            await learnerDataOuterApiHelper.AddOnProgrammeLearningSupport(testData.LearningKey, learningSupportStartDate.Value, learningSupportEndDate.Value);
+            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, builder =>
+                builder.WithOnProgrammeLearningSupport(startDate.Value, endDate.Value));
         }
-
 
         [Then(@"earnings of (.*) are generated from periods (.*) to (.*)")]
         public async Task ThenEarningsOfAreGeneratedBetweenPeriods(decimal amount, TokenisablePeriod periodFrom, TokenisablePeriod periodTo)

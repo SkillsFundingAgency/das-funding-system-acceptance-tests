@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -11,119 +11,104 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         LearnerDataOuterApiHelper learnerDataOuterApiHelper)
     {
         [When("Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*)")]
-        public async Task AddMathsAndEnglishLearning(TokenisableDateTime StartDate, TokenisableDateTime EndDate,
-            string course, decimal amount)
+        public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount)
         {
             var testData = context.Get<TestData>();
-            var helper = new EarningsInnerApiHelper();
-            await helper.SetMathAndEnglishLearning(testData.LearningKey,
-            [
-                new EarningsInnerApiClient.MathAndEnglishDetails
-                    { StartDate = StartDate.Value, EndDate = EndDate.Value, Amount = amount, Course = course }
-            ]);
+
+            var learnerDataBuilder = new LearnerDataBuilder()
+                .WithMathsAndEnglish(startDate.Value, endDate.Value, course, amount);
+
+            testData.LearnerDataBuilder = learnerDataBuilder;
+
+            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerDataBuilder.Build());
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
         [When("Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*) and completion on (.*)")]
-        public async Task AddMathsAndEnglishLearningWithCompletion(TokenisableDateTime StartDate, TokenisableDateTime EndDate,
-            string course, decimal amount, TokenisableDateTime completionDate)
+        public async Task AddMathsAndEnglishLearningWithCompletion(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount, TokenisableDateTime completionDate)
         {
             var testData = context.Get<TestData>();
 
-            await learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
-                new LearnerDataOuterApiClient.MathsAndEnglish
-                {
-                    Amount = amount,
-                    CompletionDate = completionDate.Value,
-                    Course = course,
-                    StartDate = StartDate.Value,
-                    PlannedEndDate = EndDate.Value
-                });
+            var learnerDataBuilder = new LearnerDataBuilder()
+                .WithMathsAndEnglish(startDate.Value, endDate.Value, course, amount, completionDate: completionDate.Value);
+
+            testData.LearnerDataBuilder = learnerDataBuilder;
+
+            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerDataBuilder.Build());
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
         [When("a Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*) and learning support from (.*) to (.*)")]
-        public async Task AddMathsAndEnglishLearningSupport(TokenisableDateTime StartDate, TokenisableDateTime EndDate,
-            string course, decimal amount, TokenisableDateTime LearningSupportStartDate, TokenisableDateTime LearningSupportEndDate)
+        public async Task AddMathsAndEnglishLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount,
+            TokenisableDateTime learningSupportStartDate,
+            TokenisableDateTime learningSupportEndDate)
         {
             var testData = context.Get<TestData>();
 
-            await learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
-                new LearnerDataOuterApiClient.MathsAndEnglish
-                {
-                    Amount = amount,
-                    Course = course,
-                    StartDate = StartDate.Value,
-                    PlannedEndDate = EndDate.Value,
-                    LearningSupport = new List<LearnerDataOuterApiClient.LearningSupport>
-                    {
-                        new LearnerDataOuterApiClient.LearningSupport {
-                        StartDate = LearningSupportStartDate.Value,
-                        EndDate = LearningSupportEndDate.Value
-                    }
-                    }
-                });
+            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, builder =>
+                builder.WithMathsAndEnglish(mathsAndEnglishBuilder =>
+                    mathsAndEnglishBuilder.WithCourseDetails(startDate.Value, endDate.Value, course, amount)
+                        .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value)));
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
         [When("Maths and English learning is recorded from (.*) for (.*) days with course (.*), amount (.*) and withdrawal after (.*) days")]
-        public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, int duration,
-            string course, decimal amount, int withdrawalOnDay)
+        public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, int duration, string course, decimal amount, int withdrawalOnDay)
         {
+            var testData = context.Get<TestData>();
+
             var endDate = startDate.Value.AddDays(duration - 1);
             var withdrawalDate = startDate.Value.AddDays(withdrawalOnDay - 1);
 
-            var testData = context.Get<TestData>();
+            var learnerBuilder = new LearnerDataBuilder()
+                .WithMathsAndEnglish(startDate.Value, endDate, course, amount, withdrawalDate: withdrawalDate);
 
-            await learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
-                new LearnerDataOuterApiClient.MathsAndEnglish
-                {
-                    Amount = amount,
-                    Course = course,
-                    StartDate = startDate.Value,
-                    PlannedEndDate = endDate,
-                    WithdrawalDate = withdrawalDate
-                });
+            testData.LearnerDataBuilder = learnerBuilder;
+
+            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerBuilder.Build());
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
+
         [When("Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*) and prior learning adjustment of (.*) percent")]
-        public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate,
-            string course, decimal amount, int? priorLearning)
+        public async Task AddMathsAndEnglishLearning(
+            TokenisableDateTime startDate,
+            TokenisableDateTime endDate,
+            string course,
+            decimal amount,
+            int? priorLearning)
         {
             var testData = context.Get<TestData>();
 
-            await learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
-                new LearnerDataOuterApiClient.MathsAndEnglish
-                {
-                    Amount = amount,
-                    Course = course,
-                    StartDate = startDate.Value,
-                    PlannedEndDate = endDate.Value,
-                    PriorLearningPercentage = priorLearning
-                });
+            var learnerBuilder = new LearnerDataBuilder()
+                .WithMathsAndEnglish(b =>
+                    b.WithCourseDetails(startDate.Value, endDate.Value, course,amount)
+                        .WithPriorLearningPercentage(priorLearning));
+
+            testData.LearnerDataBuilder = learnerBuilder;
+
+            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerBuilder.Build());
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
         [When("the first course is recorded from (.*) to (.*) with course (.*) and amount (.*) and the second course from (.*) to (.*) with course (.*) and amount (.*)")]
-        public async Task AddMultipleMathsAndEnglishLearnings(TokenisableDateTime Course1StartDate, TokenisableDateTime Course1EndDate,
-            string Course1Name, decimal Course1Amount, TokenisableDateTime Course2StartDate, TokenisableDateTime Course2EndDate, string Course2Name, decimal Course2Amount)
+        public async Task AddMultipleMathsAndEnglishLearnings(TokenisableDateTime course1StartDate, TokenisableDateTime course1EndDate, string course1Name, decimal course1Amount,
+            TokenisableDateTime course2StartDate, TokenisableDateTime course2EndDate, string course2Name, decimal course2Amount)
         {
             var testData = context.Get<TestData>();
-            var helper = new EarningsInnerApiHelper();
-            await helper.SetMathAndEnglishLearning(testData.LearningKey,
-            [
-                new EarningsInnerApiClient.MathAndEnglishDetails
-                    { StartDate = Course1StartDate.Value, EndDate = Course1EndDate.Value, Amount = Course1Amount, Course = Course1Name },
-                new  EarningsInnerApiClient.MathAndEnglishDetails
-                    { StartDate = Course2StartDate.Value, EndDate = Course2EndDate.Value, Amount = Course2Amount, Course = Course2Name }
-            ]
-            );
+
+            var learnerBuilder = new LearnerDataBuilder()
+                .WithMathsAndEnglish(b => b.WithCourseDetails(course1StartDate.Value, course1EndDate.Value, course1Name, course1Amount))
+                .WithMathsAndEnglish(b => b.WithCourseDetails(course2StartDate.Value, course2EndDate.Value, course2Name, course2Amount));
+
+            testData.LearnerDataBuilder = learnerBuilder;
+
+            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerBuilder.Build());
 
             testData.IsMathsAndEnglishAdded = true;
         }

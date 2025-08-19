@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
@@ -29,57 +29,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             return learnerData.First();
         }
 
-        public async Task CompleteLearning(Guid learningKey, DateTime? completionDate)
+        public async Task UpdateLearning(Guid learningKey, Action<LearnerDataBuilder> configure)
         {
-            var requestData = new UpdateLearnerRequest()
-            {
-                Delivery = new UpdateLearnerRequestDeliveryDetails()
-                {
-                    CompletionDate = completionDate,
-                    MathsAndEnglishCourses = []
-                }
-            };
+            var builder = new LearnerDataBuilder();
+            configure(builder);
+            var request = builder.Build();
 
-            await _apiClient.UpdateLearning(learningKey, requestData);
+            await _apiClient.UpdateLearning(learningKey, request);
         }
 
-        public async Task AddOnProgrammeLearningSupport (Guid learningKey, DateTime startDate, DateTime endDate)
+
+        public async Task UpdateLearning(Guid learningKey, UpdateLearnerRequest request)
         {
-            var requestData = new UpdateLearnerRequest()
-            {
-                Delivery = new UpdateLearnerRequestDeliveryDetails()
-                {
-                    OnProgramme = new OnProgramme()
-                    {
-                        LearningSupport = new List<LearningSupport>()
-                        {
-                            new LearningSupport
-                            {
-                                StartDate = startDate,
-                                EndDate = endDate
-                            }
-
-                        }
-                    }
-                }
-            };
-
-            await _apiClient.UpdateLearning(learningKey, requestData);
-        }
-        public async Task AddMathsAndEnglish(Guid learningKey, MathsAndEnglish mathsAndEnglish)
-        {
-            var requestData = new UpdateLearnerRequest()
-            {
-                Delivery = new UpdateLearnerRequestDeliveryDetails()
-                {
-                    MathsAndEnglishCourses = new List<MathsAndEnglish>
-                    {
-                        mathsAndEnglish
-                    }
-                }
-            };
-
-            await _apiClient.UpdateLearning(learningKey, requestData);
+            await _apiClient.UpdateLearning(learningKey, request);
         }
     }
 }
