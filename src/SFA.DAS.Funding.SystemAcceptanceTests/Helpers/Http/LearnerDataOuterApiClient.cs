@@ -1,7 +1,5 @@
-﻿using System.Net.Http.Headers;
-using System.Text.Json;
+﻿using System.Text.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 {
@@ -11,7 +9,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         private readonly string _subscriptionKey;
         private readonly FundingConfig _fundingConfig;
         private DateTime _bearerTokenExpiry;
-        private string? _azureToken;
         private string? _cachedBearerToken;
 
         public LearnerDataOuterApiClient() {
@@ -69,11 +66,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             response.EnsureSuccessStatusCode();
         }
 
+        private readonly object _tokenLock = new object();
+
         private void EnsureBearerToken()
         {
             if (string.IsNullOrEmpty(_cachedBearerToken) || DateTime.UtcNow >= _bearerTokenExpiry)
             {
-                AddBearerToken();
+                lock (_tokenLock)
+                {
+                    // Double-check inside lock to avoid race
+                    if (string.IsNullOrEmpty(_cachedBearerToken) || DateTime.UtcNow >= _bearerTokenExpiry)
+                    {
+                        AddBearerToken();
+                    }
+                }
             }
         }
 
@@ -83,22 +89,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             var signingKey = _fundingConfig.LearningServiceBearerTokenSigningKey;
 
             var accessToken = ServiceBearerTokenProvider.GetServiceBearerToken(signingKey);
-
             accessToken = BearerTokenHelper.AddClaimsToBearerToken(accessToken, claims, signingKey);
 
             _cachedBearerToken = accessToken;
             _bearerTokenExpiry = DateTime.UtcNow.AddMinutes(20);
 
             _apiClient.DefaultRequestHeaders.Remove("X-Forwarded-Authorization");
-            _apiClient.DefaultRequestHeaders.Add("X-Forwarded-Authorization",
-                $"Bearer {_cachedBearerToken}");
+            _apiClient.DefaultRequestHeaders.Add("X-Forwarded-Authorization", $"Bearer {_cachedBearerToken}");
         }
 
         private Dictionary<string, string> GetClaims()
         {
             return new Dictionary<string, string>();
         }
-
 
         public class LearnerDataRequest
         {

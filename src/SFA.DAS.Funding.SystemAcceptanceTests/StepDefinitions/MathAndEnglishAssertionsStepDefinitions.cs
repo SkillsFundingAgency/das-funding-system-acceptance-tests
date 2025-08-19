@@ -1,30 +1,20 @@
-﻿using AutoFixture;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
     [Binding]
-    public class MathAndEnglishAssertionsStepDefinitions
+    public class MathAndEnglishAssertionsStepDefinitions(
+        ScenarioContext context,
+        EarningsSqlClient earningsEntitySqlClient,
+        LearnerDataOuterApiHelper learnerDataOuterApiHelper)
     {
-        private readonly ScenarioContext _context;
-        private readonly EarningsSqlClient _earningsSqlClient;
-        private readonly LearnerDataOuterApiHelper _learnerDataOuterApiHelper;
-
-        public MathAndEnglishAssertionsStepDefinitions(ScenarioContext context,
-            EarningsSqlClient earningsEntitySqlClient, LearnerDataOuterApiHelper learnerDataOuterApiHelper)
-        {
-            _context = context;
-            _earningsSqlClient = earningsEntitySqlClient;
-            _learnerDataOuterApiHelper = learnerDataOuterApiHelper;
-        }
-
         [When("Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*)")]
         public async Task AddMathsAndEnglishLearning(TokenisableDateTime StartDate, TokenisableDateTime EndDate,
             string course, decimal amount)
         {
-            var testData = _context.Get<TestData>();
+            var testData = context.Get<TestData>();
             var helper = new EarningsInnerApiHelper();
             await helper.SetMathAndEnglishLearning(testData.LearningKey,
             [
@@ -39,9 +29,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task AddMathsAndEnglishLearningWithCompletion(TokenisableDateTime StartDate, TokenisableDateTime EndDate,
             string course, decimal amount, TokenisableDateTime completionDate)
         {
-            var testData = _context.Get<TestData>();
+            var testData = context.Get<TestData>();
 
-            await _learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
+            await learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
                 new LearnerDataOuterApiClient.MathsAndEnglish
                 {
                     Amount = amount,
@@ -58,9 +48,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task AddMathsAndEnglishLearningSupport(TokenisableDateTime StartDate, TokenisableDateTime EndDate,
             string course, decimal amount, TokenisableDateTime LearningSupportStartDate, TokenisableDateTime LearningSupportEndDate)
         {
-            var testData = _context.Get<TestData>();
+            var testData = context.Get<TestData>();
 
-            await _learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
+            await learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
                 new LearnerDataOuterApiClient.MathsAndEnglish
                 {
                     Amount = amount,
@@ -86,9 +76,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var endDate = startDate.Value.AddDays(duration - 1);
             var withdrawalDate = startDate.Value.AddDays(withdrawalOnDay - 1);
 
-            var testData = _context.Get<TestData>();
+            var testData = context.Get<TestData>();
 
-            await _learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
+            await learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
                 new LearnerDataOuterApiClient.MathsAndEnglish
                 {
                     Amount = amount,
@@ -105,9 +95,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate,
             string course, decimal amount, int? priorLearning)
         {
-            var testData = _context.Get<TestData>();
+            var testData = context.Get<TestData>();
 
-            await _learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
+            await learnerDataOuterApiHelper.AddMathsAndEnglish(testData.LearningKey,
                 new LearnerDataOuterApiClient.MathsAndEnglish
                 {
                     Amount = amount,
@@ -124,7 +114,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task AddMultipleMathsAndEnglishLearnings(TokenisableDateTime Course1StartDate, TokenisableDateTime Course1EndDate,
             string Course1Name, decimal Course1Amount, TokenisableDateTime Course2StartDate, TokenisableDateTime Course2EndDate, string Course2Name, decimal Course2Amount)
         {
-            var testData = _context.Get<TestData>();
+            var testData = context.Get<TestData>();
             var helper = new EarningsInnerApiHelper();
             await helper.SetMathAndEnglishLearning(testData.LearningKey,
             [
@@ -157,12 +147,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         private async Task VerifyMathsAndEnglishEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
             TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course, bool assertNoSubsequentEarningsExist)
         {
-            var testData = _context.Get<TestData>();
+            var testData = context.Get<TestData>();
             EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
 
             await WaitHelper.WaitForIt(() =>
             {
-                earningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
+                earningsApprenticeshipModel = earningsEntitySqlClient.GetEarningsEntityModel(context);
                 return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault()
                     .EarningsProfileHistory.Any();
             }, "Failed to find updated earnings entity.");
@@ -213,12 +203,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then("a Maths and English earning of (.*) is generated for course (.*) for period (.*)")]
         public async Task VerifyMathsAndEnglishEarnings(decimal amount, string course, TokenisablePeriod period)
         {
-            var testData = _context.Get<TestData>();
+            var testData = context.Get<TestData>();
             EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
 
             await WaitHelper.WaitForIt(() =>
             {
-                earningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
+                earningsApprenticeshipModel = earningsEntitySqlClient.GetEarningsEntityModel(context);
                 return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault()
                     .EarningsProfileHistory.Any();
             }, "Failed to find updated earnings entity.");
@@ -253,12 +243,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then("Maths and English earnings for course (.*) are zero")]
         public async Task VerifyMathsAndEnglishEarnings(string course)
         {
-            var testData = _context.Get<TestData>();
+            var testData = context.Get<TestData>();
             EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
 
             await WaitHelper.WaitForIt(() =>
             {
-                earningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
+                earningsApprenticeshipModel = earningsEntitySqlClient.GetEarningsEntityModel(context);
                 return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault()
                     .EarningsProfileHistory.Any();
             }, "Failed to find updated earnings entity.");
