@@ -13,6 +13,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await learnerDataOuterApiHelper.CompleteLearning(testData.LearningKey, completionDate.Value);
         }
 
+        [When("SLD inform us of learning support request from (.*) to (.*)")]
+        public async Task SLDInformUsOfLearningSupportRequest(TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
+        {
+            var testData = context.Get<TestData>();
+
+            await learnerDataOuterApiHelper.AddOnProgrammeLearningSupport(testData.LearningKey, learningSupportStartDate.Value, learningSupportEndDate.Value);
+        }
+
+
         [Then(@"earnings of (.*) are generated from periods (.*) to (.*)")]
         public async Task ThenEarningsOfAreGeneratedBetweenPeriods(decimal amount, TokenisablePeriod periodFrom, TokenisablePeriod periodTo)
         {

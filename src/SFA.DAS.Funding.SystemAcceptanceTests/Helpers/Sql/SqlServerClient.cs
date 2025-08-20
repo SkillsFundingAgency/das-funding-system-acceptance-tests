@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using System.Collections.Concurrent;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
@@ -42,18 +43,11 @@ internal class SqlServerClient
 /// </summary>
 internal static class SqlServerClientProvider
 {
-    private static Dictionary<string, SqlServerClient> _sqlServerClients = new Dictionary<string, SqlServerClient>();
+    private static readonly ConcurrentDictionary<string, SqlServerClient> _sqlServerClients = new();
 
     internal static SqlServerClient GetSqlServerClient(string connectionString)
     {
-        if (_sqlServerClients.TryGetValue(connectionString, out var client))
-        {
-            return client;
-        }
-
-        var newClient = new SqlServerClient(connectionString);
-        _sqlServerClients.Add(connectionString, newClient);
-        return newClient;
+        return _sqlServerClients.GetOrAdd(connectionString, cs => new SqlServerClient(cs));
     }
 }
 
