@@ -9,6 +9,7 @@ public class LearningSqlClient
     public LearningSqlClient()
     {
         var connectionString = Configurator.GetConfiguration().LearningDbConnectionString;
+        LoggerHelper.WriteLog($"LearningSqlClient connection: {connectionString}");
         _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
     }
 
