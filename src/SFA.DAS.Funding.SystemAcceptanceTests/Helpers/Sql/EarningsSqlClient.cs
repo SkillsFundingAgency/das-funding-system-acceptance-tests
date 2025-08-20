@@ -10,6 +10,7 @@ public class EarningsSqlClient
     public EarningsSqlClient()
     {
         var connectionString = Configurator.GetConfiguration().EarningsDbConnectionString;
+        LoggerHelper.WriteLog($"EarningsSqlClient connection: {connectionString}");
         _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
     }
 
