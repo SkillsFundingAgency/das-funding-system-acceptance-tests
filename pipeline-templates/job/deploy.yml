@@ -72,7 +72,7 @@ jobs:
             AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
             EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
             PaymentsFunctionKey: $(PaymentsFunctionKey)
-            ApprenticeshipsDbConnectionString: $(ApprenticeshipsDbConnectionString)
+            LearningDbConnectionString: $(LearningDbConnectionString)
             EarningsDbConnectionString: $(EarningsDbConnectionString)
             PaymentsDbConnectionString : $(PaymentsDbConnectionString)
             ApprenticeshipServiceBearerTokenSigningKey : $(ApprenticeshipServiceBearerTokenSigningKey)
