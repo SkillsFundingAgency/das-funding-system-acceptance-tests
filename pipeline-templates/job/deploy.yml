@@ -75,8 +75,8 @@ jobs:
             LearningDbConnectionString: $(LearningDbConnectionString)
             EarningsDbConnectionString: $(EarningsDbConnectionString)
             PaymentsDbConnectionString : $(PaymentsDbConnectionString)
-            ApprenticeshipServiceBearerTokenSigningKey : $(ApprenticeshipServiceBearerTokenSigningKey)
-            ApprenticeshipAzureFunctionKey : $(ApprenticeshipAzureFunctionKey)
+            LearningServiceBearerTokenSigningKey : $(LearningServiceBearerTokenSigningKey)
+            LearningAzureFunctionKey : $(LearningAzureFunctionKey)
             EarningsOuterSubscriptionKey: $(EarningsOuterSubscriptionKey)
           inputs:
             command: 'test'
