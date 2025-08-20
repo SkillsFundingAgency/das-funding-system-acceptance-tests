@@ -10,6 +10,7 @@ Scenario: Learning Support Earnings
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
 	And learning support is recorded from <learning_support_start> to <learning_support_end>
+	And SLD submit updated learners details
 	Then learning support earnings are generated from periods <expected_first_payment_period> to <expected_last_payment_period>
 
 Examples:

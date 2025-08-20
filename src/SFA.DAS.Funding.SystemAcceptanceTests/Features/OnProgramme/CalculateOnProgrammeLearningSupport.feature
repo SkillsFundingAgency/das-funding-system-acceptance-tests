@@ -7,7 +7,7 @@ So that earnings and payments can be recalculated based on the latest data
 @regression
 Scenario: Learning support added for On programme learning
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
-	When SLD inform us of learning support request from <ls_start_date> to <ls_end_date>
+	When learning support is recorded from <ls_start_date> to <ls_end_date>
 	And SLD submit updated learners details
 	Then learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
 
