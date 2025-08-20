@@ -33,7 +33,7 @@ Examples:
 Scenario: Learning support across multiple Maths & English courses with overlap
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
 	When a Maths and English learning is recorded from <maths_start_date> to <maths_end_date> with course Maths and amount 1000 and learning support from <maths_start_date> to <maths_end_date>
-	When a Maths and English learning is recorded from <english_start_date> to <english_end_date> with course English and amount 2000 and learning support from <english_start_date> to <english_end_date>
+	And a Maths and English learning is recorded from <english_start_date> to <english_end_date> with course English and amount 2000 and learning support from <english_start_date> to <english_end_date>
 	And SLD submit updated learners details
 	Then learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
 
