@@ -45,9 +45,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
                 var iConfig = GetIConfigurationRoot();
 
                 iConfig.Bind(_builtConfiguration);
-            }
 
-            LogConfigurationValidationWarnings();
+                LogConfigurationValidationWarnings();
+            }
 
             return _builtConfiguration;
         }
