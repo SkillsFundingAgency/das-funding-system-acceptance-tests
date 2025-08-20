@@ -49,7 +49,7 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
 
         while (learningSupportStart.Value.IsBefore(learningSupportEnd.Value))
         {
-            additionalPayments.Should().Contain(x =>
+            additionalPayments.Should().ContainSingle(x =>
                     x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport
                     && x.Amount == 150
                     && x.AcademicYear == learningSupportStart.Value.AcademicYear

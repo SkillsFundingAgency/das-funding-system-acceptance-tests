@@ -14,3 +14,7 @@ Scenario: Learning support added for On programme learning
 Examples:
 	| start_date      | end_date        | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
 	| currentAY-09-25 | currentAY-04-15 | currentAY-11-15 | currentAY-03-10 | currentAY-R04            | currentAY-R07           |
+	| currentAY-08-01 | currentAY-07-31 | currentAY-08-01 | currentAY-12-15 | currentAY-R01            | currentAY-R04           |
+	| currentAY-08-01 | currentAY-07-31 | currentAY-09-01 | currentAY-12-15 | currentAY-R02            | currentAY-R04           |
+	| currentAY-08-01 | currentAY-07-31 | nextAY-09-01    | nextAY-05-15    | nextAY-R02               | nextAY-R09              |
+
