@@ -22,6 +22,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
+        public LearnerDataBuilder WithNoOnProgrammeLearningSupport()
+        {
+            _request.Delivery.OnProgramme.LearningSupport.Clear();
+            return this;
+        }
+
         public LearnerDataBuilder WithMathsAndEnglish(Func<MathsAndEnglishBuilder, MathsAndEnglishBuilder> configure)
         {
             var builder = new MathsAndEnglishBuilder();

@@ -18,6 +18,15 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
         testData.IsLearningSupportAdded = true;
     }
 
+    [When(@"learning support is removed")]
+    public void WhenLearningSupportIsRemoved()
+    {
+        var testData = context.Get<TestData>();
+        var learnerDataBuilder = testData.GetLearnerDataBuilder();
+        learnerDataBuilder.WithNoOnProgrammeLearningSupport();
+    }
+
+
     [Then(@"learning support earnings are generated from periods (.*) to (.*)")]
     public async Task VerifyLearningSupportEarnings(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
     {
@@ -58,4 +67,24 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
             learningSupportStart.Value = learningSupportStart.Value.GetNextPeriod();
         }
     }
+
+    [Then(@"no learning support earnings are generated")]
+    public async Task ThenNoLearningSupportEarningsAreGenerated()
+    {
+        EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsApprenticeshipModel = earningsEntitySqlClient.GetEarningsEntityModel(context);
+            return earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
+        }, "Failed to find updated earnings entity.");
+
+        var additionalPayments = earningsApprenticeshipModel
+            .Episodes
+            .SingleOrDefault()
+            ?.AdditionalPayments;
+
+        additionalPayments.Should().NotContain(x => x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport);
+    }
+
 }
