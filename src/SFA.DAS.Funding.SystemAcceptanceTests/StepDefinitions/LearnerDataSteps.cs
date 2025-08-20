@@ -15,6 +15,23 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             context.Set(testData);
         }
 
+        [When(@"SLD submit updated learners details")]
+        public async Task WhenSLDSubmitUpdatedLearnersDetails()
+        {
+            var testData = context.Get<TestData>();
+
+            if (testData.LearnerDataBuilder == null)
+            {
+                throw new InvalidOperationException(
+                    "No learner data builder has been stored; cannot build or submit learner data");
+            }
+
+            var learnerData = testData.LearnerDataBuilder.Build();
+
+            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerData);
+        }
+
+
         [Then(@"the learner's details are added to Learner Data db")]
         public async Task ThenTheLearnerIsAddedToLearnerData()
         {

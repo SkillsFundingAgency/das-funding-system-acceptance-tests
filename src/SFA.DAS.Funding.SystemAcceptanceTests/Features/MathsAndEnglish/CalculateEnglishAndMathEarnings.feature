@@ -26,7 +26,8 @@ Scenario: Calculate Multiple Math and English earnings
 	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 22
 	When the apprenticeship commitment is approved
-	And the first course is recorded from <course1_start_date> to <course1_end_date> with course <course1_name> and amount <course1_amount> and the second course from <course2_start_date> to <course2_end_date> with course <course2_name> and amount <course2_amount>
+	And Maths and English learning is recorded from <course1_start_date> to <course1_end_date> with course <course1_name> and amount <course1_amount>
+	And Maths and English learning is recorded from <course2_start_date> to <course2_end_date> with course <course2_name> and amount <course2_amount>
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <course1_first_payment_period> to <course1_last_payment_period> with instalment amount <course1_instalment> for course <course1_name>
 	And Maths and English earnings are generated from periods <course2_first_payment_period> to <course2_last_payment_period> with instalment amount <course2_instalment> for course <course2_name>

@@ -7,8 +7,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     [Binding]
     public class MathAndEnglishAssertionsStepDefinitions(
         ScenarioContext context,
-        EarningsSqlClient earningsEntitySqlClient,
-        LearnerDataOuterApiHelper learnerDataOuterApiHelper)
+        EarningsSqlClient earningsEntitySqlClient)
     {
         [When("Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*)")]
         public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount)
@@ -73,38 +72,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             testData.IsMathsAndEnglishAdded = true;
         }
-
-        [When("the first course is recorded from (.*) to (.*) with course (.*) and amount (.*) and the second course from (.*) to (.*) with course (.*) and amount (.*)")]
-        public async Task AddMultipleMathsAndEnglishLearnings(TokenisableDateTime course1StartDate, TokenisableDateTime course1EndDate, string course1Name, decimal course1Amount,
-            TokenisableDateTime course2StartDate, TokenisableDateTime course2EndDate, string course2Name, decimal course2Amount)
-        {
-            var testData = context.Get<TestData>();
-
-            var learnerBuilder = testData.GetLearnerDataBuilder();
-            
-            learnerBuilder
-                .WithMathsAndEnglish(b => b.WithCourseDetails(course1StartDate.Value, course1EndDate.Value, course1Name, course1Amount))
-                .WithMathsAndEnglish(b => b.WithCourseDetails(course2StartDate.Value, course2EndDate.Value, course2Name, course2Amount));
-
-            testData.IsMathsAndEnglishAdded = true;
-        }
-
-        [When(@"SLD submit updated learners details")]
-        public async Task WhenSLDSubmitUpdatedLearnersDetails()
-        {
-            var testData = context.Get<TestData>();
-
-            if (testData.LearnerDataBuilder == null)
-            {
-                throw new InvalidOperationException(
-                    "No learner data builder has been stored; cannot build or submit learner data");
-            }
-
-            var learnerData =  testData.LearnerDataBuilder.Build();
-                
-            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerData);
-        }
-
 
         [Then("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for course (.*)")]
         public async Task VerifyMathsAndEnglishInstalmentEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
