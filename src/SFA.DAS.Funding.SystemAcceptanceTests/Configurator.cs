@@ -54,21 +54,28 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests
 
         private static void LogConfigurationValidationWarnings()
         {
-            var defaultedProperties = new List<string>();
+            var notSetProperties = new List<string>();
+            var underscoreDefaultedProperties = new List<string>();
             foreach (var prop in typeof(FundingConfig).GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 if (prop.CanRead && prop.PropertyType == typeof(string))
                 {
-                    var value = (string)prop.GetValue(_builtConfiguration);
+                    var value = (string)prop.GetValue(_builtConfiguration)!;
                     if (value == FundingConfig.NotSet)
                     {
-                        defaultedProperties.Add(prop.Name);
+                        notSetProperties.Add(prop.Name);
+                    }
+                    if (value.StartsWith("__"))
+                    {
+                        underscoreDefaultedProperties.Add(prop.Name);
                     }
                 }
             }
 
-            LoggerHelper.WriteLog(defaultedProperties.Any()
-                ? $"The following FundingConfig configuration properties are still set to the default value ('{FundingConfig.NotSet}'): {string.Join(", ", defaultedProperties)}"
+            LoggerHelper.WriteLog(notSetProperties.Any() || underscoreDefaultedProperties.Any()
+                ? $"The following FundingConfig configuration properties are still set to the default value ('{FundingConfig.NotSet}'): {string.Join(", ", notSetProperties)}" +
+                  Environment.NewLine +
+                  $"The following FundingConfig configuration properties are still set to the default value (starting and ending with __, e.g. __MyConfigValue__): {string.Join(", ", underscoreDefaultedProperties)}"
                 : "All configuration properties are set.");
         }
 
