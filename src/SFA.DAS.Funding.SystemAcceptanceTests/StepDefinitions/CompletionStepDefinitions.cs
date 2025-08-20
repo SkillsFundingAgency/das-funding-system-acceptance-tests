@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
@@ -6,20 +7,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     [Binding]
     public class CompletionStepDefinitions(ScenarioContext context, LearnerDataOuterApiHelper learnerDataOuterApiHelper, EarningsSqlClient earningsSqlClient)
     {
-        [When(@"SLD inform us that the Learning Completed on (.*)")]
+        [When(@"Learning Completion is recorded on (.*)")]
         public async Task WhenSLDInformUsThatTheLearningCompletedOn(TokenisableDateTime completionDate)
         {
             var testData = context.Get<TestData>();
-            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, builder => 
-                builder.WithCompletionDate(completionDate.Value));
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder.WithCompletionDate(completionDate.Value);
         }
 
         [When("SLD inform us of learning support request from (.*) to (.*)")]
         public async Task SLDInformUsOfLearningSupportRequest(TokenisableDateTime startDate, TokenisableDateTime endDate)
         {
             var testData = context.Get<TestData>();
-            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, builder =>
-                builder.WithOnProgrammeLearningSupport(startDate.Value, endDate.Value));
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder.WithOnProgrammeLearningSupport(startDate.Value, endDate.Value);
         }
 
         [Then(@"earnings of (.*) are generated from periods (.*) to (.*)")]

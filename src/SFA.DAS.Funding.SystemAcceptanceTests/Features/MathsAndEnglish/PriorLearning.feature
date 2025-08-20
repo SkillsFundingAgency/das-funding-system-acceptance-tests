@@ -11,6 +11,7 @@ M&E Earnings must be multipled by this percentage amount.
 Scenario: Earnings for Maths and English with prior learning %
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of <agreed_price>
 	When Maths and English learning is recorded from <start_date> to <end_date> with course <course>, amount <amount> and prior learning adjustment of <prior_learning> percent
+	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
 
 Examples:

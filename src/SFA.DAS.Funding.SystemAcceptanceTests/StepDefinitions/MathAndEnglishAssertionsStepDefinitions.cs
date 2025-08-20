@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -15,13 +15,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
 
-            var learnerDataBuilder = new LearnerDataBuilder()
-                .WithMathsAndEnglish(startDate.Value, endDate.Value, course, amount);
-
-            testData.LearnerDataBuilder = learnerDataBuilder;
-
-            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerDataBuilder.Build());
-
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder.WithMathsAndEnglish(startDate.Value, endDate.Value, course, amount);
+            
             testData.IsMathsAndEnglishAdded = true;
         }
 
@@ -30,27 +26,23 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
 
-            var learnerDataBuilder = new LearnerDataBuilder()
-                .WithMathsAndEnglish(startDate.Value, endDate.Value, course, amount, completionDate: completionDate.Value);
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-            testData.LearnerDataBuilder = learnerDataBuilder;
-
-            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerDataBuilder.Build());
-
+            learnerDataBuilder.WithMathsAndEnglish(startDate.Value, endDate.Value, course, amount, completionDate: completionDate.Value);
+            
             testData.IsMathsAndEnglishAdded = true;
         }
 
         [When("a Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*) and learning support from (.*) to (.*)")]
         public async Task AddMathsAndEnglishLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount,
-            TokenisableDateTime learningSupportStartDate,
-            TokenisableDateTime learningSupportEndDate)
+            TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
         {
             var testData = context.Get<TestData>();
 
-            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, builder =>
-                builder.WithMathsAndEnglish(mathsAndEnglishBuilder =>
-                    mathsAndEnglishBuilder.WithCourseDetails(startDate.Value, endDate.Value, course, amount)
-                        .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value)));
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount)
+                        .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
             testData.IsMathsAndEnglishAdded = true;
         }
@@ -63,12 +55,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var endDate = startDate.Value.AddDays(duration - 1);
             var withdrawalDate = startDate.Value.AddDays(withdrawalOnDay - 1);
 
-            var learnerBuilder = new LearnerDataBuilder()
-                .WithMathsAndEnglish(startDate.Value, endDate, course, amount, withdrawalDate: withdrawalDate);
+            var learnerBuilder = testData.GetLearnerDataBuilder();
 
-            testData.LearnerDataBuilder = learnerBuilder;
-
-            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerBuilder.Build());
+            learnerBuilder.WithMathsAndEnglish(startDate.Value, endDate, course, amount, withdrawalDate: withdrawalDate);
 
             testData.IsMathsAndEnglishAdded = true;
         }
@@ -79,12 +68,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
 
-            var learnerBuilder = new LearnerDataBuilder()
-                .WithMathsAndEnglish(startDate.Value, endDate.Value, course, amount, priorLearningPercentage: priorLearning);
-
-            testData.LearnerDataBuilder = learnerBuilder;
-
-            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerBuilder.Build());
+            var learnerBuilder = testData.GetLearnerDataBuilder();
+            learnerBuilder.WithMathsAndEnglish(startDate.Value, endDate.Value, course, amount, priorLearningPercentage: priorLearning);
 
             testData.IsMathsAndEnglishAdded = true;
         }
@@ -95,16 +80,31 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
 
-            var learnerBuilder = new LearnerDataBuilder()
+            var learnerBuilder = testData.GetLearnerDataBuilder();
+            
+            learnerBuilder
                 .WithMathsAndEnglish(b => b.WithCourseDetails(course1StartDate.Value, course1EndDate.Value, course1Name, course1Amount))
                 .WithMathsAndEnglish(b => b.WithCourseDetails(course2StartDate.Value, course2EndDate.Value, course2Name, course2Amount));
 
-            testData.LearnerDataBuilder = learnerBuilder;
-
-            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerBuilder.Build());
-
             testData.IsMathsAndEnglishAdded = true;
         }
+
+        [When(@"SLD submit updated learners details")]
+        public async Task WhenSLDSubmitUpdatedLearnersDetails()
+        {
+            var testData = context.Get<TestData>();
+
+            if (testData.LearnerDataBuilder == null)
+            {
+                throw new InvalidOperationException(
+                    "No learner data builder has been stored; cannot build or submit learner data");
+            }
+
+            var learnerData =  testData.LearnerDataBuilder.Build();
+                
+            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerData);
+        }
+
 
         [Then("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for course (.*)")]
         public async Task VerifyMathsAndEnglishInstalmentEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
