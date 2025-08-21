@@ -29,7 +29,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             return learnerData.First();
         }
 
-        public async Task<GetLearnerResponse> GetLearnerForProvider (long ukprn, int academicYear)
+        public async Task<GetLearnerResponse> GetLearnersForProvider (long ukprn, int academicYear)
         {
             return await _apiClient.GetLearners(ukprn, academicYear);
         }
