@@ -29,6 +29,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 .All(l1 => expectedLearners.Any(l2 => l2.Uln == l1.Uln && l2.Key == l1.Key));
 
             Assert.IsTrue(allExist, "Some learners in LearnerData outer response do not match with learners in learning db");
+
+            Assert.AreEqual(expectedLearners.Count, actualLearners.Total, "Total count does not match");
         }
     }
 }

@@ -61,11 +61,12 @@ public class LearningSqlClient
     {
         var dates = AcademicYearParser.ParseFrom(academicYear);
 
-        var learners = _sqlServerClient.GetList<Http.LearnerDataOuterApiClient.Learning>($"select lrn.[Uln], lrn.[Key] " +
+        var learners = _sqlServerClient.GetList<Http.LearnerDataOuterApiClient.Learning>($"select distinct lrn.[Uln], lrn.[Key] " +
             $" from [dbo].[Learning] lrn " +
             $" inner join [dbo].[Episode] ep on ep.LearningKey = lrn.[Key] " +
             $" inner join [dbo].[EpisodePrice] eppr on eppr.EpisodeKey = ep.[Key] " +
-            $" where eppr.StartDate >= '{dates.Start}' and eppr.EndDate <= '{dates.End}'");
+            $" WHERE (eppr.StartDate <= '{dates.End}' AND eppr.EndDate   >= '{dates.Start}') " +
+            $" AND ep.Ukprn = {ukprn} And ep.LearningStatus = 'Active'");
 
         return learners;
     }
