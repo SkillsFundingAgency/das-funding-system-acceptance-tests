@@ -1,4 +1,6 @@
-﻿using SFA.DAS.Learning.Enums;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Learning.Enums;
+using SFA.DAS.Learning.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
@@ -54,6 +56,19 @@ public class LearningSqlClient
         learning.WithdrawalRequests = _sqlServerClient.GetList<WithdrawalRequest>($"SELECT * FROM [dbo].[WithdrawalRequest] WHERE LearningKey = '{learning.Key}'");
         return learning;
     }
+
+    public List<Http.LearnerDataOuterApiClient.Learning> GetApprovedLearners (long ukprn, int academicYear)
+    {
+        var dates = AcademicYearParser.ParseFrom(academicYear);
+
+        var learners = _sqlServerClient.GetList<Http.LearnerDataOuterApiClient.Learning>($"select lrn.[Uln], lrn.[Key] " +
+            $" from [dbo].[Learning] lrn " +
+            $" inner join [dbo].[Episode] ep on ep.LearningKey = lrn.[Key] " +
+            $" inner join [dbo].[EpisodePrice] eppr on eppr.EpisodeKey = ep.[Key] " +
+            $" where eppr.StartDate >= '{dates.Start}' and eppr.EndDate <= '{dates.End}'");
+
+        return learners;
+    }
 }
 
 public class Learning
@@ -78,8 +93,8 @@ public class Episode
     public Guid LearningKey { get; set; }
     public long Ukprn { get; set; }
     public long EmployerAccountId { get; set; }
-    public FundingType FundingType { get; set; }
-    public FundingPlatform? FundingPlatform { get; set; }
+    public DAS.Learning.Types.FundingType FundingType { get; set; }
+    public DAS.Learning.Types.FundingPlatform? FundingPlatform { get; set; }
     public long? FundingEmployerAccountId { get; set; }
     public string LegalEntityName { get; set; }
     public long? AccountLegalEntityId { get; set; }
