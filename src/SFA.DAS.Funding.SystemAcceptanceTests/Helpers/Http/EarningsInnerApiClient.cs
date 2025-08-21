@@ -98,7 +98,7 @@ public class EarningsInnerApiClient
     {
         if (string.IsNullOrEmpty(_azureToken))
         {
-            _azureToken = await _azureTokenHelper.GetAccessTokenAsync(_fundingConfig.EarningsInnerApiScope);
+            _azureToken = await _azureTokenHelper.GetAccessTokenAsync($"{_fundingConfig.EarningsInnerApiScope}/.default");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _azureToken);
         }
     }
