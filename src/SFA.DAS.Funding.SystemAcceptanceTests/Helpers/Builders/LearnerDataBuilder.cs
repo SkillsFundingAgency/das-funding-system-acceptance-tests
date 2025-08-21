@@ -64,6 +64,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
+        public LearnerDataBuilder WithNoMathsAndEnglish()
+        {
+            _request.Delivery.MathsAndEnglishCourses.Clear();
+            return this;
+        }
+
         public UpdateLearnerRequest Build()
         {
             return _request;
