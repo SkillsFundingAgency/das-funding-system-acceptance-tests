@@ -14,6 +14,7 @@ The Qualifying Period varies depending upon the length of the course:
 Scenario: Earnings for Maths and English after Withdrawal after Qualifying Period
 	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
 	When Maths and English learning is recorded from <start_date> for <duration_days> days with course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
+	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
 
 Examples:
@@ -27,6 +28,7 @@ Examples:
 Scenario: Earnings for Maths and English after Withdrawal during Qualifying Period
 	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
 	When Maths and English learning is recorded from <start_date> for <duration_days> days with course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
+	And SLD submit updated learners details
 	Then Maths and English earnings for course <course> are zero
 
 Examples:

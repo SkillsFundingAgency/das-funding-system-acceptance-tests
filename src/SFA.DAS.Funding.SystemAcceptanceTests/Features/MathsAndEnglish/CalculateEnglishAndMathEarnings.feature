@@ -10,6 +10,7 @@ Scenario: Calculate Single Math and English earnings
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
 	And Maths and English learning is recorded from <start_date> to <end_date> with course <course> and amount <amount>
+	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
 
 Examples:
@@ -25,7 +26,9 @@ Scenario: Calculate Multiple Math and English earnings
 	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 22
 	When the apprenticeship commitment is approved
-	And the first course is recorded from <course1_start_date> to <course1_end_date> with course <course1_name> and amount <course1_amount> and the second course from <course2_start_date> to <course2_end_date> with course <course2_name> and amount <course2_amount>
+	And Maths and English learning is recorded from <course1_start_date> to <course1_end_date> with course <course1_name> and amount <course1_amount>
+	And Maths and English learning is recorded from <course2_start_date> to <course2_end_date> with course <course2_name> and amount <course2_amount>
+	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <course1_first_payment_period> to <course1_last_payment_period> with instalment amount <course1_instalment> for course <course1_name>
 	And Maths and English earnings are generated from periods <course2_first_payment_period> to <course2_last_payment_period> with instalment amount <course2_instalment> for course <course2_name>
 
@@ -41,6 +44,7 @@ Scenario: Do Not calculate Maths and English earnings for a hard closed academic
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
 	And Maths and English learning is recorded from <start_date> to <end_date> with course <course> and amount <amount>
+	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <expected_first_payment_period> to <expected_last_payment_period> with instalment amount <instalment> for course <course>
 
 Examples:
@@ -54,6 +58,7 @@ Scenario: Learning Support for Maths and English Earnings
 	When the apprenticeship commitment is approved
 	And Maths and English learning is recorded from <start_date> to <maths_and_english_end_date> with course <course> and amount 12000
 	And learning support is recorded from <start_date> to <maths_and_english_end_date>
+	And SLD submit updated learners details
 	Then learning support earnings are generated from periods <expected_first_earning_period> to <expected_last_earning_period>
 
 Examples:
@@ -68,6 +73,7 @@ Scenario: Do Not Generate Learning Support earnings for Maths and English Earnin
 	When the apprenticeship commitment is approved
 	And Maths and English learning is recorded from <start_date> to <maths_and_english_end_date> with course <course> and amount 12000
 	And learning support is recorded from <start_date> to <maths_and_english_end_date>
+	And SLD submit updated learners details
 	Then learning support earnings are generated from periods <expected_first_earning_period> to <expected_last_earning_period>
 
 Examples:

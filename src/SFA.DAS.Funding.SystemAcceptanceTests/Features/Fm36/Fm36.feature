@@ -75,6 +75,7 @@ Scenario: Retrieve Valid Fm36 learning support data
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
 	And learning support is recorded from <learning_support_start> to <learning_support_end>
+	And SLD submit updated learners details
 	When the fm36 data is retrieved for currentDate
 	Then learning support amounts and periods from <expected_first_payment_period> to <expected_last_payment_period> are updated in the fm36 response
 
