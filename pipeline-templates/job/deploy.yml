@@ -118,8 +118,3 @@ jobs:
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(FundingApprenticeshipEarningsFunctionAppName)
-
-        - template: azure-pipelines-templates/deploy/step/appservice-remove-ip.yml@das-platform-building-blocks
-          parameters:
-            ServiceConnection: ${{ parameters.ServiceConnection }}
-            ResourceName: $(FundingApprenticeshipPaymentsFunctionAppName)
