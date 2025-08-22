@@ -1,5 +1,8 @@
-﻿using System.Text.Json;
+﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
+using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
+using System.Text.Json;
+using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 {
@@ -26,7 +29,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             request.Headers.Add("X-Version", "1");
 
             var jsonContent = new StringContent(
-                JsonSerializer.Serialize(learnerData),
+                System.Text.Json.JsonSerializer.Serialize(learnerData),
                 System.Text.Encoding.UTF8,
                 "application/json");
 
@@ -42,6 +45,26 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             response.EnsureSuccessStatusCode();
         }
 
+        public async Task<GetLearnerResponse> GetLearners (long ukprn, int academicYear)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/Learners/providers/{ukprn}/academicyears/{academicYear}/learners");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+
+            var response = await _apiClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return JsonConvert.DeserializeObject<GetLearnerResponse>(await response.Content.ReadAsStringAsync())!;
+        }
+
         public async Task UpdateLearning(Guid learningKey, UpdateLearnerRequest learningData)
         {
             var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/Learners/{learningKey}");
@@ -50,7 +73,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             request.Headers.Add("X-Version", "1");
 
             var jsonContent = new StringContent(
-                JsonSerializer.Serialize(learningData),
+                System.Text.Json.JsonSerializer.Serialize(learningData),
                 System.Text.Encoding.UTF8,
                 "application/json");
 
@@ -156,6 +179,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         {
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
+        }
+
+        public class Learning
+        {
+            public string Uln { get; set; } = "";
+            public Guid Key { get; set; }
+        }
+
+        public class GetLearnerResponse
+        {
+            public List<Learning> Learners { get; set; } = [];
+            public int Total {  get; set; }
+            public int Page {  get; set; }
+            public int PageSize { get; set; }
+            public int TotalPages { get; set; }
         }
     }
 }
