@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
@@ -14,6 +15,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.LearnerData = learnerData;
             context.Set(testData);
         }
+
+        [When("SLD want to know the learners already on Apprenticeship service for a provider")]
+        public async Task SLDWantToKnowTheLearnersAlreadyOnApprenticeshipServiceForAProvider()
+        {
+            var testData = context.Get<TestData>();
+            var learnerData = await learnerDataOuterApiHelper.GetLearnersForProvider(Constants.UkPrn, Convert.ToInt32(TableExtensions.CalculateAcademicYear("0")));
+            
+            testData.LearnersOnService = learnerData;
+            context.Set(testData);
+        }
+
 
         [When(@"SLD submit updated learners details")]
         public async Task WhenSLDSubmitUpdatedLearnersDetails()
