@@ -12,7 +12,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     [Binding]
     public class LearningSteps (ScenarioContext context, LearningSqlClient learningSqlClient)
     {
-        [Then("all approved learners for the provider are returned in the response")]
+        [Then("all approved and active learners for the provider are returned in the response")]
         public async Task AllApprovedLearnersForTheProviderAreReturned()
         {
             var testData = context.Get<TestData>();

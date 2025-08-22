@@ -8,4 +8,4 @@ So that DAS is kept up-to-date with latest data in the ILR
 @regression
 Scenario: Get Learners for provider
 	When SLD want to know the learners already on Apprenticeship service for a provider
-	Then all approved learners for the provider are returned in the response
+	Then all approved and active learners for the provider are returned in the response
