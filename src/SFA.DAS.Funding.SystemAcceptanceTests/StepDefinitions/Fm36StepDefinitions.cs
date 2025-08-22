@@ -553,7 +553,7 @@ public class Fm36StepDefinitions
     }
 
     [Then(@"fm36 ActualDaysIL value is (.*)")]
-    public void ThenFm36ActualDaysInLearningValueIs(int expectedValue)
+    public void ThenFm36ActualDaysInLearningValue(int expectedValue)
     {
         var testData = _context.Get<TestData>();
         var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
@@ -561,6 +561,17 @@ public class Fm36StepDefinitions
         Assert.AreEqual(expectedValue,
             fm36Learner!.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected FundStart found!");
     }
+
+    [Then("fm36 ActualEndDate value is (.*)")]
+    public void Fm36ActualEndDateValueIs(TokenisableDateTime lastDayOfLearning)
+    {
+        var testData = _context.Get<TestData>();
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+
+        Assert.AreEqual(lastDayOfLearning.Value,
+            fm36Learner!.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeActualEndDate, "Unexpected PriceEpisodeActualEndDate found!");
+    }
+
 
     [Then(@"fm36 block contains a new price episode starting (.*) with episode 1 tnp of (.*) and episode 2 tnp of (.*)")]
     public void ThenFm36BlockContainsANewPriceEpisodeStarting(TokenisableDateTime newEpisodeStartDate, decimal expectedEpisode1Tnp, decimal expectedEpisode2Tnp)
@@ -690,5 +701,40 @@ public class Fm36StepDefinitions
                 .GetValuesForAttribute(LearningDeliveryPeriodisedValuesAttributeNames.LearnSuppFundCash).SingleOrDefault(x => x.PeriodNumber == i).Value
                 .Should().Be(150, $"{LearningDeliveryPeriodisedValuesAttributeNames.LearnDelFirstProv1618Pay} value for period {i} is not 150");
         }
+    }
+
+    [Then("PriceEpisodeActualEndDateIncEPA is (.*)")]
+    public void ValidatePriceEpisodeActualEndDateIncEPA(TokenisableDateTime? completionDate)
+    {
+        var testData = _context.Get<TestData>();
+
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+
+        fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodeValues.PriceEpisodeActualEndDateIncEPA
+            .Should().Be(completionDate.Value, $"{EarningsFM36Constants.PriceEpisodeActualEndDateIncEPA} value is not {completionDate.Value}");
+    }
+
+    [Then("PriceEpisodeBalancePayment for period (.*) is amount (.*)")]
+    public void ValidatePriceEpisodeBalancePayment(TokenisablePeriod? balancingPaymentPeriod, int amount)
+    {
+        var testData = _context.Get<TestData>();
+
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+
+        fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
+            .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeBalancePayment).SingleOrDefault(x => x.PeriodNumber == balancingPaymentPeriod.Value.PeriodValue).Value
+            .Should().Be(amount, $"{PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeBalancePayment} value for period {balancingPaymentPeriod.Value} is not {amount}");
+    }
+
+    [Then("PriceEpisodeCompletionPayment for period (.*) is amount (.*)")]
+    public void ValidatePriceEpisodeCompletionPayment(TokenisablePeriod? completionPaymentPeriod, int amount)
+    {
+        var testData = _context.Get<TestData>();
+
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+
+        fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
+            .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeCompletionPayment).SingleOrDefault(x => x.PeriodNumber == completionPaymentPeriod.Value.PeriodValue).Value
+            .Should().Be(amount, $"{PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeCompletionPayment} value for period {completionPaymentPeriod.Value} is not {amount}");
     }
 }

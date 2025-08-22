@@ -10,6 +10,7 @@ Scenario: Withdrawal of learner - FundStart should be False if withdrawn before 
 	And the fm36 data is retrieved for previousAY-07-31
 	Then fm36 FundStart value is <expected_fundstart>
 	And fm36 ActualDaysIL value is <expected_actual_days_in_learning>
+	And fm36 ActualEndDate value is <last_day_of_delivery>
 
 Examples:
 	| start_date       | end_date         | agreed_price | training_code | reason                 | last_day_of_delivery | expected_fundstart | expected_actual_days_in_learning |
