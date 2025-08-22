@@ -3,6 +3,7 @@ parameters:
   SolutionBaseName:
   ServiceConnection:
   AzureArtifactsFeed:
+  AppRoleAssignmentsServiceConnection:
 
 jobs:
 - deployment: RunAcceptanceTests
@@ -62,6 +63,13 @@ jobs:
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             SQLServerName: $(SharedSQLServerName)
+
+        - template: azure-pipelines-templates/deploy/step/app-role-assignments.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.AppRoleAssignmentsServiceConnection }}
+            ResourceName: "das-dev-automated-tests-ar"
+            Tenant: $(Tenant)
+            IsMultiRepoCheckout: true
 
         - task: DotNetCoreCLI@2
           displayName: Restore - Including Custom Feed
