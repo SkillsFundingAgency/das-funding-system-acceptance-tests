@@ -553,7 +553,7 @@ public class Fm36StepDefinitions
     }
 
     [Then(@"fm36 ActualDaysIL value is (.*)")]
-    public void ThenFm36ActualDaysInLearningValueIs(int expectedValue)
+    public void ThenFm36ActualDaysInLearningValue(int expectedValue)
     {
         var testData = _context.Get<TestData>();
         var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
@@ -561,6 +561,17 @@ public class Fm36StepDefinitions
         Assert.AreEqual(expectedValue,
             fm36Learner!.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected FundStart found!");
     }
+
+    [Then("fm36 ActualEndDate value is (.*)")]
+    public void Fm36ActualEndDateValueIs(TokenisableDateTime lastDayOfLearning)
+    {
+        var testData = _context.Get<TestData>();
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+
+        Assert.AreEqual(lastDayOfLearning.Value,
+            fm36Learner!.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeActualEndDate, "Unexpected PriceEpisodeActualEndDate found!");
+    }
+
 
     [Then(@"fm36 block contains a new price episode starting (.*) with episode 1 tnp of (.*) and episode 2 tnp of (.*)")]
     public void ThenFm36BlockContainsANewPriceEpisodeStarting(TokenisableDateTime newEpisodeStartDate, decimal expectedEpisode1Tnp, decimal expectedEpisode2Tnp)
