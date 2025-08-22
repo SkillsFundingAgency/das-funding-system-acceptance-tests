@@ -29,6 +29,11 @@ resources:
     name: SkillsFundingAgency/das-platform-automation
     ref: refs/heads/Added_dev_for_env
     endpoint: SkillsFundingAgency
+    pipelines:
+  - pipeline: das-employer-config
+    project: Digital Apprenticeship Service
+    source: das-employer-config
+    branch: master
 
 stages:
 - stage: Build
