@@ -1,6 +1,7 @@
 ﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
 using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
+using System.Net;
 using System.Text.Json;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
@@ -124,6 +125,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         private Dictionary<string, string> GetClaims()
         {
             return new Dictionary<string, string>();
+        }
+
+        public async Task<List<FM36Learner>> GetFm36Block(long ukprn, int collectionYear, byte collectionPeriod)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/Learners/providers/{ukprn}/collectionPeriod/{collectionYear}/{collectionPeriod}/fm36data");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+            var response = await _apiClient.SendAsync(request);
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"Expected HTTP 200 OK response from GetFm36Block request, but got {response.StatusCode}");
+
+            return JsonConvert.DeserializeObject<List<FM36Learner>>(await response.Content.ReadAsStringAsync())!;
         }
 
         public class LearnerDataRequest

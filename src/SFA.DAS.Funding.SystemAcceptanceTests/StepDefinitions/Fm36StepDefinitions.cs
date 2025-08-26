@@ -3,6 +3,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using System.Runtime.CompilerServices;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -11,6 +12,7 @@ public class Fm36StepDefinitions
 {
     private readonly ScenarioContext _context;
     private readonly EarningsOuterClient _earningsOuterClient;
+    private readonly LearnerDataOuterApiClient _learnerDataOuterApiClient;
     private readonly LearningSqlClient _apprenticeshipSqlClient;
     private readonly EarningsSqlClient _earningsSqlClient;
     private readonly EarningsInnerApiHelper _earningsInnerApiHelper;
@@ -18,12 +20,14 @@ public class Fm36StepDefinitions
     public Fm36StepDefinitions(
         ScenarioContext context,
         EarningsOuterClient earningsOuterClient,
+        LearnerDataOuterApiClient learnerDataOuterApiClient,
         LearningSqlClient apprenticeshipSqlClient,
         EarningsSqlClient earningsSqlClient,
         EarningsInnerApiHelper earningsInnerApiHelper)
     {
         _context = context;
         _earningsOuterClient = earningsOuterClient;
+        _learnerDataOuterApiClient = learnerDataOuterApiClient;
         _apprenticeshipSqlClient = apprenticeshipSqlClient;
         _earningsSqlClient = earningsSqlClient;
         _earningsInnerApiHelper = earningsInnerApiHelper;
@@ -42,6 +46,18 @@ public class Fm36StepDefinitions
             collectionPeriod);
 
     }
+
+    [When("the fm36 data is retrieved through LearnerData outer api for (.*)")]
+    public async Task WhenTheFmDataIsRetrievedThroughLearnerDataOuterApiForCurrentDate(TokenisableDateTime searchDate)
+    {
+        var testData = _context.Get<TestData>();
+        var collectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", searchDate.Value));
+        var collectionPeriod = TableExtensions.Period[searchDate.Value.ToString("MMMM")];
+
+        testData.FM36Learners = await _learnerDataOuterApiClient.GetFm36Block(testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, collectionYear,
+            collectionPeriod);
+    }
+
 
     [Given(@"the apprentice is marked as a care leaver")]
     public async Task GivenTheApprenticeIsMarkedAsACareLeaver()
