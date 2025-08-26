@@ -47,6 +47,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
+        [Given("Maths and English learning is recorded from (.*) for (.*) days with course (.*), amount (.*) and withdrawal after (.*) days")]
         [When("Maths and English learning is recorded from (.*) for (.*) days with course (.*), amount (.*) and withdrawal after (.*) days")]
         public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, int duration, string course, decimal amount, int withdrawalOnDay)
         {
@@ -74,6 +75,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
+        [Given("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for course (.*)")]
+        [When("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for course (.*)")]
         [Then("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for course (.*)")]
         public async Task VerifyMathsAndEnglishInstalmentEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
             TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course)
@@ -81,6 +84,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await VerifyMathsAndEnglishEarnings(mathsAndEnglishStartPeriod, mathsAndEnglishEndPeriod, amount, course,
                 true);
         }
+
+        [When("SLD inform us that Maths and English details have changed")]
+        public void SLDInformUsThatMathsAndEnglishDetailsHaveChanged()
+        {
+            var testData = context.Get<TestData>();
+
+            testData.ResetLearnerDataBuilder();
+        }
+
 
         [Then("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
         public async Task VerifyRegularMathsAndEnglishInstalmentEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,

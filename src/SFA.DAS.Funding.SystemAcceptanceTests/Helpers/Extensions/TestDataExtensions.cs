@@ -8,5 +8,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions
         {
             return testData.LearnerDataBuilder ?? (testData.LearnerDataBuilder = new LearnerDataBuilder());
         }
+
+        internal static void ResetLearnerDataBuilder(this TestData testData)
+        {
+            testData.LearnerDataBuilder = null;
+        }
     }
 }
