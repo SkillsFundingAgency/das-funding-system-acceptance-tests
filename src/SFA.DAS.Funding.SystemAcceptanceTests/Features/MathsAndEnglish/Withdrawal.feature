@@ -24,6 +24,22 @@ Examples:
 	| currentAY-09-25 | 14            | Entry level English | 5000         | 14                | currentAY-R02                 | currentAY-R02        | 133        |
 	| currentAY-09-25 | 13            | Entry level English | 5000         | 1                 | currentAY-R02                 | currentAY-R02        | 133        |
 
+
+@regression
+Scenario: Earnings for Maths and English are recalculated when withdrawal details have changed
+	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
+	And Maths and English learning is recorded from <start_date> for <duration_days> days with course <course>, amount <agreed_price> and withdrawal after <first_withdrawal_on_day> days
+	And SLD submit updated learners details
+	And Maths and English earnings are generated from periods <first_withdrawal_earnings_start_period> to <first_withdrawal_earnings_end_period> with instalment amount <instalment> for course <course>
+	When SLD inform us that Maths and English details have changed
+	And Maths and English learning is recorded from <start_date> for <duration_days> days with course <course>, amount <agreed_price> and withdrawal after <second_withdrawal_on_day> days
+	And SLD submit updated learners details
+	Then Maths and English earnings are generated from periods <second_withdrawal_earnings_start_period> to <second_withdrawal_earnings_end_period> with instalment amount <instalment> for course <course>
+
+Examples:
+	| start_date      | duration_days | course              | agreed_price | first_withdrawal_on_day | first_withdrawal_earnings_start_period | first_withdrawal_earnings_end_period | instalment | second_withdrawal_on_day | second_withdrawal_earnings_start_period | second_withdrawal_earnings_end_period |
+	| currentAY-09-25 | 240           | Entry level English | 5000         | 42                      | currentAY-R02                          | currentAY-R03                        | 625        | 70                       | currentAY-R02                           | currentAY-R04                         |
+
 @regression
 Scenario: Earnings for Maths and English after Withdrawal during Qualifying Period
 	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>

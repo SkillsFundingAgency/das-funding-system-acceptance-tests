@@ -1,6 +1,7 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -46,6 +47,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
+        [Given("Maths and English learning is recorded from (.*) for (.*) days with course (.*), amount (.*) and withdrawal after (.*) days")]
         [When("Maths and English learning is recorded from (.*) for (.*) days with course (.*), amount (.*) and withdrawal after (.*) days")]
         public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, int duration, string course, decimal amount, int withdrawalOnDay)
         {
@@ -73,6 +75,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
+        [Given("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for course (.*)")]
+        [When("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for course (.*)")]
         [Then("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for course (.*)")]
         public async Task VerifyMathsAndEnglishInstalmentEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
             TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course)
@@ -81,12 +85,56 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 true);
         }
 
+        [When("SLD inform us that Maths and English details have changed")]
+        public void SLDInformUsThatMathsAndEnglishDetailsHaveChanged()
+        {
+            var testData = context.Get<TestData>();
+
+            testData.ResetLearnerDataBuilder();
+        }
+
+
         [Then("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
         public async Task VerifyRegularMathsAndEnglishInstalmentEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
             TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course)
         {
             await VerifyMathsAndEnglishEarnings(mathsAndEnglishStartPeriod, mathsAndEnglishEndPeriod, amount, course,
                 false);
+        }
+
+        [When(@"the maths and english courses are removed")]
+        public void WhenTheMathsAndEnglishCoursesAreRemoved()
+        {
+            var testData = context.Get<TestData>();
+            var learnerBuilder = testData.GetLearnerDataBuilder();
+            learnerBuilder.WithNoMathsAndEnglish();
+        }
+
+        [Then(@"no maths and english earnings are generated")]
+        public async Task ThenNoMathsAndEnglishEarningsAreGenerated()
+        {
+            var testData = context.Get<TestData>();
+            EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+
+            await WaitHelper.WaitForIt(() =>
+            {
+                earningsApprenticeshipModel = earningsEntitySqlClient.GetEarningsEntityModel(context);
+                return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault()
+                    .EarningsProfileHistory.Any();
+            }, "Failed to find updated earnings entity.");
+
+            var mathsAndEnglish = earningsApprenticeshipModel
+                .Episodes
+                .SingleOrDefault()
+                ?.MathsAndEnglish;
+
+            var mathAndEnglishInstalments = earningsApprenticeshipModel
+                .Episodes
+                .SingleOrDefault()
+                ?.MathsAndEnglishInstalments;
+
+            mathsAndEnglish.Should().BeEmpty("Expected no Maths and English earnings to be generated, but found some on the earnings apprenticeship model");
+            mathAndEnglishInstalments.Should().BeEmpty("Expected no Maths and English instalments to be generated, but found some on the earnings apprenticeship model");
         }
 
         private async Task VerifyMathsAndEnglishEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,

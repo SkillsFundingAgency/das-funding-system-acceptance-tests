@@ -26,7 +26,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             context.Set(testData);
         }
 
-
+        [Given(@"SLD submit updated learners details")]
         [When(@"SLD submit updated learners details")]
         public async Task WhenSLDSubmitUpdatedLearnersDetails()
         {
