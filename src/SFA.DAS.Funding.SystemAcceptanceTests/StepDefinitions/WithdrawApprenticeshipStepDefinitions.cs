@@ -81,6 +81,21 @@ internal class WithdrawApprenticeshipStepDefinitions
         Assert.AreEqual(apprenticeship?.WithdrawalRequests.Count, 1);
     }
 
+    [Then("last day of learning is set to (.*) in learning db")]
+    public async Task LastDayOfLearningIsSetToDateInLearningDb(TokenisableDateTime withdrawalDate)
+    {
+        var testData = _context.Get<TestData>();
+        SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.Learning? apprenticeship = null;
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
+
+            return apprenticeship.Episodes.First().LastDayOfLearning == withdrawalDate.Value;
+        }, $"LastDayOfLearning did not change to {withdrawalDate} in learning db episode table");
+    }
+
+
     [Then("earnings are recalculated")]
     public async Task EarningsAreRecalculated()
     {
@@ -96,7 +111,12 @@ internal class WithdrawApprenticeshipStepDefinitions
 
         Assert.AreEqual(expectedInstalmentsNumber, testData.ApprenticeshipEarningsRecalculatedEvent.DeliveryPeriods.Count, "Unexpected number of instalments in earnings recalculated event");
 
-        var actualInstalmentsNumber = testData.EarningsApprenticeshipModel?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.Count ?? 0;
+        var actualInstalmentsNumber = testData.EarningsApprenticeshipModel.Episodes
+            .FirstOrDefault()?
+            .EarningsProfile?.Instalments?
+            .Where(x => x.Type.Contains("Regular"))
+            .Count() ?? 0;
+
         Assert.AreEqual(expectedInstalmentsNumber, actualInstalmentsNumber, "Unexpected number of instalments after withdrawal has been recorded in earnings db!");
     }
 

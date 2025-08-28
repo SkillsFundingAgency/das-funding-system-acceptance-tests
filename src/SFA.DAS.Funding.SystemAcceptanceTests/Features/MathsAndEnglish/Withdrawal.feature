@@ -26,6 +26,18 @@ Examples:
 
 
 @regression
+Scenario: Withdrawal for Maths and English can be after Planned end date
+	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
+	When Maths and English learning is recorded from <start_date> for <duration_days> days with course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
+	And SLD submit updated learners details
+	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
+
+Examples:
+	| start_date      | duration_days | course              | agreed_price | withdrawal_on_day | expected_first_earning_period | expected_last_period | instalment |
+	| currentAY-09-25 | 240           | Entry level English | 5000         | 270               | currentAY-R02                 | currentAY-R10        | 625        |
+	
+
+@regression
 Scenario: Earnings for Maths and English are recalculated when withdrawal details have changed
 	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
 	And Maths and English learning is recorded from <start_date> for <duration_days> days with course <course>, amount <agreed_price> and withdrawal after <first_withdrawal_on_day> days
