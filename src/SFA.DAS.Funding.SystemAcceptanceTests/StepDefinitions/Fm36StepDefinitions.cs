@@ -42,7 +42,7 @@ public class Fm36StepDefinitions
         var collectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", searchDate.Value));
         var collectionPeriod = TableExtensions.Period[searchDate.Value.ToString("MMMM")];
 
-        testData.FM36Learners = await _earningsOuterClient.GetFm36Block(testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, collectionYear,
+        testData.FM36Learners = await _learnerDataOuterApiClient.GetFm36Block(testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, collectionYear,
             collectionPeriod);
 
     }
