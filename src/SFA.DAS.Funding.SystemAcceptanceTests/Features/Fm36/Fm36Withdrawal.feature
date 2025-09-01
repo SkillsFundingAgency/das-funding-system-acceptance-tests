@@ -14,8 +14,8 @@ Scenario: Withdrawal of learner - FundStart should be False if withdrawn before 
 
 Examples:
 	| start_date       | end_date         | agreed_price | training_code | reason                 | last_day_of_delivery | expected_fundstart | expected_actual_days_in_learning |
-	| previousAY-08-01 | previousAY-07-31 | 15000        | 2             | WithdrawDuringLearning | previousAY-09-11     | false              | 42                               |
-	| previousAY-08-01 | previousAY-07-31 | 15000        | 2             | WithdrawDuringLearning | previousAY-09-12     | true               | 43                               |
+	| previousAY-08-01 | previousAY-07-31 | 15000        | 2             | WithdrawDuringLearning | previousAY-09-10     | false              | 41                               |
+	| previousAY-08-01 | previousAY-07-31 | 15000        | 2             | WithdrawDuringLearning | previousAY-09-11     | true               | 42                               |
 
 @regression
 Scenario: Withdrawal of learner from start results in no FM36 block (FLP-969 AC3)
