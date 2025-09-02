@@ -4,7 +4,7 @@ using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuter
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
-    public class LearnerDataOuterApiHelper
+    public class LearnerDataOuterApiHelper ()
     {
         private readonly LearnerDataOuterApiClient _apiClient = new();
 
@@ -40,13 +40,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             configure(builder);
             var request = builder.Build();
 
-            await _apiClient.UpdateLearning(learningKey, request);
+            await _apiClient.UpdateLearning(Constants.UkPrn,learningKey, request);
         }
 
 
         public async Task UpdateLearning(Guid learningKey, UpdateLearnerRequest request)
         {
-            await _apiClient.UpdateLearning(learningKey, request);
+            await _apiClient.UpdateLearning(Constants.UkPrn, learningKey, request);
         }
     }
 }

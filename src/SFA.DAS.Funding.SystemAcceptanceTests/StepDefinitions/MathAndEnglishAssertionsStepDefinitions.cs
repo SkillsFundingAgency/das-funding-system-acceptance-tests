@@ -16,7 +16,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var testData = context.Get<TestData>();
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
-            learnerDataBuilder.WithMathsAndEnglish(startDate.Value, endDate.Value, course, amount);
+            learnerDataBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount);
             
             testData.IsMathsAndEnglishAdded = true;
         }
@@ -28,7 +28,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-            learnerDataBuilder.WithMathsAndEnglish(startDate.Value, endDate.Value, course, amount, completionDate: completionDate.Value);
+            learnerDataBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, completionDate: completionDate.Value);
             
             testData.IsMathsAndEnglishAdded = true;
         }
@@ -58,7 +58,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var learnerBuilder = testData.GetLearnerDataBuilder();
 
-            learnerBuilder.WithMathsAndEnglish(startDate.Value, endDate, course, amount, withdrawalDate: withdrawalDate);
+            learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate, course, amount, withdrawalDate: withdrawalDate);
 
             testData.IsMathsAndEnglishAdded = true;
         }
@@ -70,7 +70,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var testData = context.Get<TestData>();
 
             var learnerBuilder = testData.GetLearnerDataBuilder();
-            learnerBuilder.WithMathsAndEnglish(startDate.Value, endDate.Value, course, amount, priorLearningPercentage: priorLearning);
+            learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, priorLearningPercentage: priorLearning);
 
             testData.IsMathsAndEnglishAdded = true;
         }

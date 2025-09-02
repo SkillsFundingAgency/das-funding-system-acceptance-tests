@@ -2,11 +2,11 @@
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 
-public class MathsAndEnglishBuilder
+public class EnglishAndMathsBuilder
 {
-    private readonly MathsAndEnglish _course = new();
+    private readonly EnglishAndMaths _course = new();
 
-    public MathsAndEnglishBuilder WithCourseDetails(
+    public EnglishAndMathsBuilder WithCourseDetails(
         DateTime startDate,
         DateTime endDate,
         string course,
@@ -14,12 +14,12 @@ public class MathsAndEnglishBuilder
     {
         _course.Course = course;
         _course.StartDate = startDate;
-        _course.PlannedEndDate = endDate;
+        _course.EndDate = endDate;
         _course.Amount = amount;
         return this;
     }
 
-    public MathsAndEnglishBuilder WithLearningSupport(DateTime start, DateTime end)
+    public EnglishAndMathsBuilder WithLearningSupport(DateTime start, DateTime end)
     {
         _course.LearningSupport.Add(new LearningSupport
         {
@@ -29,17 +29,17 @@ public class MathsAndEnglishBuilder
         return this;
     }
 
-    public MathsAndEnglishBuilder WithPriorLearningPercentage(int? percentage)
+    public EnglishAndMathsBuilder WithPriorLearningPercentage(int? percentage)
     {
         _course.PriorLearningPercentage = percentage;
         return this;
     }
 
-    public MathsAndEnglishBuilder WithWithdrawalDate(DateTime withdrawalDate)
+    public EnglishAndMathsBuilder WithWithdrawalDate(DateTime withdrawalDate)
     {
         _course.WithdrawalDate = withdrawalDate;
         return this;
     }
 
-    public MathsAndEnglish Build() => _course;
+    public EnglishAndMaths Build() => _course;
 }
