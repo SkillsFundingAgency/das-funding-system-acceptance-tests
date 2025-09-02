@@ -66,9 +66,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             return JsonConvert.DeserializeObject<GetLearnerResponse>(await response.Content.ReadAsStringAsync())!;
         }
 
-        public async Task UpdateLearning(Guid learningKey, UpdateLearnerRequest learningData)
+        public async Task UpdateLearning(long ukprn, Guid learningKey, UpdateLearnerRequest learningData)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/Learners/{learningKey}");
+            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/providers/{ukprn}/learning/{learningKey}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -79,6 +79,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
                 "application/json");
 
             request.Content = jsonContent;
+
             EnsureBearerToken();
             var response = await _apiClient.SendAsync(request);
 
@@ -162,26 +163,27 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class UpdateLearnerRequest
         {
-            public UpdateLearnerRequestDeliveryDetails Delivery { get; set; } = new UpdateLearnerRequestDeliveryDetails();
+            public List<UpdateLearnerRequestDeliveryDetails> Delivery { get; set; } = new List<UpdateLearnerRequestDeliveryDetails> ();
         }
         public class UpdateLearnerRequestDeliveryDetails
         {
-            public DateTime? CompletionDate { get; set; }
             public OnProgramme OnProgramme { get; set; } = new OnProgramme();
 
-            public List<MathsAndEnglish> MathsAndEnglishCourses { get; set; } = [];
+            public List<EnglishAndMaths> EnglishAndMaths { get; set; } = [];
         }
 
         public class OnProgramme
         {
+            public DateTime? CompletionDate { get; set; }
+
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
         }
 
-        public class MathsAndEnglish
+        public class EnglishAndMaths
         {
             public string Course { get; set; }
             public DateTime StartDate { get; set; }
-            public DateTime PlannedEndDate { get; set; }
+            public DateTime EndDate { get; set; }
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
             public int? PriorLearningPercentage { get; set; }

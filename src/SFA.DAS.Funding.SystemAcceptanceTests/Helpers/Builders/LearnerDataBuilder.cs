@@ -4,17 +4,29 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 {
     public class LearnerDataBuilder
     {
-        private readonly UpdateLearnerRequest _request = new();
+        private readonly UpdateLearnerRequest _request;
+
+        public LearnerDataBuilder()
+        {
+            _request = new UpdateLearnerRequest
+            {
+                Delivery = new List<UpdateLearnerRequestDeliveryDetails>
+            {
+                new UpdateLearnerRequestDeliveryDetails()
+            }
+            };
+        }
 
         public LearnerDataBuilder WithCompletionDate(DateTime? completionDate)
         {
-            _request.Delivery.CompletionDate = completionDate;
+            _request.Delivery.First().OnProgramme.CompletionDate = completionDate;
+
             return this;
         }
 
         public LearnerDataBuilder WithOnProgrammeLearningSupport(DateTime startDate, DateTime endDate)
         {
-            _request.Delivery.OnProgramme.LearningSupport.Add(new LearningSupport
+            _request.Delivery.First().OnProgramme.LearningSupport.Add(new LearningSupport
             {
                 StartDate = startDate,
                 EndDate = endDate
@@ -24,24 +36,24 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
         public LearnerDataBuilder WithNoOnProgrammeLearningSupport()
         {
-            _request.Delivery.OnProgramme.LearningSupport.Clear();
+            _request.Delivery.First().OnProgramme.LearningSupport.Clear();
             return this;
         }
 
-        public LearnerDataBuilder WithMathsAndEnglish(Func<MathsAndEnglishBuilder, MathsAndEnglishBuilder> configure)
+        public LearnerDataBuilder WithMathsAndEnglish(Func<EnglishAndMathsBuilder, EnglishAndMathsBuilder> configure)
         {
-            var builder = new MathsAndEnglishBuilder();
+            var builder = new EnglishAndMathsBuilder();
             var course = configure(builder).Build();
-            _request.Delivery.MathsAndEnglishCourses.Add(course);
+            _request.Delivery.First().EnglishAndMaths.Add(course);
             return this;
         }
 
-        public LearnerDataBuilder WithMathsAndEnglish(DateTime startDate, DateTime endDate, string course, decimal amount, DateTime? completionDate = null, DateTime? withdrawalDate = null, int? priorLearningPercentage = null)
+        public LearnerDataBuilder WithEnglishAndMaths(DateTime startDate, DateTime endDate, string course, decimal amount, DateTime? completionDate = null, DateTime? withdrawalDate = null, int? priorLearningPercentage = null)
         {
-            var mathsAndEnglish = new MathsAndEnglish
+            var mathsAndEnglish = new EnglishAndMaths
             {
                 StartDate = startDate,
-                PlannedEndDate = endDate,
+                EndDate = endDate,
                 Course = course,
                 Amount = amount,
                 CompletionDate = completionDate,
@@ -49,24 +61,24 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
                 PriorLearningPercentage = priorLearningPercentage
             };
 
-            return WithMathsAndEnglish(mathsAndEnglish);
+            return WithEnglishAndMaths(mathsAndEnglish);
         }
 
-        public LearnerDataBuilder WithMathsAndEnglish(MathsAndEnglish course)
+        public LearnerDataBuilder WithEnglishAndMaths(EnglishAndMaths course)
         {
-            _request.Delivery.MathsAndEnglishCourses.Add(course);
+            _request.Delivery.First().EnglishAndMaths.Add(course);
             return this;
         }
 
-        public LearnerDataBuilder WithMathsAndEnglish(IEnumerable<MathsAndEnglish> courses)
+        public LearnerDataBuilder WithEnglishAndMaths(IEnumerable<EnglishAndMaths> courses)
         {
-            _request.Delivery.MathsAndEnglishCourses.AddRange(courses);
+            _request.Delivery.First().EnglishAndMaths.AddRange(courses);
             return this;
         }
 
         public LearnerDataBuilder WithNoMathsAndEnglish()
         {
-            _request.Delivery.MathsAndEnglishCourses.Clear();
+            _request.Delivery.First().EnglishAndMaths.Clear();
             return this;
         }
 
