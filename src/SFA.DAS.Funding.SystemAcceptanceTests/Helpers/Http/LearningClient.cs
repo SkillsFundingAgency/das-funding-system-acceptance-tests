@@ -15,13 +15,11 @@ internal class LearningClient
         var baseUrl = config.LearningAzureFunctionBaseUrl;
         _apiClient = HttpClientProvider.GetClient(baseUrl);
         _functionKey = config.LearningAzureFunctionKey;
-        _signingKey = config.LearningServiceBearerTokenSigningKey;
     }
 
     public async Task WithdrawLearning(WithdrawLearningRequestBody body)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, $"api/WithdrawLearning?code={_functionKey}");
-        request.Headers.Add("ServiceBearerToken", ServiceBearerTokenProvider.GetServiceBearerToken(_signingKey));
         request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
         HttpResponseMessage? response = null;
         try

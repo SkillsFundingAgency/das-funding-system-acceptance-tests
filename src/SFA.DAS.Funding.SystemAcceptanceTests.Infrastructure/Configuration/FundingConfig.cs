@@ -24,7 +24,6 @@ public class FundingConfig
     public string PaymentsUnfrozenEventHandlersQueue { get; set; } = NotSet;
     public int EventWaitTimeInSeconds { get; set; } = 120;
     public string ApprovalCreatedQueue { get; set; } = NotSet;
-    public string LearningServiceBearerTokenSigningKey { get; set; } = NotSet;
     public string LearningInnerApiClientBaseUrl { get; set; } = NotSet;
     public string LearningInnerApiIdentifier { get; set; } = NotSet;
     public string EarningsInnerApiClientBaseUrl { get; set; } = NotSet;
