@@ -80,7 +80,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
             request.Content = jsonContent;
 
-            EnsureBearerToken();
             var response = await _apiClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
@@ -92,41 +91,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         }
 
         private readonly object _tokenLock = new object();
-
-        private void EnsureBearerToken()
-        {
-            if (string.IsNullOrEmpty(_cachedBearerToken) || DateTime.UtcNow >= _bearerTokenExpiry)
-            {
-                lock (_tokenLock)
-                {
-                    // Double-check inside lock to avoid race
-                    if (string.IsNullOrEmpty(_cachedBearerToken) || DateTime.UtcNow >= _bearerTokenExpiry)
-                    {
-                        AddBearerToken();
-                    }
-                }
-            }
-        }
-
-        private void AddBearerToken()
-        {
-            var claims = GetClaims();
-            var signingKey = _fundingConfig.LearningServiceBearerTokenSigningKey;
-
-            var accessToken = ServiceBearerTokenProvider.GetServiceBearerToken(signingKey);
-            accessToken = BearerTokenHelper.AddClaimsToBearerToken(accessToken, claims, signingKey);
-
-            _cachedBearerToken = accessToken;
-            _bearerTokenExpiry = DateTime.UtcNow.AddMinutes(20);
-
-            _apiClient.DefaultRequestHeaders.Remove("X-Forwarded-Authorization");
-            _apiClient.DefaultRequestHeaders.Add("X-Forwarded-Authorization", $"Bearer {_cachedBearerToken}");
-        }
-
-        private Dictionary<string, string> GetClaims()
-        {
-            return new Dictionary<string, string>();
-        }
 
         public async Task<List<FM36Learner>> GetFm36Block(long ukprn, int collectionYear, byte collectionPeriod)
         {

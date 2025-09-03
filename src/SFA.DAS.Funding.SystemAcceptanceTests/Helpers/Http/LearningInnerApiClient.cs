@@ -8,58 +8,35 @@ public class LearningInnerApiClient
 {
     private readonly FundingConfig _fundingConfig;
     private readonly HttpClient _httpClient;
-    private string _cachedToken;
-    private DateTime _tokenExpiry;
+    private readonly AzureTokenHelper _azureTokenHelper;
+    private string? _azureToken;
 
     public LearningInnerApiClient()
     {
         _fundingConfig = Configurator.GetConfiguration();
         var baseUrl = _fundingConfig.LearningInnerApiClientBaseUrl;
         _httpClient = HttpClientProvider.GetClient(baseUrl);
+        _azureTokenHelper = new AzureTokenHelper();
     }
 
     public async Task<HttpResponseMessage> PostAsync(string url, object body)
     {
-        EnsureBearerToken();
+        await EnsureAzureToken();
         return await _httpClient.PostAsJsonAsync(url, body);
     }
 
     public async Task<HttpResponseMessage> PatchAsync(string url, object body)
     {
-        EnsureBearerToken();
         return await _httpClient.PatchAsJsonAsync(url, body);
     }
 
-    private void EnsureBearerToken()
+    private async Task EnsureAzureToken()
     {
-        if (string.IsNullOrEmpty(_cachedToken) || DateTime.UtcNow >= _tokenExpiry)
+        if (string.IsNullOrEmpty(_azureToken))
         {
-            AddBearerToken();
+            _azureToken = await _azureTokenHelper.GetAccessTokenAsync(_fundingConfig.LearningInnerApiIdentifier);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _azureToken);
         }
-    }
-
-    private void AddBearerToken()
-    {
-        var claims = GetClaims();
-        var signingKey = _fundingConfig.LearningServiceBearerTokenSigningKey;
-
-        var accessToken = ServiceBearerTokenProvider.GetServiceBearerToken(signingKey);
-
-        accessToken = BearerTokenHelper.AddClaimsToBearerToken(accessToken, claims, signingKey);
-
-        _cachedToken = accessToken;
-        _tokenExpiry = DateTime.UtcNow.AddSeconds(100);
-
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _cachedToken);
-    }
-
-    private Dictionary<string, string> GetClaims()
-    {
-        return new Dictionary<string, string>
-        {
-            { "http://schemas.portal.com/ukprn", $"{Constants.UkPrn}" },
-            { "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", "tester" }
-        };
     }
 
 #pragma warning disable CS8618 // Null properties

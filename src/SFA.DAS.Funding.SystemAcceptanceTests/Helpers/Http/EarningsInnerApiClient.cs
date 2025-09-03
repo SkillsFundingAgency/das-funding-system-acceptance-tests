@@ -9,9 +9,7 @@ public class EarningsInnerApiClient
     private readonly HttpClient _httpClient;
     private readonly FundingConfig _fundingConfig;
     private readonly AzureTokenHelper _azureTokenHelper;
-    private DateTime _bearerTokenExpiry;
     private string? _azureToken;
-    private string? _cachedBearerToken;
     
     public EarningsInnerApiClient()
     {
@@ -40,7 +38,6 @@ public class EarningsInnerApiClient
             Content = jsonContent
         };
 
-        EnsureBearerToken();
         await EnsureAzureToken();
         var response = await _httpClient.SendAsync(requestMessage);
         return response;
@@ -53,29 +50,6 @@ public class EarningsInnerApiClient
             _azureToken = await _azureTokenHelper.GetAccessTokenAsync(_fundingConfig.EarningsInnerApiScope);
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _azureToken);
         }
-    }
-
-    private void EnsureBearerToken()
-    {
-        if (string.IsNullOrEmpty(_cachedBearerToken) || DateTime.UtcNow >= _bearerTokenExpiry)
-        {
-            AddBearerToken();
-        }
-    }
-
-    private void AddBearerToken()
-    {
-        var claims = GetClaims();
-        var signingKey = _fundingConfig.LearningServiceBearerTokenSigningKey;
-
-        var accessToken = ServiceBearerTokenProvider.GetServiceBearerToken(signingKey);
-
-        accessToken = BearerTokenHelper.AddClaimsToBearerToken(accessToken, claims, signingKey);
-
-        _cachedBearerToken = accessToken;
-        _bearerTokenExpiry = DateTime.UtcNow.AddMinutes(20);
-
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _cachedBearerToken);
     }
 
     private Dictionary<string, string> GetClaims()
