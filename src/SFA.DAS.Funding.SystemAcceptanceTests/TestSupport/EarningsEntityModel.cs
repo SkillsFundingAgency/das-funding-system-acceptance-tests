@@ -52,11 +52,12 @@ public class EarningsProfileModel : EarningsProfileModelBase
     public List<InstalmentModel> Instalments { get; set; } = null!;
 }
 
-public class EarningsProfileHistoryModel : EarningsProfileModelBase
+public class EarningsProfileHistoryModel
 {
-    public Guid OriginalEarningsProfileId { get; set; }
-    public List<InstalmentHistoryModel> Instalments { get; set; } = null!;
-    public DateTime SupersededDate { get; set; }
+    public Guid EarningsProfileId { get; set; }
+    public Guid Version { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public string State { get; set; }
 }
 
 public abstract class InstalmentModelBase
@@ -70,11 +71,6 @@ public abstract class InstalmentModelBase
 }
 
 public class InstalmentModel : InstalmentModelBase
-{
-
-}
-
-public class InstalmentHistoryModel : InstalmentModelBase
 {
 
 }

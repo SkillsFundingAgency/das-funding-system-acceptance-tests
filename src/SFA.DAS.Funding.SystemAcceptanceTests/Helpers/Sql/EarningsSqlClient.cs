@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
@@ -30,12 +31,7 @@ public class EarningsSqlClient
             episode.EarningsProfile = _sqlServerClient.GetList<EarningsProfileModel>($"SELECT * FROM [Domain].[EarningsProfile] Where EpisodeKey ='{episode.Key}'").Single();
             episode.EarningsProfile.Instalments = _sqlServerClient.GetList<InstalmentModel>($"SELECT Amount, AcademicYear, DeliveryPeriod, Type FROM [Domain].[Instalment] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
 
-            episode.EarningsProfileHistory = _sqlServerClient.GetList<EarningsProfileHistoryModel>($"SELECT * FROM [Domain].[EarningsProfileHistory] Where EpisodeKey ='{episode.Key}'");
-
-            foreach (var history in episode.EarningsProfileHistory)
-            {
-                history.Instalments = _sqlServerClient.GetList<InstalmentHistoryModel>($"SELECT * FROM [Domain].[Instalment] Where EarningsProfileId ='{history.EarningsProfileId}'");
-            }
+            episode.EarningsProfileHistory = _sqlServerClient.GetList<EarningsProfileHistoryModel>($"SELECT * FROM [History].[EarningsProfileHistory] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
 
             episode.AdditionalPayments = _sqlServerClient.GetList<AdditionalPaymentsModel>($"SELECT * FROM [Domain].[AdditionalPayment] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
 
@@ -71,8 +67,10 @@ public class EarningsSqlClient
         foreach(var episodeKey in episodeKeys)
         {
             _sqlServerClient.Execute($"DELETE FROM [Domain].[EpisodePrice] WHERE EpisodeKey = '{episodeKey}'");
-            DeleteEarningProfile(episodeKey);
+
             DeleteEarningProfileHistory(episodeKey);
+            DeleteEnglishAndMaths(episodeKey);
+            DeleteEarningProfile(episodeKey);
             _sqlServerClient.Execute($"DELETE FROM [Domain].[Episode] WHERE [Key] = '{episodeKey}'");
         }
 
@@ -91,11 +89,36 @@ public class EarningsSqlClient
 
     private void DeleteEarningProfileHistory(Guid episodeKey)
     {
-        var earningProfileHistoryIds = _sqlServerClient.GetList<Guid>($"SELECT EarningsProfileId FROM [Domain].[EarningsProfileHistory] WHERE EpisodeKey = '{episodeKey}'");
-        foreach (var earningProfileHistoryId in earningProfileHistoryIds)
+        var earningProfileIds = _sqlServerClient.GetList<Guid>($"SELECT EarningsProfileId FROM [Domain].[EarningsProfile] WHERE EpisodeKey = '{episodeKey}'");
+
+        if (earningProfileIds != null || earningProfileIds.Count > 0)
         {
-            _sqlServerClient.Execute($"DELETE FROM [Domain].[InstalmentHistory] WHERE EarningsProfileId = '{earningProfileHistoryId}'");
-            _sqlServerClient.Execute($"DELETE FROM [Domain].[EarningsProfileHistory] WHERE EarningsProfileId = '{earningProfileHistoryId}'");
+            var profileId = string.Join(",", earningProfileIds.Select(k => $"'{k}'"));
+
+            _sqlServerClient.Execute($"DELETE FROM [History].[EarningsProfileHistory] WHERE EarningsProfileId IN ({profileId})");
+
         }
     }
+
+    public void DeleteEnglishAndMaths(Guid episodeKey)
+    {
+        var earningProfileIds = _sqlServerClient.GetList<Guid>($"SELECT EarningsProfileId FROM [Domain].[EarningsProfile] WHERE EpisodeKey = '{episodeKey}'");
+
+        if (earningProfileIds == null || earningProfileIds.Count == 0)
+            return;
+
+        var profileIdList = string.Join(",", earningProfileIds.Select(id => $"'{id}'"));
+
+        var mathsAndEnglishKeys = _sqlServerClient.GetList<Guid>($"SELECT [Key] FROM [Domain].[MathsAndEnglish] WHERE EarningsProfileId IN ({profileIdList})");
+
+        if (mathsAndEnglishKeys != null && mathsAndEnglishKeys.Count > 0)
+        {
+            var keyList = string.Join(",", mathsAndEnglishKeys.Select(k => $"'{k}'"));
+
+            _sqlServerClient.Execute($"DELETE FROM [Domain].[MathsAndEnglishInstalment] WHERE MathsAndEnglishKey IN ({keyList})");
+        }
+
+        _sqlServerClient.Execute($"DELETE FROM [Domain].[MathsAndEnglish] WHERE EarningsProfileId IN ({profileIdList})");
+    }
+
 }
