@@ -1,5 +1,4 @@
 ﻿using SFA.DAS.Learning.Types;
-using System.Collections.Specialized;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 

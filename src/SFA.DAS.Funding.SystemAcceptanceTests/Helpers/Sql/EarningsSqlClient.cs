@@ -1,6 +1,4 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.X509Certificates;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
