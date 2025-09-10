@@ -127,7 +127,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class UpdateLearnerRequest
         {
-            public List<UpdateLearnerRequestDeliveryDetails> Delivery { get; set; } = new List<UpdateLearnerRequestDeliveryDetails> ();
+            public UpdateLearnerRequestDeliveryDetails Delivery { get; set; } = new ();
         }
         public class UpdateLearnerRequestDeliveryDetails
         {
