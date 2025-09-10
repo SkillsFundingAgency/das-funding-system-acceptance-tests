@@ -1,5 +1,4 @@
-﻿using SFA.DAS.Learning.Types;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 

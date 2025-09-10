@@ -76,6 +76,7 @@ public class TestRunHooks
         StaticObjects.EarningsSqlClient = new EarningsSqlClient();
         StaticObjects.ApprenticeshipsInnerApiHelper = new ApprenticeshipsInnerApiHelper();
         StaticObjects.EarningsInnerApiHelper = new EarningsInnerApiHelper();
+        StaticObjects.LearnerDataOuterApiHelper = new LearnerDataOuterApiHelper();
     }
 
 

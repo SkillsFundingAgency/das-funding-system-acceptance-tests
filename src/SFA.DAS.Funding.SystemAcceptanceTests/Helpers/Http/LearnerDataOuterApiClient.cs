@@ -1,6 +1,8 @@
-﻿using System.Net.Http.Headers;
-using System.Text.Json;
+﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
+using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
+using System.Net;
+using System.Text.Json;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
@@ -11,7 +13,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         private readonly string _subscriptionKey;
         private readonly FundingConfig _fundingConfig;
         private DateTime _bearerTokenExpiry;
-        private string? _azureToken;
         private string? _cachedBearerToken;
 
         public LearnerDataOuterApiClient() {
@@ -29,7 +30,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             request.Headers.Add("X-Version", "1");
 
             var jsonContent = new StringContent(
-                JsonSerializer.Serialize(learnerData),
+                System.Text.Json.JsonSerializer.Serialize(learnerData),
                 System.Text.Encoding.UTF8,
                 "application/json");
 
@@ -45,20 +46,40 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task UpdateLearning(Guid learningKey, UpdateLearnerRequest learningData)
+        public async Task<GetLearnerResponse> GetLearners (long ukprn, int academicYear)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/Learners/{learningKey}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/Learners/providers/{ukprn}/academicyears/{academicYear}/learners");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+
+            var response = await _apiClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return JsonConvert.DeserializeObject<GetLearnerResponse>(await response.Content.ReadAsStringAsync())!;
+        }
+
+        public async Task UpdateLearning(long ukprn, Guid learningKey, UpdateLearnerRequest learningData)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/providers/{ukprn}/learning/{learningKey}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
 
             var jsonContent = new StringContent(
-                JsonSerializer.Serialize(learningData),
+                System.Text.Json.JsonSerializer.Serialize(learningData),
                 System.Text.Encoding.UTF8,
                 "application/json");
 
             request.Content = jsonContent;
-            EnsureBearerToken();
+
             var response = await _apiClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
@@ -69,35 +90,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             response.EnsureSuccessStatusCode();
         }
 
-        private void EnsureBearerToken()
+        private readonly object _tokenLock = new object();
+
+        public async Task<List<FM36Learner>> GetFm36Block(long ukprn, int collectionYear, byte collectionPeriod)
         {
-            if (string.IsNullOrEmpty(_cachedBearerToken) || DateTime.UtcNow >= _bearerTokenExpiry)
-            {
-                AddBearerToken();
-            }
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/Learners/providers/{ukprn}/collectionPeriod/{collectionYear}/{collectionPeriod}/fm36data");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+            var response = await _apiClient.SendAsync(request);
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"Expected HTTP 200 OK response from GetFm36Block request, but got {response.StatusCode}");
+
+            return JsonConvert.DeserializeObject<List<FM36Learner>>(await response.Content.ReadAsStringAsync())!;
         }
-
-        private void AddBearerToken()
-        {
-            var claims = GetClaims();
-            var signingKey = _fundingConfig.LearningServiceBearerTokenSigningKey;
-
-            var accessToken = ServiceBearerTokenProvider.GetServiceBearerToken(signingKey);
-
-            accessToken = BearerTokenHelper.AddClaimsToBearerToken(accessToken, claims, signingKey);
-
-            _cachedBearerToken = accessToken;
-            _bearerTokenExpiry = DateTime.UtcNow.AddMinutes(20);
-
-            _apiClient.DefaultRequestHeaders.Add("X-Forwarded-Authorization",
-                $"Bearer {_cachedBearerToken}");
-        }
-
-        private Dictionary<string, string> GetClaims()
-        {
-            return new Dictionary<string, string>();
-        }
-
 
         public class LearnerDataRequest
         {
@@ -121,24 +127,53 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class UpdateLearnerRequest
         {
-            public UpdateLearnerRequestDeliveryDetails Delivery { get; set; }
+            public UpdateLearnerRequestDeliveryDetails Delivery { get; set; } = new ();
         }
         public class UpdateLearnerRequestDeliveryDetails
         {
-            public DateTime? CompletionDate { get; set; }
+            public OnProgramme OnProgramme { get; set; } = new OnProgramme();
 
-            public List<MathsAndEnglish> MathsAndEnglishCourses { get; set; }
+            public List<EnglishAndMaths> EnglishAndMaths { get; set; } = [];
         }
 
-        public class MathsAndEnglish
+        public class OnProgramme
+        {
+            public DateTime? CompletionDate { get; set; }
+
+            public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
+        }
+
+        public class EnglishAndMaths
         {
             public string Course { get; set; }
             public DateTime StartDate { get; set; }
-            public DateTime PlannedEndDate { get; set; }
+            public DateTime EndDate { get; set; }
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
             public int? PriorLearningPercentage { get; set; }
             public decimal Amount { get; set; }
+            public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
+        }
+
+        public class LearningSupport
+        {
+            public DateTime StartDate { get; set; }
+            public DateTime EndDate { get; set; }
+        }
+
+        public class Learning
+        {
+            public string Uln { get; set; } = "";
+            public Guid Key { get; set; }
+        }
+
+        public class GetLearnerResponse
+        {
+            public List<Learning> Learners { get; set; } = [];
+            public int Total {  get; set; }
+            public int Page {  get; set; }
+            public int PageSize { get; set; }
+            public int TotalPages { get; set; }
         }
     }
 }

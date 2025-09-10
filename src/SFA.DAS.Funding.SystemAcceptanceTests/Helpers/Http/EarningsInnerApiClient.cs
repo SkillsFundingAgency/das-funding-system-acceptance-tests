@@ -9,9 +9,7 @@ public class EarningsInnerApiClient
     private readonly HttpClient _httpClient;
     private readonly FundingConfig _fundingConfig;
     private readonly AzureTokenHelper _azureTokenHelper;
-    private DateTime _bearerTokenExpiry;
     private string? _azureToken;
-    private string? _cachedBearerToken;
     
     public EarningsInnerApiClient()
     {
@@ -40,59 +38,10 @@ public class EarningsInnerApiClient
             Content = jsonContent
         };
 
-        EnsureBearerToken();
         await EnsureAzureToken();
         var response = await _httpClient.SendAsync(requestMessage);
         return response;
     }
-
-    /// <summary>
-    /// Sends a PATCH request to the earnings inner API to save learning support data for an apprenticeship.
-    /// </summary>
-    public async Task<HttpResponseMessage> SaveLearningSupport(Guid apprenticeshipKey, List<LearningSupportPaymentDetail> request)
-    {
-        var url = $"apprenticeship/{apprenticeshipKey}/learningSupport";
-
-        var jsonContent = new StringContent(
-            JsonSerializer.Serialize(request),
-            System.Text.Encoding.UTF8,
-            "application/json");
-
-        var requestMessage = new HttpRequestMessage(HttpMethod.Patch, url)
-        {
-            Content = jsonContent
-        };
-
-        EnsureBearerToken();
-        await EnsureAzureToken();
-        var response = await _httpClient.SendAsync(requestMessage);
-        return response;
-    }
-
-    /// <summary>
-    /// Sends a PATCH request to the earnings inner API to save Maths and English data for an apprenticeship.
-    /// </summary>
-
-    public async Task<HttpResponseMessage> SaveMathAndEnglishDetails(Guid apprenticeshipKey, List<MathAndEnglishDetails> request)
-    {
-        var url = $"apprenticeship/{apprenticeshipKey}/mathsAndEnglish";
-
-        var jsonContent = new StringContent(
-            JsonSerializer.Serialize(request),
-            System.Text.Encoding.UTF8,
-            "application/json");
-
-        var requestMessage = new HttpRequestMessage(HttpMethod.Patch, url)
-        {
-            Content = jsonContent
-        };
-
-        EnsureBearerToken();
-        await EnsureAzureToken();
-        var response = await _httpClient.SendAsync(requestMessage);
-        return response;
-    }
-
 
     private async Task EnsureAzureToken()
     {
@@ -101,29 +50,6 @@ public class EarningsInnerApiClient
             _azureToken = await _azureTokenHelper.GetAccessTokenAsync($"{_fundingConfig.EarningsInnerApiScope}/.default");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _azureToken);
         }
-    }
-
-    private void EnsureBearerToken()
-    {
-        if (string.IsNullOrEmpty(_cachedBearerToken) || DateTime.UtcNow >= _bearerTokenExpiry)
-        {
-            AddBearerToken();
-        }
-    }
-
-    private void AddBearerToken()
-    {
-        var claims = GetClaims();
-        var signingKey = _fundingConfig.LearningServiceBearerTokenSigningKey;
-
-        var accessToken = ServiceBearerTokenProvider.GetServiceBearerToken(signingKey);
-
-        accessToken = BearerTokenHelper.AddClaimsToBearerToken(accessToken, claims, signingKey);
-
-        _cachedBearerToken = accessToken;
-        _bearerTokenExpiry = DateTime.UtcNow.AddMinutes(20);
-
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _cachedBearerToken);
     }
 
     private Dictionary<string, string> GetClaims()

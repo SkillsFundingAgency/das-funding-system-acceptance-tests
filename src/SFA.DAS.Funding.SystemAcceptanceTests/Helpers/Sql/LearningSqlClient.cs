@@ -1,4 +1,6 @@
-﻿using SFA.DAS.Learning.Enums;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Learning.Enums;
+using SFA.DAS.Learning.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
@@ -15,10 +17,15 @@ public class LearningSqlClient
 
     public void DeleteApprenticeship(Guid learningKey)
     {
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[WithdrawalRequest] WHERE LearningKey = '{learningKey}'");
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[StartDateChange] WHERE LearningKey = '{learningKey}'");
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[PriceHistory] WHERE LearningKey = '{learningKey}'");
-        _sqlServerClient.Execute($"DELETE FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learningKey}'");
+        var sql = $@"
+            DELETE FROM [dbo].[WithdrawalRequest] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[StartDateChange] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[PriceHistory] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[MathsAndEnglish] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[LearningSupport] WHERE LearningKey = '{learningKey}';
+        ";
+        _sqlServerClient.Execute(sql);
 
         var episodeKeys = _sqlServerClient.GetList<Guid>($"SELECT [Key] FROM [dbo].[Episode] WHERE LearningKey = '{learningKey}'");
 
@@ -29,7 +36,6 @@ public class LearningSqlClient
         }
 
         _sqlServerClient.Execute($"DELETE FROM [dbo].[Learning] WHERE [Key] = '{learningKey}'");
-
     }
 
     public Learning GetApprenticeship(Guid learningKey)
@@ -49,6 +55,20 @@ public class LearningSqlClient
         learning.FreezeRequests = _sqlServerClient.GetList<FreezeRequest>($"SELECT * FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learning.Key}'");
         learning.WithdrawalRequests = _sqlServerClient.GetList<WithdrawalRequest>($"SELECT * FROM [dbo].[WithdrawalRequest] WHERE LearningKey = '{learning.Key}'");
         return learning;
+    }
+
+    public List<Http.LearnerDataOuterApiClient.Learning> GetApprovedLearners (long ukprn, int academicYear)
+    {
+        var dates = AcademicYearParser.ParseFrom(academicYear);
+
+        var learners = _sqlServerClient.GetList<Http.LearnerDataOuterApiClient.Learning>($"select distinct lrn.[Uln], lrn.[Key] " +
+            $" from [dbo].[Learning] lrn " +
+            $" inner join [dbo].[Episode] ep on ep.LearningKey = lrn.[Key] " +
+            $" inner join [dbo].[EpisodePrice] eppr on eppr.EpisodeKey = ep.[Key] " +
+            $" WHERE (eppr.StartDate <= '{dates.End}' AND eppr.EndDate   >= '{dates.Start}') " +
+            $" AND ep.Ukprn = {ukprn} And ep.LearningStatus = 'Active'");
+
+        return learners;
     }
 }
 
@@ -74,8 +94,8 @@ public class Episode
     public Guid LearningKey { get; set; }
     public long Ukprn { get; set; }
     public long EmployerAccountId { get; set; }
-    public FundingType FundingType { get; set; }
-    public FundingPlatform? FundingPlatform { get; set; }
+    public DAS.Learning.Types.FundingType FundingType { get; set; }
+    public DAS.Learning.Types.FundingPlatform? FundingPlatform { get; set; }
     public long? FundingEmployerAccountId { get; set; }
     public string LegalEntityName { get; set; }
     public long? AccountLegalEntityId { get; set; }

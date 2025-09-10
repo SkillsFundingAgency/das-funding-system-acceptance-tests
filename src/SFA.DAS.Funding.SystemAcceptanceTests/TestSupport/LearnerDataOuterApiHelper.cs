@@ -1,10 +1,10 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
-    public class LearnerDataOuterApiHelper
+    public class LearnerDataOuterApiHelper ()
     {
         private readonly LearnerDataOuterApiClient _apiClient = new();
 
@@ -29,34 +29,24 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             return learnerData.First();
         }
 
-        public async Task CompleteLearning(Guid learningKey, DateTime? completionDate)
+        public async Task<GetLearnerResponse> GetLearnersForProvider (long ukprn, int academicYear)
         {
-            var requestData = new UpdateLearnerRequest()
-            {
-                Delivery = new UpdateLearnerRequestDeliveryDetails()
-                {
-                    CompletionDate = completionDate,
-                    MathsAndEnglishCourses = []
-                }
-            };
-
-            await _apiClient.UpdateLearning(learningKey, requestData);
+            return await _apiClient.GetLearners(ukprn, academicYear);
         }
 
-        public async Task AddMathsAndEnglish(Guid learningKey, MathsAndEnglish mathsAndEnglish)
+        public async Task UpdateLearning(Guid learningKey, Action<LearnerDataBuilder> configure)
         {
-            var requestData = new UpdateLearnerRequest()
-            {
-                Delivery = new UpdateLearnerRequestDeliveryDetails()
-                {
-                    MathsAndEnglishCourses = new List<MathsAndEnglish>
-                    {
-                        mathsAndEnglish
-                    }
-                }
-            };
+            var builder = new LearnerDataBuilder();
+            configure(builder);
+            var request = builder.Build();
 
-            await _apiClient.UpdateLearning(learningKey, requestData);
+            await _apiClient.UpdateLearning(Constants.UkPrn,learningKey, request);
+        }
+
+
+        public async Task UpdateLearning(Guid learningKey, UpdateLearnerRequest request)
+        {
+            await _apiClient.UpdateLearning(Constants.UkPrn, learningKey, request);
         }
     }
 }

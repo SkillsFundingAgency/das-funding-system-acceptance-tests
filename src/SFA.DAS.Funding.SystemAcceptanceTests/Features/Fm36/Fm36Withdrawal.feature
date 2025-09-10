@@ -10,11 +10,18 @@ Scenario: Withdrawal of learner - FundStart should be False if withdrawn before 
 	And the fm36 data is retrieved for previousAY-07-31
 	Then fm36 FundStart value is <expected_fundstart>
 	And fm36 ActualDaysIL value is <expected_actual_days_in_learning>
+	And fm36 ActualEndDate value is <last_day_of_delivery>
+	And fm36 ThresholdDays value is <threshold_days>
 
 Examples:
-	| start_date       | end_date         | agreed_price | training_code | reason                 | last_day_of_delivery | expected_fundstart | expected_actual_days_in_learning |
-	| previousAY-08-01 | previousAY-07-31 | 15000        | 2             | WithdrawDuringLearning | previousAY-09-11     | false              | 42                               |
-	| previousAY-08-01 | previousAY-07-31 | 15000        | 2             | WithdrawDuringLearning | previousAY-09-12     | true               | 43                               |
+	| start_date       | end_date         | agreed_price | training_code | reason                 | last_day_of_delivery | expected_fundstart | expected_actual_days_in_learning | threshold_days |
+	| previousAY-08-01 | previousAY-07-31 | 15000        | 2             | WithdrawDuringLearning | previousAY-09-10     | false              | 41                               | 42             |
+	| previousAY-08-01 | previousAY-07-31 | 15000        | 2             | WithdrawDuringLearning | previousAY-09-11     | true               | 42                               | 42             |
+	| previousAY-08-31 | previousAY-09-13 | 15000        | 2             | WithdrawDuringLearning | previousAY-09-13     | true               | 14                               | 14             |
+	| previousAY-08-31 | previousAY-09-13 | 15000        | 2             | WithdrawDuringLearning | previousAY-09-12     | false              | 13                               | 14             |
+	| previousAY-08-01 | previousAY-01-14 | 15000        | 2             | WithdrawDuringLearning | previousAY-12-15     | true               | 137                              | 14             |
+	| previousAY-08-31 | previousAY-09-12 | 15000        | 2             | WithdrawDuringLearning | previousAY-08-31     | true               | 1                                | 1              |
+
 
 @regression
 Scenario: Withdrawal of learner from start results in no FM36 block (FLP-969 AC3)

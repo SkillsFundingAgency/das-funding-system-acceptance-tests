@@ -2,13 +2,13 @@
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 
-internal static class TestUlnProvider
+public static class TestUlnProvider
 {
     private static bool _isInitialised = false;
     private static ConcurrentQueue<string> _values = new ConcurrentQueue<string>();
     private static readonly object _lock = new();
 
-    internal static List<string> Initialise(int numberOfUlns)
+    public static List<string> Initialise(int numberOfUlns)
     {
         lock (_lock)
         {

@@ -11,8 +11,11 @@ Scenario: Learning Support for Maths and English Earnings over 5 years
 	When the apprenticeship commitment is approved
 	And Maths and English learning is recorded from <start_date> to <end_date> with course course and amount 12000
 	And learning support is recorded from 2023-08-01 to <end_date>
+	And SLD submit updated learners details
 	And learning support is recorded from 2023-08-01 to <end_date>
+	And SLD submit updated learners details
 	And learning support is recorded from <start_date> to <end_date>
+	And SLD submit updated learners details
 	Then learning support earnings are generated from periods <expected_first_earning_period> to <expected_last_earning_period>
 
 Examples:
