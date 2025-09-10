@@ -4,29 +4,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 {
     public class LearnerDataBuilder
     {
-        private readonly UpdateLearnerRequest _request;
-
-        public LearnerDataBuilder()
+        private readonly UpdateLearnerRequest _request = new ()
         {
-            _request = new UpdateLearnerRequest
-            {
-                Delivery = new List<UpdateLearnerRequestDeliveryDetails>
-            {
-                new UpdateLearnerRequestDeliveryDetails()
-            }
-            };
-        }
+            Delivery = new UpdateLearnerRequestDeliveryDetails()
+        };
 
         public LearnerDataBuilder WithCompletionDate(DateTime? completionDate)
         {
-            _request.Delivery.First().OnProgramme.CompletionDate = completionDate;
+            _request.Delivery.OnProgramme.CompletionDate = completionDate;
 
             return this;
         }
 
         public LearnerDataBuilder WithOnProgrammeLearningSupport(DateTime startDate, DateTime endDate)
         {
-            _request.Delivery.First().OnProgramme.LearningSupport.Add(new LearningSupport
+            _request.Delivery.OnProgramme.LearningSupport.Add(new LearningSupport
             {
                 StartDate = startDate,
                 EndDate = endDate
@@ -36,7 +28,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
         public LearnerDataBuilder WithNoOnProgrammeLearningSupport()
         {
-            _request.Delivery.First().OnProgramme.LearningSupport.Clear();
+            _request.Delivery.OnProgramme.LearningSupport.Clear();
             return this;
         }
 
@@ -44,7 +36,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         {
             var builder = new EnglishAndMathsBuilder();
             var course = configure(builder).Build();
-            _request.Delivery.First().EnglishAndMaths.Add(course);
+            _request.Delivery.EnglishAndMaths.Add(course);
             return this;
         }
 
@@ -66,19 +58,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
         public LearnerDataBuilder WithEnglishAndMaths(EnglishAndMaths course)
         {
-            _request.Delivery.First().EnglishAndMaths.Add(course);
+            _request.Delivery.EnglishAndMaths.Add(course);
             return this;
         }
 
         public LearnerDataBuilder WithEnglishAndMaths(IEnumerable<EnglishAndMaths> courses)
         {
-            _request.Delivery.First().EnglishAndMaths.AddRange(courses);
+            _request.Delivery.EnglishAndMaths.AddRange(courses);
             return this;
         }
 
         public LearnerDataBuilder WithNoMathsAndEnglish()
         {
-            _request.Delivery.First().EnglishAndMaths.Clear();
+            _request.Delivery.EnglishAndMaths.Clear();
             return this;
         }
 

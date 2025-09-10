@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using Newtonsoft.Json;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
@@ -126,7 +127,9 @@ public class RecalculateEarningsStepDefinitions
         var testData = _context.Get<TestData>();
         var earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
-        Assert.AreEqual(testData.InitialEarningsProfileId, earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfileHistory.FirstOrDefault().OriginalEarningsProfileId, "OriginalEarningsProfileId in EarningsProfileHistory table does not match the initial EarningsProfileId");
+        Assert.AreEqual(testData.InitialEarningsProfileId, earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate)
+            .EarningsProfileHistory.FirstOrDefault().EarningsProfileId, "EarningsProfileId in EarningsProfileHistory table does not match the initial EarningsProfileId");
+        
         Assert.AreEqual(testData.InitialEarningsProfileId, earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.EarningsProfileId, "EarningsProfileId has changed post earnings recalculation");
     }
 
@@ -157,17 +160,27 @@ public class RecalculateEarningsStepDefinitions
         {
             var earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
 
-            var historicalInstalments = earningsApprenticeshipModel?.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)?.StartDate)?.EarningsProfileHistory.FirstOrDefault()?.Instalments;
+            var historicalInstalmentsString = earningsApprenticeshipModel?.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)?.StartDate)?
+            .EarningsProfileHistory
+            .OrderBy(h => h.CreatedOn)
+            .FirstOrDefault()?.State;
 
-            if (historicalInstalments != null)
+            if (!string.IsNullOrWhiteSpace(historicalInstalmentsString))
             {
-                foreach (var instalment in historicalInstalments)
+                var historicalInstalments = JsonConvert.DeserializeObject<EarningsProfileUpdatedEvent>(historicalInstalmentsString)?.Instalments;
+
+                if (historicalInstalments != null)
                 {
-                    Assert.AreEqual(old_instalment_amount, instalment.Amount, $"Expected historical earnings amount to be {old_instalment_amount}, but was {instalment.Amount}");
+                    foreach (var instalment in historicalInstalments)
+                    {
+                        Assert.AreEqual(old_instalment_amount, instalment.Amount, $"Expected historical earnings amount to be {old_instalment_amount}, but was {instalment.Amount}");
+                    }
+                    return true;
                 }
-                return true;
+                return false;
             }
-            return false;
+            else
+                return false;
         }, "Failed to find installments in Earnings Profile History");
     }
 
