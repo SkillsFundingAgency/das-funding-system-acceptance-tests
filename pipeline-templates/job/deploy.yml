@@ -3,6 +3,8 @@ parameters:
   SolutionBaseName:
   ServiceConnection:
   AzureArtifactsFeed:
+  AppRoleAssignmentsServiceConnection:
+  TargetEnvironment:
 
 jobs:
 - deployment: RunAcceptanceTests
@@ -41,12 +43,6 @@ jobs:
             FunctionAppName: $(FundingApprenticeshipEarningsFunctionAppName)
             OutputVariableName: FundingApprenticeshipEarningsFunctionAppSystemKey
 
-        - template: azure-pipelines-templates/deploy/step/function-app-get-system-key.yml@das-platform-building-blocks
-          parameters:
-            ServiceConnection: ${{ parameters.ServiceConnection }}
-            FunctionAppName: $(FundingApprenticeshipPaymentsFunctionAppName)
-            OutputVariableName: FundingApprenticeshipPaymentsFunctionAppSystemKey
-
         - template: azure-pipelines-templates/deploy/step/app-reg-new-temp-client-secret.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
@@ -57,6 +53,15 @@ jobs:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             SQLServerName: $(SharedSQLServerName)
 
+        - ${{ if ne(parameters.TargetEnvironment, '') }}:
+          - template: azure-pipelines-templates/deploy/step/app-role-assignments.yml@das-platform-building-blocks
+            parameters:
+              ServiceConnection: ${{ parameters.AppRoleAssignmentsServiceConnection }}
+              ResourceName: "das-dev-automated-tests-ar"
+              Tenant: $(Tenant)
+              TargetEnvironment: ${{ parameters.TargetEnvironment }}
+              IsMultiRepoCheckout: true
+            
         - task: DotNetCoreCLI@2
           displayName: Restore - Including Custom Feed
           condition: ne('${{ parameters.AzureArtifactsFeed }}', '')

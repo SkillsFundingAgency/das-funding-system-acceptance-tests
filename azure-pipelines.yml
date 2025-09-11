@@ -27,8 +27,13 @@ resources:
   - repository: das-platform-automation
     type: github
     name: SkillsFundingAgency/das-platform-automation
-    ref: refs/tags/5.1.15
+    ref: refs/tags/5.1.20
     endpoint: SkillsFundingAgency
+  pipelines:
+  - pipeline: das-employer-config
+    project: Digital Apprenticeship Service
+    source: das-employer-config
+    branch: master
 
 stages:
 - stage: Build
@@ -54,6 +59,8 @@ stages:
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DAS-DevTest-ARM
       AzureArtifactsFeed: dct-pkg
+      AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
+      TargetEnvironment: test
 
 - stage: Deploy_TEST2
   dependsOn: Build
@@ -70,6 +77,8 @@ stages:
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DAS-DevTest-ARM
       AzureArtifactsFeed: dct-pkg
+      AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
+      TargetEnvironment: test2
 
 - stage: Deploy_PP
   dependsOn: Build
@@ -102,3 +111,5 @@ stages:
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DAS-DevTest-ARM
       AzureArtifactsFeed: dct-pkg
+      AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
+      TargetEnvironment: demo
