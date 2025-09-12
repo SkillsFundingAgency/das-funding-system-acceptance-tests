@@ -93,6 +93,8 @@ jobs:
             LearningServiceBearerTokenSigningKey : $(LearningServiceBearerTokenSigningKey)
             LearningAzureFunctionKey : $(LearningAzureFunctionKey)
             EarningsOuterSubscriptionKey: $(EarningsOuterSubscriptionKey)
+            LearnerDataOuterApiSubscriptionKey: $(LearnerDataOuterApiSubscriptionKey)
+            LearnerDataDbConnectionString: $(LearnerDataDbConnectionString)
           inputs:
             testSelector: 'testAssemblies'
             testAssemblyVer2: |
