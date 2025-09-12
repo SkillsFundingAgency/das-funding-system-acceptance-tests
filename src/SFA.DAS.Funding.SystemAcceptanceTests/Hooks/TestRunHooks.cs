@@ -60,7 +60,7 @@ public class TestRunHooks
     [BeforeTestRun(Order = 4)]
     public static async Task GenerateSharedTestData()
     {
-        var ulns = TestUlnProvider.Initialise(100);// increase this number as the number of tests increases
+        var ulns = TestUlnProvider.Initialise(150);// increase this number as the number of tests increases
         var testLearners = ulns.Select(uln => DcLearnerDataHelper.GetLearner(uln)).ToList();
         var wireMockClient = new WireMockClient();
         var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
