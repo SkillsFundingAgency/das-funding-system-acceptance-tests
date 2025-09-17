@@ -1,4 +1,5 @@
-﻿using Azure.Identity;
+﻿using System.Reflection;
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
@@ -60,7 +61,7 @@ public class TestRunHooks
     [BeforeTestRun(Order = 4)]
     public static async Task GenerateSharedTestData()
     {
-        var ulns = TestUlnProvider.Initialise(150);// increase this number as the number of tests increases
+        var ulns = TestUlnProvider.Initialise(GetTestCount());// automatically generate the number of ULNs needed for a test run
         var testLearners = ulns.Select(uln => DcLearnerDataHelper.GetLearner(uln)).ToList();
         var wireMockClient = new WireMockClient();
         var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
@@ -103,4 +104,28 @@ public class TestRunHooks
         // TestServiceBus.Pv2?.Stop();
     }
 
+    private static int GetTestCount()
+    {
+        var methods = Assembly.GetExecutingAssembly().GetTypes()
+            .SelectMany(t => t.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
+
+        var testCount = 0;
+
+        foreach (var method in methods)
+        {
+            var testCases = method.GetCustomAttributes(typeof(TestCaseAttribute), inherit: true)
+                .Cast<TestCaseAttribute>()
+                .ToList();
+
+            if (testCases.Any())
+            {
+                testCount += testCases.Count;
+            }
+            else if (method.GetCustomAttributes(typeof(TestAttribute), inherit: true).Any())
+            {
+                testCount++;
+            }
+        }
+        return testCount;
+    }
 }
