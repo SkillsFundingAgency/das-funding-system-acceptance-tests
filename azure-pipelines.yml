@@ -95,6 +95,8 @@ stages:
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DIG-PreProd-ARM
       AzureArtifactsFeed: dct-pkg
+      AppRoleAssignmentsServiceConnection: das-app-role-assignments-FCS
+      TargetEnvironment: pp
 
 - stage: Deploy_DEMO
   dependsOn: Build
