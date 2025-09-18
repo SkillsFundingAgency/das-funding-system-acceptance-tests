@@ -53,15 +53,14 @@ jobs:
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             SQLServerName: $(SharedSQLServerName)
-
-        - ${{ if ne(parameters.TargetEnvironment, '') }}:
-          - template: azure-pipelines-templates/deploy/step/app-role-assignments.yml@das-platform-building-blocks
-            parameters:
-              ServiceConnection: ${{ parameters.AppRoleAssignmentsServiceConnection }}
-              ResourceName: ${{ parameters.ResourceName }}
-              Tenant: $(Tenant)
-              TargetEnvironment: ${{ parameters.TargetEnvironment }}
-              IsMultiRepoCheckout: true
+      
+        - template: azure-pipelines-templates/deploy/step/app-role-assignments.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.AppRoleAssignmentsServiceConnection }}
+            ResourceName: ${{ parameters.ResourceName }}
+            Tenant: $(Tenant)
+            TargetEnvironment: ${{ parameters.TargetEnvironment }}
+            IsMultiRepoCheckout: true
             
         - task: DotNetCoreCLI@2
           displayName: Restore - Including Custom Feed
