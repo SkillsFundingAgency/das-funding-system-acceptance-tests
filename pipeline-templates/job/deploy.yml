@@ -43,7 +43,7 @@ jobs:
             parameters:
               ServiceConnection: ${{ parameters.ServiceConnection }}
               ResourceName: $(LearnerInnerAppName)
-              RuleName: "FundingAcceptanceTestsLearningInner"
+              RuleName: "AcceptanceTestsLearningInnerPP"
 
         - template: azure-pipelines-templates/deploy/step/function-app-get-system-key.yml@das-platform-building-blocks
           parameters:
