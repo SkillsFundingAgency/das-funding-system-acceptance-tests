@@ -61,6 +61,7 @@ stages:
       AzureArtifactsFeed: dct-pkg
       AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
       TargetEnvironment: test
+      ResourceName: $(ResourceName)
 
 - stage: Deploy_TEST2
   dependsOn: Build
@@ -79,6 +80,7 @@ stages:
       AzureArtifactsFeed: dct-pkg
       AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
       TargetEnvironment: test2
+      ResourceName: $(ResourceName)
 
 - stage: Deploy_PP
   dependsOn: Build
@@ -97,6 +99,7 @@ stages:
       AzureArtifactsFeed: dct-pkg
       AppRoleAssignmentsServiceConnection: das-app-role-assignments-FCS
       TargetEnvironment: pp
+      ResourceName: $(ResourceName)
 
 - stage: Deploy_DEMO
   dependsOn: Build
@@ -115,3 +118,4 @@ stages:
       AzureArtifactsFeed: dct-pkg
       AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
       TargetEnvironment: demo
+      ResourceName: $(ResourceName)
