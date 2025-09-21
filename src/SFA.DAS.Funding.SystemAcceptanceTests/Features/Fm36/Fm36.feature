@@ -84,19 +84,3 @@ Examples:
 	| learning_support_start | learning_support_end | expected_first_payment_period | expected_last_payment_period |
 	| currentAY-08-01        | currentAY-12-15      | currentAY-R01                 | currentAY-R04                |
 	| currentAY-09-01        | currentAY-12-15      | currentAY-R02                 | currentAY-R04                |
-
-
-#Remove the below test when FM36 Endpoint is removed from Earnings outer 
-#and repurpose the exisiting tests to point to LearnerData outer 
-
-@regression
-Scenario: Retrieve Valid Fm36 data through LearnerData outer api
-	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the age at the start of the apprenticeship is <age>
-	And the apprenticeship commitment is approved
-	When the fm36 data is retrieved through LearnerData outer api for currentDate
-	Then fm36 data exists for that apprenticeship
-
-Examples:
-	| start_date      | end_date     | agreed_price | training_code | age |
-	| currentAY-08-01 | nextAY-07-31 | 15000        | 2             | 19  |
