@@ -19,9 +19,9 @@ Scenario: Price change approved; recalc earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
 	And the total price is above or below or at the funding band maximum
-	And a price change request was sent on <pc_from_date>
-	And the price change request has an approval date of <pc_approved_date> with a new total <new_total_price>
-	When the price change is approved
+	When SLD record on-programme cost as total price <agreed_price> from date <start_date>
+	And SLD record on-programme cost as total price <new_total_price> from date <pc_from_date>
+	And SLD submit updated learners details
 	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
 	And earnings prior to <delivery_period> and <academic_year_string> are frozen with <old_inst_amount>
 	And the history of old earnings is maintained with <old_inst_amount>

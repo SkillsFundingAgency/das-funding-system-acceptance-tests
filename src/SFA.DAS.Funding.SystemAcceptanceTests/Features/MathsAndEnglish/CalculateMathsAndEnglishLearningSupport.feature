@@ -8,6 +8,7 @@ So that earnings and payments can be recalculated based on the latest data
 Scenario: Learning support added for Maths and English course
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
 	When a Maths and English learning is recorded from <start_date> to <end_date> with course <course> and amount <amount> and learning support from <ls_start_date> to <ls_end_date>
+	And SLD record on-programme cost as total price 12000 from date <start_date> 
 	And SLD submit updated learners details
 	Then learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
 
