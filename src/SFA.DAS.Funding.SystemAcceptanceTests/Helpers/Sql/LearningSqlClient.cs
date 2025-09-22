@@ -19,6 +19,8 @@ public class LearningSqlClient
     {
         var sql = $@"
             DELETE FROM [dbo].[WithdrawalRequest] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[StartDateChange] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[PriceHistory] WHERE LearningKey = '{learningKey}';
             DELETE FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learningKey}';
             DELETE FROM [dbo].[MathsAndEnglish] WHERE LearningKey = '{learningKey}';
             DELETE FROM [dbo].[LearningSupport] WHERE LearningKey = '{learningKey}';
@@ -48,6 +50,8 @@ public class LearningSqlClient
         {
             episode.Prices = _sqlServerClient.GetList<EpisodePrice>($"SELECT * FROM [dbo].[EpisodePrice] WHERE EpisodeKey = '{episode.Key}'");
         }
+        learning.PriceHistories = _sqlServerClient.GetList<PriceHistory>($"SELECT * FROM [dbo].[PriceHistory] WHERE LearningKey = '{learning.Key}'");
+        learning.StartDateChanges = _sqlServerClient.GetList<StartDateChange>($"SELECT * FROM [dbo].[StartDateChange] WHERE LearningKey = '{learning.Key}'");
         learning.FreezeRequests = _sqlServerClient.GetList<FreezeRequest>($"SELECT * FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learning.Key}'");
         learning.WithdrawalRequests = _sqlServerClient.GetList<WithdrawalRequest>($"SELECT * FROM [dbo].[WithdrawalRequest] WHERE LearningKey = '{learning.Key}'");
         return learning;
@@ -77,6 +81,8 @@ public class Learning
     public string LastName { get; set; } = null!;
     public DateTime DateOfBirth { get; set; }
     public string ApprenticeshipHashedId { get; set; } = null!;
+    public List<PriceHistory> PriceHistories { get; set; }
+    public List<StartDateChange> StartDateChanges { get; set; }
     public List<FreezeRequest> FreezeRequests { get; set; }
     public List<Episode> Episodes { get; set; }
     public List<WithdrawalRequest> WithdrawalRequests { get; set; }
@@ -86,8 +92,6 @@ public class Episode
 {
     public Guid Key { get; set; }
     public Guid LearningKey { get; set; }
-    public bool IsDeleted { get; set; }
-
     public long Ukprn { get; set; }
     public long EmployerAccountId { get; set; }
     public DAS.Learning.Types.FundingType FundingType { get; set; }
@@ -108,6 +112,7 @@ public class EpisodePrice
 {
     public Guid Key { get; set; }
     public Guid EpisodeKey { get; set; }
+    public bool IsDeleted { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public decimal? TrainingPrice { get; set; }
@@ -126,6 +131,42 @@ public class FreezeRequest
     public DateTime? UnfrozenDateTime { get; set; }
     public string? UnfrozenBy { get; set; }
     public string? Reason { get; set; }
+}
+
+public class PriceHistory
+{
+    public Guid Key { get; set; }
+    public Guid LearningKey { get; set; }
+    public decimal? TrainingPrice { get; set; }
+    public decimal? AssessmentPrice { get; set; }
+    public decimal TotalPrice { get; set; }
+    public DateTime EffectiveFromDate { get; set; }
+    public string? ProviderApprovedBy { get; set; }
+    public DateTime? ProviderApprovedDate { get; set; }
+    public string? EmployerApprovedBy { get; set; }
+    public DateTime? EmployerApprovedDate { get; set; }
+    public string? ChangeReason { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public ChangeRequestStatus? PriceChangeRequestStatus { get; set; }
+    public string? RejectReason { get; set; }
+    public ChangeInitiator? Initiator { get; set; }
+}
+
+public class StartDateChange
+{
+    public Guid Key { get; set; }
+    public Guid LearningKey { get; set; }
+    public DateTime ActualStartDate { get; set; }
+    public DateTime PlannedEndDate { get; set; }
+    public string Reason { get; set; } = null!;
+    public string? ProviderApprovedBy { get; set; }
+    public DateTime? ProviderApprovedDate { get; set; }
+    public string? EmployerApprovedBy { get; set; }
+    public DateTime? EmployerApprovedDate { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public ChangeRequestStatus RequestStatus { get; set; }
+    public ChangeInitiator? Initiator { get; set; }
+    public string RejectReason { get; set; } = null!;
 }
 
 public class WithdrawalRequest
