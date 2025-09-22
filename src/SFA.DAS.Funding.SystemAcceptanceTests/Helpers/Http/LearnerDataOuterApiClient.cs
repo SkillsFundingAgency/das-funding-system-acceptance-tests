@@ -138,17 +138,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class OnProgramme
         {
-            public List<CostDetails> Costs { get; set; } = new List<CostDetails> ();
             public DateTime? CompletionDate { get; set; }
 
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
-        }
-
-        public class CostDetails
-        {
-            public int TrainingPrice { get; set; }
-            public int? EpaoPrice { get; set; }
-            public DateTime? FromDate { get; set; }
         }
 
         public class EnglishAndMaths

@@ -9,18 +9,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             Delivery = new UpdateLearnerRequestDeliveryDetails()
         };
 
-        public LearnerDataBuilder WithCostDetails(int trainingPrice, int? epaoPrice, DateTime? fromDate)
-        {
-            _request.Delivery.OnProgramme.Costs.Add(new CostDetails
-            {
-                TrainingPrice = trainingPrice,
-                EpaoPrice = epaoPrice,
-                FromDate = fromDate
-            });
-
-            return this;
-        }
-
         public LearnerDataBuilder WithCompletionDate(DateTime? completionDate)
         {
             _request.Delivery.OnProgramme.CompletionDate = completionDate;
