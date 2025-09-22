@@ -58,6 +58,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithCostDetails((int)trainingPrice , (int)epaoPrice, fromDate.Value);
         }
 
+        [When("SLD record on-programme training price (.*) with epao as (.*) from date (.*)")]
+        public void WhenSLDRecordOn_ProgrammeTrainingPriceWithEpaoAsNullFromDateCurrentAY(int trainingPrice, string? epaoPrice, TokenisableDateTime fromDate)
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            int? epao = string.IsNullOrWhiteSpace(epaoPrice) || epaoPrice.Equals("null", StringComparison.OrdinalIgnoreCase)
+                ? null
+                : Convert.ToInt32(epaoPrice);
+
+            learnerDataBuilder.WithCostDetails(trainingPrice, epao, fromDate.Value);
+        }
+
+
 
 
         [Then(@"the learner's details are added to Learner Data db")]
