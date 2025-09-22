@@ -1,6 +1,4 @@
-﻿using NUnit.Framework.Interfaces;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -23,7 +21,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
             var learnerData = await learnerDataOuterApiHelper.GetLearnersForProvider(Constants.UkPrn, Convert.ToInt32(TableExtensions.CalculateAcademicYear("0")));
-
+            
             testData.LearnersOnService = learnerData;
             context.Set(testData);
         }
@@ -44,20 +42,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerData);
         }
-
-        [Given("SLD record on-programme cost as total price (.*) from date (.*)")]
-        [When("SLD record on-programme cost as total price (.*) from date (.*)")]
-        public void WhenSLDRecordOn_ProgrammeCostAsTotalPriceFromDateCurrentAY(int totalPrice, TokenisableDateTime fromDate)
-        {
-            var testData = context.Get<TestData>();
-
-            var trainingPrice = totalPrice * 0.8;
-            var epaoPrice = totalPrice * 0.2;
-
-            var learnerDataBuilder = testData.GetLearnerDataBuilder();
-            learnerDataBuilder.WithCostDetails((int)trainingPrice , (int)epaoPrice, fromDate.Value);
-        }
-
 
 
         [Then(@"the learner's details are added to Learner Data db")]

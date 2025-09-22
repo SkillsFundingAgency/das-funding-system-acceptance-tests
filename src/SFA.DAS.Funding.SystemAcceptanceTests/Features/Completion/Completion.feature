@@ -8,7 +8,6 @@ And record the completion payment as earned
 Scenario: Balancing and Completion earnings on Completion
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of <agreed_price>
 	When Learning Completion is recorded on <completion_date>
-	And SLD record on-programme cost as total price <agreed_price> from date <start_date> 
 	And SLD submit updated learners details
 	Then earnings of <expected_earning_amount> are generated from periods <expected_first_earning_period> to <expected_last_earning_period>
 	Then an earning of <expected_balancing_amount> of type Balancing is generated for period <expected_balancing_period>
