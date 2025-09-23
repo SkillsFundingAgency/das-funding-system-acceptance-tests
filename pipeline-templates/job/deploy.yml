@@ -3,11 +3,14 @@ parameters:
   SolutionBaseName:
   ServiceConnection:
   AzureArtifactsFeed:
+  AppRoleAssignmentsServiceConnection:
+  TargetEnvironment:
+  ResourceName:
 
 jobs:
 - deployment: RunAcceptanceTests
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'windows-latest'
   environment: ${{ parameters.Environment }}
   strategy:
     runOnce:
@@ -15,49 +18,60 @@ jobs:
         steps:
         - checkout: self
         - checkout: das-platform-automation
+
         - template: azure-pipelines-templates/deploy/step/wait-azure-devops-deployment.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             EnvironmentId: $(Environment.Id)
             PipelineName: $(Build.DefinitionName)
             RunId: $(Build.BuildId)
+
         - template: azure-pipelines-templates/deploy/step/appservice-whitelist-ip.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(FundingApprenticeshipEarningsFunctionAppName)
             RuleName: "FundingAcceptanceTestsEarnings"
-        - template: azure-pipelines-templates/deploy/step/appservice-whitelist-ip.yml@das-platform-building-blocks
-          parameters:
-            ServiceConnection: ${{ parameters.ServiceConnection }}
-            ResourceName: $(FundingApprenticeshipPaymentsFunctionAppName)
-            RuleName: "FundingAcceptanceTestsPayments"
+
         - template: azure-pipelines-templates/deploy/step/appservice-whitelist-ip.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(ApprenticeshipsFunctionAppName)
             RuleName: "FundingAcceptanceTestsApps"
+            
+        - ${{ if eq(parameters.TargetEnvironment, 'pp') }}:
+          - template: azure-pipelines-templates/deploy/step/appservice-whitelist-ip.yml@das-platform-building-blocks
+            parameters:
+              ServiceConnection: ${{ parameters.ServiceConnection }}
+              ResourceName: $(LearnerInnerAppName)
+              RuleName: "AcceptanceTestsLearningInnerPP"
+
         - template: azure-pipelines-templates/deploy/step/function-app-get-system-key.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             FunctionAppName: $(FundingApprenticeshipEarningsFunctionAppName)
             OutputVariableName: FundingApprenticeshipEarningsFunctionAppSystemKey
-        - template: azure-pipelines-templates/deploy/step/function-app-get-system-key.yml@das-platform-building-blocks
-          parameters:
-            ServiceConnection: ${{ parameters.ServiceConnection }}
-            FunctionAppName: $(FundingApprenticeshipPaymentsFunctionAppName)
-            OutputVariableName: FundingApprenticeshipPaymentsFunctionAppSystemKey
+
         - template: azure-pipelines-templates/deploy/step/app-reg-new-temp-client-secret.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             AppRegistrationObjectId: $(AppRegistrationObjectId)
+
         - template: azure-pipelines-templates/deploy/step/sql-whitelist-ip.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             SQLServerName: $(SharedSQLServerName)
-
+      
+        - template: azure-pipelines-templates/deploy/step/app-role-assignments.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.AppRoleAssignmentsServiceConnection }}
+            ResourceName: ${{ parameters.ResourceName }}
+            Tenant: $(Tenant)
+            TargetEnvironment: ${{ parameters.TargetEnvironment }}
+            IsMultiRepoCheckout: true
+            
         - task: DotNetCoreCLI@2
-          condition: ne('${{ parameters.AzureArtifactsFeed }}', '')
           displayName: Restore - Including Custom Feed
+          condition: ne('${{ parameters.AzureArtifactsFeed }}', '')
           inputs:
             command: restore
             projects: '**/*.csproj'
@@ -67,24 +81,42 @@ jobs:
             includeNuGetOrg: true
 
         - task: DotNetCoreCLI@2
+          displayName: Build Acceptance Test Project
+          inputs:
+            command: build
+            projects: '**/SFA.DAS.Funding.SystemAcceptanceTests.csproj'
+            arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)/publish'
+
+        - task: VSTest@3
+          displayName: Run Acceptance Tests
           env:
             NServiceBusLicense: $(NServiceBusLicense)
             AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
             EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
             PaymentsFunctionKey: $(PaymentsFunctionKey)
-            ApprenticeshipsDbConnectionString: $(ApprenticeshipsDbConnectionString)
+            LearningDbConnectionString: $(LearningDbConnectionString)
             EarningsDbConnectionString: $(EarningsDbConnectionString)
-            PaymentsDbConnectionString : $(PaymentsDbConnectionString)
-            ApprenticeshipServiceBearerTokenSigningKey : $(ApprenticeshipServiceBearerTokenSigningKey)
-            ApprenticeshipAzureFunctionKey : $(ApprenticeshipAzureFunctionKey)
+            PaymentsDbConnectionString: $(PaymentsDbConnectionString)
+            LearningServiceBearerTokenSigningKey : $(LearningServiceBearerTokenSigningKey)
+            LearningAzureFunctionKey : $(LearningAzureFunctionKey)
             EarningsOuterSubscriptionKey: $(EarningsOuterSubscriptionKey)
+            LearnerDataOuterApiSubscriptionKey: $(LearnerDataOuterApiSubscriptionKey)
+            LearnerDataDbConnectionString: $(LearnerDataDbConnectionString)
           inputs:
-            command: 'test'
-            projects: |
-              **/${{ parameters.SolutionBaseName }}.csproj
-            arguments: '--logger "trx;LogFileName=test_results.trx"'
+            testSelector: 'testAssemblies'
+            testAssemblyVer2: |
+              $(Build.ArtifactStagingDirectory)/publish/${{ parameters.SolutionBaseName }}.dll
+            searchFolder: '$(Build.ArtifactStagingDirectory)/publish'
+            testAdapterPath: '$(Build.ArtifactStagingDirectory)/publish'
+            runInParallel: false
+            maxCpuCount: 1
+            rerunFailedTests: true
+            maxAttempts: 2
+            failurePercentage: 30
+            rerunType: 'basedontestfailurepercentage'
 
         - task: PublishTestResults@2
+          displayName: Publish Test Results
           inputs:
             testResultsFormat: 'VSTest'
             testResultsFiles: '**/*.trx'
@@ -95,11 +127,8 @@ jobs:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             AppRegistrationObjectId: $(AppRegistrationObjectId)
             AppRegistrationClientSecretId: $(AppRegistrationTemporaryClientSecretId)
+
         - template: azure-pipelines-templates/deploy/step/appservice-remove-ip.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(FundingApprenticeshipEarningsFunctionAppName)
-        - template: azure-pipelines-templates/deploy/step/appservice-remove-ip.yml@das-platform-building-blocks
-          parameters:
-            ServiceConnection: ${{ parameters.ServiceConnection }}
-            ResourceName: $(FundingApprenticeshipPaymentsFunctionAppName)

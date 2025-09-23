@@ -27,8 +27,13 @@ resources:
   - repository: das-platform-automation
     type: github
     name: SkillsFundingAgency/das-platform-automation
-    ref: refs/tags/5.1.15
+    ref: refs/tags/5.1.20
     endpoint: SkillsFundingAgency
+  pipelines:
+  - pipeline: das-employer-config
+    project: Digital Apprenticeship Service
+    source: das-employer-config
+    branch: master
 
 stages:
 - stage: Build
@@ -38,22 +43,7 @@ stages:
       SolutionBaseName: $(SolutionBaseName)
       BuildConfiguration: $(BuildConfiguration)
       AzureArtifactsFeed: dct-pkg
-- stage: Deploy_AT
-  dependsOn: Build
-  displayName: Deploy to AT
-  condition: and(succeeded(), eq(variables.Deploy, 'true'))
-  variables:
-  - group: DevTest Management Resources
-  - group: AT DevTest Shared Resources
-  - group: AT Automation Suite Variables
-  - group: AT das-funding-system-acceptance-tests
-  jobs:
-  - template: pipeline-templates/job/deploy.yml
-    parameters:
-      Environment: AT
-      SolutionBaseName: $(SolutionBaseName)
-      ServiceConnection: SFA-DAS-DevTest-ARM
-      AzureArtifactsFeed: dct-pkg
+
 - stage: Deploy_TEST
   dependsOn: Build
   displayName: Deploy to TEST
@@ -69,6 +59,10 @@ stages:
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DAS-DevTest-ARM
       AzureArtifactsFeed: dct-pkg
+      AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
+      TargetEnvironment: test
+      ResourceName: $(ResourceName)
+
 - stage: Deploy_TEST2
   dependsOn: Build
   displayName: Deploy to TEST2
@@ -84,6 +78,10 @@ stages:
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DAS-DevTest-ARM
       AzureArtifactsFeed: dct-pkg
+      AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
+      TargetEnvironment: test2
+      ResourceName: $(ResourceName)
+
 - stage: Deploy_PP
   dependsOn: Build
   displayName: Deploy to PP
@@ -99,6 +97,9 @@ stages:
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DIG-PreProd-ARM
       AzureArtifactsFeed: dct-pkg
+      AppRoleAssignmentsServiceConnection: das-app-role-assignments-FCS
+      TargetEnvironment: pp
+      ResourceName: $(ResourceName)
 
 - stage: Deploy_DEMO
   dependsOn: Build
@@ -115,3 +116,6 @@ stages:
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DAS-DevTest-ARM
       AzureArtifactsFeed: dct-pkg
+      AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
+      TargetEnvironment: demo
+      ResourceName: $(ResourceName)
