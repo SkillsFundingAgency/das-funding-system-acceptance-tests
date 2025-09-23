@@ -47,7 +47,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
         [Given("SLD record on-programme cost as total price (.*) from date (.*)")]
         [When("SLD record on-programme cost as total price (.*) from date (.*)")]
-        public void WhenSLDRecordOn_ProgrammeCostAsTotalPriceFromDateCurrentAY(int totalPrice, TokenisableDateTime fromDate)
+        public void WhenSLDRecordOnProgrammeCostFromDate(int totalPrice, TokenisableDateTime fromDate)
         {
             var testData = context.Get<TestData>();
 
@@ -59,7 +59,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [When("SLD record on-programme training price (.*) with epao as (.*) from date (.*)")]
-        public void WhenSLDRecordOn_ProgrammeTrainingPriceWithEpaoAsNullFromDateCurrentAY(int trainingPrice, string? epaoPrice, TokenisableDateTime fromDate)
+        public void WhenSLDRecordOnProgrammeTrainingPriceAndEpaoFromDate(int trainingPrice, string? epaoPrice, TokenisableDateTime fromDate)
         {
             var testData = context.Get<TestData>();
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
