@@ -26,15 +26,15 @@ internal class AfterScenario
         OutputTestDataToFile();
     }
 
-    //[AfterScenario(Order = 10)]
-    //public void AfterScenarioCleanup()
-    //{
-    //    if (_config.ShouldCleanUpTestRecords)
-    //    {
-    //        PurgeCreatedRecords();
-    //        //PurgeLearnerData();
-    //    }
-    //}
+    [AfterScenario(Order = 10)]
+    public void AfterScenarioCleanup()
+    {
+        if (_config.ShouldCleanUpTestRecords)
+        {
+            PurgeCreatedRecords();
+            PurgeLearnerData();
+        }
+    }
 
     private void PurgeCreatedRecords()
     {
