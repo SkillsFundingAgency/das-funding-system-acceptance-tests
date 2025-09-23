@@ -55,7 +55,7 @@ internal class AfterScenario
         if (testData.LearnerData == null) return;
 
         var learnerDataSqlClient = new LearnerDataSqlClient();
-        learnerDataSqlClient.DeleteLearnerData(testData.LearnerData.ULN);
+        learnerDataSqlClient.DeleteLearnerData(long.Parse(testData.LearnerData.Learner.Uln));
     }
 
     private void OutputTestDataToFile()

@@ -1,6 +1,8 @@
 ﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
@@ -12,19 +14,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         private readonly HttpClient _apiClient;
         private readonly string _subscriptionKey;
         private readonly FundingConfig _fundingConfig;
-        private DateTime _bearerTokenExpiry;
-        private string? _cachedBearerToken;
 
-        public LearnerDataOuterApiClient() {
+        public LearnerDataOuterApiClient()
+        {
             _fundingConfig = Configurator.GetConfiguration();
             var baseUrl = _fundingConfig.OuterApiBaseUrl;
             _subscriptionKey = _fundingConfig.LearnerDataOuterApiSubscriptionKey;
             _apiClient = HttpClientProvider.GetClient(baseUrl);
         }
 
-        public async Task AddLearnerData(long ukprn, int academicYear, IEnumerable<LearnerDataRequest> learnerData)
+        public async Task AddLearnerData(long ukprn, LearnerDataRequest learnerData)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/provider/{ukprn}/academicyears/{academicYear}/learners");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"/learnerdata/providers/{ukprn}/learners");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -40,13 +41,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             if (!response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                
+
             }
 
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<GetLearnerResponse> GetLearners (long ukprn, int academicYear)
+        public async Task<GetLearnerResponse> GetLearners(long ukprn, int academicYear)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/Learners/providers/{ukprn}/academicyears/{academicYear}/learners");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
@@ -107,29 +108,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class LearnerDataRequest
         {
-            public long ULN { get; set; }
-            public long UKPRN { get; set; }
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public string? LearnerEmail { get; set; }
-            public DateTime DateOfBirth { get; set; }
-            public DateTime StartDate { get; set; }
-            public DateTime PlannedEndDate { get; set; }
-            public int? PercentageLearningToBeDelivered { get; set; }
-            public int EpaoPrice { get; set; }
-            public int TrainingPrice { get; set; }
-            public string? AgreementId { get; set; }
-            public bool IsFlexiJob { get; set; }
-            public int? PlannedOTJTrainingHours { get; set; }
-            public int StandardCode { get; set; }
-            public string ConsumerReference { get; set; }
+            public string ConsumerReference { get; set; } 
+            public StubLearner Learner { get; set; }
+            public StubDelivery Delivery { get; set; }
         }
 
         public class UpdateLearnerRequest
         {
-            public UpdateLearnerRequestDeliveryDetails Delivery { get; set; } = new ();
+            public Delivery Delivery { get; set; } = new();
         }
-        public class UpdateLearnerRequestDeliveryDetails
+        public class Delivery
         {
             public OnProgramme OnProgramme { get; set; } = new OnProgramme();
 
@@ -138,7 +126,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class OnProgramme
         {
-            public List<CostDetails> Costs { get; set; } = new List<CostDetails> ();
+            public List<CostDetails> Costs { get; set; } = new List<CostDetails>();
             public DateTime? CompletionDate { get; set; }
 
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
@@ -178,10 +166,60 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         public class GetLearnerResponse
         {
             public List<Learning> Learners { get; set; } = [];
-            public int Total {  get; set; }
-            public int Page {  get; set; }
+            public int Total { get; set; }
+            public int Page { get; set; }
             public int PageSize { get; set; }
             public int TotalPages { get; set; }
+        }
+
+        public class StubLearner
+        {
+            public string Uln { get; set; }
+            public string LearnerRef { get; set; }
+            public string Firstname { get; set; }
+            public string Lastname { get; set; }
+            public DateTime? Dob { get; set; }
+            public string Email { get; set; }
+            public bool? HasEhcp { get; set; }
+        }
+
+        public class StubDelivery
+        {
+            public StubOnProgramme OnProgramme { get; set; }
+            public List<StubEnglishAndMaths> EnglishAndMaths { get; set; }
+        }
+
+        public class StubOnProgramme
+        {
+            public StubCare Care { get; set; }
+            public int? StandardCode { get; set; }
+            public string? AgreementId { get; set; }
+            public DateTime? StartDate { get; set; }
+            public DateTime? ExpectedEndDate { get; set; }
+            public int? OffTheJobHours { get; set; }
+            public int? PercentageOfTrainingLeft { get; set; }
+            public List<CostDetails> Costs { get; set; }
+            public DateTime? CompletionDate { get; set; }
+            public DateTime? WithdrawalDate { get; set; }
+            public List<LearningSupport> LearningSupport { get; set; }
+            public bool? IsFlexiJob { get; set; }
+        }
+
+        public class StubCare
+        {
+            public bool? Careleaver { get; set; }
+            public bool? EmployerConsent { get; set; }
+        }
+
+        public class StubEnglishAndMaths
+        {
+            public DateTime? StartDate { get; set; }
+            public DateTime? EndDate { get; set; }
+            public int? CourseCode { get; set; }
+            public int? PriorLearningPercentage { get; set; }
+            public DateTime? CompletionDate { get; set; }
+            public DateTime? WithdrawalDate { get; set; }
+            public List<LearningSupport> LearningSupport { get; set; }
         }
     }
 }
