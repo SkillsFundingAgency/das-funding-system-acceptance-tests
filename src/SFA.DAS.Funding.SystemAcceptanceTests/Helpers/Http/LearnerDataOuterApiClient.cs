@@ -14,8 +14,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         private readonly HttpClient _apiClient;
         private readonly string _subscriptionKey;
         private readonly FundingConfig _fundingConfig;
-        private DateTime _bearerTokenExpiry;
-        private string? _cachedBearerToken;
 
         public LearnerDataOuterApiClient()
         {
@@ -25,9 +23,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             _apiClient = HttpClientProvider.GetClient(baseUrl);
         }
 
-        public async Task AddLearnerData(long ukprn, IEnumerable<LearnerDataRequest> learnerData)
+        public async Task AddLearnerData(long ukprn, LearnerDataRequest learnerData)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, $"/learnerdata/provider/{ukprn}/learners");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"/learnerdata/providers/{ukprn}/learners");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -187,9 +185,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class StubDelivery
         {
-            [Required]
             public StubOnProgramme OnProgramme { get; set; }
-            [Required]
             public List<StubEnglishAndMaths> EnglishAndMaths { get; set; }
         }
 

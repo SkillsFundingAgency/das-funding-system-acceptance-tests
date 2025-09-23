@@ -86,19 +86,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             Assert.IsNotNull(data);
 
-            data.Should()
-                .BeEquivalentTo(testData.LearnerData,
-                    options => options
-                        .Excluding(x => x.Learner.Email)
-                        .Excluding(x => x.Learner.Dob)
-                        .Excluding(x => x.Delivery.OnProgramme.StartDate)
-                        .Excluding(x => x.Delivery.OnProgramme.ExpectedEndDate)
-                    );
-
-            data.Email.Should().Be(testData.LearnerData.Learner.Email);
-            data.DoB.Date.Should().Be(testData.LearnerData.Learner.Dob);
-            data.StartDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.StartDate);
-            data.PlannedEndDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.ExpectedEndDate);
+            data.Email.Should().Be(testData.LearnerData!.Learner.Email);
+            data.DoB.Date.Should().Be(testData.LearnerData.Learner.Dob!.Value.Date);
+            data.StartDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.StartDate!.Value.Date);
+            data.PlannedEndDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.ExpectedEndDate!.Value.Date);
         }
     }
 }
