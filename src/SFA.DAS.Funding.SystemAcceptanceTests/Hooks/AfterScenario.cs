@@ -26,15 +26,15 @@ internal class AfterScenario
         OutputTestDataToFile();
     }
 
-    [AfterScenario(Order = 10)]
-    public void AfterScenarioCleanup()
-    {
-        if (_config.ShouldCleanUpTestRecords)
-        {
-            PurgeCreatedRecords();
-            PurgeLearnerData();
-        }
-    }
+    //[AfterScenario(Order = 10)]
+    //public void AfterScenarioCleanup()
+    //{
+    //    if (_config.ShouldCleanUpTestRecords)
+    //    {
+    //        PurgeCreatedRecords();
+    //        //PurgeLearnerData();
+    //    }
+    //}
 
     private void PurgeCreatedRecords()
     {
@@ -55,7 +55,7 @@ internal class AfterScenario
         if (testData.LearnerData == null) return;
 
         var learnerDataSqlClient = new LearnerDataSqlClient();
-        learnerDataSqlClient.DeleteLearnerData(testData.LearnerData.ULN);
+        learnerDataSqlClient.DeleteLearnerData(long.Parse(testData.LearnerData.Learner.Uln));
     }
 
     private void OutputTestDataToFile()
