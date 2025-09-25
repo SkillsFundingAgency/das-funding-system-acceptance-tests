@@ -13,7 +13,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task WhenSldInformUsOfANewLearner()
         {
             var testData = context.Get<TestData>();
-            var learnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, 10005077);
+            var learnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, 10005077, 2425);
             testData.LearnerData = learnerData;
             context.Set(testData);
         }
@@ -86,10 +86,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             Assert.IsNotNull(data);
 
-            data.Email.Should().Be(testData.LearnerData!.Learner.Email);
-            data.DoB.Date.Should().Be(testData.LearnerData.Learner.Dob!.Value.Date);
-            data.StartDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.StartDate!.Value.Date);
-            data.PlannedEndDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.ExpectedEndDate!.Value.Date);
+            data.Should()
+                .BeEquivalentTo(testData.LearnerData,
+                    options => options
+                        .Excluding(x => x.LearnerEmail)
+                        .Excluding(x => x.DateOfBirth)
+                        .Excluding(x => x.StartDate)
+                        .Excluding(x => x.PlannedEndDate)
+                    );
+
+            data.Email.Should().Be(testData.LearnerData.LearnerEmail);
+            data.DoB.Date.Should().Be(testData.LearnerData.DateOfBirth.Date);
+            data.StartDate.Date.Should().Be(testData.LearnerData.StartDate.Date);
+            data.PlannedEndDate.Date.Should().Be(testData.LearnerData.PlannedEndDate.Date);
         }
     }
 }

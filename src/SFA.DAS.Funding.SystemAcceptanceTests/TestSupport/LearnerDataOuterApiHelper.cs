@@ -4,41 +4,32 @@ using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuter
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
 {
-    public class LearnerDataOuterApiHelper()
+    public class LearnerDataOuterApiHelper ()
     {
         private readonly LearnerDataOuterApiClient _apiClient = new();
 
-        public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn)
+        public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn, int academicYear)
         {
             var fixture = new Fixture();
-            var learnerData =
-                new LearnerDataRequest
-                {
-                    ConsumerReference = fixture.Create<string>(),
-                    Learner = fixture.Build<StubLearner>()
-                    .With(x => x.Uln, uln)
-                    .With(x => x.Email, $"{uln}@test.com")
-                    .Create(),
-                    Delivery = new StubDelivery
-                    {
-                        EnglishAndMaths = fixture.Create<List<StubEnglishAndMaths>>(),
-                        OnProgramme = fixture.Build<StubOnProgramme>()
-                        .With(x => x.StartDate, DateTime.UtcNow)
-                        .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
-                        .With(x => x.AgreementId, "AG1")
-                        .With(x => x.StandardCode, 57)
-                        .With(x => x.Costs, new List<CostDetails> { fixture.Create<CostDetails>() })
-                        .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
-                        .Create()
-                    }
-                };
+            var learnerData = new List<LearnerDataOuterApiClient.LearnerDataRequest>
+            {
+                fixture.Build<LearnerDataOuterApiClient.LearnerDataRequest>()
+                    .With(x => x.ULN, Convert.ToInt64(uln))
+                    .With(x => x.UKPRN, ukprn)
+                    .With(x => x.LearnerEmail, $"{uln}@test.com")
+                    .With(x => x.StartDate, DateTime.UtcNow)
+                    .With(x => x.PlannedEndDate, DateTime.UtcNow.AddYears(1))
+                    .With(x => x.AgreementId, "AG1")
+                    .With(x => x.StandardCode, 57)
+                    .Create()
+            };
 
-            await _apiClient.AddLearnerData(ukprn, learnerData);
+            await _apiClient.AddLearnerData(ukprn, academicYear, learnerData);
 
-            return learnerData;
+            return learnerData.First();
         }
 
-        public async Task<GetLearnerResponse> GetLearnersForProvider(long ukprn, int academicYear)
+        public async Task<GetLearnerResponse> GetLearnersForProvider (long ukprn, int academicYear)
         {
             return await _apiClient.GetLearners(ukprn, academicYear);
         }
@@ -49,7 +40,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             configure(builder);
             var request = builder.Build();
 
-            await _apiClient.UpdateLearning(Constants.UkPrn, learningKey, request);
+            await _apiClient.UpdateLearning(Constants.UkPrn,learningKey, request);
         }
 
 

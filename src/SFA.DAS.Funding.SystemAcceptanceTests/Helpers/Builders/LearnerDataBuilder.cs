@@ -1,5 +1,4 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
-using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
+﻿using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 {
@@ -7,7 +6,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
     {
         private readonly UpdateLearnerRequest _request = new ()
         {
-            Delivery = new Delivery()
+            Delivery = new UpdateLearnerRequestDeliveryDetails()
         };
 
         public LearnerDataBuilder WithCostDetails(int trainingPrice, int? epaoPrice, DateTime? fromDate)
