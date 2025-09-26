@@ -7,6 +7,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     [Binding]
     public class CompletionStepDefinitions(ScenarioContext context, LearnerDataOuterApiHelper learnerDataOuterApiHelper, EarningsSqlClient earningsSqlClient)
     {
+        [Given(@"Learning Completion is recorded on (.*)")]
         [When(@"Learning Completion is recorded on (.*)")]
         public async Task WhenSLDInformUsThatTheLearningCompletedOn(TokenisableDateTime completionDate)
         {
@@ -15,6 +16,25 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithCompletionDate(completionDate.Value);
         }
 
+        [When("SLD resubmits ILR")]
+        public void SLDResubmitsILR()
+        {
+            var testData = context.Get<TestData>();
+            testData.ResetLearnerDataBuilder();
+        }
+
+
+        [When("completion date is removed")]
+        public void CompletionDateIsRemoved()
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder.WithCompletionDate(null);
+        }
+
+
+        [Given(@"earnings of (.*) are generated from periods (.*) to (.*)")]
+        [When(@"earnings of (.*) are generated from periods (.*) to (.*)")]
         [Then(@"earnings of (.*) are generated from periods (.*) to (.*)")]
         public async Task ThenEarningsOfAreGeneratedBetweenPeriods(decimal amount, TokenisablePeriod periodFrom, TokenisablePeriod periodTo)
         {
@@ -42,6 +62,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             }
         }
 
+        [Given(@"an earning of (.*) of type (.*) is generated for period (.*)")]
+        [When(@"an earning of (.*) of type (.*) is generated for period (.*)")]
         [Then(@"an earning of (.*) of type (.*) is generated for period (.*)")]
         public async Task ThenABalancingEarningOfIsGeneratedForPeriod(decimal amount, string earningType, TokenisablePeriod period)
         {
@@ -56,6 +78,30 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             deliveryPeriod.PeriodValue.Should().Be(period.Value.PeriodValue);
 
             instalment.Amount.Should().Be(amount);
-       }
+        }
+
+        [Then("Balancing earning is removed")]
+        public async Task BalancingEarningIsRemoved()
+        {
+            var earnings = earningsSqlClient.GetEarningsEntityModel(context);
+            var episode = earnings.Episodes.SingleOrDefault();
+
+            var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(x => x.Type.Trim() == "Balancing");
+
+            instalment.Should().BeNull();
+        }
+
+        [Then("Completion earning is removed")]
+        public void CompletionEarningIsRemoved()
+        {
+            var earnings = earningsSqlClient.GetEarningsEntityModel(context);
+            var episode = earnings.Episodes.SingleOrDefault();
+
+            var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(x => x.Type.Trim() == "Completion");
+
+            instalment.Should().BeNull();
+        }
+
+
     }
 }
