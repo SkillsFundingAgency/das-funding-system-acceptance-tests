@@ -22,6 +22,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
+        public LearnerDataBuilder WithExpectedEndDate(DateTime Date)
+        {
+            _request.Delivery.OnProgramme.ExpectedEndDate = Date;
+            return this;
+        }
+
         public LearnerDataBuilder WithCompletionDate(DateTime? completionDate)
         {
             _request.Delivery.OnProgramme.CompletionDate = completionDate;

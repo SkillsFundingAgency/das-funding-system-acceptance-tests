@@ -19,8 +19,8 @@ Scenario: Price change - Total price change ONLY - recalc earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
 	And the total price is above or below or at the funding band maximum
-	When SLD record on-programme cost as total price <agreed_price> from date <start_date>
-	And SLD record on-programme cost as total price <new_total_price> from date <pc_from_date>
+	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
+	And SLD record on-programme cost as total price <new_total_price> from date <pc_from_date> to date <end_date>
 	And SLD submit updated learners details
 	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
 	And earnings prior to <delivery_period> and <academic_year_string> are frozen with <old_inst_amount>
@@ -40,8 +40,8 @@ Scenario: Price change; EPAO is null
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
 	And the total price is above or below or at the funding band maximum
-	When SLD record on-programme cost as total price <agreed_price> from date <new_start_date>
-	And SLD record on-programme training price <training_price> with epao as <epao> from date <pc_from_date>
+	When SLD record on-programme cost as total price <agreed_price> from date <new_start_date> to date <end_date>
+	And SLD record on-programme training price <training_price> with epao as <epao> from date <pc_from_date> to date <end_date>
 	And SLD submit updated learners details
 	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
 	And earnings prior to <delivery_period> and <academic_year_string> are frozen with <old_inst_amount>
@@ -55,8 +55,8 @@ Scenario: Price change; Both total price and start date changed
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
 	And the total price is above or below or at the funding band maximum
-	When SLD record on-programme cost as total price <agreed_price> from date <new_start_date>
-	And SLD record on-programme cost as total price <new_total_price> from date <pc_from_date>
+	When SLD record on-programme cost as total price <agreed_price> from date <new_start_date> to date <end_date>
+	And SLD record on-programme cost as total price <new_total_price> from date <pc_from_date> to date <end_date>
 	And SLD submit updated learners details
 	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
 	And earnings prior to <delivery_period> and <academic_year_string> are frozen with <old_inst_amount>
