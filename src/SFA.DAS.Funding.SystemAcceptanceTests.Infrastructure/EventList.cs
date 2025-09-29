@@ -7,9 +7,10 @@ public static class EventList
         var events = new List<string>
         {
             "SFA.DAS.Approvals.EventHandlers.Messages.ApprovalCreatedEvent",
-            typeof(SFA.DAS.Funding.ApprenticeshipEarnings.Types.EarningsGeneratedEvent).FullName!,
-            typeof(SFA.DAS.Learning.Types.LearningCreatedEvent).FullName!,
-            typeof(SFA.DAS.Funding.ApprenticeshipEarnings.Types.ApprenticeshipEarningsRecalculatedEvent).FullName!
+            typeof(ApprenticeshipEarnings.Types.EarningsGeneratedEvent).FullName!,
+            typeof(Learning.Types.LearningCreatedEvent).FullName!,
+            typeof(ApprenticeshipEarnings.Types.ApprenticeshipEarningsRecalculatedEvent).FullName!,
+            typeof(Learning.Types.EndDateChangedEvent).FullName!
         };
 
         return events;

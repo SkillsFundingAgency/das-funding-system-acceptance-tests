@@ -218,6 +218,18 @@ public class RecalculateEarningsStepDefinitions
         await TestServiceBus.Das.SendPriceChangeApprovedMessage(apprenticeshipPriceChangedEvent);
     }
 
+    [Then("an end date changed event is published to approvals with end date (.*)")]
+    public async Task EndDateChangedEventIsPublishedToApprovals(TokenisableDateTime endDate)
+    {
+        var testData = _context.Get<TestData>();
+
+        await _context.ReceiveEndDateChangedEvent(testData.LearningCreatedEvent.LearningKey);
+
+        Assert.AreEqual(testData.EndDateChangedEvent.PlannedEndDate.Date, endDate.Value, "Unexpected planned end found!");
+        Assert.AreEqual(testData.EndDateChangedEvent.ApprovalsApprenticeshipId, testData.LearningCreatedEvent.ApprovalsApprenticeshipId, "Unexpected ApprenticeshipId found!" );
+    }
+
+
 
     static int CalculateMonthsDifference(DateTime endDate, DateTime startDate)
     {
