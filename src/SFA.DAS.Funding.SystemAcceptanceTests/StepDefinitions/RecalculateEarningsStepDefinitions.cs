@@ -99,7 +99,12 @@ public class RecalculateEarningsStepDefinitions
 
         await _context.ReceiveEarningsRecalculatedEvent(testData.LearningKey);
 
-        testData.ApprenticeshipEarningsRecalculatedEvent.DeliveryPeriods.All(Dp => Dp.LearningAmount.Should().Equals(newInstalmentAmount));
+        var deliveryPeriods = testData.ApprenticeshipEarningsRecalculatedEvent.DeliveryPeriods;
+
+        for (var i = 0; i < deliveryPeriods.Count; i++)
+        {
+            Assert.AreEqual(deliveryPeriods[i].LearningAmount, newInstalmentAmount, $"Expected new instalment amount to be {newInstalmentAmount} but found {deliveryPeriods[i].LearningAmount}");
+        }
     }
 
     [Then(@"the AgreedPrice on the earnings entity is updated to (.*)")]
@@ -217,6 +222,18 @@ public class RecalculateEarningsStepDefinitions
 
         await TestServiceBus.Das.SendPriceChangeApprovedMessage(apprenticeshipPriceChangedEvent);
     }
+
+    [Then("an end date changed event is published to approvals with end date (.*)")]
+    public async Task EndDateChangedEventIsPublishedToApprovals(TokenisableDateTime endDate)
+    {
+        var testData = _context.Get<TestData>();
+
+        await _context.ReceiveEndDateChangedEvent(testData.LearningCreatedEvent.LearningKey);
+
+        Assert.AreEqual(testData.EndDateChangedEvent.PlannedEndDate.Date, endDate.Value, "Unexpected planned end found!");
+        Assert.AreEqual(testData.EndDateChangedEvent.ApprovalsApprenticeshipId, testData.LearningCreatedEvent.ApprovalsApprenticeshipId, "Unexpected ApprenticeshipId found!" );
+    }
+
 
 
     static int CalculateMonthsDifference(DateTime endDate, DateTime startDate)

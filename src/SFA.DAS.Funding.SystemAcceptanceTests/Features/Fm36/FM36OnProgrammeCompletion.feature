@@ -6,7 +6,7 @@ Fm36 Withdrawl tests
 Scenario: On programme completion
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of <agreed_price>
 	When Learning Completion is recorded on <completion_date>
-	And SLD record on-programme cost as total price <agreed_price> from date <start_date>
+	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	And the fm36 data is retrieved for previousAY-07-25
 	Then PriceEpisodeActualEndDateIncEPA is <completion_date>

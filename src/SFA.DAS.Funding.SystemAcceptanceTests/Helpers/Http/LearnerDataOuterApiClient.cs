@@ -126,6 +126,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class OnProgramme
         {
+            public DateTime ExpectedEndDate { get; set; }
             public List<CostDetails> Costs { get; set; } = new List<CostDetails>();
             public DateTime? CompletionDate { get; set; }
 

@@ -47,6 +47,7 @@ internal class TestData
     internal LearnerDataOuterApiClient.LearnerDataRequest? LearnerData { get; set; }
     internal LearnerDataOuterApiClient.GetLearnerResponse? LearnersOnService { get; set; }
     internal LearnerDataBuilder? LearnerDataBuilder { get; set; }
+    internal EndDateChangedEvent EndDateChangedEvent { get; set; }
 
     public TestData(string uln)
     {
