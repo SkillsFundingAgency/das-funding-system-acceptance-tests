@@ -67,7 +67,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var testData = context.Get<TestData>();
 
             var plannedEndDate = fromDate.Value.AddDays(duration - 1);
-            var tokenised = new TokenisableDateTime(plannedEndDate);
 
             var trainingPrice = totalPrice * 0.8;
             var epaoPrice = totalPrice * 0.2;
@@ -75,7 +74,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
             learnerDataBuilder.WithCostDetails((int)trainingPrice, (int)epaoPrice, fromDate.Value);
 
-            learnerDataBuilder.WithExpectedEndDate(tokenised.Value);
+            learnerDataBuilder.WithExpectedEndDate(plannedEndDate);
         }
 
         [When("SLD record on-programme training price (.*) with epao as (.*) from date (.*) to date (.*)")]
