@@ -99,7 +99,12 @@ public class RecalculateEarningsStepDefinitions
 
         await _context.ReceiveEarningsRecalculatedEvent(testData.LearningKey);
 
-        testData.ApprenticeshipEarningsRecalculatedEvent.DeliveryPeriods.All(Dp => Dp.LearningAmount.Should().Equals(newInstalmentAmount));
+        var deliveryPeriods = testData.ApprenticeshipEarningsRecalculatedEvent.DeliveryPeriods;
+
+        for (var i = 0; i < deliveryPeriods.Count; i++)
+        {
+            Assert.AreEqual(deliveryPeriods[i].LearningAmount, newInstalmentAmount, $"Expected new instalment amount to be {newInstalmentAmount} but found {deliveryPeriods[i].LearningAmount}");
+        }
     }
 
     [Then(@"the AgreedPrice on the earnings entity is updated to (.*)")]
