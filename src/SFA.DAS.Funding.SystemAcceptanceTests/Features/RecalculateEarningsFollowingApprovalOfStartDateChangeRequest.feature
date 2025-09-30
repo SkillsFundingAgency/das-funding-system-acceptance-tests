@@ -27,7 +27,7 @@ Examples:
 	| start_date      | end_date               | agreed_price | training_code | new_start_date  | old_inst_amount | new_expected_earnings |
 	| currentAY-08-23 | currentAYPlusTwo-08-23 | 15000        | 2             | currentAY-12-23 | 500             | 600                   |
 	| currentAY-03-24 | currentAYPlusTwo-03-24 | 18000        | 2             | currentAY-09-24 | 600             | 480                   |
-	| currentAY-08-26 | nextAy-04-26           | 15000        | 2             | nextAY-10-26    | 600             | 666.66667             |
+	| currentAY-08-26 | nextAy-04-26           | 15000        | 2             | nextAY-10-26    | 600             | 2000                  |
 	| currentAY-09-15 | currentAYPlusTwo-09-15 | 15000        | 2             | currentAY-01-20 | 500             | 600                   |
 
 
