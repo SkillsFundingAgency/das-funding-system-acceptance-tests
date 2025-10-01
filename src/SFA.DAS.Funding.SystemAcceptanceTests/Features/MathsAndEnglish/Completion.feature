@@ -8,15 +8,54 @@ When M&E is marked as "Complete", earnings for subsequent delivery periods are "
 	
 @regression
 Scenario: Balancing earnings for Maths and English on Completion
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
-	When Maths and English learning is recorded from <start_date> to <end_date> with course <course>, amount <amount> and completion on <completion_date>
-	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
+	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with course Entry level English, amount 931 and completion on currentAY-01-01
+	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
 	And SLD submit updated learners details
-	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with regular instalment amount <instalment> for course <course>
-	And a Maths and English earning of <balancing_amount> is generated for course <course> for period <balancing_period>
+	Then Maths and English earnings are generated from periods currentAY-R02 to currentAY-R05 with regular instalment amount 133 for course Entry level English
+	And a Maths and English balancing earning of 399 is generated for course Entry level English for period currentAY-R06
 
-Examples:
-	| start_date      | end_date        | course              | completion_date | amount | expected_first_earning_period | expected_last_period | instalment | balancing_amount | balancing_period |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English | currentAY-01-01 | 931    | currentAY-R02                 | currentAY-R05        | 133        | 399              | currentAY-R06    |
+@regression
+Scenario: Balancing earnings for Maths and English on Completion moved earlier
+	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with course Entry level English, amount 931 and completion on currentAY-01-01
+	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
+	And SLD submit updated learners details
+	And Maths and English earnings are generated from periods currentAY-R02 to currentAY-R05 with regular instalment amount 133 for course Entry level English
+	And a Maths and English balancing earning of 399 is generated for course Entry level English for period currentAY-R06
+	And SLD resubmits ILR
+	And Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with course Entry level English, amount 931 and completion on currentAY-12-15
+	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
+	And SLD submit updated learners details
+	Then Maths and English earnings are generated from periods currentAY-R02 to currentAY-R04 with regular instalment amount 133 for course Entry level English
+	And a Maths and English balancing earning of 532 is generated for course Entry level English for period currentAY-R05
 
+@regression
+Scenario: Balancing earnings for Maths and English on Completion moved later
+	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with course Entry level English, amount 931 and completion on currentAY-01-01
+	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
+	And SLD submit updated learners details
+	And Maths and English earnings are generated from periods currentAY-R02 to currentAY-R05 with regular instalment amount 133 for course Entry level English
+	And a Maths and English balancing earning of 399 is generated for course Entry level English for period currentAY-R06
+	And SLD resubmits ILR
+	And Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with course Entry level English, amount 931 and completion on currentAY-02-20
+	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
+	And SLD submit updated learners details
+	Then Maths and English earnings are generated from periods currentAY-R02 to currentAY-R06 with regular instalment amount 133 for course Entry level English
+	And a Maths and English balancing earning of 266 is generated for course Entry level English for period currentAY-R07
 
+@regression
+Scenario: Balancing earnings for Maths and English on Completion - Completion removed
+	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with course Entry level English, amount 931 and completion on currentAY-01-01
+	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
+	And SLD submit updated learners details
+	And Maths and English earnings are generated from periods currentAY-R02 to currentAY-R05 with regular instalment amount 133 for course Entry level English
+	And a Maths and English balancing earning of 399 is generated for course Entry level English for period currentAY-R06
+	And SLD resubmits ILR
+	And Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with course Entry level English and amount 931
+	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
+	And SLD submit updated learners details
+	Then Maths and English earnings are generated from periods currentAY-R02 to currentAY-R08 with regular instalment amount 133 for course Entry level English
+	And Maths and English balancing earning is removed for course Entry level English
