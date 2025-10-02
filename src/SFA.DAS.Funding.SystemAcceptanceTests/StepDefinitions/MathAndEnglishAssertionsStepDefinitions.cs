@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
+﻿using Microsoft.IdentityModel.Tokens;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
@@ -17,7 +18,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
             learnerDataBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount);
-            
+
             testData.IsMathsAndEnglishAdded = true;
         }
 
@@ -29,7 +30,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
             learnerDataBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, completionDate: completionDate.Value);
-            
+
             testData.IsMathsAndEnglishAdded = true;
         }
 
@@ -93,7 +94,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.ResetLearnerDataBuilder();
         }
 
-
+        [When("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
         [Then("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
         public async Task VerifyRegularMathsAndEnglishInstalmentEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
             TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course)
@@ -161,6 +162,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 .Episodes
                 .SingleOrDefault()
                 ?.MathsAndEnglishInstalments.Where(x => x.MathsAndEnglishKey == mathsAndEnglishKey)
+                .Where(x => x.Type == "Regular")
                 .ToList();
 
             testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile
@@ -193,48 +195,40 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             }
         }
 
-        [Then("a Maths and English earning of (.*) is generated for course (.*) for period (.*)")]
+        [When("a Maths and English balancing earning of (.*) is generated for course (.*) for period (.*)")]
+        [Then("a Maths and English balancing earning of (.*) is generated for course (.*) for period (.*)")]
         public async Task VerifyMathsAndEnglishEarnings(decimal amount, string course, TokenisablePeriod period)
         {
-            var testData = context.Get<TestData>();
-            EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
-
-            await WaitHelper.WaitForIt(() =>
-            {
-                earningsApprenticeshipModel = earningsEntitySqlClient.GetEarningsEntityModel(context);
-                return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault()
-                    .EarningsProfileHistory.Any();
-            }, "Failed to find updated earnings entity.");
-
-            var mathsAndEnglish = earningsApprenticeshipModel
-                .Episodes
-                .SingleOrDefault()
-                ?.MathsAndEnglish;
-
-            var mathsAndEnglishKey = mathsAndEnglish.FirstOrDefault(x => x.Course.Contains(course)).Key;
-
-            var mathsAndEnglishInstalments = earningsApprenticeshipModel
-                .Episodes
-                .SingleOrDefault()
-                ?.MathsAndEnglishInstalments.Where(x => x.MathsAndEnglishKey == mathsAndEnglishKey)
-                .ToList();
-
-            testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile
-                .EarningsProfileId;
+            var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(course, "Balancing");
 
             mathsAndEnglishInstalments.Should()
-                .NotBeNull("No Maths and English instalment data found on earnings apprenticeship model");
+                .NotBeNull("No Maths and English balancing instalment data found on earnings apprenticeship model");
 
-            mathsAndEnglishInstalments.Should()
+            mathsAndEnglishInstalments.Result.Should()
                 .Contain(x =>
                     x.DeliveryPeriod == period.Value.PeriodValue &&
                     x.AcademicYear == period.Value.AcademicYear &&
                     x.Amount == amount);
         }
 
+        [Then("Maths and English balancing earning is removed for course (.*)")]
+        public void MathsAndEnglishBalancingEarningIsRemovedForCourse(string course)
+        {
+
+            var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(course, "Balancing");
+
+            Assert.Zero(mathsAndEnglishInstalments.Result.Count, "Unexpected Balancing earning for English and Maths found! ");
+        }
 
         [Then("Maths and English earnings for course (.*) are zero")]
         public async Task VerifyMathsAndEnglishEarnings(string course)
+        {
+            var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(course, "Regular");
+
+            mathsAndEnglishInstalments.Result.Should().BeEmpty("Unexpected Maths and English instalment data found on earnings apprenticeship model");
+        }
+
+        private async Task<List<MathsAndEnglishInstalment>> GetLatestMathsAndEnglishInstalmentsOfType(string course, string type)
         {
             var testData = context.Get<TestData>();
             EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
@@ -242,27 +236,30 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await WaitHelper.WaitForIt(() =>
             {
                 earningsApprenticeshipModel = earningsEntitySqlClient.GetEarningsEntityModel(context);
-                return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault()
-                    .EarningsProfileHistory.Any();
+                return !testData.IsMathsAndEnglishAdded
+                       || earningsApprenticeshipModel.Episodes.SingleOrDefault()
+                           .EarningsProfileHistory.Any();
             }, "Failed to find updated earnings entity.");
 
-            var mathsAndEnglish = earningsApprenticeshipModel
+            var episode = earningsApprenticeshipModel
                 .Episodes
-                .SingleOrDefault()
-                ?.MathsAndEnglish;
+                .SingleOrDefault();
 
-            var mathsAndEnglishKey = mathsAndEnglish.FirstOrDefault(x => x.Course.Contains(course)).Key;
+            if (episode == null || episode.MathsAndEnglish == null)
+                return new List<MathsAndEnglishInstalment>();
 
-            var mathsAndEnglishInstalments = earningsApprenticeshipModel
-                .Episodes
-                .SingleOrDefault()
-                ?.MathsAndEnglishInstalments.Where(x => x.MathsAndEnglishKey == mathsAndEnglishKey)
+            var mathsAndEnglishKey = episode.MathsAndEnglish
+                .FirstOrDefault(x => x.Course.Contains(course))?
+                .Key;
+
+            if (mathsAndEnglishKey == null)
+                return new List<MathsAndEnglishInstalment>();
+
+            testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId;
+
+            return episode.MathsAndEnglishInstalments
+                .Where(x => x.MathsAndEnglishKey == mathsAndEnglishKey && x.Type == type)
                 .ToList();
-
-            testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile
-                .EarningsProfileId;
-
-            mathsAndEnglishInstalments.Should().BeEmpty("Unexpected Maths and English instalment data found on earnings apprenticeship model");
         }
     }
 }
