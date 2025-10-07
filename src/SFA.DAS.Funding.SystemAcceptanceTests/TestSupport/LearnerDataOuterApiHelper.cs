@@ -57,5 +57,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         {
             await _apiClient.UpdateLearning(Constants.UkPrn, learningKey, request);
         }
+
+        public async Task RemoveLearner(Guid learningKey)
+        {
+            await _apiClient.DeleteLearner(Constants.UkPrn, learningKey);
+        }
     }
 }
