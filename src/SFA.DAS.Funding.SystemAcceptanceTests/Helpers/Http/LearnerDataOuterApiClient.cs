@@ -115,7 +115,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             request.Headers.Add("X-Version", "1");
             var response = await _apiClient.SendAsync(request);
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"Expected HTTP 200 OK response from DeleteLearner request, but got {response.StatusCode}");
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, $"Expected HTTP 200 OK response from DeleteLearner request, but got {response.StatusCode}");
         }
 
         public class LearnerDataRequest

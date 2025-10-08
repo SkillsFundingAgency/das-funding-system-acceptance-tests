@@ -10,5 +10,6 @@ Scenario: Apprentice removed from the ILR
 	When sld inform us that the learner is to removed
 	Then the apprenticeship is marked as withdrawn
 	And last day of learning is set to currentAY-08-01 in learning db
+	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are 0
-	And a learning removed event is published to approvals with reason withdrawn and last day of learning as currentAY-08-01
+	And a learning removed event is published to approvals with reason WithdrawFromStart and last day of learning as currentAY-08-01

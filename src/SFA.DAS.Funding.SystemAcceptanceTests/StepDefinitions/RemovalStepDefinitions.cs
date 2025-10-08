@@ -23,8 +23,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await context.ReceiveLearningWithdrawnEvent(testData.LearningCreatedEvent.LearningKey);
 
-            Assert.AreEqual(testData.LearningWithdrawnEvent.Reason, reason, "Unexpected withdrawal reason found in the event!");
-            Assert.AreEqual(testData.LearningWithdrawnEvent.LastDayOfLearning.Date, lastDayOfLearning.Value.Date, "Unexpected last day of learning found in the event!");
+            Assert.AreEqual(reason, testData.LearningWithdrawnEvent.Reason, "Unexpected withdrawal reason found in the event!");
+            Assert.AreEqual(lastDayOfLearning.Value.Date, testData.LearningWithdrawnEvent.LastDayOfLearning.Date, "Unexpected last day of learning found in the event!");
         }
     }
 }

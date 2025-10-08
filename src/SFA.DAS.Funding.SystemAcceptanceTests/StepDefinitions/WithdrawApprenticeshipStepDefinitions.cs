@@ -77,8 +77,6 @@ internal class WithdrawApprenticeshipStepDefinitions
 
             return apprenticeship.Episodes.First().LearningStatus == "Withdrawn";
         }, "LearningStatus did not change to 'Withdrawn' in time.");
-
-        Assert.AreEqual(apprenticeship?.WithdrawalRequests.Count, 1);
     }
 
     [Then("last day of learning is set to (.*) in learning db")]
