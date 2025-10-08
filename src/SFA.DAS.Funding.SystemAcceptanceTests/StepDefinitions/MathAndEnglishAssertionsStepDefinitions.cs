@@ -48,6 +48,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
+        [When("an English and Maths learning is recorded from (.*) to (.*) with course (.*) and amount (.*) and completion date as (.*) and learning support from (.*) to (.*)")]
+        public async Task AddMathsAndEnglishWithCompletionAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount, TokenisableDateTime completionDate,
+            TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount)
+            .WithCompletionDate(completionDate.Value)
+            .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
         [Given("Maths and English learning is recorded from (.*) for (.*) days with course (.*), amount (.*) and withdrawal after (.*) days")]
         [When("Maths and English learning is recorded from (.*) for (.*) days with course (.*), amount (.*) and withdrawal after (.*) days")]
         public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, int duration, string course, decimal amount, int withdrawalOnDay)

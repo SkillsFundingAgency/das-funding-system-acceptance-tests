@@ -41,5 +41,11 @@ public class EnglishAndMathsBuilder
         return this;
     }
 
+    public EnglishAndMathsBuilder WithCompletionDate(DateTime completionDate)
+    {
+        _course.CompletionDate = completionDate;
+        return this;
+    }
+
     public EnglishAndMaths Build() => _course;
 }

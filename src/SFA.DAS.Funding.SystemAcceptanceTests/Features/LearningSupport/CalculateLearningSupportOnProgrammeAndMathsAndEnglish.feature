@@ -45,3 +45,20 @@ Examples:
 	| currentAY-08-01 | currentAY-07-31 | currentAY-08-01  | currentAY-12-31 | currentAY-12-01    | currentAY-07-31  | currentAY-R01            | currentAY-R12           |
 
 
+@regression
+Scenario: Dont pay learning support after on-programme completion
+	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
+	When learning support is recorded from currentAY-08-15 to currentAY-07-20
+	And Learning Completion is recorded on currentAY-04-15
+	And SLD submit updated learners details
+	Then learning support earnings are generated from periods currentAY-R01 to currentAY-R8
+
+@regression
+Scenario: Dont pay learning support after english and maths completion
+	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
+	When an English and Maths learning is recorded from currentAY-08-15 to currentAY-07-20 with course Maths and amount 1000 and completion date as currentAY-04-10 and learning support from currentAY-08-25 to currentAY-07-20
+	And SLD submit updated learners details
+	Then learning support earnings are generated from periods currentAY-R01 to currentAY-R8
+
