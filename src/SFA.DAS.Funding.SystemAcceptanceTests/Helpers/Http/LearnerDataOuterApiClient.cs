@@ -2,6 +2,7 @@
 using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
+using SFA.DAS.Payments.Model.Core;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
@@ -104,6 +105,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"Expected HTTP 200 OK response from GetFm36Block request, but got {response.StatusCode}");
 
             return JsonConvert.DeserializeObject<List<FM36Learner>>(await response.Content.ReadAsStringAsync())!;
+        }
+
+        public async Task DeleteLearner(long ukprn, Guid learningKey)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"/learnerdata/providers/{ukprn}/learning/{learningKey}");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+            var response = await _apiClient.SendAsync(request);
+
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, $"Expected HTTP 200 OK response from DeleteLearner request, but got {response.StatusCode}");
         }
 
         public class LearnerDataRequest
