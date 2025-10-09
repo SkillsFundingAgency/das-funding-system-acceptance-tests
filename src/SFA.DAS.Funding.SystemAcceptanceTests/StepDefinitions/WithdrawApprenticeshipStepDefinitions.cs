@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -13,7 +14,6 @@ internal class WithdrawApprenticeshipStepDefinitions
     private readonly LearningClient _apprenticeshipsClient;
     private readonly LearningSqlClient _apprenticeshipSqlClient;
     private readonly EarningsSqlClient _earningsSqlClient;
-
     public WithdrawApprenticeshipStepDefinitions(
         ScenarioContext context,
         LearningClient apprenticeshipsClient,
@@ -139,4 +139,13 @@ internal class WithdrawApprenticeshipStepDefinitions
             Assert.IsTrue(isValidEarningInDb, $"Some instalments have a delivery period > {deliveryPeriod} and academic year > {academicYear} in earnings db.");
         }
     }
+
+    [When("Learning withdrawal date is recorded on (.*)")]
+    public void LearningWithdrawalDateIsRecordedOn(TokenisableDateTime withdrawalDate)
+    {
+        var testData = _context.Get<TestData>();
+        var learnerDataBuilder = testData.GetLearnerDataBuilder();
+        learnerDataBuilder.WithWithdrawalDate(withdrawalDate.Value);
+    }
+
 }

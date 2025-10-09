@@ -16,8 +16,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await learnerDataOuterApiHelper.RemoveLearner(testData.EarningsGeneratedEvent.ApprenticeshipKey);
         }
 
-        [Then("a learning removed event is published to approvals with reason (.*) and last day of learning as (.*)")]
-        public async Task LearningRemovedEventIsPublishedToApprovals(string reason, TokenisableDateTime lastDayOfLearning)
+
+        [Then("a learning withdrawn event is published to approvals with reason (.*) and last day of learning as (.*)")]
+        public async Task LearningWithdrawnEventIsPublishedToApprovals(string reason, TokenisableDateTime lastDayOfLearning)
         {
             var testData = context.Get<TestData>();
 
