@@ -134,6 +134,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public OnProgramme OnProgramme { get; set; } = new OnProgramme();
 
             public List<EnglishAndMaths> EnglishAndMaths { get; set; } = [];
+            public DateTime? WithdrawalDate { get; set; }
         }
 
         public class OnProgramme
