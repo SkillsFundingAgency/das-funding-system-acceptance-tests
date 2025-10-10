@@ -11,7 +11,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 internal class StaticObjects
 {
     internal static WireMockServer? WireMockServer;
-    internal static LearningClient? ApprenticeshipsClient;
     internal static EarningsOuterClient? EarningsOuterClient;
     internal static LearningSqlClient? ApprenticeshipsSqlClient;
     internal static EarningsSqlClient? EarningsSqlClient;

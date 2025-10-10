@@ -11,59 +11,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 internal class WithdrawApprenticeshipStepDefinitions
 {
     private readonly ScenarioContext _context;
-    private readonly LearningClient _apprenticeshipsClient;
     private readonly LearningSqlClient _apprenticeshipSqlClient;
     private readonly EarningsSqlClient _earningsSqlClient;
     public WithdrawApprenticeshipStepDefinitions(
         ScenarioContext context,
-        LearningClient apprenticeshipsClient,
         LearningSqlClient apprenticeshipSqlClient,
         EarningsSqlClient earningsSqlClient)
     {
         _context = context;
-        _apprenticeshipsClient = apprenticeshipsClient;
         _apprenticeshipSqlClient = apprenticeshipSqlClient;
         _earningsSqlClient = earningsSqlClient;
     }
-
-    [When(@"the apprenticeship is withdrawn")]
-    public async Task WithdrawApprenticeship()
-    {
-        var testData = _context.Get<TestData>();
-
-        var body = new WithdrawLearningRequestBody
-        {
-            UKPRN = testData.LearningCreatedEvent.Episode.Ukprn,
-            ULN = testData.LearningCreatedEvent.Uln,
-            Reason = "WithdrawFromBeta",
-            ReasonText = "",
-            LastDayOfLearning = testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate!.Value.AddDays(1),
-            ProviderApprovedBy = "SystemAcceptanceTest"
-        };
-
-        await _apprenticeshipsClient.WithdrawLearning(body);
-    }
-
-    [When("a Withdrawal request is recorded with a reason (.*) and last day of delivery (.*)")]
-    public async Task WithdrawalRequestIsRecordedWithAReasonWithdrawDuringLearningAndLastDayOfDelivery(string reason, TokenisableDateTime lastDayOfDelivery)
-    {
-        var testData = _context.Get<TestData>();
-
-        testData.LastDayOfLearning = lastDayOfDelivery.Value;
-
-        var body = new WithdrawLearningRequestBody
-        {
-            UKPRN = testData.LearningCreatedEvent.Episode.Ukprn,
-            ULN = testData.LearningCreatedEvent.Uln,
-            Reason = reason,
-            ReasonText = "",
-            LastDayOfLearning = testData.LastDayOfLearning,
-            ProviderApprovedBy = "SystemAcceptanceTest"
-        };
-
-        await _apprenticeshipsClient.WithdrawLearning(body);
-    }
-
 
     [Then(@"the apprenticeship is marked as withdrawn")]
     public async Task ApprenticeshipIsMarkedAsWithdrawn()
@@ -112,7 +70,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         var actualInstalmentsNumber = testData.EarningsApprenticeshipModel.Episodes
             .FirstOrDefault()?
             .EarningsProfile?.Instalments?
-            .Where(x => x.Type.Contains("Regular"))
+            .Where(x => x.Type.Contains("Regular") && !x.IsAfterLearningEnded)
             .Count() ?? 0;
 
         Assert.AreEqual(expectedInstalmentsNumber, actualInstalmentsNumber, "Unexpected number of instalments after withdrawal has been recorded in earnings db!");
