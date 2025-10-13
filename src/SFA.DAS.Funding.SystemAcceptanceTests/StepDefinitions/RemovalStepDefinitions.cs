@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using FluentAssertions.Execution;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -27,5 +28,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             Assert.AreEqual(reason, testData.LearningWithdrawnEvent.Reason, "Unexpected withdrawal reason found in the event!");
             Assert.AreEqual(lastDayOfLearning.Value.Date, testData.LearningWithdrawnEvent.LastDayOfLearning.Date, "Unexpected last day of learning found in the event!");
         }
+
+        [When("a withdrawal reverted event is published to approvals")]
+        public async Task WithdrawalRevertedEventIsPublishedToApprovals()
+        {
+            var testData = context.Get<TestData>();
+
+            await context.ReceiveWithdrawalRevertedEvent(testData.LearningCreatedEvent.LearningKey);
+
+            Assert.AreEqual(testData.LearningCreatedEvent.ApprovalsApprenticeshipId, testData.WithdrawalRevertedEvent.ApprovalsApprenticeshipId, "Unexpected approvals apprenticeship Id found in the event!");
+        }
+
     }
 }

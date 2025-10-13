@@ -49,6 +49,7 @@ internal class TestData
     internal LearnerDataBuilder? LearnerDataBuilder { get; set; }
     internal EndDateChangedEvent EndDateChangedEvent { get; set; }
     internal LearningWithdrawnEvent LearningWithdrawnEvent { get; set; }
+    internal WithdrawalRevertedEvent WithdrawalRevertedEvent { get; set; }
 
     public TestData(string uln)
     {

@@ -11,7 +11,8 @@ public static class EventList
             typeof(Learning.Types.LearningCreatedEvent).FullName!,
             typeof(ApprenticeshipEarnings.Types.ApprenticeshipEarningsRecalculatedEvent).FullName!,
             typeof(Learning.Types.EndDateChangedEvent).FullName!,
-            typeof(Learning.Types.LearningWithdrawnEvent).FullName!
+            typeof(Learning.Types.LearningWithdrawnEvent).FullName!,
+            typeof(Learning.Types.WithdrawalRevertedEvent).FullName!
         };
 
         return events;
