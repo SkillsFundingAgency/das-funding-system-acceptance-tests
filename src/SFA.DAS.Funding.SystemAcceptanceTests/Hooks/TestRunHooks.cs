@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using Azure.Identity;
-using Azure.Messaging.ServiceBus;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -71,7 +69,6 @@ public class TestRunHooks
     [BeforeTestRun(Order = 5)]
     public static void RegisterSingletons()
     {
-        StaticObjects.ApprenticeshipsClient = new LearningClient();
         StaticObjects.EarningsOuterClient = new EarningsOuterClient();
         StaticObjects.ApprenticeshipsSqlClient = new LearningSqlClient();
         StaticObjects.EarningsSqlClient = new EarningsSqlClient();

@@ -67,6 +67,7 @@ public abstract class InstalmentModelBase
     public byte DeliveryPeriod { get; set; }
     public decimal Amount { get; set; }
     public string Type { get; set; }
+    public bool IsAfterLearningEnded { get; set; }
 }
 
 public class InstalmentModel : InstalmentModelBase

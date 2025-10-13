@@ -26,7 +26,6 @@ public class BeforeScenarioHooks
     private static void RegisterDependencies(ScenarioContext context)
     {
         var container = context.ScenarioContainer;
-        container.RegisterInstanceAs(StaticObjects.ApprenticeshipsClient);
         container.RegisterInstanceAs(StaticObjects.EarningsOuterClient);
         container.RegisterInstanceAs(StaticObjects.ApprenticeshipsSqlClient);
         container.RegisterInstanceAs(StaticObjects.EarningsSqlClient);
