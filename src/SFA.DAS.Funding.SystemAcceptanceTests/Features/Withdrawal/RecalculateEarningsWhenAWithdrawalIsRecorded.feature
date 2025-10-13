@@ -76,6 +76,22 @@ Scenario: Withdrawal is removed; with date set to null
 	And the expected number of earnings instalments after withdrawal are 12
 	And a withdrawal reverted event is published to approvals
 
+@regression
+Scenario: Withdrawal after removal
+	Given an apprenticeship has a start date of 2024-08-01, a planned end date of 2025-07-31, an agreed price of 15000, and a training code 2
+	And the apprenticeship commitment is approved
+	And sld inform us that the learner is to removed
+	And the apprenticeship is marked as withdrawn
+	And earnings are recalculated
+	And the expected number of earnings instalments after withdrawal are 0
+	And a learning withdrawn event is published to approvals with reason WithdrawFromStart and last day of learning as 2024-08-01
+	When SLD resubmits ILR
+	And SLD record on-programme cost as total price 15000 from date 2024-08-01 to date 2025-07-31
+	And Learning withdrawal date is recorded on 2024-12-15
+	And SLD submit updated learners details
+	And earnings are recalculated
+	And the expected number of earnings instalments after withdrawal are 4
+
 
 @regression
 Scenario: Withdrawal date can be after planned end date

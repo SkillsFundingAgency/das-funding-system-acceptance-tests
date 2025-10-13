@@ -23,6 +23,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         _earningsSqlClient = earningsSqlClient;
     }
 
+    [Given(@"the apprenticeship is marked as withdrawn")]
     [When(@"the apprenticeship is marked as withdrawn")]
     [Then(@"the apprenticeship is marked as withdrawn")]
     public async Task ApprenticeshipIsMarkedAsWithdrawn()
@@ -38,6 +39,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         }, "LearningStatus did not change to 'Withdrawn' in time.");
     }
 
+    [Given("last day of learning is set to (.*) in learning db")]
     [Then("last day of learning is set to (.*) in learning db")]
     public async Task LastDayOfLearningIsSetToDateInLearningDb(TokenisableDateTime withdrawalDate)
     {
@@ -52,6 +54,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         }, $"LastDayOfLearning did not change to {withdrawalDate} in learning db episode table");
     }
 
+    [Given("earnings are recalculated")]
     [When("earnings are recalculated")]
     [Then("earnings are recalculated")]
     public async Task EarningsAreRecalculated()
@@ -61,7 +64,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         testData.EarningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
     }
 
-
+    [Given("the expected number of earnings instalments after withdrawal are (.*)")]
     [When("the expected number of earnings instalments after withdrawal are (.*)")]
     [Then("the expected number of earnings instalments after withdrawal are (.*)")]
     public void ExpectedNumberOfEarningsInstalmentsAfterWithdrawalIs(int expectedInstalmentsNumber)

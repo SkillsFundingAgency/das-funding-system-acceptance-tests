@@ -9,7 +9,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     [Binding]
     public class RemovalStepDefinitions(ScenarioContext context, LearnerDataOuterApiHelper learnerDataOuterApiHelper, EarningsSqlClient earningsSqlClient)
     {
-
+        [Given("sld inform us that the learner is to removed")]
         [When("sld inform us that the learner is to removed")]
         public async Task WhenSldInformUThatTheLearnerIsToRemoved()
         {
@@ -17,7 +17,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await learnerDataOuterApiHelper.RemoveLearner(testData.EarningsGeneratedEvent.ApprenticeshipKey);
         }
 
-
+        [Given("a learning withdrawn event is published to approvals with reason (.*) and last day of learning as (.*)")]
         [Then("a learning withdrawn event is published to approvals with reason (.*) and last day of learning as (.*)")]
         public async Task LearningWithdrawnEventIsPublishedToApprovals(string reason, TokenisableDateTime lastDayOfLearning)
         {
