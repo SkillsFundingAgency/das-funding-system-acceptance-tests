@@ -1,11 +1,7 @@
 ﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
-using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
-using SFA.DAS.Payments.Model.Core;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
-using System.Text.Json;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
@@ -21,8 +17,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             _fundingConfig = Configurator.GetConfiguration();
             var baseUrl = _fundingConfig.OuterApiBaseUrl;
             _subscriptionKey = _fundingConfig.LearnerDataOuterApiSubscriptionKey;
-            _apiClient = HttpClientProvider.GetClient(baseUrl);
-        }
+            _apiClient = HttpClientProvider.GetClient(baseUrl);        }
 
         public async Task AddLearnerData(long ukprn, LearnerDataRequest learnerData)
         {
@@ -128,7 +123,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         public class UpdateLearnerRequest
         {
             public Delivery Delivery { get; set; } = new();
+            public LearnerRequestDetails Learner { get; set; }
         }
+
+        public class LearnerRequestDetails
+        {
+            public string FirstName { get; set; } 
+            public string LastName { get; set; } 
+            public string? Email { get; set; }
+        }
+
+
         public class Delivery
         {
             public OnProgramme OnProgramme { get; set; } = new OnProgramme();
