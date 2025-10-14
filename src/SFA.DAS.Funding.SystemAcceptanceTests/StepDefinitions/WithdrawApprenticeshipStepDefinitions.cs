@@ -1,7 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 

@@ -11,7 +11,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 [Binding]
 public class TestRunHooks
 {
+    private readonly ScenarioContext _context;
 
+
+    public TestRunHooks (ScenarioContext context)
+    {
+        _context = context;
+    }
 
     [BeforeTestRun(Order = 1)]
     public static void StartLocalWireMockServer()

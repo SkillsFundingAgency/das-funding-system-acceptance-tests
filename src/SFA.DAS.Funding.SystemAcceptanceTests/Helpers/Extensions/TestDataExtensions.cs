@@ -6,7 +6,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions
     {
         internal static LearnerDataBuilder GetLearnerDataBuilder(this TestData testData)
         {
-            return testData.LearnerDataBuilder ?? (testData.LearnerDataBuilder = new LearnerDataBuilder());
+            return testData.LearnerDataBuilder ?? (testData.LearnerDataBuilder = new LearnerDataBuilder(testData));
         }
 
         internal static void ResetLearnerDataBuilder(this TestData testData)

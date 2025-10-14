@@ -77,6 +77,8 @@ public class Learning
     public string LastName { get; set; } = null!;
     public DateTime DateOfBirth { get; set; }
     public string ApprenticeshipHashedId { get; set; } = null!;
+    public DateTime? CompletionDate { get; set; } = null;
+    public string? EmailAddress { get; set; }
     public List<FreezeRequest> FreezeRequests { get; set; }
     public List<Episode> Episodes { get; set; }
     public List<WithdrawalRequest> WithdrawalRequests { get; set; }

@@ -11,7 +11,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-internal class TestData
+public class TestData
 {
     internal string Uln { get; }
     internal Guid LearningKey { get; set; } = Guid.Empty;
@@ -50,6 +50,7 @@ internal class TestData
     internal EndDateChangedEvent EndDateChangedEvent { get; set; }
     internal LearningWithdrawnEvent LearningWithdrawnEvent { get; set; }
     internal WithdrawalRevertedEvent WithdrawalRevertedEvent { get; set; }
+    internal PersonalDetailsChangedEvent PersonalDetailsChangedEvent { get; set; }
 
     public TestData(string uln)
     {
