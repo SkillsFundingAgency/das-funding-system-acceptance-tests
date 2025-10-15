@@ -139,7 +139,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public OnProgramme OnProgramme { get; set; } = new OnProgramme();
 
             public List<EnglishAndMaths> EnglishAndMaths { get; set; } = [];
-            public DateTime? WithdrawalDate { get; set; }
         }
 
         public class OnProgramme
@@ -147,6 +146,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime ExpectedEndDate { get; set; }
             public List<CostDetails> Costs { get; set; } = new List<CostDetails>();
             public DateTime? CompletionDate { get; set; }
+            public DateTime? WithdrawalDate { get; set; }
+
 
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
         }

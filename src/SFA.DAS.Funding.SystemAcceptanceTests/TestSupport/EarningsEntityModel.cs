@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Learning.Types;
+﻿using Newtonsoft.Json.Serialization;
+using SFA.DAS.Learning.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -21,6 +22,8 @@ public class EpisodeModel
     public string LegalEntityName { get; set; }
     public string TrainingCode { get; set; } = null!;
     public int AgeAtStartOfApprenticeship { get; set; }
+    public DateTime? CompletionDate { get; set; }
+    public DateTime? WithdrawalDate { get; set; }
     public List<EpisodePriceModel> Prices { get; set; }
     public EarningsProfileModel EarningsProfile { get; set; }
     public List<EarningsProfileHistoryModel> EarningsProfileHistory { get; set; }

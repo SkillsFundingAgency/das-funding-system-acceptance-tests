@@ -92,6 +92,24 @@ Scenario: Withdrawal after removal
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are 4
 
+@regression
+Scenario: Withdrawal and price change applied together - reclalc earnings
+	Given an apprenticeship has a start date of 2024-08-01, a planned end date of 2025-07-31, an agreed price of 15000, and a training code 2
+	And the apprenticeship commitment is approved
+	And SLD record on-programme cost as total price 15000 from date 2024-08-01 to date 2025-07-31
+	And Learning withdrawal date is recorded on 2025-05-27
+	And SLD submit updated learners details
+	And the apprenticeship is marked as withdrawn
+	And earnings are recalculated
+	When SLD resubmits ILR
+	And SLD record on-programme cost as total price 18000 from date 2024-08-01 to date 2025-07-31
+	And Learning withdrawal date is recorded on 2025-05-27
+	And SLD submit updated learners details
+	Then the apprenticeship is marked as withdrawn
+	And earnings are recalculated
+	And the expected number of earnings instalments after withdrawal are 9
+	And the earnings after the delivery period 9 and academic year 2425 are soft deleted
+	And last day of learning is set to 2025-05-27 in learning and earning db
 
 @regression
 Scenario: Withdrawal date can be after planned end date
@@ -101,7 +119,7 @@ Scenario: Withdrawal date can be after planned end date
 	And Learning withdrawal date is recorded on <last_day_of_delivery>
 	And SLD submit updated learners details
 	Then the apprenticeship is marked as withdrawn
-	And last day of learning is set to <last_day_of_delivery> in learning db
+	And last day of learning is set to <last_day_of_delivery> in learning and earning db
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are <new_num_of_instalments>
 Examples:

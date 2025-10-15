@@ -37,8 +37,8 @@ internal class WithdrawApprenticeshipStepDefinitions
         }, "LearningStatus did not change to 'Withdrawn' in time.");
     }
 
-    [Given("last day of learning is set to (.*) in learning db")]
-    [Then("last day of learning is set to (.*) in learning db")]
+    [Given("last day of learning is set to (.*) in learning and earning db")]
+    [Then("last day of learning is set to (.*) in learning and earning db")]
     public async Task LastDayOfLearningIsSetToDateInLearningDb(TokenisableDateTime withdrawalDate)
     {
         var testData = _context.Get<TestData>();
@@ -47,8 +47,9 @@ internal class WithdrawApprenticeshipStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
+            var earnings  = _earningsSqlClient.GetEarningsEntityModel(_context);
 
-            return apprenticeship.Episodes.First().LastDayOfLearning == withdrawalDate.Value;
+            return apprenticeship.Episodes.First().LastDayOfLearning == withdrawalDate.Value && earnings.Episodes.First().WithdrawalDate == withdrawalDate.Value;
         }, $"LastDayOfLearning did not change to {withdrawalDate} in learning db episode table");
     }
 
@@ -104,6 +105,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         }
     }
 
+    [Given("Learning withdrawal date is recorded on (.*)")]
     [When("Learning withdrawal date is recorded on (.*)")]
     public void LearningWithdrawalDateIsRecordedOn(TokenisableDateTime? withdrawalDate)
     {
