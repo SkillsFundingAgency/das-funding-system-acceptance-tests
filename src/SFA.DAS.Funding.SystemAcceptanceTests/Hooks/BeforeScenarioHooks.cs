@@ -15,6 +15,12 @@ public class BeforeScenarioHooks
         RegisterDependencies(context);
     }
 
+    [BeforeScenario]
+    public void AssignContextToSingletons(ScenarioContext context)
+    {
+        StaticObjects.LearnerDataOuterApiHelper.SetContext(context);
+    }
+
     private static void PopulateContextTestData(ScenarioContext context)
     {
         var testData = new TestData(TestUlnProvider.GetNext());

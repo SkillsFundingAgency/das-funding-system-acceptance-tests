@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events
 {
-    internal static class WithdrawalRevertedEvent
+    internal static class WithdrawalRevertedEventHelper
     {
         internal static async Task ReceiveWithdrawalRevertedEvent(this ScenarioContext context, Guid learningKey)
         {

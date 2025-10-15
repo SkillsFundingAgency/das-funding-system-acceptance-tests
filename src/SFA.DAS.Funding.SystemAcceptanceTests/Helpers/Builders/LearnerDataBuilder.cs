@@ -3,12 +3,26 @@ using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuter
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 {
-    public class LearnerDataBuilder
+    public class LearnerDataBuilder(TestData testData)
     {
-        private readonly UpdateLearnerRequest _request = new ()
+        private readonly UpdateLearnerRequest _request = new()
         {
-            Delivery = new Delivery()
+            Delivery = new Delivery(),
+            Learner = new LearnerRequestDetails
+            {
+                FirstName = testData.LearningCreatedEvent.FirstName,
+                LastName = testData.LearningCreatedEvent.LastName
+            }
         };
+
+        public LearnerDataBuilder WithLearnersPersonalDetails (string firstName, string lastName, string? email)
+        {
+            _request.Learner.FirstName = firstName;
+            _request.Learner.LastName = lastName;
+            _request.Learner.Email = email;
+
+            return this;
+        }
 
         public LearnerDataBuilder WithCostDetails(int trainingPrice, int? epaoPrice, DateTime? fromDate)
         {
