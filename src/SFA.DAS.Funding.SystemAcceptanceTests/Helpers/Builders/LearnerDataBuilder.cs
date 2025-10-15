@@ -51,7 +51,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
         public LearnerDataBuilder WithWithdrawalDate(DateTime? withdrawalDate)
         {
-            _request.Delivery.WithdrawalDate = withdrawalDate;
+            _request.Delivery.OnProgramme.WithdrawalDate = withdrawalDate;
 
             return this;
         }
