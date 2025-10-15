@@ -62,7 +62,7 @@ Scenario: Balancing and Completion earnings on Completion - Completion moved lat
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And SLD submit updated learners details
 	Then earnings of 1000 are generated from periods currentAY-R01 to currentAY-R11
-	#And an earning of 1000 of type Balancing is generated for period currentAY-R12
+	And an earning of 1000 of type Balancing is generated for period currentAY-R12
 	And an earning of 3000 of type Completion is generated for period currentAY-R12
 
 @regression
