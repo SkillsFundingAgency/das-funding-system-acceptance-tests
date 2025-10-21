@@ -91,6 +91,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public async Task<List<FM36Learner>> GetFm36Block(long ukprn, int collectionYear, byte collectionPeriod)
         {
+            var response = await GetFm36BlockHttpResponseMessage(ukprn, collectionYear, collectionPeriod);
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"Expected HTTP 200 OK response from GetFm36Block request, but got {response.StatusCode}");
+            return JsonConvert.DeserializeObject<List<FM36Learner>>(await response.Content.ReadAsStringAsync())!;
+        }
+
+        public async Task<HttpResponseMessage> GetFm36BlockHttpResponseMessage(long ukprn, int collectionYear, byte collectionPeriod, int? pageSize = null, int? pageNumber = null)
+        {
+            var url = $"/learnerdata/Learners/providers/{ukprn}/collectionPeriod/{collectionYear}/{collectionPeriod}/fm36data";
+
+            if (pageSize.HasValue && pageNumber.HasValue)
+            {
+                url += $"?page={pageNumber.Value}&pageSize={pageSize.Value}";
+            }
+
             var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/Learners/providers/{ukprn}/collectionPeriod/{collectionYear}/{collectionPeriod}/fm36data");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
@@ -99,7 +113,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"Expected HTTP 200 OK response from GetFm36Block request, but got {response.StatusCode}");
 
-            return JsonConvert.DeserializeObject<List<FM36Learner>>(await response.Content.ReadAsStringAsync())!;
+            return response;
         }
 
         public async Task DeleteLearner(long ukprn, Guid learningKey)
