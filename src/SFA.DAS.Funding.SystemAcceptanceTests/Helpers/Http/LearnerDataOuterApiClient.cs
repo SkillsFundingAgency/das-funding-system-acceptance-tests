@@ -105,7 +105,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
                 url += $"?page={pageNumber.Value}&pageSize={pageSize.Value}";
             }
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/Learners/providers/{ukprn}/collectionPeriod/{collectionYear}/{collectionPeriod}/fm36data");
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");

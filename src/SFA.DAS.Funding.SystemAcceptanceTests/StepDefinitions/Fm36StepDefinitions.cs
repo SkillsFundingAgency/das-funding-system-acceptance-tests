@@ -51,7 +51,7 @@ public class Fm36StepDefinitions
     [Given(@"that there is at least 15 records available from FM36 endpoint")]
     public async Task GivenThatRecordsExistInFm36Endpoint()
     {
-        // The perpose of this endpoint is to ensure paging tests can be run. There should be
+        // The purpose of this endpoint is to ensure paging tests can be run. There should be
         // at least 15 records of fm36 data from previous tests. If not then we create some test records here.
         // the content of the records is not important for paging tests.
 

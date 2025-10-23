@@ -2,7 +2,6 @@
 
 This feature tests paging functionality of endpoint
 
-@tag1
 Scenario: No paging parameters provided 
 	Given that there is at least 15 records available from FM36 endpoint
 	When a request is made without paging parameters
