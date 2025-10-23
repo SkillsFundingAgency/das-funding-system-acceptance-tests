@@ -104,7 +104,7 @@ public class Fm36StepDefinitions
         var now = DateTime.Now;
         var collectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", now));
         var collectionPeriod = TableExtensions.Period[now.ToString("MMMM")];
-        testData.Fm36HttpResponseMessage = await _learnerDataOuterApiClient.GetFm36BlockHttpResponseMessage(Constants.UkPrn, collectionYear, collectionPeriod, pageNumber, pageSize);
+        testData.Fm36HttpResponseMessage = await _learnerDataOuterApiClient.GetFm36BlockHttpResponseMessage(Constants.UkPrn, collectionYear, collectionPeriod, pageSize, pageNumber);
     }
 
     [Given(@"the apprentice is marked as a care leaver")]
