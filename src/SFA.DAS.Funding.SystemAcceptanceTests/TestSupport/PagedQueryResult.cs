@@ -1,6 +1,6 @@
 ﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
-public abstract class PagedQueryResult<T>
+public class PagedQueryResult<T>
 {
     public int Page { get; set; }
     public int TotalItems { get; set; }
