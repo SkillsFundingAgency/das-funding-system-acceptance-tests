@@ -16,6 +16,7 @@ internal static class ApprenticeshipEventHelper
         return fixture.Build<CMT.ApprenticeshipCreatedEvent>()
            .With(_ => _.StartDate, new DateTime(actualStartDate.Year, actualStartDate.Month, 1))
            .With(_ => _.ActualStartDate, actualStartDate)
+           .With(_ => _.FirstName, "Sys acceptance test - " + context.ScenarioInfo.Title)
            .With(_ => _.EndDate, plannedEndDate)
            .With(_ => _.PriceEpisodes, new PriceEpisodeHelper().CreateSinglePriceEpisodeUsingStartDate(actualStartDate, agreedPrice))
            .With(_ => _.Uln, testData.Uln)
