@@ -15,7 +15,7 @@ Scenario: Apprentice personal details are updated
 	And a personal details changed event is published to approvals with first name <first_name> last name <last_name> and email <email>
 
 Examples:
-	| first_name | last_name | email             |
-	| John       | Doe       | john.doe@test.com |
-	| Jane       | Doe       | null              |
+	| first_name                  | last_name | email             |
+	| Sys Acceptance Tests - John | Doe       | john.doe@test.com |
+	| Sys Acceptance Tests - Jane | Doe       | null              |
 
