@@ -51,6 +51,7 @@ public class TestData
     internal LearningWithdrawnEvent LearningWithdrawnEvent { get; set; }
     internal WithdrawalRevertedEvent WithdrawalRevertedEvent { get; set; }
     internal PersonalDetailsChangedEvent PersonalDetailsChangedEvent { get; set; }
+    internal HttpResponseMessage? Fm36HttpResponseMessage { get; set; }
 
     public TestData(string uln)
     {

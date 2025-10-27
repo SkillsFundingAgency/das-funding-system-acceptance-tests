@@ -1,9 +1,10 @@
 ﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
+using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using System.Runtime.CompilerServices;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -47,6 +48,34 @@ public class Fm36StepDefinitions
 
     }
 
+    [Given(@"that there is at least 15 records available from FM36 endpoint")]
+    public async Task GivenThatRecordsExistInFm36Endpoint()
+    {
+        // The purpose of this endpoint is to ensure paging tests can be run. There should be
+        // at least 15 records of fm36 data from previous tests. If not then we create some test records here.
+        // the content of the records is not important for paging tests.
+
+        var testData = _context.Get<TestData>();
+        var now = DateTime.Now;
+        var collectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", now));
+        var collectionPeriod = TableExtensions.Period[now.ToString("MMMM")];
+
+        var existingFm36Records = await _learnerDataOuterApiClient.GetFm36Block(Constants.UkPrn, collectionYear, collectionPeriod);
+
+        if(existingFm36Records.Count >= 15)
+            return;
+
+        var recordsToCreate = 15 - existingFm36Records.Count;
+
+        for (int i = 0; i < recordsToCreate; i++)
+        {
+            var startDate = TokenisableDateTime.FromString("currentAY-08-23");
+            var plannedEndDate = TokenisableDateTime.FromString("currentAYPlusTwo-08-23");
+            testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, 15000, "2");
+            await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
+        }
+    }
+
     [When("the fm36 data is retrieved through LearnerData outer api for (.*)")]
     public async Task WhenTheFmDataIsRetrievedThroughLearnerDataOuterApiForCurrentDate(TokenisableDateTime searchDate)
     {
@@ -58,6 +87,25 @@ public class Fm36StepDefinitions
             collectionPeriod);
     }
 
+    [When(@"a request is made without paging parameters")]
+    public async Task WhenARequestIsMadeWithoutPagingParameters()
+    {
+        var testData = _context.Get<TestData>();
+        var now = DateTime.Now;
+        var collectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", now));
+        var collectionPeriod = TableExtensions.Period[now.ToString("MMMM")];
+        testData.Fm36HttpResponseMessage = await _learnerDataOuterApiClient.GetFm36BlockHttpResponseMessage(Constants.UkPrn, collectionYear, collectionPeriod);
+    }
+
+    [When(@"a request is made with page number (.*) and page size (.*)")]
+    public async Task WhenARequestIsMadeWithPageNumberAndPageSize(int pageNumber, int pageSize)
+    {
+        var testData = _context.Get<TestData>();
+        var now = DateTime.Now;
+        var collectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", now));
+        var collectionPeriod = TableExtensions.Period[now.ToString("MMMM")];
+        testData.Fm36HttpResponseMessage = await _learnerDataOuterApiClient.GetFm36BlockHttpResponseMessage(Constants.UkPrn, collectionYear, collectionPeriod, pageSize, pageNumber);
+    }
 
     [Given(@"the apprentice is marked as a care leaver")]
     public async Task GivenTheApprenticeIsMarkedAsACareLeaver()
@@ -548,7 +596,6 @@ public class Fm36StepDefinitions
         fm36Learner.Should().NotBeNull();
     }
 
-
     [Then(@"fm36 FundStart value is (.*)")]
     public void ThenFm36FundStartValueIsFalse(bool expectedValue)
     {
@@ -587,7 +634,6 @@ public class Fm36StepDefinitions
         Assert.AreEqual(lastDayOfLearning.Value,
             fm36Learner!.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeActualEndDate, "Unexpected PriceEpisodeActualEndDate found!");
     }
-
 
     [Then(@"fm36 block contains a new price episode starting (.*) with episode 1 tnp of (.*) and episode 2 tnp of (.*)")]
     public void ThenFm36BlockContainsANewPriceEpisodeStarting(TokenisableDateTime newEpisodeStartDate, decimal expectedEpisode1Tnp, decimal expectedEpisode2Tnp)
@@ -752,5 +798,33 @@ public class Fm36StepDefinitions
         fm36Learner.PriceEpisodes.FirstOrDefault()?.PriceEpisodePeriodisedValues
             .GetValuesForAttribute(PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeCompletionPayment).SingleOrDefault(x => x.PeriodNumber == completionPaymentPeriod.Value.PeriodValue).Value
             .Should().Be(amount, $"{PriceEpisodePeriodisedValuesAttributeNames.PriceEpisodeCompletionPayment} value for period {completionPaymentPeriod.Value} is not {amount}");
+    }
+
+    [Then(@"the response should be unpaged")]
+    public async Task ThenTheResponseShouldBeUnpaged()
+    {
+        var testData = _context.Get<TestData>();
+        var responseContent = await testData.Fm36HttpResponseMessage!.Content.ReadAsStringAsync();
+        var learners = JsonConvert.DeserializeObject<List<FM36Learner>>(responseContent);
+
+        Assert.IsNotNull(learners, "FM36 learners response is null");
+        learners!.Count.Should().BeGreaterThan(14, "Expected at least 15 learners");
+    }
+
+    [Then(@"the response should contain (.*) records for page (.*)")]
+    public async Task ThenTheResponseShouldContainRecordsForPage(int numberOfRecords, int pageNumber)
+    {
+        var testData = _context.Get<TestData>();
+        var responseContent = await testData.Fm36HttpResponseMessage!.Content.ReadAsStringAsync();
+        var pagedLearners = JsonConvert.DeserializeObject<PagedQueryResult<FM36Learner>>(responseContent);
+
+        Assert.IsNotNull(pagedLearners, "Paged FM36 learners response is null");
+        pagedLearners!.Items.Count.Should().Be(numberOfRecords, $"Expected {numberOfRecords} learners on page {pageNumber}");
+        pagedLearners.Page.Should().Be(pageNumber, $"Expected page number to be {pageNumber}");
+        pagedLearners.TotalItems.Should().BeGreaterThan(14, "Expected total items to be greater than 15");
+        pagedLearners.TotalPages.Should().BeGreaterThan(2, "Expected total pages to be greater than 2");
+
+        var linksHeader = testData.Fm36HttpResponseMessage.Headers.SingleOrDefault(x=>x.Key == "links");
+        linksHeader.Should().NotBeNull("Links header is missing in the response");
     }
 }
