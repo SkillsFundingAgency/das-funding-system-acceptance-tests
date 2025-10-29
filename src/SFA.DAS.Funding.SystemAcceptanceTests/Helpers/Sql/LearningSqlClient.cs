@@ -62,7 +62,7 @@ public class LearningSqlClient
             $" inner join [dbo].[Episode] ep on ep.LearningKey = lrn.[Key] " +
             $" inner join [dbo].[EpisodePrice] eppr on eppr.EpisodeKey = ep.[Key] " +
             $" WHERE (eppr.StartDate <= '{dates.End}' AND eppr.EndDate   >= '{dates.Start}') " +
-            $" AND ep.Ukprn = {ukprn} And ep.LastDayOfLearning is not null");
+            $" AND ep.Ukprn = {ukprn} And ep.LastDayOfLearning is null");
 
         return learners;
     }
