@@ -26,7 +26,7 @@ public class TestData
     internal decimal NewAssessmentPrice { get; set; }
     internal decimal NewEarningsAmount { get; set; }
     internal decimal FundingBandMax { get; set; }
-    internal DateTime LastDayOfLearning { get; set; }
+    internal DateTime? LastDayOfLearning { get; set; } = null;
     internal DateTime PriceChangeEffectiveFrom { get; set; }
     internal DateTime PriceChangeApprovedDate { get; set; }
     internal DateTime StartDateChangeApprovedDate { get; set; }

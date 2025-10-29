@@ -33,8 +33,8 @@ internal class WithdrawApprenticeshipStepDefinitions
         {
             apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
 
-            return apprenticeship.Episodes.First().LearningStatus == "Withdrawn";
-        }, "LearningStatus did not change to 'Withdrawn' in time.");
+            return apprenticeship.Episodes.First().LastDayOfLearning == testData.LastDayOfLearning;
+        }, $"Incorrect LastDayOfLearning found in the Learning db, Episode table.");
     }
 
     [Given("last day of learning is set to (.*) in learning and earning db")]
@@ -112,6 +112,8 @@ internal class WithdrawApprenticeshipStepDefinitions
         var testData = _context.Get<TestData>();
         var learnerDataBuilder = testData.GetLearnerDataBuilder();
         learnerDataBuilder.WithWithdrawalDate(withdrawalDate.Value);
+
+        testData.LastDayOfLearning = withdrawalDate.Value;
     }
 
 }
