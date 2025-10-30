@@ -7,6 +7,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 [Binding]
 public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, EarningsSqlClient earningsEntitySqlClient)
 {
+    [Given(@"learning support is recorded from (.*) to (.*)")]
     [When(@"learning support is recorded from (.*) to (.*)")]
     public void AddLearningSupport(TokenisableDateTime learningSupportStart, TokenisableDateTime learningSupportEnd)
     {
@@ -26,7 +27,8 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
         learnerDataBuilder.WithNoOnProgrammeLearningSupport();
     }
 
-
+    [Given("learning support continues to be paid from periods (.*) to (.*)")]
+    [Then("learning support continues to be paid from periods (.*) to (.*)")]
     [Then(@"learning support earnings are generated from periods (.*) to (.*)")]
     public async Task VerifyLearningSupportEarnings(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
     {

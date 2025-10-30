@@ -34,6 +34,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
+        [Given("a Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*) and learning support from (.*) to (.*)")]
         [When("a Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*) and learning support from (.*) to (.*)")]
         public async Task AddMathsAndEnglishLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount,
             TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
@@ -43,6 +44,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
             learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount)
+                        .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+        [When("English and Maths learning is recorded from (.*) to (.*) with course (.*) and amount (.*) and withdrawal date (.*) and learning support from (.*) to (.*)")]
+        public async Task AddMathsAndEnglishWithWithdrawalAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount, TokenisableDateTime withdrawalDate,
+            TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount)
+                        .WithWithdrawalDate(withdrawalDate.Value)
                         .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
             testData.IsMathsAndEnglishAdded = true;
