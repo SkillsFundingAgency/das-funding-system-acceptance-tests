@@ -62,7 +62,7 @@ public class LearningSqlClient
             $" inner join [dbo].[Episode] ep on ep.LearningKey = lrn.[Key] " +
             $" inner join [dbo].[EpisodePrice] eppr on eppr.EpisodeKey = ep.[Key] " +
             $" WHERE (eppr.StartDate <= '{dates.End}' AND eppr.EndDate   >= '{dates.Start}') " +
-            $" AND ep.Ukprn = {ukprn} And ep.LearningStatus = 'Active'");
+            $" AND ep.Ukprn = {ukprn} And ep.LastDayOfLearning is null");
 
         return learners;
     }
@@ -101,8 +101,6 @@ public class Episode
     public string? TrainingCourseVersion { get; set; }
     public bool PaymentsFrozen { get; set; }
     public List<EpisodePrice> Prices { get; set; }
-    public string LearningStatus { get; set; }
-
     public DateTime? LastDayOfLearning { get; set; }
 }
 

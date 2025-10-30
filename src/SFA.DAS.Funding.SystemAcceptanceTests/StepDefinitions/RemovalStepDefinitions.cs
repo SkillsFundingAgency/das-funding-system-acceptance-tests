@@ -15,6 +15,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
             await learnerDataOuterApiHelper.RemoveLearner(testData.EarningsGeneratedEvent.ApprenticeshipKey);
+
+            testData.LastDayOfLearning = testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate;
         }
 
         [Given("a learning withdrawn event is published to approvals with reason (.*) and last day of learning as (.*)")]
