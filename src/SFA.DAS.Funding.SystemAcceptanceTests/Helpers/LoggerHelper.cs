@@ -2,5 +2,8 @@
 
 public static class LoggerHelper
 {
-    public static void WriteLog(string message) => TestContext.Progress.WriteLine(message);
+    public static void WriteLog(string message)
+    {
+        //do nothing todo fix it if we stick with mstest
+    }
 }

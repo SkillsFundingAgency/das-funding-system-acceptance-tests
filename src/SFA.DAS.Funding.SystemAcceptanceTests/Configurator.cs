@@ -3,7 +3,6 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using System.Reflection;
 
-[assembly: Parallelizable(ParallelScope.Fixtures)]
 namespace SFA.DAS.Funding.SystemAcceptanceTests
 {
     public static class Configurator

@@ -29,7 +29,7 @@ public static class PaymentDeliveryPeriodExpectationExtensions
 
 		var errorMessage = $"Expected a payment on the ENTITY for delivery period {periodExpectation.DeliveryPeriod.AcademicYear}-{periodExpectation.DeliveryPeriod.PeriodValue}";
 
-		Assert.That(periodPayments.Any(), $"{errorMessage}, but found no payments.");
+		Assert.IsTrue(periodPayments.Any(), $"{errorMessage}, but found no payments.");
 
 		var filteredPeriodPayments = periodPayments;
 
@@ -64,7 +64,7 @@ public static class PaymentDeliveryPeriodExpectationExtensions
                 filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.EmployerIncentiveAmount && x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString());
             }
 
-            Assert.That(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
+            Assert.IsTrue(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
 	}
 
 	public static void AssertAgainstEventPayments(this PaymentDeliveryPeriodExpectation periodExpectation, IEnumerable<Payment> payments)
@@ -75,7 +75,7 @@ public static class PaymentDeliveryPeriodExpectationExtensions
 
 		var errorMessage = $"Expected a payment on the EVENT for delivery period {periodExpectation.DeliveryPeriod.AcademicYear}-{periodExpectation.DeliveryPeriod.PeriodValue}";
 
-		Assert.That(periodPayments.Any(), $"{errorMessage}, but found no payments.");
+		Assert.IsTrue(periodPayments.Any(), $"{errorMessage}, but found no payments.");
 
 		var filteredPeriodPayments = periodPayments;
 
@@ -99,6 +99,6 @@ public static class PaymentDeliveryPeriodExpectationExtensions
                 filteredPeriodPayments = filteredPeriodPayments.Where(x => (decimal)x.Amount == periodExpectation.Expectation.EmployerIncentiveAmount && x.PaymentType == AdditionalPaymentType.EmployerIncentive.ToString());
             }
 
-            Assert.That(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
+            Assert.IsTrue(filteredPeriodPayments.Any(), $"{errorMessage} but only got the following payment(s): {JsonConvert.SerializeObject(periodPayments)}");
 	}
 }

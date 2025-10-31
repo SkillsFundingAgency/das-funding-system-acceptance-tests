@@ -23,8 +23,8 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         var commitmentsApprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
         var apprenticeshipCreatedEvent = testData.LearningCreatedEvent;
 
-        if (condition == "below") Assert.Less(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost, apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate)!.FundingBandMaximum);
-        else Assert.Greater(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost, apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate)!.FundingBandMaximum);
+        if (condition == "below") Assert.IsTrue(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost < apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate)!.FundingBandMaximum);
+        else Assert.IsTrue(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost > apprenticeshipCreatedEvent.Episode.Prices.MaxBy(x => x.StartDate)!.FundingBandMaximum);
     }
 
     [Then(@"80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months (.*)")]

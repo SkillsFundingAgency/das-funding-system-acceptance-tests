@@ -164,8 +164,7 @@ public class Fm36StepDefinitions
         var secondIncentiveThresholdDate = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DueDate;
 
 
-        Assert.Multiple(() =>
-        {
+        
             Assert.AreEqual(EarningsFM36Constants.LearnRefNumber, fm36Learner.LearnRefNumber,
                 "Unexpected Learner Ref Number found!");
             Assert.AreEqual(2, fm36Learner.EarningsPlatform, "Unexpected Earnings Platform found!");
@@ -577,7 +576,6 @@ public class Fm36StepDefinitions
             fm36Learner.LearningDeliveries.FirstOrDefault()?.LearningDeliveryPeriodisedTextValues
             .GetValuesForAttribute(LearningDeliveryPeriodisedTextValuesAttributeNames.LearnDelContType)
             .Should().OnlyContain(x => x.Value.ToString() == "Contract for services with the employer", $"Not all {LearningDeliveryPeriodisedTextValuesAttributeNames.LearnDelContType} are \"Contract for services with the employer\".");
-        });
     }
 
     [Then(@"fm36 data does not exist for that apprenticeship")]

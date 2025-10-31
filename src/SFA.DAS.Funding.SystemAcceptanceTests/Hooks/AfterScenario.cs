@@ -102,6 +102,6 @@ internal class AfterScenario
         }
 
         // Attach the test data file to the test output
-        TestContext.AddTestAttachment(outputFile);
+        //TestContext.AddTestAttachment(outputFile); todo if we stick with MSTest
     }
 }

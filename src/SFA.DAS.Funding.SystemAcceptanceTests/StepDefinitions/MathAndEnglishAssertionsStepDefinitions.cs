@@ -248,7 +248,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(course, "Balancing");
 
-            Assert.Zero(mathsAndEnglishInstalments.Result.Count, "Unexpected Balancing earning for English and Maths found! ");
+            Assert.IsTrue(mathsAndEnglishInstalments.Result.Count == 0, "Unexpected Balancing earning for English and Maths found! ");
         }
 
         [Then("Maths and English earnings for course (.*) are zero")]

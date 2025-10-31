@@ -152,9 +152,9 @@ public class RecalculateEarningsStepDefinitions
             var instalment =
                 newEarningsProfile.Single(x => x.AcademicYear.ToString() == academicYear && x.DeliveryPeriod == i);
 
-            Assert.AreEqual(oldInstalmentAmount, instalment.Amount, $"Earning prior to DeliveryPeriod {delivery_period} " +
-                                                                               $" are not frozen. Expected Amount for Delivery Period: {instalment.DeliveryPeriod} and AcademicYear: " +
-                                                                               $" {instalment.AcademicYear} to be {oldInstalmentAmount} but was {instalment.Amount}");
+            Assert.AreEqual((decimal)oldInstalmentAmount, instalment.Amount, $"Earning prior to DeliveryPeriod {delivery_period} " +
+                                                                            $" are not frozen. Expected Amount for Delivery Period: {instalment.DeliveryPeriod} and AcademicYear: " +
+                                                                            $" {instalment.AcademicYear} to be {oldInstalmentAmount} but was {instalment.Amount}");
         }
     }
 
@@ -178,7 +178,7 @@ public class RecalculateEarningsStepDefinitions
                 {
                     foreach (var instalment in historicalInstalments)
                     {
-                        Assert.AreEqual(old_instalment_amount, instalment.Amount, $"Expected historical earnings amount to be {old_instalment_amount}, but was {instalment.Amount}");
+                        Assert.AreEqual((decimal)old_instalment_amount, instalment.Amount, $"Expected historical earnings amount to be {old_instalment_amount}, but was {instalment.Amount}");
                     }
                     return true;
                 }

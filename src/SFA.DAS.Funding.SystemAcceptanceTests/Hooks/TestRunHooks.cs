@@ -116,15 +116,15 @@ public class TestRunHooks
 
         foreach (var method in methods)
         {
-            var testCases = method.GetCustomAttributes(typeof(TestCaseAttribute), inherit: true)
-                .Cast<TestCaseAttribute>()
+            var testCases = method.GetCustomAttributes(typeof(DataRowAttribute), inherit: true)
+                .Cast<DataRowAttribute>()
                 .ToList();
 
             if (testCases.Any())
             {
                 testCount += testCases.Count;
             }
-            else if (method.GetCustomAttributes(typeof(TestAttribute), inherit: true).Any())
+            else if (method.GetCustomAttributes(typeof(TestMethodAttribute), inherit: true).Any())
             {
                 testCount++;
             }

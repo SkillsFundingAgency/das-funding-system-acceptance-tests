@@ -43,12 +43,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
 
-            Assert.Multiple(() =>
-            {
+            
                 Assert.AreEqual(firstName, apprenticeship.FirstName, "Unexpected First Name found!");
                 Assert.AreEqual(lastName, apprenticeship.LastName, "Unexpected Last Name found");
                 Assert.AreEqual(email, apprenticeship.EmailAddress, "Unexpected Email address found");
-            });
         }
 
 
@@ -63,12 +61,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var testData = _context.Get<TestData>();
             await _context.ReceivePersonalDetailsChangedEvent(testData.LearningKey);
 
-            Assert.Multiple(() =>
-            {
+            
                 Assert.AreEqual(firstName, testData.PersonalDetailsChangedEvent.FirstName, "Unexpected First Name found!");
                 Assert.AreEqual(lastName, testData.PersonalDetailsChangedEvent.LastName, "Unexpected Last Name found");
                 Assert.AreEqual(email, testData.PersonalDetailsChangedEvent.EmailAddress, "Unexpected Email address found");
-            });
+            
         }
 
     }
