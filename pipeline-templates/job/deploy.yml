@@ -42,7 +42,7 @@ jobs:
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(EarningsInnerAppName)
-            RuleName: "FundingAcceptanceTestsEarningsInner"
+            RuleName: "FundingATsEarningsInner"
             
         - ${{ if eq(parameters.TargetEnvironment, 'pp') }}:
           - template: azure-pipelines-templates/deploy/step/appservice-whitelist-ip.yml@das-platform-building-blocks
