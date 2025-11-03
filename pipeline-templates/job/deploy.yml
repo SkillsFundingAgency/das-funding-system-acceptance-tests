@@ -123,7 +123,13 @@ jobs:
 
         # Extract failed tests from TRX
         - powershell: |
-            [xml]$trx = Get-Content "$(Agent.TempDirectory)\TestResults\*.trx" | Out-String | ConvertFrom-Xml
+            $trxFile = Get-ChildItem "$(Agent.TempDirectory)\TestResults" -Filter *.trx | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            if (-not $trxFile) {
+              Write-Host "No TRX file found!"
+              exit 0
+            }
+
+            [xml]$trx = Get-Content $trxFile.FullName
             $failed = $trx.TestRun.Results.UnitTestResult | Where-Object outcome -eq 'Failed'
             if ($failed) {
               $names = ($failed.TestName | ForEach-Object { $_ -replace '"','\"' }) -join ','
