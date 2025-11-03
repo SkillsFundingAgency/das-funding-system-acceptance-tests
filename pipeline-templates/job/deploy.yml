@@ -142,15 +142,35 @@ jobs:
           displayName: "Collect failed test names"
 
         # Rerun only failed tests
-        - script: |
-            echo "Retrying failed tests: $(failedTests)"
-            for test in $(echo $(failedTests) | tr "," "\n")
-            do
-              echo "Re-running $test"
-              dotnet test "$(Build.ArtifactStagingDirectory)/publish/${{ parameters.SolutionBaseName }}.dll" --filter "FullyQualifiedName~$test"
-            done
+        - powershell: |
+            if (-not "$(failedTests)") {
+              Write-Host "No failed tests to rerun."
+              exit 0
+            }
+
+            Write-Host "Retrying failed tests:"
+            $failedTests = "$(failedTests)" -split ','
+            foreach ($test in $failedTests) {
+              $testName = $test.Trim()
+              Write-Host "Re-running: $testName"
+              dotnet test "$(Build.ArtifactStagingDirectory)/publish/${{ parameters.SolutionBaseName }}.dll" --filter "FullyQualifiedName~$testName" --logger trx
+            }
+          env:
+            NServiceBusLicense: $(NServiceBusLicense)
+            AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
+            EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
+            PaymentsFunctionKey: $(PaymentsFunctionKey)
+            LearningDbConnectionString: $(LearningDbConnectionString)
+            EarningsDbConnectionString: $(EarningsDbConnectionString)
+            PaymentsDbConnectionString: $(PaymentsDbConnectionString)
+            LearningServiceBearerTokenSigningKey : $(LearningServiceBearerTokenSigningKey)
+            LearningAzureFunctionKey : $(LearningAzureFunctionKey)
+            EarningsOuterSubscriptionKey: $(EarningsOuterSubscriptionKey)
+            LearnerDataOuterApiSubscriptionKey: $(LearnerDataOuterApiSubscriptionKey)
+            LearnerDataDbConnectionString: $(LearnerDataDbConnectionString)
           condition: and(failed(), ne(variables.failedTests, ''))
           displayName: "Re-run failed tests"
+
 
         - task: PublishTestResults@2
           displayName: Publish Test Results
