@@ -116,10 +116,33 @@ jobs:
             testAdapterPath: '$(Build.ArtifactStagingDirectory)/publish'
             runInParallel: false
             maxCpuCount: 1
-            rerunFailedTests: true
+            rerunFailedTests: false
             maxAttempts: 2
             failurePercentage: 30
             rerunType: 'basedontestfailurepercentage'
+
+        - task: VSTest@3
+          condition: failed()
+          displayName: "Re-run failed tests attempt"
+          env:
+            NServiceBusLicense: $(NServiceBusLicense)
+            AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
+            EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
+            PaymentsFunctionKey: $(PaymentsFunctionKey)
+            LearningDbConnectionString: $(LearningDbConnectionString)
+            EarningsDbConnectionString: $(EarningsDbConnectionString)
+            PaymentsDbConnectionString: $(PaymentsDbConnectionString)
+            LearningServiceBearerTokenSigningKey : $(LearningServiceBearerTokenSigningKey)
+            LearningAzureFunctionKey : $(LearningAzureFunctionKey)
+            EarningsOuterSubscriptionKey: $(EarningsOuterSubscriptionKey)
+            LearnerDataOuterApiSubscriptionKey: $(LearnerDataOuterApiSubscriptionKey)
+            LearnerDataDbConnectionString: $(LearnerDataDbConnectionString)
+          inputs:
+            testSelector: 'testAssemblies'
+            testAssemblyVer2: |
+              $(Build.ArtifactStagingDirectory)/publish/${{ parameters.SolutionBaseName }}.dll
+            searchFolder: '$(Build.ArtifactStagingDirectory)/publish'
+            testFiltercriteria: 'TestCategory=Flaky'
 
         - task: PublishTestResults@2
           displayName: Publish Test Results
