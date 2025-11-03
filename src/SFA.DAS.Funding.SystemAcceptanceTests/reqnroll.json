@@ -1,0 +1,10 @@
+{
+  "runtime": {
+    "executionOrder": "Any"
+  },
+  "bindingAssemblies": [
+    {
+      "assembly": "SFA.DAS.Funding.SystemAcceptanceTests"
+    }
+  ]
+}
