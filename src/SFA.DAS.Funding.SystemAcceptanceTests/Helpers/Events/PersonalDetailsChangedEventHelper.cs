@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Learning.Types;
+﻿using Reqnroll;
+using SFA.DAS.Learning.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events
 {

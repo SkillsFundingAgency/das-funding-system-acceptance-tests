@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+﻿using Reqnroll;
+
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 
 internal static class EarningsRecalculatedEventHelper
 {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using System.Text.Json;
+using Reqnroll;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;

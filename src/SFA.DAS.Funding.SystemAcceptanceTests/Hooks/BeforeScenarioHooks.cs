@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using Reqnroll;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 

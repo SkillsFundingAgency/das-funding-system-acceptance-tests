@@ -8,12 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="NServiceBus" Version="7.7.4" />
+    <PackageReference Include="Reqnroll" Version="3.2.0" />
 	<PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="100.0.64" />
     <PackageReference Include="SFA.DAS.Funding.ApprenticeshipEarnings.Types" Version="1.0.37-prerelease-28" />
     <PackageReference Include="SFA.DAS.Funding.ApprenticeshipPayments.Types" Version="0.1.37-prerelease-10" />
     <PackageReference Include="SFA.DAS.Learning.Types" Version="6.8.64-prerelease-9" />
     <PackageReference Include="SFA.DAS.NServiceBus" Version="17.0.13" />
-    <PackageReference Include="SpecFlow" Version="3.9.40" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="7.0.1" />
 	<PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Messages" Version="0.0.14" />
   </ItemGroup>
