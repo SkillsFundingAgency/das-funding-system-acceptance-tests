@@ -121,28 +121,30 @@ jobs:
             failurePercentage: 30
             rerunType: 'basedontestfailurepercentage'
 
-        - task: VSTest@3
+        # Extract failed tests from TRX
+        - powershell: |
+            [xml]$trx = Get-Content "$(Agent.TempDirectory)\TestResults\*.trx" | Out-String | ConvertFrom-Xml
+            $failed = $trx.TestRun.Results.UnitTestResult | Where-Object outcome -eq 'Failed'
+            if ($failed) {
+              $names = ($failed.TestName | ForEach-Object { $_ -replace '"','\"' }) -join ','
+              Write-Host "##vso[task.setvariable variable=failedTests]$names"
+              Write-Host "Found $($failed.Count) failed tests"
+            } else {
+              Write-Host "No failed tests found"
+            }
           condition: failed()
-          displayName: "Re-run failed tests attempt"
-          env:
-            NServiceBusLicense: $(NServiceBusLicense)
-            AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
-            EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
-            PaymentsFunctionKey: $(PaymentsFunctionKey)
-            LearningDbConnectionString: $(LearningDbConnectionString)
-            EarningsDbConnectionString: $(EarningsDbConnectionString)
-            PaymentsDbConnectionString: $(PaymentsDbConnectionString)
-            LearningServiceBearerTokenSigningKey : $(LearningServiceBearerTokenSigningKey)
-            LearningAzureFunctionKey : $(LearningAzureFunctionKey)
-            EarningsOuterSubscriptionKey: $(EarningsOuterSubscriptionKey)
-            LearnerDataOuterApiSubscriptionKey: $(LearnerDataOuterApiSubscriptionKey)
-            LearnerDataDbConnectionString: $(LearnerDataDbConnectionString)
-          inputs:
-            testSelector: 'testAssemblies'
-            testAssemblyVer2: |
-              $(Build.ArtifactStagingDirectory)/publish/${{ parameters.SolutionBaseName }}.dll
-            searchFolder: '$(Build.ArtifactStagingDirectory)/publish'
-            testFiltercriteria: 'TestCategory=Flaky'
+          displayName: "Collect failed test names"
+
+        # Rerun only failed tests
+        - script: |
+            echo "Retrying failed tests: $(failedTests)"
+            for test in $(echo $(failedTests) | tr "," "\n")
+            do
+              echo "Re-running $test"
+              dotnet test "$(Build.ArtifactStagingDirectory)/publish/${{ parameters.SolutionBaseName }}.dll" --filter "FullyQualifiedName~$test"
+            done
+          condition: and(failed(), ne(variables.failedTests, ''))
+          displayName: "Re-run failed tests"
 
         - task: PublishTestResults@2
           displayName: Publish Test Results
