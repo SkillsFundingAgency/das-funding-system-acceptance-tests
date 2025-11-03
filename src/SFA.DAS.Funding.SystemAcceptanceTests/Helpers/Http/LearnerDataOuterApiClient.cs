@@ -157,6 +157,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class OnProgramme
         {
+            public DateTime StartDate { get; set; }
             public DateTime ExpectedEndDate { get; set; }
             public List<CostDetails> Costs { get; set; } = new List<CostDetails>();
             public DateTime? CompletionDate { get; set; }
@@ -168,7 +169,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class CostDetails
         {
-            public int TrainingPrice { get; set; }
+            public int? TrainingPrice { get; set; }
             public int? EpaoPrice { get; set; }
             public DateTime? FromDate { get; set; }
         }

@@ -3,6 +3,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -14,6 +15,36 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
             var learnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, 10005077);
+            testData.LearnerData = learnerData;
+            context.Set(testData);
+        }
+
+        [When("SLD inform us of a learner with empty costs array")]
+        public async Task LearnerWithEmptyCostsArray()
+        {
+            var testData = context.Get<TestData>();
+            var learnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, Constants.UkPrn, new List<CostDetails> ());
+            testData.LearnerData = learnerData;
+            context.Set(testData);
+        }
+
+        [When("SLD inform us of a learner with training price (.*), epao as (.*) and fromDate (.*)")]
+        public async Task LearnerWithTrainingPriceEpaoAsAndFromDateFrom_Date(string trainingPrice, string epao, string   fromDate)
+        {
+            var testData = context.Get<TestData>();
+            var learnerData = await learnerDataOuterApiHelper.AddLearnerData(
+                testData.Uln, 
+                Constants.UkPrn, 
+                new List<CostDetails>
+                {
+                    new CostDetails
+                    {
+                        TrainingPrice = trainingPrice == "null" ? null : int.Parse(trainingPrice),
+                        EpaoPrice = epao == "null" ? null : int.Parse(epao),
+                        FromDate = fromDate == "null" ? null : TokenisableDateTime.FromString(fromDate).Value
+
+                    }
+                });
             testData.LearnerData = learnerData;
             context.Set(testData);
         }
@@ -78,7 +109,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [When("SLD record on-programme training price (.*) with epao as (.*) from date (.*) to date (.*)")]
-        public void SLDRecordOnProgrammeTrainingPriceAndEpaoFromDate(int trainingPrice, string? epaoPrice, TokenisableDateTime fromDate, TokenisableDateTime toDate)
+        public void SLDRecordOnProgrammeTrainingPriceAndEpaoFromDate(string? trainingPrice, string? epaoPrice, TokenisableDateTime fromDate, TokenisableDateTime toDate)
         {
             var testData = context.Get<TestData>();
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
@@ -87,13 +118,41 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 ? null
                 : Convert.ToInt32(epaoPrice);
 
-            learnerDataBuilder.WithCostDetails(trainingPrice, epao, fromDate.Value);
+            int? tp = string.IsNullOrWhiteSpace(trainingPrice) || trainingPrice.Equals("null", StringComparison.OrdinalIgnoreCase)
+                ? null
+                : Convert.ToInt32(trainingPrice);
+
+            learnerDataBuilder.WithCostDetails(tp, epao, fromDate.Value);
 
             learnerDataBuilder.WithExpectedEndDate(toDate.Value);
         }
 
+        [When("SLD record an empty on-programme costs array")]
+        public void SLDRecordEmptyOnProgCostsArray()
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
+            learnerDataBuilder.WithEmptyCostDetails();
+        }
 
+        [When("SLD record expected end date (.*)")]
+        public void SLDRecordExpectedEndDate(TokenisableDateTime plannedEndDate)
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithExpectedEndDate(plannedEndDate.Value);
+        }
+
+        [When("SLD record on-prog start date as (.*)")]
+        public void WhenSLDRecordOn_ProgStartDateAsPreviousAY(TokenisableDateTime startDate)
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithStartDate(startDate.Value);
+        }
 
         [Then(@"the learner's details are added to Learner Data db")]
         public async Task ThenTheLearnerIsAddedToLearnerData()
@@ -111,6 +170,23 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             data.DoB.Date.Should().Be(testData.LearnerData.Learner.Dob!.Value.Date);
             data.StartDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.StartDate!.Value.Date);
             data.PlannedEndDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.ExpectedEndDate!.Value.Date);
+        }
+
+        [Then("treat Training price as (.*), EPAO price as (.*) and fromDate as Start Date")]
+        public async Task TreatTrainingPriceAsEPAOPriceAsAndFromDateAs(int? trainingPrice, int? epaoPrice)
+        {
+            var testData = context.Get<TestData>();
+            var uln = testData.Uln;
+
+            await WaitHelper.WaitForIt(() => learnerDataSqlClient.GetLearnerData(Convert.ToInt64(uln)) != null, "Unable to find LearnerData for Uln");
+
+            var data = learnerDataSqlClient.GetLearnerData(Convert.ToInt64(uln));
+
+            Assert.IsNotNull(data);
+
+            data.StartDate.Should().Be(testData.LearnerData.Delivery.OnProgramme.StartDate!.Value.Date);
+            data.TrainingPrice.Should().Be(trainingPrice);
+            data.EpaoPrice.Should().Be(epaoPrice);
         }
     }
 }
