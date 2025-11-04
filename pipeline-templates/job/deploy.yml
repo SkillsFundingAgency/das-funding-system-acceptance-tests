@@ -155,7 +155,7 @@ jobs:
                   -replace '\)','\)' `
                   -replace ',','\,'
                 dotnet test $(Build.ArtifactStagingDirectory)/publish/${{ parameters.SolutionBaseName }}.dll `
-                  --filter "FullyQualifiedName=$escaped"
+                  --filter "FullyQualifiedName=$escaped" `
                   --logger "trx;LogFileName=rerun_$($t).trx" `
                   --results-directory "$(Agent.TempDirectory)\TestResultsRerun"
                 if ($LASTEXITCODE -ne 0) {
