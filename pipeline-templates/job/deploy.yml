@@ -149,13 +149,9 @@ jobs:
               $tests = Get-Content "$(failedTestsFile)"
               foreach ($t in $tests) {
                 Write-Host "Re-running failed test: $t"
-                $escaped = $t `
-                  -replace '"','\"' `
-                  -replace '\(','\(' `
-                  -replace '\)','\)' `
-                  -replace ',','\,'
+                $baseName = $t -replace '\(.*$', ''
                 dotnet test $(Build.ArtifactStagingDirectory)/publish/${{ parameters.SolutionBaseName }}.dll `
-                  --filter "FullyQualifiedName=$escaped" `
+                  --filter "FullyQualifiedName~$baseName" `
                   --logger "trx;LogFileName=rerun_$($t).trx" `
                   --results-directory "$(Agent.TempDirectory)\TestResultsRerun"
                 if ($LASTEXITCODE -ne 0) {
