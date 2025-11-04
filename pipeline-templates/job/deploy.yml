@@ -131,10 +131,12 @@ jobs:
 
             [xml]$trx = Get-Content $trxFile.FullName
             $failed = $trx.TestRun.Results.UnitTestResult | Where-Object outcome -eq 'Failed'
+
             if ($failed) {
-              $names = ($failed.TestName | ForEach-Object { $_ -replace '"','\"' }) -join ','
-              Write-Host "##vso[task.setvariable variable=failedTests]$names"
-              Write-Host "Found $($failed.Count) failed tests"
+              $failedFile = "$(Agent.TempDirectory)\failed_tests.txt"
+              $failed.TestName | Set-Content $failedFile
+              Write-Host "Found $($failed.Count) failed tests, saved to $failedFile"
+              Write-Host "##vso[task.setvariable variable=failedTestsFile]$failedFile"
             } else {
               Write-Host "No failed tests found"
             }
@@ -143,17 +145,20 @@ jobs:
 
         # Rerun only failed tests
         - powershell: |
-            if (-not "$(failedTests)") {
-              Write-Host "No failed tests to rerun."
-              exit 0
-            }
-
-            Write-Host "Retrying failed tests:"
-            $failedTests = "$(failedTests)" -split ','
-            foreach ($test in $failedTests) {
-              $testName = $test.Trim()
-              Write-Host "Re-running: $testName"
-              dotnet test "$(Build.ArtifactStagingDirectory)/publish/${{ parameters.SolutionBaseName }}.dll" --filter "FullyQualifiedName~$testName" --logger trx
+            if (Test-Path "$(failedTestsFile)") {
+              $tests = Get-Content "$(failedTestsFile)"
+              foreach ($t in $tests) {
+                Write-Host "Re-running failed test: $t"
+                dotnet test $(Build.ArtifactStagingDirectory)/publish/${{ parameters.SolutionBaseName }}.dll `
+                  --filter "FullyQualifiedName~$t" `
+                  --logger "trx;LogFileName=rerun_$($t).trx" `
+                  --results-directory "$(Agent.TempDirectory)\TestResultsRerun"
+                if ($LASTEXITCODE -ne 0) {
+                  Write-Host "Test failed again: $t"
+                }
+              }
+            } else {
+              Write-Host "No failed test list found — skipping rerun."
             }
           env:
             NServiceBusLicense: $(NServiceBusLicense)
@@ -168,8 +173,9 @@ jobs:
             EarningsOuterSubscriptionKey: $(EarningsOuterSubscriptionKey)
             LearnerDataOuterApiSubscriptionKey: $(LearnerDataOuterApiSubscriptionKey)
             LearnerDataDbConnectionString: $(LearnerDataDbConnectionString)
-          condition: and(failed(), ne(variables.failedTests, ''))
-          displayName: "Re-run failed tests"
+          condition: failed()
+          displayName: "Re-run failed tests (individually)"
+
 
 
         - task: PublishTestResults@2
