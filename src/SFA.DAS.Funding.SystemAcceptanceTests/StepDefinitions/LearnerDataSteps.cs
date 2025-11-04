@@ -109,7 +109,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [When("SLD record on-programme training price (.*) with epao as (.*) from date (.*) to date (.*)")]
-        public void SLDRecordOnProgrammeTrainingPriceAndEpaoFromDate(string? trainingPrice, string? epaoPrice, TokenisableDateTime fromDate, TokenisableDateTime toDate)
+        public void SLDRecordOnProgrammeTrainingPriceAndEpaoFromDate(string trainingPrice, string epaoPrice, string fromDate, TokenisableDateTime toDate)
         {
             var testData = context.Get<TestData>();
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
@@ -122,7 +122,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 ? null
                 : Convert.ToInt32(trainingPrice);
 
-            learnerDataBuilder.WithCostDetails(tp, epao, fromDate.Value);
+            TokenisableDateTime? fd = string.IsNullOrWhiteSpace(fromDate) || fromDate.Equals("null", StringComparison.OrdinalIgnoreCase)
+                ? null
+                : TokenisableDateTime.FromString(fromDate);
+
+            learnerDataBuilder.WithCostDetails(tp, epao, fd == null? null : fd.Value);
 
             learnerDataBuilder.WithExpectedEndDate(toDate.Value);
         }
