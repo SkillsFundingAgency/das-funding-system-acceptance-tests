@@ -24,7 +24,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
-        public LearnerDataBuilder WithCostDetails(int trainingPrice, int? epaoPrice, DateTime? fromDate)
+        public LearnerDataBuilder WithCostDetails(int? trainingPrice, int? epaoPrice, DateTime? fromDate)
         {
             _request.Delivery.OnProgramme.Costs.Add(new CostDetails
             {
@@ -32,6 +32,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
                 EpaoPrice = epaoPrice,
                 FromDate = fromDate
             });
+
+            return this;
+        }
+
+        public LearnerDataBuilder WithEmptyCostDetails()
+        {
+            _request.Delivery.OnProgramme.Costs = new List<CostDetails>();
+
+            return this;
+        }
+        public LearnerDataBuilder WithStartDate(DateTime startDate)
+        {
+            _request.Delivery.OnProgramme.StartDate = startDate;
 
             return this;
         }

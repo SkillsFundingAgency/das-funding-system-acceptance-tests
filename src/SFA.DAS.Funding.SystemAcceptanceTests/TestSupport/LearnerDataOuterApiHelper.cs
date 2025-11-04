@@ -45,6 +45,36 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             return learnerData;
         }
 
+        public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn, List<CostDetails> costs)
+        {
+            var fixture = new Fixture();
+            var learnerData =
+                new LearnerDataRequest
+                {
+                    ConsumerReference = fixture.Create<string>(),
+                    Learner = fixture.Build<StubLearner>()
+                    .With(x => x.Uln, uln)
+                    .With(x => x.Email, $"{uln}@test.com")
+                    .Create(),
+                    Delivery = new StubDelivery
+                    {
+                        EnglishAndMaths = fixture.Create<List<StubEnglishAndMaths>>(),
+                        OnProgramme = fixture.Build<StubOnProgramme>()
+                        .With(x => x.StartDate, DateTime.UtcNow)
+                        .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
+                        .With(x => x.AgreementId, "AG1")
+                        .With(x => x.StandardCode, 57)
+                        .With(x => x.Costs,costs)
+                        .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
+                        .Create()
+                    }
+                };
+
+            await _apiClient.AddLearnerData(ukprn, learnerData);
+
+            return learnerData;
+        }
+
         public async Task<GetLearnerResponse> GetLearnersForProvider(long ukprn, int academicYear)
         {
             return await _apiClient.GetLearners(ukprn, academicYear);
