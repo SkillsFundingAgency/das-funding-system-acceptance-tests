@@ -11,8 +11,3 @@ Scenario: Paging parameters provided
 	Given that there is at least 15 records available from FM36 endpoint
 	When a request is made with page number 2 and page size 5
 	Then the response should contain 5 records for page 2
-
-Scenario: TODO TEMPORARY TEST DESIGNED TO FAIL
-	Given that there is at least 15 records available from FM36 endpoint
-	When a request is made with page number 2 and page size 5
-	Then the response should contain 4 records for page 2
