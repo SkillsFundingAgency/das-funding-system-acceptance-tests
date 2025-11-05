@@ -1,4 +1,5 @@
-﻿Feature: Fm36
+﻿@nonparallelizable
+Feature: Fm36
 
 Retrieve Fm36 data
 
