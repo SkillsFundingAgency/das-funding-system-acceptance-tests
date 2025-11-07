@@ -150,7 +150,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class Delivery
         {
-            public OnProgramme OnProgramme { get; set; } = new OnProgramme();
+            public OnProgramme[] OnProgramme { get; set; } = [];
 
             public List<EnglishAndMaths> EnglishAndMaths { get; set; } = [];
         }
@@ -220,7 +220,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class StubDelivery
         {
-            public StubOnProgramme OnProgramme { get; set; }
+            public StubOnProgramme[] OnProgramme { get; set; } = [];
             public List<StubEnglishAndMaths> EnglishAndMaths { get; set; }
         }
 

@@ -18,8 +18,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn)
         {
             var fixture = new Fixture();
-            var learnerData =
-                new LearnerDataRequest
+
+            var onProgramme = fixture.Build<StubOnProgramme>()
+                .With(x => x.StartDate, DateTime.UtcNow)
+                        .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
+                        .With(x => x.AgreementId, "AG1")
+                        .With(x => x.StandardCode, 57)
+                        .With(x => x.Costs, new List<CostDetails> { fixture.Create<CostDetails>() })
+                        .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
+                        .Create();
+
+            var learnerData = new LearnerDataRequest
                 {
                     ConsumerReference = fixture.Create<string>(),
                     Learner = fixture.Build<StubLearner>()
@@ -29,14 +38,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     Delivery = new StubDelivery
                     {
                         EnglishAndMaths = fixture.Create<List<StubEnglishAndMaths>>(),
-                        OnProgramme = fixture.Build<StubOnProgramme>()
-                        .With(x => x.StartDate, DateTime.UtcNow)
-                        .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
-                        .With(x => x.AgreementId, "AG1")
-                        .With(x => x.StandardCode, 57)
-                        .With(x => x.Costs, new List<CostDetails> { fixture.Create<CostDetails>() })
-                        .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
-                        .Create()
+                        OnProgramme = new[] { onProgramme }
+
                     }
                 };
 
@@ -48,8 +51,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn, List<CostDetails> costs)
         {
             var fixture = new Fixture();
-            var learnerData =
-                new LearnerDataRequest
+
+            var onProgramme = fixture.Build<StubOnProgramme>()
+                .With(x => x.StartDate, DateTime.UtcNow)
+                .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
+                .With(x => x.AgreementId, "AG1")
+                .With(x => x.StandardCode, 57)
+                .With(x => x.Costs, costs)
+                .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
+                .Create();
+
+
+            var learnerData = new LearnerDataRequest
                 {
                     ConsumerReference = fixture.Create<string>(),
                     Learner = fixture.Build<StubLearner>()
@@ -59,14 +72,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     Delivery = new StubDelivery
                     {
                         EnglishAndMaths = fixture.Create<List<StubEnglishAndMaths>>(),
-                        OnProgramme = fixture.Build<StubOnProgramme>()
-                        .With(x => x.StartDate, DateTime.UtcNow)
-                        .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
-                        .With(x => x.AgreementId, "AG1")
-                        .With(x => x.StandardCode, 57)
-                        .With(x => x.Costs,costs)
-                        .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
-                        .Create()
+                        OnProgramme = new[] { onProgramme }
                     }
                 };
 
