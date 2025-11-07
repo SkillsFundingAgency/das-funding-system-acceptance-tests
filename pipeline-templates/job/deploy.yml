@@ -37,6 +37,12 @@ jobs:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceName: $(ApprenticeshipsFunctionAppName)
             RuleName: "FundingAcceptanceTestsApps"
+
+        - template: azure-pipelines-templates/deploy/step/appservice-whitelist-ip.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            ResourceName: $(EarningsInnerAppName)
+            RuleName: "FundingATsEarningsInner"
             
         - ${{ if eq(parameters.TargetEnvironment, 'pp') }}:
           - template: azure-pipelines-templates/deploy/step/appservice-whitelist-ip.yml@das-platform-building-blocks
@@ -110,10 +116,68 @@ jobs:
             testAdapterPath: '$(Build.ArtifactStagingDirectory)/publish'
             runInParallel: false
             maxCpuCount: 1
-            rerunFailedTests: true
+            rerunFailedTests: false
             maxAttempts: 2
             failurePercentage: 30
             rerunType: 'basedontestfailurepercentage'
+
+        # Extract failed tests from TRX
+        - powershell: |
+            $trxFile = Get-ChildItem "$(Agent.TempDirectory)\TestResults" -Filter *.trx | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            if (-not $trxFile) {
+              Write-Host "No TRX file found!"
+              exit 0
+            }
+
+            [xml]$trx = Get-Content $trxFile.FullName
+            $failed = $trx.TestRun.Results.UnitTestResult | Where-Object outcome -eq 'Failed'
+
+            if ($failed) {
+              $failedFile = "$(Agent.TempDirectory)\failed_tests.txt"
+              $failed.TestName | Set-Content $failedFile
+              Write-Host "Found $($failed.Count) failed tests, saved to $failedFile"
+              Write-Host "##vso[task.setvariable variable=failedTestsFile]$failedFile"
+            } else {
+              Write-Host "No failed tests found"
+            }
+          condition: failed()
+          displayName: "Collect failed test names"
+
+        # Rerun only failed tests
+        - powershell: |
+            if (Test-Path "$(failedTestsFile)") {
+              $tests = Get-Content "$(failedTestsFile)"
+              foreach ($t in $tests) {
+                Write-Host "Re-running failed test: $t"
+                $baseName = $t -replace '\(.*$', ''
+                dotnet test $(Build.ArtifactStagingDirectory)/publish/${{ parameters.SolutionBaseName }}.dll `
+                  --filter "FullyQualifiedName~$baseName" `
+                  --logger "trx;LogFileName=rerun_$($t).trx" `
+                  --results-directory "$(Agent.TempDirectory)\TestResultsRerun"
+                if ($LASTEXITCODE -ne 0) {
+                  Write-Host "Test failed again: $t"
+                }
+              }
+            } else {
+              Write-Host "No failed test list found — skipping rerun."
+            }
+          env:
+            NServiceBusLicense: $(NServiceBusLicense)
+            AZURE_CLIENT_SECRET: $(AppRegistrationTemporaryClientSecret)
+            EarningsFunctionKey: $(FundingApprenticeshipEarningsFunctionAppSystemKey)
+            PaymentsFunctionKey: $(PaymentsFunctionKey)
+            LearningDbConnectionString: $(LearningDbConnectionString)
+            EarningsDbConnectionString: $(EarningsDbConnectionString)
+            PaymentsDbConnectionString: $(PaymentsDbConnectionString)
+            LearningServiceBearerTokenSigningKey : $(LearningServiceBearerTokenSigningKey)
+            LearningAzureFunctionKey : $(LearningAzureFunctionKey)
+            EarningsOuterSubscriptionKey: $(EarningsOuterSubscriptionKey)
+            LearnerDataOuterApiSubscriptionKey: $(LearnerDataOuterApiSubscriptionKey)
+            LearnerDataDbConnectionString: $(LearnerDataDbConnectionString)
+          condition: failed()
+          displayName: "Re-run failed tests (individually)"
+
+
 
         - task: PublishTestResults@2
           displayName: Publish Test Results

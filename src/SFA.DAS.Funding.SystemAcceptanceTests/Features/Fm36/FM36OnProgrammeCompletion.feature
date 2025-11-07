@@ -1,4 +1,5 @@
-﻿Feature: FM36OnProgrammeCompletion
+﻿@nonparallelizable
+Feature: FM36OnProgrammeCompletion
 
 Fm36 Withdrawl tests
 

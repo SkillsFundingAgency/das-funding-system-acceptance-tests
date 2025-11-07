@@ -1,4 +1,5 @@
-﻿Feature: Fm36ChangeOfCircumstance
+﻿@nonparallelizable
+Feature: Fm36ChangeOfCircumstance
 
 Fm36 Change Of Circumstance
 

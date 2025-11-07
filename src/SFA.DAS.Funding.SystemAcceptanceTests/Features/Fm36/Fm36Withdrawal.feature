@@ -1,4 +1,5 @@
-﻿Feature: Fm36Withdrawal
+﻿@nonparallelizable
+Feature: Fm36Withdrawal
 
 Fm36 Withdrawl tests
 

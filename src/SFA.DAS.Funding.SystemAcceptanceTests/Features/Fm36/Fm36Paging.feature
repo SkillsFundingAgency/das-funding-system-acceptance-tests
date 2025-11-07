@@ -1,4 +1,5 @@
-﻿Feature: Fm36Paging
+﻿@nonparallelizable
+Feature: Fm36Paging
 
 This feature tests paging functionality of endpoint
 
