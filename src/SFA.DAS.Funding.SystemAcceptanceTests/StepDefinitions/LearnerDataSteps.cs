@@ -172,8 +172,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             data.Email.Should().Be(testData.LearnerData!.Learner.Email);
             data.DoB.Date.Should().Be(testData.LearnerData.Learner.Dob!.Value.Date);
-            data.StartDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.StartDate!.Value.Date);
-            data.PlannedEndDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.ExpectedEndDate!.Value.Date);
+            data.StartDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.First().StartDate!.Value.Date);
+            data.PlannedEndDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.First().ExpectedEndDate!.Value.Date);
         }
 
         [Then("treat Training price as (.*), EPAO price as (.*) and fromDate as Start Date")]
@@ -188,7 +188,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             Assert.IsNotNull(data);
 
-            data.StartDate.Should().Be(testData.LearnerData.Delivery.OnProgramme.StartDate!.Value.Date);
+            data.StartDate.Should().Be(testData.LearnerData.Delivery.OnProgramme.First().StartDate!.Value.Date);
             data.TrainingPrice.Should().Be(trainingPrice);
             data.EpaoPrice.Should().Be(epaoPrice);
         }

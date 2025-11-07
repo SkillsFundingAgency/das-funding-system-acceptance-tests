@@ -7,7 +7,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
     {
         private readonly UpdateLearnerRequest _request = new()
         {
-            Delivery = new Delivery(),
+            Delivery = new Delivery
+            {
+                OnProgramme = new[] { new OnProgramme() }
+            },
             Learner = new LearnerRequestDetails
             {
                 FirstName = testData.LearningCreatedEvent.FirstName,
@@ -15,7 +18,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             }
         };
 
-        public LearnerDataBuilder WithLearnersPersonalDetails (string firstName, string lastName, string? email)
+        public LearnerDataBuilder WithLearnersPersonalDetails(string firstName, string lastName, string? email)
         {
             _request.Learner.FirstName = firstName;
             _request.Learner.LastName = lastName;
@@ -26,7 +29,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
         public LearnerDataBuilder WithCostDetails(int? trainingPrice, int? epaoPrice, DateTime? fromDate)
         {
-            _request.Delivery.OnProgramme.Costs.Add(new CostDetails
+            _request.Delivery.OnProgramme.First().Costs.Add(new CostDetails
             {
                 TrainingPrice = trainingPrice,
                 EpaoPrice = epaoPrice,
@@ -34,44 +37,46 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             });
 
             return this;
+
         }
 
         public LearnerDataBuilder WithEmptyCostDetails()
         {
-            _request.Delivery.OnProgramme.Costs = new List<CostDetails>();
+            _request.Delivery.OnProgramme.First().Costs ??= new List<CostDetails>();
 
             return this;
         }
+
         public LearnerDataBuilder WithStartDate(DateTime startDate)
         {
-            _request.Delivery.OnProgramme.StartDate = startDate;
+            _request.Delivery.OnProgramme.First().StartDate = startDate;
 
             return this;
         }
 
         public LearnerDataBuilder WithExpectedEndDate(DateTime Date)
         {
-            _request.Delivery.OnProgramme.ExpectedEndDate = Date;
+            _request.Delivery.OnProgramme.First().ExpectedEndDate = Date;
             return this;
         }
 
         public LearnerDataBuilder WithCompletionDate(DateTime? completionDate)
         {
-            _request.Delivery.OnProgramme.CompletionDate = completionDate;
+            _request.Delivery.OnProgramme.First().CompletionDate = completionDate;
 
             return this;
         }
 
         public LearnerDataBuilder WithWithdrawalDate(DateTime? withdrawalDate)
         {
-            _request.Delivery.OnProgramme.WithdrawalDate = withdrawalDate;
+            _request.Delivery.OnProgramme.First().WithdrawalDate = withdrawalDate;
 
             return this;
         }
 
         public LearnerDataBuilder WithOnProgrammeLearningSupport(DateTime startDate, DateTime endDate)
         {
-            _request.Delivery.OnProgramme.LearningSupport.Add(new LearningSupport
+            _request.Delivery.OnProgramme.First().LearningSupport.Add(new LearningSupport
             {
                 StartDate = startDate,
                 EndDate = endDate
@@ -81,7 +86,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
         public LearnerDataBuilder WithNoOnProgrammeLearningSupport()
         {
-            _request.Delivery.OnProgramme.LearningSupport.Clear();
+            _request.Delivery.OnProgramme.First().LearningSupport.Clear();
             return this;
         }
 
