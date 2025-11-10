@@ -25,6 +25,7 @@ public static class IncentiveEarningsAssertionHelper
             x.AcademicYear == expectedPeriod.AcademicYear
             && x.DeliveryPeriod == expectedPeriod.Period
             && x.AdditionalPaymentType == paymentType
-            && x.Amount == 500);
+            && x.Amount == 500
+            && x.IsAfterLearningEnded == false);
     }
 }
