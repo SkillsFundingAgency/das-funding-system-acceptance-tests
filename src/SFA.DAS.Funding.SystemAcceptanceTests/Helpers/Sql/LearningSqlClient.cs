@@ -18,7 +18,6 @@ public class LearningSqlClient
     public void DeleteApprenticeship(Guid learningKey)
     {
         var sql = $@"
-            DELETE FROM [dbo].[WithdrawalRequest] WHERE LearningKey = '{learningKey}';
             DELETE FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learningKey}';
             DELETE FROM [dbo].[MathsAndEnglish] WHERE LearningKey = '{learningKey}';
             DELETE FROM [dbo].[LearningSupport] WHERE LearningKey = '{learningKey}';
@@ -49,7 +48,6 @@ public class LearningSqlClient
             episode.Prices = _sqlServerClient.GetList<EpisodePrice>($"SELECT * FROM [dbo].[EpisodePrice] WHERE EpisodeKey = '{episode.Key}'");
         }
         learning.FreezeRequests = _sqlServerClient.GetList<FreezeRequest>($"SELECT * FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learning.Key}'");
-        learning.WithdrawalRequests = _sqlServerClient.GetList<WithdrawalRequest>($"SELECT * FROM [dbo].[WithdrawalRequest] WHERE LearningKey = '{learning.Key}'");
         return learning;
     }
 
