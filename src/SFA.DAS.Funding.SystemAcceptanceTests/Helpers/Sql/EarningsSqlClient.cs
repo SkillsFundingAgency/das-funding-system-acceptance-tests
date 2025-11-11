@@ -58,8 +58,6 @@ public class EarningsSqlClient
 
     public void DeleteEarnings(Guid apprenticeshipKey)
     {
-        _sqlServerClient.Execute($"DELETE FROM [Query].[Earning] WHERE ApprenticeshipKey = '{apprenticeshipKey}'");
-
         var episodeKeys = _sqlServerClient.GetList<Guid>($"SELECT [Key] FROM [Domain].[Episode] WHERE ApprenticeshipKey = '{apprenticeshipKey}'");
 
         foreach(var episodeKey in episodeKeys)
