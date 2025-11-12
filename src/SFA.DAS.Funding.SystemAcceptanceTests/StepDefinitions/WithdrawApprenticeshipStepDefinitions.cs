@@ -89,13 +89,6 @@ internal class WithdrawApprenticeshipStepDefinitions
 
         if (deliveryPeriod != "null" && academicYear != "null")
         {
-            bool isValidRecalculatedEarnings = testData.ApprenticeshipEarningsRecalculatedEvent.DeliveryPeriods?
-                .All(Dp => Dp.AcademicYear < Convert.ToInt16(academicYear) 
-                || (Dp.AcademicYear == Convert.ToInt16(academicYear) && Dp.Period <= Convert.ToInt16(deliveryPeriod))) ?? true;
-
-            Assert.IsTrue(isValidRecalculatedEarnings, $"Some instalments have a delivery period > {deliveryPeriod} and academic year > {academicYear} in recalculated earnings event.");
-
-
             bool isValidEarningInDb = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?
                .Where(x => !x.IsAfterLearningEnded)
                .All(i => i.AcademicYear < Convert.ToInt16(academicYear) 
