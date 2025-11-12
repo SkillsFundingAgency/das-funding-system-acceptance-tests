@@ -162,8 +162,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public List<CostDetails> Costs { get; set; } = new List<CostDetails>();
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
-
-
+            public DateTime? PauseDate { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
         }
 

@@ -16,6 +16,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithCompletionDate(completionDate.Value);
         }
 
+        [When("SLD inform us of a break in learning with pause date (.*)")]
+        public void SLDInformUsOfABreakInLearningWithPauseDate(TokenisableDateTime pauseDate)
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder.WithPauseDate(pauseDate.Value);
+        }
+
+
         [When("SLD resubmits ILR")]
         public void SLDResubmitsILR()
         {
