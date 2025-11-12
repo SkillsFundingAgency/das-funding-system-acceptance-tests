@@ -16,6 +16,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithCompletionDate(completionDate.Value);
         }
 
+        [Given("SLD inform us of a break in learning with pause date (.*)")]
         [When("SLD inform us of a break in learning with pause date (.*)")]
         public void SLDInformUsOfABreakInLearningWithPauseDate(TokenisableDateTime pauseDate)
         {
