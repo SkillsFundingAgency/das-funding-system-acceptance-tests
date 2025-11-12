@@ -5,6 +5,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using TechTalk.SpecFlow;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -51,10 +52,15 @@ public class Fm36StepDefinitions
     [Given(@"that there is at least 15 records available from FM36 endpoint")]
     public async Task GivenThatRecordsExistInFm36Endpoint()
     {
+        if (!_context.ScenarioInfo.Tags.Contains("Creates15RecordsForPaging"))
+        {
+            throw new InvalidOperationException(
+                "This step must only be used in scenarios tagged with @Creates15RecordsForPaging");
+        }
+
         // The purpose of this endpoint is to ensure paging tests can be run. There should be
         // at least 15 records of fm36 data from previous tests. If not then we create some test records here.
         // the content of the records is not important for paging tests.
-
         var testData = _context.Get<TestData>();
         var now = DateTime.Now;
         var collectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", now));
@@ -69,10 +75,14 @@ public class Fm36StepDefinitions
 
         for (int i = 0; i < recordsToCreate; i++)
         {
+            var disposableTestData = new TestData(TestUlnProvider.GetNext());
+            disposableTestData.CurrentCollectionYear = TableExtensions.CalculateAcademicYear("0");
+            disposableTestData.CurrentCollectionPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
+
             var startDate = TokenisableDateTime.FromString("currentAY-08-23");
             var plannedEndDate = TokenisableDateTime.FromString("currentAYPlusTwo-08-23");
-            testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, 15000, "2");
-            await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
+            disposableTestData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, 15000, "2");
+            await _context.PublishApprenticeshipApprovedMessage(disposableTestData.CommitmentsApprenticeshipCreatedEvent);
         }
     }
 

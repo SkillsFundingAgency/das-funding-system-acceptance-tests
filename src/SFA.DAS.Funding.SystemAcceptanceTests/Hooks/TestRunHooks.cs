@@ -65,7 +65,7 @@ public class TestRunHooks
     [BeforeTestRun(Order = 4)]
     public static async Task GenerateSharedTestData()
     {
-        var ulns = TestUlnProvider.Initialise(GetTestCount());// automatically generate the number of ULNs needed for a test run
+        var ulns = TestUlnProvider.Initialise(GetNumberOfLearnersRequired());// automatically generate the number of ULNs needed for a test run
         var testLearners = ulns.Select(uln => DcLearnerDataHelper.GetLearner(uln)).ToList();
         var wireMockClient = new WireMockClient();
         var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
@@ -107,7 +107,7 @@ public class TestRunHooks
         // TestServiceBus.Pv2?.Stop();
     }
 
-    private static int GetTestCount()
+    private static int GetNumberOfLearnersRequired()
     {
         var methods = Assembly.GetExecutingAssembly().GetTypes()
             .SelectMany(t => t.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
@@ -120,15 +120,27 @@ public class TestRunHooks
                 .Cast<TestCaseAttribute>()
                 .ToList();
 
+            var hasPagingAttribute = method
+                .GetCustomAttributes(typeof(NUnit.Framework.CategoryAttribute), inherit: true)
+                .Cast<NUnit.Framework.CategoryAttribute>()
+                .Any(x=>x.Name == "Creates15RecordsForPaging");
+
             if (testCases.Any())
             {
                 testCount += testCases.Count;
+                if(hasPagingAttribute)
+                    testCount += testCases.Count * 14; // each test case will need 15 records, so add 14 more per test case
+
             }
             else if (method.GetCustomAttributes(typeof(TestAttribute), inherit: true).Any())
             {
                 testCount++;
+                if (hasPagingAttribute)
+                    testCount += 14; // each test will need 15 records, so add 14 more
             }
+
         }
         return testCount;
     }
+
 }
