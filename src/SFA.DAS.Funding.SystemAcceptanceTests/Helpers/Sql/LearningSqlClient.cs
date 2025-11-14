@@ -83,7 +83,6 @@ public class Learning
     public string? EmailAddress { get; set; }
     public List<FreezeRequest> FreezeRequests { get; set; }
     public List<Episode> Episodes { get; set; }
-    public List<WithdrawalRequest> WithdrawalRequests { get; set; }
 }
 
 public class Episode
@@ -104,6 +103,7 @@ public class Episode
     public bool PaymentsFrozen { get; set; }
     public List<EpisodePrice> Prices { get; set; }
     public DateTime? LastDayOfLearning { get; set; }
+    public DateTime? PauseDate { get; set; }
 }
 
 public class EpisodePrice
@@ -128,15 +128,4 @@ public class FreezeRequest
     public DateTime? UnfrozenDateTime { get; set; }
     public string? UnfrozenBy { get; set; }
     public string? Reason { get; set; }
-}
-
-public class WithdrawalRequest
-{
-    public Guid Key { get; set; }
-    public Guid LearningKey { get; set; }
-    public Guid EpisodeKey { get; set; }
-    public string Reason { get; set; }
-    public DateTime LastDayOfLearning { get; set; }
-    public DateTime CreatedDate { get; set; }
-    public string? ProviderApprovedBy { get; set; }
 }

@@ -67,6 +67,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
+        public LearnerDataBuilder WithPauseDate(DateTime? pauseDate)
+        {
+            _request.Delivery.OnProgramme.First().PauseDate = pauseDate;
+
+            return this;
+        }
+
         public LearnerDataBuilder WithWithdrawalDate(DateTime? withdrawalDate)
         {
             _request.Delivery.OnProgramme.First().WithdrawalDate = withdrawalDate;
