@@ -1,4 +1,5 @@
-﻿Feature: GetLearnersForProvider
+﻿@nonparallelizable
+Feature: GetLearnersForProvider
 
 In order to keep DAS in sync with learners details reported in the ILR
 As SLD
