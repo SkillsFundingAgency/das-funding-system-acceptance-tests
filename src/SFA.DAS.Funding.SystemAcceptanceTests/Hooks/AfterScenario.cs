@@ -1,7 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using System.Text.Json;
-using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 
@@ -10,7 +8,6 @@ internal class AfterScenario
 {
     private ScenarioContext _context;
     private const string OutputFile = "OutputFile";
-    private FundingConfig _config = Configurator.GetConfiguration();
 
     public AfterScenario(ScenarioContext context)
     {
@@ -26,36 +23,25 @@ internal class AfterScenario
         OutputTestDataToFile();
     }
 
-    [AfterScenario(Order = 10)]
-    public void AfterScenarioCleanup()
+    [AfterTestRun]
+    public static void TestDataCleanUp()
     {
-        if (_config.ShouldCleanUpTestRecords)
+        if (Configurator.GetConfiguration().ShouldCleanUpTestRecords)
         {
-            PurgeCreatedRecords();
-            PurgeLearnerData();
+            PurgeAllDataForTestUkprn();
         }
     }
 
-    private void PurgeCreatedRecords()
+    private static void PurgeAllDataForTestUkprn()
     {
-        var testData = _context.Get<TestData>();
-        if (testData.LearningKey == Guid.Empty)
-            return;
+        var learningSqlClient = new LearningSqlClient();
+        learningSqlClient.DeleteAllDataForUkprn(Constants.UkPrn);
 
-        var earningsSqlClient = _context.ScenarioContainer.Resolve<EarningsSqlClient>();
-        earningsSqlClient.DeleteEarnings(testData.LearningKey);
-
-        var apprenticeshipSqlClient = _context.ScenarioContainer.Resolve<LearningSqlClient>();
-        apprenticeshipSqlClient.DeleteApprenticeship(testData.LearningKey);
-    }
-
-    private void PurgeLearnerData()
-    {
-        var testData = _context.Get<TestData>();
-        if (testData.LearnerData == null) return;
+        var earningsSqlClient = new EarningsSqlClient();
+        earningsSqlClient.DeleteAllDataForUkprn(Constants.UkPrn);
 
         var learnerDataSqlClient = new LearnerDataSqlClient();
-        learnerDataSqlClient.DeleteLearnerData(long.Parse(testData.LearnerData.Learner.Uln));
+        learnerDataSqlClient.DeleteAllDataForUkprn(Constants.UkPrn);
     }
 
     private void OutputTestDataToFile()

@@ -27,14 +27,11 @@ internal class SqlServerClient
         return result;
     }
 
-    public void Execute(string sql)
+    public void Execute(string sql, object? parameters = null)
     {
-        using (SqlConnection connection = new SqlConnection(_connectionString))
-        {
-            connection.Open();
-            connection.Execute(sql);
-            connection.Close();
-        }
+        using var connection = new SqlConnection(_connectionString);
+        connection.Open();
+        connection.Execute(sql, parameters);
     }
 }
 

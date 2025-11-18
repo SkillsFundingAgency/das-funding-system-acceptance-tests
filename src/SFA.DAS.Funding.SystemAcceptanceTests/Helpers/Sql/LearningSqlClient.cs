@@ -1,6 +1,4 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using SFA.DAS.Learning.Enums;
-using SFA.DAS.Learning.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
@@ -67,6 +65,76 @@ public class LearningSqlClient
 
 
         return learners;
+    }
+
+    public void DeleteAllDataForUkprn(long ukprn)
+    {
+        var sql = @"
+
+            /*===========================================================
+            1. Delete Episode Prices
+            ===========================================================*/
+            DELETE ep
+            FROM dbo.EpisodePrice ep
+            JOIN dbo.Episode e ON ep.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            2. Delete Freeze Requests
+            ===========================================================*/
+            DELETE fr
+            FROM dbo.FreezeRequest fr
+            JOIN dbo.Learning l ON fr.LearningKey = l.[Key]
+            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            3. Delete Learning Supports
+            ===========================================================*/
+            DELETE ls
+            FROM dbo.LearningSupport ls
+            JOIN dbo.Learning l ON ls.LearningKey = l.[Key]
+            JOIN dbo.Episode e ON ls.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            4. Delete Maths and English
+            ===========================================================*/
+            DELETE me
+            FROM dbo.MathsAndEnglish me
+            JOIN dbo.Learning l ON me.LearningKey = l.[Key]
+            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            5. Delete Approvals
+            ===========================================================*/
+            DELETE a
+            FROM dbo.Approval a
+            JOIN dbo.Learning l ON a.ApprenticeshipKey = l.[Key]
+            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            6. Delete Episodes
+            ===========================================================*/
+            DELETE e
+            FROM dbo.Episode e
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            7. Delete Learnings
+            ===========================================================*/
+            DELETE l
+            FROM dbo.Learning l
+            WHERE EXISTS (
+                SELECT 1 
+                FROM dbo.Episode e 
+                WHERE e.LearningKey = l.[Key] AND e.Ukprn = @Ukprn
+            );
+    ";
+
+        _sqlServerClient.Execute(sql, new { Ukprn = ukprn });
     }
 }
 
