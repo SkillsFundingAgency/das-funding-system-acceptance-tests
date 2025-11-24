@@ -23,27 +23,6 @@ internal class AfterScenario
         OutputTestDataToFile();
     }
 
-    [AfterTestRun]
-    public static void TestDataCleanUp()
-    {
-        if (Configurator.GetConfiguration().ShouldCleanUpTestRecords)
-        {
-            PurgeAllDataForTestUkprn();
-        }
-    }
-
-    private static void PurgeAllDataForTestUkprn()
-    {
-        var learningSqlClient = new LearningSqlClient();
-        learningSqlClient.DeleteAllDataForUkprn(Constants.UkPrn);
-
-        var earningsSqlClient = new EarningsSqlClient();
-        earningsSqlClient.DeleteAllDataForUkprn(Constants.UkPrn);
-
-        var learnerDataSqlClient = new LearnerDataSqlClient();
-        learnerDataSqlClient.DeleteAllDataForUkprn(Constants.UkPrn);
-    }
-
     private void OutputTestDataToFile()
     {
         var testData = _context.Get<TestData>();
