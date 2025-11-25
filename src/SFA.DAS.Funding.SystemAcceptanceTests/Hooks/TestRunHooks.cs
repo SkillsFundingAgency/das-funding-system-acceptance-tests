@@ -19,6 +19,15 @@ public class TestRunHooks
         _context = context;
     }
 
+    [BeforeTestRun(Order = 0)]
+    public static void TestDataCleanUp()
+    {
+        if (Configurator.GetConfiguration().ShouldCleanUpTestRecords)
+        {
+            PurgeAllDataForTestUkprn();
+        }
+    }
+
     [BeforeTestRun(Order = 1)]
     public static void StartLocalWireMockServer()
     {
@@ -130,5 +139,17 @@ public class TestRunHooks
             }
         }
         return testCount;
+    }
+
+    private static void PurgeAllDataForTestUkprn()
+    {
+        var learningSqlClient = new LearningSqlClient();
+        learningSqlClient.DeleteAllDataForUkprn(Constants.UkPrn);
+
+        var earningsSqlClient = new EarningsSqlClient();
+        earningsSqlClient.DeleteAllDataForUkprn(Constants.UkPrn);
+
+        var learnerDataSqlClient = new LearnerDataSqlClient();
+        learnerDataSqlClient.DeleteAllDataForUkprn(Constants.UkPrn);
     }
 }

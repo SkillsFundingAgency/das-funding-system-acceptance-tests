@@ -23,7 +23,6 @@ internal static class PriceChangeApprovedEventHelper
                         TrainingPrice = apprenticeshipCreatedEvent.Episode.Prices[0].TrainingPrice,
                         EndPointAssessmentPrice = apprenticeshipCreatedEvent.Episode.Prices[0].EndPointAssessmentPrice,
                         EndDate = effectiveFromDate.AddDays(-1),
-                        FundingBandMaximum = apprenticeshipCreatedEvent.Episode.Prices[0].FundingBandMaximum,
                         Key = apprenticeshipCreatedEvent.Episode.Key,
                         StartDate = apprenticeshipCreatedEvent.Episode.Prices[0].StartDate,
                         TotalPrice = apprenticeshipCreatedEvent.Episode.Prices[0].TotalPrice,
@@ -34,7 +33,6 @@ internal static class PriceChangeApprovedEventHelper
                             TrainingPrice = trainingPrice,
                             EndPointAssessmentPrice = assessmentPrice,
                             EndDate = apprenticeshipCreatedEvent.Episode.Prices[0].EndDate,
-                            FundingBandMaximum = apprenticeshipCreatedEvent.Episode.Prices[0].FundingBandMaximum,
                             Key = Guid.NewGuid(),
                             StartDate = effectiveFromDate,
                             TotalPrice = trainingPrice + assessmentPrice

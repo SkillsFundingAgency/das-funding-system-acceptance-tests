@@ -23,7 +23,6 @@ internal static class ApprenticeshipStartDateChangedEventHelper
                     new LearningEpisodePrice
                     {
                         EndDate = plannedEndDate,
-                        FundingBandMaximum = apprenticeshipCreatedEvent.Episode.Prices.First().FundingBandMaximum,
                         TrainingPrice = apprenticeshipCreatedEvent.Episode.Prices.First().TrainingPrice,
                         EndPointAssessmentPrice = apprenticeshipCreatedEvent.Episode.Prices.First().EndPointAssessmentPrice,
                         Key = Guid.NewGuid() ,
