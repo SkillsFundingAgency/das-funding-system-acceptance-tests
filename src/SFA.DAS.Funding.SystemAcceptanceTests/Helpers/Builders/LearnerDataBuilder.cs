@@ -91,6 +91,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
+        public LearnerDataBuilder WithStandardCode(int standardCode)
+        {
+            _request.Delivery.OnProgramme.First().StandardCode = standardCode;
+
+            return this;
+        }
+
         public LearnerDataBuilder WithNoOnProgrammeLearningSupport()
         {
             _request.Delivery.OnProgramme.First().LearningSupport.Clear();

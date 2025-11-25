@@ -89,6 +89,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithCostDetails((int)trainingPrice , (int)epaoPrice, fromDate.Value);
 
             learnerDataBuilder.WithExpectedEndDate(toDate.Value);
+
+            learnerDataBuilder.WithStandardCode(Convert.ToInt32(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode));
         }
 
         [Given("SLD record on-programme cost as total price (.*) from date (.*) with duration (.*)")]
@@ -129,6 +131,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithCostDetails(tp, epao, fd == null? null : fd.Value);
 
             learnerDataBuilder.WithExpectedEndDate(toDate.Value);
+
+            learnerDataBuilder.WithStandardCode(Convert.ToInt32(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode));
         }
 
         [When("SLD record an empty on-programme costs array")]
