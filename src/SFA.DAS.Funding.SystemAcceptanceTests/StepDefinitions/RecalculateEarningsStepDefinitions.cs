@@ -208,7 +208,6 @@ public class RecalculateEarningsStepDefinitions
                     StartDate = testData.OriginalStartDate.GetValueOrDefault(),
                     EndDate = testData.PlannedEndDate.GetValueOrDefault(),
                     TrainingPrice = decimal.Parse(table.Rows[0]["training_price"]),
-                    FundingBandMaximum = (int)Math.Ceiling(testData.FundingBandMax),
                     Key = Guid.NewGuid()
                 }
             },
