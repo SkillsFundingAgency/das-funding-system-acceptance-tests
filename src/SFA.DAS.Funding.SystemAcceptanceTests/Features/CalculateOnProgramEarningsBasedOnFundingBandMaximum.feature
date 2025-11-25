@@ -9,7 +9,7 @@ So we don’t overpay for apprenticeship funding
 
 | Training Code | Earliest Start Date		| Latest End Date		  | Proposed Max Funding |
 | 6				| 2014-11-12 00:00:00.000	| 2019-03-03 00:00:00.000 | 27000                |
-| 6				| 2019-03-04 00:00:00.000	| NULL					  | 26000                |
+| 6				| 2019-03-04 00:00:00.000	| 2024-10-10 00:00:00.000 | 26000                |
 
 @regression
 Scenario: On program earnings generation when agreed price is below funding band max
@@ -20,7 +20,7 @@ Scenario: On program earnings generation when agreed price is below funding band
 	
 Examples:
 	| start_date | planned_end_date | agreed_price | training_code | instalment_amount |
-	| 2018-08-01 | 2019-07-31       | 26100        | 6             | 1740              |
+	| 2018-08-01 | 2019-07-31       |        26100 |             6 |              1740 |
 
 @regression
 Scenario Outline: On program earnings generation when agreed price is above funding band max
@@ -31,5 +31,5 @@ Scenario Outline: On program earnings generation when agreed price is above fund
 
 Examples:
 	| start_date | planned_end_date | agreed_price | training_code | instalment_amount |
-	| 2022-08-01 | 2023-07-31       | 30000        | 6             | 1733.33333        |
-	| 2018-08-01 | 2019-07-31       | 30000        | 6             | 1800              |
+	| 2022-08-01 | 2023-07-31       |        30000 |             6 |        1733.33333 |
+	| 2018-08-01 | 2019-07-31       |        30000 |             6 |              1800 |

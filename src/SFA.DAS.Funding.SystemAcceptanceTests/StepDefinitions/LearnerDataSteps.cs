@@ -153,6 +153,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithExpectedEndDate(plannedEndDate.Value);
         }
 
+        [When("SLD record standard code as (.*)")]
+        public void WhenSLDRecordStandardCodeAs(int standardCode)
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithStandardCode(standardCode);
+        }
+
+
         [When("SLD record on-prog start date as (.*)")]
         public void WhenSLDRecordOn_ProgStartDateAsPreviousAY(TokenisableDateTime startDate)
         {

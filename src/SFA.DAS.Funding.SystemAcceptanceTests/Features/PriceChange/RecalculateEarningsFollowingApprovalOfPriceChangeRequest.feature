@@ -60,6 +60,7 @@ Scenario: Price change; Empty Costs array
 	And the apprenticeship commitment is approved
 	When SLD record on-prog start date as <start_date>
 	And SLD record expected end date <end_date>
+	And SLD record standard code as <training_code>
 	And SLD record an empty on-programme costs array
 	And SLD submit updated learners details
 	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
