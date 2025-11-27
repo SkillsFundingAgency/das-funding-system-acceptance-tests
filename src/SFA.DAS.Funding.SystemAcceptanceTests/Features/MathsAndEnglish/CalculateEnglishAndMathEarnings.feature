@@ -94,6 +94,8 @@ Scenario: Maths and English instalments removed if maths and english courses rem
 	And Maths and English learning is recorded from <start_date> to <end_date> with course <course> and amount <amount>
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
+	When SLD resubmits ILR
+	And SLD record on-programme cost as total price 15000 from date <start_date> to date <end_date> 
 	When the maths and english courses are removed
 	And SLD submit updated learners details
 	Then no maths and english earnings are generated
@@ -101,3 +103,5 @@ Scenario: Maths and English instalments removed if maths and english courses rem
 Examples:
 	| start_date       | end_date        | course              | amount | expected_first_earning_period | expected_first_payment_period | expected_last_period | instalment |
 	| currentAY-09-25  | currentAY-01-15 | Entry level English | 931    | currentAY-R02                 | currentAY-R02                 | currentAY-R05        | 232.75     |
+
+

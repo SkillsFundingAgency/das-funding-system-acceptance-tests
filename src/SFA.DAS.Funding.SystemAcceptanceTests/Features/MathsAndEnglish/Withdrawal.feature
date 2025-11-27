@@ -20,10 +20,10 @@ Scenario: Earnings for Maths and English after Withdrawal after Qualifying Perio
 
 Examples:
 	| start_date      | duration_days | course              | agreed_price | withdrawal_on_day | expected_first_earning_period | expected_last_period | instalment |
-	| currentAY-09-25 | 240           | Entry level English | 5000         | 42                | currentAY-R02                 | currentAY-R03        | 625        |
-	| currentAY-09-25 | 180           | Entry level English | 5000         | 42                | currentAY-R02                 | currentAY-R03        | 833.33     |
-	| currentAY-09-25 | 14            | Entry level English | 5000         | 14                | currentAY-R02                 | currentAY-R02        | 133        |
-	| currentAY-09-25 | 13            | Entry level English | 5000         | 1                 | currentAY-R02                 | currentAY-R02        | 133        |
+	| currentAY-09-25 |           240 | Entry level English |         5000 |                42 | currentAY-R02                 | currentAY-R03        |        625 |
+	| currentAY-09-25 |           180 | Entry level English |         5000 |                42 | currentAY-R02                 | currentAY-R03        |     833.33 |
+	| currentAY-09-25 |            14 | Entry level English |         5000 |                14 | currentAY-R02                 | currentAY-R02        |        133 |
+	| currentAY-09-25 |            13 | Entry level English |         5000 |                 1 | currentAY-R02                 | currentAY-R02        |        133 |
 
 
 @regression
@@ -36,7 +36,7 @@ Scenario: Withdrawal for Maths and English can be after Planned end date
 
 Examples:
 	| start_date      | duration_days | course              | agreed_price | withdrawal_on_day | expected_first_earning_period | expected_last_period | instalment |
-	| currentAY-09-25 | 240           | Entry level English | 5000         | 270               | currentAY-R02                 | currentAY-R10        | 625        |
+	| currentAY-09-25 |           240 | Entry level English |         5000 |               270 | currentAY-R02                 | currentAY-R10        |        625 |
 	
 
 @regression
@@ -54,7 +54,7 @@ Scenario: Earnings for Maths and English are recalculated when withdrawal detail
 
 Examples:
 	| start_date      | duration_days | course              | agreed_price | first_withdrawal_on_day | first_withdrawal_earnings_start_period | first_withdrawal_earnings_end_period | instalment | second_withdrawal_on_day | second_withdrawal_earnings_start_period | second_withdrawal_earnings_end_period |
-	| currentAY-09-25 | 240           | Entry level English | 5000         | 42                      | currentAY-R02                          | currentAY-R03                        | 625        | 70                       | currentAY-R02                           | currentAY-R04                         |
+	| currentAY-09-25 |           240 | Entry level English |         5000 |                      42 | currentAY-R02                          | currentAY-R03                        |        625 |                       70 | currentAY-R02                           | currentAY-R04                         |
 
 @regression
 Scenario: Earnings for Maths and English after Withdrawal during Qualifying Period
@@ -66,8 +66,55 @@ Scenario: Earnings for Maths and English after Withdrawal during Qualifying Peri
 
 Examples:
 	| start_date      | duration_days | course              | agreed_price | withdrawal_on_day |
-	| currentAY-09-25 | 180           | Entry level English | 5000         | 41                |
-	| currentAY-09-25 | 14            | Entry level English | 5000         | 13                |
+	| currentAY-09-25 |           180 | Entry level English |         5000 |                41 |
+	| currentAY-09-25 |            14 | Entry level English |         5000 |                13 |
 
 
+@regression
+Scenario: English and Maths course withdrawn from the start
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
+	And the apprenticeship commitment is approved
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
+	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with course Entry level English and amount 931
+	And SLD submit updated learners details
+	When SLD resubmits ILR
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
+	And Maths and English learning is recorded from currentAY-08-05 for 156 days with course Entry level English, amount 931 and withdrawal after 1 days
+	And SLD submit updated learners details
+	Then Maths and English earnings for course Entry level English are soft deleted
 
+@regression
+Scenario: English and Maths course withdrawn from the start then removed
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
+	And the apprenticeship commitment is approved
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
+	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with course Entry level English and amount 1000
+	And SLD submit updated learners details
+	When SLD resubmits ILR
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
+	And Maths and English learning is recorded from currentAY-08-05 for 156 days with course Entry level English, amount 1000 and withdrawal after 1 days
+	And SLD submit updated learners details
+	Then Maths and English earnings for course Entry level English are soft deleted
+	When SLD resubmits ILR
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
+	And the maths and english courses are removed
+	And SLD submit updated learners details
+	Then Maths and English earnings for course Entry level English are zero
+
+@regression
+Scenario: English and Maths course withdrawn from the start then reinstated
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
+	And the apprenticeship commitment is approved
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
+	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with course Entry level English and amount 1000
+	And SLD submit updated learners details
+	When SLD resubmits ILR
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
+	And Maths and English learning is recorded from currentAY-08-05 for 156 days with course Entry level English, amount 1000 and withdrawal after 1 days
+	And SLD submit updated learners details
+	Then Maths and English earnings for course Entry level English are soft deleted
+	When SLD resubmits ILR
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
+	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with course Entry level English and amount 1000
+	And SLD submit updated learners details
+	Then Maths and English earnings for course Entry level English are reinstated
