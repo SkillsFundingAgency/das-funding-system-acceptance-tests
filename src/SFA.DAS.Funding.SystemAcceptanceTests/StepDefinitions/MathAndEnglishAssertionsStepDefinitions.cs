@@ -190,10 +190,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var mathsAndEnglishKey = mathsAndEnglish.FirstOrDefault(x => x.Course.Contains(course)).Key;
 
-            if (returnSoftDeleted)
-            {
-
-            }
 
             var mathsAndEnglishInstalments = earningsApprenticeshipModel
                 .Episodes
