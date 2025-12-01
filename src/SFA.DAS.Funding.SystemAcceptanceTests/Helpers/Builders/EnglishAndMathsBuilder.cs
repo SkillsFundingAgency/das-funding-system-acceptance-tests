@@ -47,5 +47,11 @@ public class EnglishAndMathsBuilder
         return this;
     }
 
+    public EnglishAndMathsBuilder WithPauseDate(DateTime pauseDate)
+    {
+        _course.PauseDate = pauseDate;
+        return this;
+    }
+
     public EnglishAndMaths Build() => _course;
 }

@@ -25,7 +25,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithPauseDate(pauseDate.Value);
         }
 
-
+        [Given("SLD resubmits ILR")]
         [When("SLD resubmits ILR")]
         public void SLDResubmitsILR()
         {
