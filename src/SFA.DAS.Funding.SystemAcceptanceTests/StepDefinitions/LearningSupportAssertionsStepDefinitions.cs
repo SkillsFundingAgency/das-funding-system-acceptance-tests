@@ -28,6 +28,7 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
     }
 
     [Given("learning support continues to be paid from periods (.*) to (.*)")]
+    [Given(@"learning support earnings are generated from periods (.*) to (.*)")]
     [Then("learning support continues to be paid from periods (.*) to (.*)")]
     [Then(@"learning support earnings are generated from periods (.*) to (.*)")]
     public async Task VerifyLearningSupportEarnings(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)

@@ -13,7 +13,6 @@ Scenario: Training provider records a break in learning without specifying a ret
 	And SLD inform us of a break in learning with pause date currentAY-05-15
 	And SLD submit updated learners details
 	Then earnings are recalculated
-	#change the below step to accept TokenisableAcademicYear 
 	And the earnings after the delivery period 09 and academic year 2526 are soft deleted
 	And learning support continues to be paid from periods currentAY-R01 to currentAY-R09
 
@@ -32,7 +31,6 @@ Scenario: Training provider corrects a previous break in learning without specif
 	And SLD inform us of a break in learning with pause date currentAY-06-20
 	And SLD submit updated learners details
 	Then earnings are recalculated
-	#change the below step to accept TokenisableAcademicYear 
 	And the earnings after the delivery period 10 and academic year 2526 are soft deleted
 	And learning support continues to be paid from periods currentAY-R01 to currentAY-R10
 
@@ -50,6 +48,5 @@ Scenario: Training provider removes a previous break in learning
 	And learning support is recorded from currentAY-08-01 to currentAY-07-31
 	And SLD submit updated learners details
 	Then earnings are recalculated
-	#change the below step to accept TokenisableAcademicYear 
 	And earnings of 1000 are generated from periods currentAY-R01 to currentAY-R12
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R12

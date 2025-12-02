@@ -35,8 +35,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
-        [Given("a Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*) and learning support from (.*) to (.*)")]
-        [When("a Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*) and learning support from (.*) to (.*)")]
+        [Given("a Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*), learning support from (.*) to (.*)")]
+        [When("a Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*), learning support from (.*) to (.*)")]
         public async Task AddMathsAndEnglishLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount,
             TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
         {
@@ -50,7 +50,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
-        [When("English and Maths learning is recorded from (.*) to (.*) with course (.*) and amount (.*) and withdrawal date (.*) and learning support from (.*) to (.*)")]
+
+        [When("English and Maths learning is recorded from (.*) to (.*) with course (.*), amount (.*), withdrawal date (.*), learning support from (.*) to (.*)")]
         public async Task AddMathsAndEnglishWithWithdrawalAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount, TokenisableDateTime withdrawalDate,
             TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
         {
@@ -65,7 +66,22 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
-        [When("an English and Maths learning is recorded from (.*) to (.*) with course (.*) and amount (.*) and completion date as (.*) and learning support from (.*) to (.*)")]
+        [When("English and Maths learning is recorded from (.*) to (.*) with course (.*), amount (.*), pause date (.*), learning support from (.*) to (.*)")]
+        public async Task AddMathsAndEnglishWithPauseAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount, TokenisableDateTime pauseDate,
+            TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount)
+                        .WithPauseDate(pauseDate.Value)
+                        .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+        [When("an English and Maths learning is recorded from (.*) to (.*) with course (.*), amount (.*), completion date as (.*), learning support from (.*) to (.*)")]
         public async Task AddMathsAndEnglishWithCompletionAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount, TokenisableDateTime completionDate,
             TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
         {

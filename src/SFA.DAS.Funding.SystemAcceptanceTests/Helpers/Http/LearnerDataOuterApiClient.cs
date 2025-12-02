@@ -181,6 +181,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime EndDate { get; set; }
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
+            public DateTime? PauseDate { get; set; }
             public int? PriorLearningPercentage { get; set; }
             public decimal Amount { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
