@@ -83,16 +83,16 @@ internal class WithdrawApprenticeshipStepDefinitions
 
     [When("the earnings after the delivery period (.*) and academic year (.*) are soft deleted")]
     [Then("the earnings after the delivery period (.*) and academic year (.*) are soft deleted")]
-    public void EarningsAfterTheDeliveryPeriodAndAcademicYearAreSoftDeleted(string deliveryPeriod, string academicYear)
+    public void EarningsAfterTheDeliveryPeriodAndAcademicYearAreSoftDeleted(string deliveryPeriod, TokenisableAcademicYear academicYear)
     {
         var testData = _context.Get<TestData>();
 
-        if (deliveryPeriod != "null" && academicYear != "null")
+        if (deliveryPeriod != "null")
         {
             bool isValidEarningInDb = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?
                .Where(x => !x.IsAfterLearningEnded)
-               .All(i => i.AcademicYear < Convert.ToInt16(academicYear) 
-               || (i.AcademicYear == Convert.ToInt16(academicYear) && i.DeliveryPeriod <= Convert.ToInt16(deliveryPeriod))) ?? true;
+               .All(i => i.AcademicYear < academicYear.Value
+               || (i.AcademicYear == academicYear.Value && i.DeliveryPeriod <= Convert.ToInt16(deliveryPeriod))) ?? true;
 
             Assert.IsTrue(isValidEarningInDb, $"Some instalments have a delivery period > {deliveryPeriod} and academic year > {academicYear} in earnings db.");
         }
