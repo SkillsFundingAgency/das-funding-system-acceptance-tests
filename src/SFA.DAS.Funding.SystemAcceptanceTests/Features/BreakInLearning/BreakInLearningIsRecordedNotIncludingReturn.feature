@@ -13,7 +13,6 @@ Scenario: Training provider records a break in learning without specifying a ret
 	And SLD inform us of a break in learning with pause date currentAY-05-15
 	And SLD submit updated learners details
 	Then earnings are recalculated
-	#todo hardcoded AY of 2526 needs to be tokenised to match currentAY in earlier setup this test and the one below will start failing when we hit AY 2627
 	And the earnings after the delivery period 09 and academic year currentAY are soft deleted
 	And learning support continues to be paid from periods currentAY-R01 to currentAY-R09
 
