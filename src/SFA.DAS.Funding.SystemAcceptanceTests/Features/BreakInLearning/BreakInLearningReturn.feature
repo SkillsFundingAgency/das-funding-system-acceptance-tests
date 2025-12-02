@@ -32,10 +32,7 @@ Scenario: Training provider records a return from a break in learning
 #@regression
 #FLP-1360 AC1 current AY return
 
-#@regression
-#FLP-1360 AC2 SLD informs us of break and return at the same time previous AY TODO NEW FEATURE - background break won't be needed, just background happy path standard learning, as we need to do both in same submission
-#@regression
-#FLP-1360 AC2 SLD informs us of break and return at the same time current AY TODO NEW FEATURE - background break won't be needed, just background happy path standard learning, as we need to do both in same submission
+#FLP-1360 AC2 see BreakInLearningBreakAndReturnInSameSubmission.feature
 
 #@regression
 #FLP-1360 AC3 training provider corrects previously recorded return previousAY
