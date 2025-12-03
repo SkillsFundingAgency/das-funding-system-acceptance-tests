@@ -14,6 +14,8 @@ public class TokenisableAcademicYear
 
     public static TokenisableAcademicYear FromString(string value)
     {
+        if (value == "null") return new TokenisableAcademicYear(0);
+
         if (value.ToLower() == TokenisableYearConstants.CurrentAyToken.ToLower())
         {
             return new TokenisableAcademicYear(GetAcademicYear(0));
