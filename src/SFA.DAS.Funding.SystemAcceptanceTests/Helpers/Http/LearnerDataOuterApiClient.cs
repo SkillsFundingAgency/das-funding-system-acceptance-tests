@@ -165,6 +165,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? WithdrawalDate { get; set; }
             public DateTime? PauseDate { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
+            public string AgreementId { get; set; }
         }
 
         public class CostDetails

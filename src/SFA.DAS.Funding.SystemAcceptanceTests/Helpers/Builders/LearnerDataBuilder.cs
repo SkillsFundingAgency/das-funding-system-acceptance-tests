@@ -9,7 +9,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         {
             Delivery = new Delivery
             {
-                OnProgramme = new[] { new OnProgramme() }
+                OnProgramme = new[] { new OnProgramme{ AgreementId = "1" } }
             },
             Learner = new LearnerRequestDetails
             {
@@ -143,6 +143,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         public LearnerDataBuilder WithNoMathsAndEnglish()
         {
             _request.Delivery.EnglishAndMaths.Clear();
+            return this;
+        }
+
+        public LearnerDataBuilder WithAgreementId(string agreementId)
+        {
+            _request.Delivery.OnProgramme.First().AgreementId = agreementId;
             return this;
         }
 
