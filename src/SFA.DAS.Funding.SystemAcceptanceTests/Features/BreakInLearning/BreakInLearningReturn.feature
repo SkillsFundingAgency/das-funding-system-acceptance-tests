@@ -11,8 +11,7 @@ Background:
 	And SLD inform us of a break in learning with pause date previousAY-01-15
 	And SLD submit updated learners details
 	Then earnings are recalculated
-	#pay for December R05 in previous AY not beyond - todo AY tokenisation
-	And the earnings after the delivery period 05 and academic year 2425 are soft deleted
+	And the earnings after the delivery period 05 and academic year previousAY are soft deleted
 	And learning support continues to be paid from periods previousAY-R01 to previousAY-R05
 
 @regression
@@ -21,13 +20,13 @@ Scenario: Training provider records a return from a break in learning
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date currentAY-07-31
 	And learning support is recorded from previousAY-08-01 to currentAY-07-31
-	#todo write this step def
-	And SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
-	And SLD submit updated learners details
-	Then earnings are recalculated
-	#todo these 2 steps need to assert the pre-break and post-break periods
-	And the earnings after the delivery period 05 and academic year 2425 are soft deleted
-	And learning support continues to be paid from periods previousAY-R01 to previousAY-R05
+	##todo write this step def
+	#And SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
+	#And SLD submit updated learners details
+	#Then earnings are recalculated
+	##todo these 2 steps need to assert the pre-break and post-break periods
+	#And the earnings after the delivery period 05 and academic year 2425 are soft deleted
+	#And learning support continues to be paid from periods previousAY-R01 to previousAY-R05
 
 #@regression
 #FLP-1360 AC1 current AY return
@@ -47,3 +46,8 @@ Scenario: Training provider records a return from a break in learning
 #FLP-1360 AC4 training provider removes previously recorded return & entire break previousAY
 #@regression
 #FLP-1360 AC4 training provider removes previously recorded return & entire break currentAY
+
+#BIL followed by another BiL a few months later (BIL and return same time -> BiL again after 3 months -> return (in my head) )
+#BiL , return then Completion 
+#Bil, return then Price increased and end date pushed back
+#It will be good to include a withdrawal at the time of return.
