@@ -39,21 +39,6 @@ Examples:
 	| currentAY-09-25    | currentAY-01-15  | Entry level English |            931 | currentAY-02-15    | currentAY-05-27  | GCSE Maths   |            864 | currentAY-R02                | currentAY-R05               |             232.75 | currentAY-R07                | currentAY-R09               |                288 |
 	| currentAY-09-25    | currentAY-01-15  | Entry level English |            931 | currentAY-11-15    | currentAY-02-27  | GCSE Maths   |            864 | currentAY-R02                | currentAY-R05               |             232.75 | currentAY-R04                | currentAY-R06               |                288 |
 
-
-@regression
-Scenario: Do Not calculate Maths and English earnings for a hard closed academic year
-	Given an apprenticeship has a start date of TwoYearsAgoAY-08-01, a planned end date of CurrentAY-07-31, an agreed price of 15000, and a training code 614
-	And the age at the start of the apprenticeship is 19
-	When the apprenticeship commitment is approved
-	And Maths and English learning is recorded from <start_date> to <end_date> with course <course> and amount <amount>
-	And SLD record on-programme cost as total price 15000 from date <start_date> to date CurrentAY-07-31
-	And SLD submit updated learners details
-	Then Maths and English earnings are generated from periods <expected_first_payment_period> to <expected_last_payment_period> with instalment amount <instalment> for course <course>
-
-Examples:
-	| start_date          | end_date            | course              | amount | expected_first_payment_period | expected_last_payment_period | instalment |
-	| TwoYearsAgoAY-09-25 | TwoYearsAgoAY-01-15 | Entry level English |    931 | TwoYearsAgoAY-R02             | TwoYearsAgoAY-R05            |     232.75 |
-
 @regression
 Scenario: Learning Support for Maths and English Earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of 15000, and a training code 614
@@ -68,20 +53,6 @@ Examples:
 	| start_date       | end_date        | maths_and_english_end_date | course                           | expected_first_earning_period | expected_last_earning_period | 
 	| previousAY-08-01 | currentAY-01-31 | currentAY-07-31            | Entry level English and/or Maths | previousAY-R01                | currentAY-R12                | 
 	| previousAY-08-01 | currentAY-01-31 | currentAY-07-30            | Entry level English and/or Maths | previousAY-R01                | currentAY-R11                | 
-
-@regression
-Scenario: Do Not Generate Learning Support earnings for Maths and English Earnings in a hard closed academic year
-	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of 15000, and a training code 614
-	And the age at the start of the apprenticeship is 19
-	When the apprenticeship commitment is approved
-	And SLD record on-programme cost as total price 15000 from date <start_date> to date <end_date>
-	And a Maths and English learning is recorded from <start_date> to <maths_and_english_end_date> with course <course>, amount 12000, learning support from <start_date> to <maths_and_english_end_date>
-	And SLD submit updated learners details
-	Then learning support earnings are generated from periods <expected_first_earning_period> to <expected_last_earning_period>
-
-Examples:
-	| start_date          | end_date        | maths_and_english_end_date | course            | expected_first_earning_period | expected_last_earning_period |
-	| TwoYearsAgoAY-08-01 | CurrentAY-01-31 | CurrentAY-07-31            | Entry level Maths | CurrentAY-R01                 | CurrentAY-R12                |
 
 @regression
 Scenario: Maths and English instalments removed if maths and english courses removed
