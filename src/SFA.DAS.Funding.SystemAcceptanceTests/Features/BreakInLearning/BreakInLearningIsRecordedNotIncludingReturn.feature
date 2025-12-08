@@ -50,3 +50,13 @@ Scenario: Training provider removes a previous break in learning
 	Then earnings are recalculated
 	And earnings of 1000 are generated from periods currentAY-R01 to currentAY-R12
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R12
+
+@regression
+#FLP-728 AC1
+Scenario: Training provider records a break in learning without specifying a return (no learning support)
+	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	When SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
+	And SLD inform us of a break in learning with pause date currentAY-05-15
+	And SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings after the delivery period 09 and academic year currentAY are soft deleted
