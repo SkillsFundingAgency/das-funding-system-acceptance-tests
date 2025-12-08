@@ -9,7 +9,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         {
             Delivery = new Delivery
             {
-                OnProgramme = new[] { new OnProgramme{ AgreementId = "1" } }
+                OnProgramme = new List<OnProgramme> { new OnProgramme{ AgreementId = "1" } }
             },
             Learner = new LearnerRequestDetails
             {
@@ -149,6 +149,47 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         public LearnerDataBuilder WithAgreementId(string agreementId)
         {
             _request.Delivery.OnProgramme.First().AgreementId = agreementId;
+            return this;
+        }
+
+        public LearnerDataBuilder WithReturnFromBreakInLearning(DateTime newLearningStartDate, bool correction = false)
+        {
+            if(correction) _request.Delivery.OnProgramme.RemoveAt(1); //assume we are dealing with a single return being corrected for now
+
+            _request.Delivery.OnProgramme.First().ActualEndDate = _request.Delivery.OnProgramme.First().PauseDate;
+            _request.Delivery.OnProgramme.Add(new OnProgramme
+            {
+                AgreementId = _request.Delivery.OnProgramme.First().AgreementId,
+                Costs = new List<CostDetails>
+                {
+                    new CostDetails
+                    {
+                        EpaoPrice = _request.Delivery.OnProgramme.First().Costs.First().EpaoPrice,
+                        TrainingPrice = _request.Delivery.OnProgramme.First().Costs.First().TrainingPrice,
+                        FromDate = newLearningStartDate
+                    }
+                },
+                ExpectedEndDate = _request.Delivery.OnProgramme.First().ExpectedEndDate,
+                LearningSupport = _request.Delivery.OnProgramme.First().LearningSupport,
+                StandardCode = _request.Delivery.OnProgramme.First().StandardCode,
+                StartDate = newLearningStartDate
+            });
+
+            return this;
+        }
+
+        public LearnerDataBuilder WithBreakInLearningReturnRemoved()
+        {
+            _request.Delivery.OnProgramme.RemoveAt(1); //assume we are dealing with a single return being removed for now
+
+            return this;
+        }
+
+        public LearnerDataBuilder WithEntireBreakInLearningRemoved()
+        {
+            _request.Delivery.OnProgramme.RemoveAt(1); //assume we are dealing with a single return being removed for now
+            _request.Delivery.OnProgramme.First().PauseDate = null;
+
             return this;
         }
 
