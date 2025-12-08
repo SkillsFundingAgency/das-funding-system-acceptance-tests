@@ -52,7 +52,7 @@ Scenario: Training provider removes a previous break in learning
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R12
 
 @regression
-#FLP-728 AC1
+#FLP-728 AC1 - Added this scenario to cover BIL without learning support as there is an issue whereby the earnings recalculated event is nont published for pause, pause remove, and BIL return, to be fixed as part of FLP-1360.
 Scenario: Training provider records a break in learning without specifying a return (no learning support)
 	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
