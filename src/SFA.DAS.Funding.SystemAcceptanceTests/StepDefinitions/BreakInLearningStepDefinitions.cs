@@ -17,6 +17,7 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
     }
 
     [Given("SLD inform us of a return from break in learning with a new learning start date (.*)")]
+    [When("SLD inform us of a return from break in learning with a new learning start date (.*)")]
     public void SLDInformUsOfAReturnFromBreakInLearningWithANewLearningStartDate(TokenisableDateTime newLearningStartDate)
     {
         var testData = context.Get<TestData>();
