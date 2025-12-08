@@ -14,38 +14,100 @@ Background:
 	And the earnings after the delivery period 05 and academic year previousAY are soft deleted
 	And learning support continues to be paid from periods previousAY-R01 to previousAY-R05
 
-@regression
 #FLP-1360 AC1 previousAY return
-Scenario: Training provider records a return from a break in learning
-	Given SLD resubmits ILR
-	And SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date currentAY-07-31
-	And learning support is recorded from previousAY-08-01 to currentAY-07-31
-	##todo write this step def
-	#And SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
-	#And SLD submit updated learners details
-	#Then earnings are recalculated
-	##todo these 2 steps need to assert the pre-break and post-break periods
-	#And the earnings after the delivery period 05 and academic year 2425 are soft deleted
-	#And learning support continues to be paid from periods previousAY-R01 to previousAY-R05
+@regression
+Scenario: Training provider records a return from a break in learning in previous academic year
+	Given SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
+	When SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings between previousAY-R01 and previousAY-R05 are maintained
+	And the earnings between previousAY-R06 and previousAY-R07 are soft deleted
+	And the earnings between previousAY-R08 and currentAY-R12 are maintained
 
-#@regression
 #FLP-1360 AC1 current AY return
+@regression
+Scenario: Training provider records a return from a break in learning in current academic year
+	Given SLD inform us of a return from break in learning with a new learning start date currentAY-05-01
+	When SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings between previousAY-R01 and previousAY-R05 are maintained
+	And the earnings between previousAY-R06 and currentAY-R09 are soft deleted
+	And the earnings between currentAY-R10 and currentAY-R12 are maintained
 
 #FLP-1360 AC2 see BreakInLearningBreakAndReturnInSameSubmission.feature
 
-#@regression
 #FLP-1360 AC3 training provider corrects previously recorded return previousAY
-#@regression
+@regression
+Scenario: Training provider corrects a previous recorded return from a break in learning in previous academic year
+	Given SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
+	And SLD submit updated learners details
+	And earnings are recalculated
+	When SLD inform us of a correction to a previously recorded return from break in learning with a new learning start date previousAY-06-01
+	And SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings between previousAY-R01 and previousAY-R05 are maintained
+	And the earnings between previousAY-R06 and previousAY-R10 are soft deleted
+	And the earnings between previousAY-R11 and currentAY-R12 are maintained
+
 #FLP-1360 AC3 training provider corrects previously recorded return currentAY
+@regression
+Scenario: Training provider corrects a previous recorded return from a break in learning in current academic year
+	Given SLD inform us of a return from break in learning with a new learning start date currentAY-05-01
+	And SLD submit updated learners details
+	And earnings are recalculated
+	When SLD inform us of a correction to a previously recorded return from break in learning with a new learning start date currentAY-06-01
+	And SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings between previousAY-R01 and previousAY-R05 are maintained
+	And the earnings between previousAY-R06 and currentAY-R10 are soft deleted
+	And the earnings between currentAY-R11 and currentAY-R12 are maintained
+
+#FLP-1360 AC4 training provider removes previously recorded return previousAY
+@regression
+Scenario: Training provider removes a previously recorded return from a break in learning in previous academic year
+	Given SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
+	And SLD submit updated learners details
+	And earnings are recalculated
+	When SLD inform us that a previously recorded return from a break in learning is removed
+	And SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings between previousAY-R01 and previousAY-R05 are maintained
+	And the earnings between previousAY-R06 and currentAY-R12 are soft deleted
+
+#FLP-1360 AC4 training provider removes previously recorded return currentAY
+@regression
+Scenario: Training provider removes a previously recorded return from a break in learning in current academic year
+	Given SLD inform us of a return from break in learning with a new learning start date currentAY-03-01
+	And SLD submit updated learners details
+	And earnings are recalculated
+	When SLD inform us that a previously recorded return from a break in learning is removed
+	And SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings between previousAY-R01 and previousAY-R05 are maintained
+	And the earnings between previousAY-R06 and currentAY-R12 are soft deleted
 
 #@regression
-#FLP-1360 AC4 training provider removes previously recorded return previousAY
-#@regression
-#FLP-1360 AC4 training provider removes previously recorded return currentAY
-#@regression
 #FLP-1360 AC4 training provider removes previously recorded return & entire break previousAY
-#@regression
+@regression
+Scenario: Training provider removes a previously recorded return from, and break in learning in previous academic year
+	Given SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
+	And SLD submit updated learners details
+	And earnings are recalculated
+	When SLD inform us that an entire previously recorded break in learning and return is removed
+	And SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings between previousAY-R01 and currentAY-R12 are maintained
+
 #FLP-1360 AC4 training provider removes previously recorded return & entire break currentAY
+@regression
+Scenario: Training provider removes a previously recorded return from, and break in learning in current academic year
+	Given SLD inform us of a return from break in learning with a new learning start date currentAY-03-01
+	And SLD submit updated learners details
+	And earnings are recalculated
+	When SLD inform us that an entire previously recorded break in learning and return is removed
+	And SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings between previousAY-R01 and currentAY-R12 are maintained
 
 #BIL followed by another BiL a few months later (BIL and return same time -> BiL again after 3 months -> return (in my head) )
 #BiL , return then Completion 
