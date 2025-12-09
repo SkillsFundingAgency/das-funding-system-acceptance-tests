@@ -31,14 +31,27 @@ Scenario: Training provider records multiple breaks in learning with returns
 	And the earnings between currentAY-R02 and currentAY-R12 are maintained
 
 #BiL , return then Completion 
-#@regression
-#Scenario: Training provider records break in learning, return, then completion
-#	Given a learning has a start date of previousAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
-#	When SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date currentAY-07-31
-#	And learning support is recorded from previousAY-08-01 to currentAY-07-31
-#	And SLD inform us of a break in learning with pause date previousAY-01-15
-#	And SLD submit updated learners details
-#	And earnings are recalculated
+@regression
+Scenario: Training provider records break in learning, return, then completion
+	Given a learning has a start date of previousAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	When SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date currentAY-07-31
+	And learning support is recorded from previousAY-08-01 to currentAY-07-31
+	And SLD inform us of a break in learning with pause date previousAY-01-15
+	And SLD inform us of a return from break in learning with a new learning start date currentAY-09-01
+	#And SLD submit updated learners details
+	#And earnings are recalculated
+	And Learning Completion is recorded on currentAY-12-01
+	And SLD submit updated learners details
+	And earnings are recalculated
+	Then the earnings between previousAY-R01 and previousAY-R05 are maintained
+	And the earnings between previousAY-R06 and currentAY-R01 are soft deleted
+	And the earnings between currentAY-R02 and currentAY-R04 are maintained
+	And an earning of 6000 of type Balancing is generated for period currentAY-R05
+	And an earning of 3000 of type Completion is generated for period currentAY-R05
+
+	#Then earnings of 1000 are generated from periods currentAY-R01 to currentAY-R10
+	#And an earning of 2000 of type Balancing is generated for period currentAY-R11
+	#And an earning of 3000 of type Completion is generated for period currentAY-R11
 
 
 #Bil, return then Price increased and end date pushed back

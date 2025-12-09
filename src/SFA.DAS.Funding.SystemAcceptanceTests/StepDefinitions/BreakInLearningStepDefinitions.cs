@@ -74,4 +74,17 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
                 x => !x.IsAfterLearningEnded,
                 x => $"Found instalment for AcademicYear {x.AcademicYear} DeliveryPeriod {x.DeliveryPeriod} that has been soft deleted in earnings db.");
     }
+
+    [Then("the earnings of (.*) between (.*) and (.*) are maintained")]
+    public void EarningsOfAmountBetweenDeliveryPeriodsAreMaintained(decimal amount, TokenisablePeriod firstPeriod, TokenisablePeriod secondPeriod)
+    {
+        var testData = context.Get<TestData>();
+
+        testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?
+            .AssertBetweenRange(
+                firstPeriod.Value,
+                secondPeriod.Value,
+                x => x.Amount == amount && !x.IsAfterLearningEnded,
+                x => $"Expected instalment of amount {amount} for AcademicYear {x.AcademicYear} DeliveryPeriod {x.DeliveryPeriod} but one was not found or was soft deleted.");
+    }
 }
