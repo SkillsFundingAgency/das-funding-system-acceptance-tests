@@ -29,7 +29,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
         public LearnerDataBuilder WithCostDetails(int? trainingPrice, int? epaoPrice, DateTime? fromDate)
         {
-            _request.Delivery.OnProgramme.First().Costs.Add(new CostDetails
+            _request.Delivery.OnProgramme.OrderBy(x => x.StartDate).Last().Costs.Add(new CostDetails
             {
                 TrainingPrice = trainingPrice,
                 EpaoPrice = epaoPrice,
@@ -37,7 +37,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             });
 
             return this;
+        }
 
+        public LearnerDataBuilder WithLatestPeriodOfLearningHavingCost(int? trainingPrice, int? epaoPrice)
+        {
+            _request.Delivery.OnProgramme.OrderBy(x => x.StartDate).Last().Costs.First().TrainingPrice = trainingPrice;
+            _request.Delivery.OnProgramme.OrderBy(x => x.StartDate).Last().Costs.First().EpaoPrice = epaoPrice;
+
+            return this;
         }
 
         public LearnerDataBuilder WithEmptyCostDetails()
