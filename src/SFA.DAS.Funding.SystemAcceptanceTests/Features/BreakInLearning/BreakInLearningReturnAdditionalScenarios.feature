@@ -43,10 +43,11 @@ Scenario: Training provider records break in learning, return, then completion
 	And Learning Completion is recorded on currentAY-12-01
 	And SLD submit updated learners details
 	And earnings are recalculated
-	Then the earnings between previousAY-R01 and previousAY-R05 are maintained
+	Then the earnings of 500 between previousAY-R01 and previousAY-R05 are maintained
 	And the earnings between previousAY-R06 and currentAY-R01 are soft deleted
-	And the earnings between currentAY-R02 and currentAY-R04 are maintained
-	And an earning of 6000 of type Balancing is generated for period currentAY-R05
+	And the earnings of 863.63686 between currentAY-R02 and currentAY-R04 are maintained
+	#6x new payment post break of 863.63636 to cover R05 to R12 inclusive = 6909.09
+	And an earning of 6909.09 of type Balancing is generated for period currentAY-R05
 	And an earning of 3000 of type Completion is generated for period currentAY-R05
 
 

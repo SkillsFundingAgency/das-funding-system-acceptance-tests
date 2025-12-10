@@ -69,7 +69,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
         public LearnerDataBuilder WithCompletionDate(DateTime? completionDate)
         {
-            _request.Delivery.OnProgramme.First().CompletionDate = completionDate;
+            _request.Delivery.OnProgramme.OrderBy(x => x.StartDate).Last().CompletionDate = completionDate;
 
             return this;
         }

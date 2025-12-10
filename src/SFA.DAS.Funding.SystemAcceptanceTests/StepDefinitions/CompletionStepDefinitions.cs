@@ -78,7 +78,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             deliveryPeriod.AcademicYear.Should().Be(period.Value.AcademicYear);
             deliveryPeriod.PeriodValue.Should().Be(period.Value.PeriodValue);
 
-            instalment.Amount.Should().Be(amount);
+            Math.Round(instalment.Amount, 2).Should().Be(Math.Round(amount, 2));
         }
 
         [Then("Balancing earning is removed")]
