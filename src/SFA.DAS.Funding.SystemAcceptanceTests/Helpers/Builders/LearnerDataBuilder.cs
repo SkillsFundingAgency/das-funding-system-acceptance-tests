@@ -152,7 +152,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
-        public LearnerDataBuilder WithReturnFromBreakInLearning(DateTime newLearningStartDate, bool correction = false)
+        public LearnerDataBuilder WithReturnFromBreakInLearning(DateTime newLearningStartDate, bool correction = false, DateTime? newExpectedEndDate = null)
         {
             if(correction) _request.Delivery.OnProgramme.RemoveAt(1); //assume we are dealing with a single return being corrected for now
 
@@ -169,7 +169,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
                         FromDate = newLearningStartDate
                     }
                 },
-                ExpectedEndDate = _request.Delivery.OnProgramme.First().ExpectedEndDate,
+                ExpectedEndDate = newExpectedEndDate ?? _request.Delivery.OnProgramme.First().ExpectedEndDate,
                 LearningSupport = _request.Delivery.OnProgramme.First().LearningSupport,
                 StandardCode = _request.Delivery.OnProgramme.First().StandardCode,
                 StartDate = newLearningStartDate

@@ -24,6 +24,14 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
         var learnerDataBuilder = testData.GetLearnerDataBuilder();
         learnerDataBuilder.WithReturnFromBreakInLearning(newLearningStartDate.Value);
     }
+    [Given("SLD inform us of a return from break in learning with both a new learning start date (.*) and new expected end date (.*)")]
+    [When("SLD inform us of a return from break in learning with both a new learning start date (.*) and new expected end date (.*)")]
+    public void SLDInformUsOfAReturnFromBreakInLearningWithANewLearningStartDateAndExpectedEndDate(TokenisableDateTime newLearningStartDate, TokenisableDateTime newExpectedEndDate)
+    {
+        var testData = context.Get<TestData>();
+        var learnerDataBuilder = testData.GetLearnerDataBuilder();
+        learnerDataBuilder.WithReturnFromBreakInLearning(newLearningStartDate.Value, newExpectedEndDate:newExpectedEndDate.Value);
+    }
 
     [When("SLD inform us of a correction to a previously recorded return from break in learning with a new learning start date (.*)")]
     public void SLDInformUsOfACorrectionToReturnFromBreakInLearningWithANewLearningStartDate(TokenisableDateTime newLearningStartDate)
