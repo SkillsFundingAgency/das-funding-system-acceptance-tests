@@ -122,7 +122,7 @@ Scenario: Training provider withdraws apprenticeship 3 months after return from 
 	And SLD inform us of a break in learning with pause date previousAY-02-01
 	And SLD submit updated learners details
 	And SLD inform us of a return from break in learning with a new learning start date previousAY-05-01
-	And Learning withdrawal date is recorded on previousAY-08-15
+	And Learning withdrawal date is recorded on currentAY-08-15
 	And SLD submit updated learners details
 	Then earnings are recalculated
 	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained

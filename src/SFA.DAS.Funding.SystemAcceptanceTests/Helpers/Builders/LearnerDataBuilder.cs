@@ -83,7 +83,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
         public LearnerDataBuilder WithWithdrawalDate(DateTime? withdrawalDate)
         {
-            _request.Delivery.OnProgramme.First().WithdrawalDate = withdrawalDate;
+            _request.Delivery.OnProgramme.OrderBy(x => x.StartDate).Last().WithdrawalDate = withdrawalDate;
 
             return this;
         }
