@@ -49,11 +49,83 @@ Scenario: Training provider records break in learning, return, then completion
 	And an earning of 6000 of type Balancing is generated for period currentAY-R05
 	And an earning of 3000 of type Completion is generated for period currentAY-R05
 
-	#Then earnings of 1000 are generated from periods currentAY-R01 to currentAY-R10
-	#And an earning of 2000 of type Balancing is generated for period currentAY-R11
-	#And an earning of 3000 of type Completion is generated for period currentAY-R11
 
+#End date pushed back to account for BIL with no price change
+@regression
+Scenario: Training provider pushes end date back to account for break in learning with no price change
+	Given a learning has a start date of previousAY-10-01, a planned end date of currentAY-09-30 and an agreed price of 15000
+	When SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-09-30
+	#And learning support is recorded from previousAY-08-01 to currentAY-07-31
+	And SLD inform us of a break in learning with pause date previousAY-02-01
+	And SLD submit updated learners details
+	And SLD inform us of a return from break in learning with a new learning start date previousAY-05-01
+	And SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-12-31
+	And SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained
+	And the earnings between previousAY-R07 and previousAY-R09 are soft deleted
+	And the earnings of 1000 between previousAY-R10 and currentAY-R05 are maintained
 
-#Bil, return then Price increased and end date pushed back
-#It will be good to include a withdrawal at the time of return.
-#check which of Pawan's spreadsheet examples are yet to be covered and do them too
+#Apprenticeship duration is increased after BIL with no price change
+@regression
+Scenario: Training provider increases duration after break in learning with no price change
+	Given a learning has a start date of previousAY-10-01, a planned end date of currentAY-09-30 and an agreed price of 15000
+	When SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-09-30
+	#And learning support is recorded from previousAY-08-01 to currentAY-07-31
+	And SLD inform us of a break in learning with pause date previousAY-02-01
+	And SLD submit updated learners details
+	And SLD inform us of a return from break in learning with a new learning start date previousAY-05-01
+	And SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-03-31
+	And SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained
+	And the earnings between previousAY-R07 and previousAY-R09 are soft deleted
+	And the earnings of 727.27 between previousAY-R10 and currentAY-R08 are maintained
+
+#Apprenticeship duration is increased after BIL with price increase
+@regression
+Scenario: Training provider increases duration after break in learning with price increase
+	Given a learning has a start date of previousAY-10-01, a planned end date of currentAY-09-30 and an agreed price of 15000
+	When SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-09-30
+	#And learning support is recorded from previousAY-08-01 to currentAY-07-31
+	And SLD inform us of a break in learning with pause date previousAY-02-01
+	And SLD submit updated learners details
+	And SLD inform us of a return from break in learning with a new learning start date previousAY-05-01
+	And SLD record on-programme cost as total price 18000 from date previousAY-10-01 to date currentAY-03-31
+	And SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained
+	And the earnings between previousAY-R07 and previousAY-R09 are soft deleted
+	And the earnings of 945.45 between previousAY-R10 and currentAY-R08 are maintained
+
+#Withdrawal on the same day after BIL return
+@regression
+Scenario: Training provider withdraws apprenticeship on the same day as return from break in learning
+	Given a learning has a start date of previousAY-10-01, a planned end date of currentAY-09-30 and an agreed price of 15000
+	When SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-09-30
+	#And learning support is recorded from previousAY-08-01 to currentAY-07-31
+	And SLD inform us of a break in learning with pause date previousAY-02-01
+	And SLD submit updated learners details
+	And SLD inform us of a return from break in learning with a new learning start date previousAY-05-01
+	And Learning withdrawal date is recorded on previousAY-05-01
+	And SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained
+	And the earnings between previousAY-R07 and currentAY-R02 are soft deleted
+
+#Withdrawal after 3 months of their return from BIL
+@regression
+Scenario: Training provider withdraws apprenticeship 3 months after return from break in learning
+	Given a learning has a start date of previousAY-10-01, a planned end date of currentAY-09-30 and an agreed price of 15000
+	When SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-09-30
+	#And learning support is recorded from previousAY-08-01 to currentAY-07-31
+	And SLD inform us of a break in learning with pause date previousAY-02-01
+	And SLD submit updated learners details
+	And SLD inform us of a return from break in learning with a new learning start date previousAY-05-01
+	And Learning withdrawal date is recorded on previousAY-08-15
+	And SLD submit updated learners details
+	Then earnings are recalculated
+	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained
+	And the earnings between previousAY-R07 and previousAY-R09 are soft deleted
+	And the earnings of 1600 between previousAY-R10 and previousAY-R12 are maintained
+	And the earnings between currentAY-R01 and currentAY-R02 are soft deleted

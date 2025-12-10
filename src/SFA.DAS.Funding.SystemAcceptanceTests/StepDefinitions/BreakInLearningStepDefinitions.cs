@@ -80,11 +80,14 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
     {
         var testData = context.Get<TestData>();
 
+        var instalments = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments
+            ?.OrderBy(x => x.AcademicYear).ThenBy(x => x.DeliveryPeriod).ToList();
+
         testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?
             .AssertBetweenRange(
                 firstPeriod.Value,
                 secondPeriod.Value,
-                x => x.Amount == amount && !x.IsAfterLearningEnded,
-                x => $"Expected instalment of amount {amount} for AcademicYear {x.AcademicYear} DeliveryPeriod {x.DeliveryPeriod} but one was not found or was soft deleted.");
+                x => Math.Round(x.Amount, 2) == Math.Round(amount, 2) && !x.IsAfterLearningEnded,
+                x => $"Expected instalment of amount {amount} for AcademicYear {x.AcademicYear} DeliveryPeriod {x.DeliveryPeriod} but one was not found, the wrong amount, or soft deleted.");
     }
 }

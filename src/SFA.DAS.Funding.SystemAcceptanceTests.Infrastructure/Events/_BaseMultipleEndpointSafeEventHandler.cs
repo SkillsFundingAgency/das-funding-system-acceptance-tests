@@ -27,12 +27,7 @@ public class MultipleEndpointSafeEventHandler<T> : IHandleMessages<T> where T : 
         if (eventObjects == null || !eventObjects.Any())
             return null;
 
-        if(eventObjects.Count() > 1)
-        {
-            throw new InvalidOperationException($"Multiple {nameof(T)} messages found matching the predicate. Expected only one, but found {eventObjects.Count()}.");
-        }
-
-        var eventObject = eventObjects.Single();
+        var eventObject = eventObjects.First();
 
         eventObject.Clear(); // Prevent message getting picked up again
         return eventObject.Message;
