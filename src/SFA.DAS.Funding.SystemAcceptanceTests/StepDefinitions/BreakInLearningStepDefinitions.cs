@@ -62,7 +62,10 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
     {
         var testData = context.Get<TestData>();
 
-        testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?
+        var instalments = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments
+            ?.OrderBy(x => x.AcademicYear).ThenBy(x => x.DeliveryPeriod).ToList();
+
+        instalments?
             .AssertBetweenRange(
                 firstPeriod.Value,
                 secondPeriod.Value, 
@@ -75,7 +78,10 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
     {
         var testData = context.Get<TestData>();
 
-        testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?
+        var instalments = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments
+            ?.OrderBy(x => x.AcademicYear).ThenBy(x => x.DeliveryPeriod).ToList();
+
+        instalments?
             .AssertBetweenRange(
                 firstPeriod.Value,
                 secondPeriod.Value,
@@ -91,7 +97,7 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
         var instalments = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments
             ?.OrderBy(x => x.AcademicYear).ThenBy(x => x.DeliveryPeriod).ToList();
 
-        testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?
+        instalments?
             .AssertBetweenRange(
                 firstPeriod.Value,
                 secondPeriod.Value,

@@ -74,8 +74,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var learnerData = testData.LearnerDataBuilder.Build();
 
-            var debugPayload = JsonSerializer.Serialize(learnerData);
-
             await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerData);
         }
 
