@@ -58,8 +58,7 @@ Scenario: Training provider pushes end date back to account for break in learnin
 	#And learning support is recorded from previousAY-08-01 to currentAY-07-31
 	And SLD inform us of a break in learning with pause date previousAY-02-01
 	And SLD submit updated learners details
-	And SLD inform us of a return from break in learning with a new learning start date previousAY-05-01
-	And SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-12-31
+	And SLD inform us of a return from break in learning with both a new learning start date previousAY-05-01 and new expected end date currentAY-12-31
 	And SLD submit updated learners details
 	Then earnings are recalculated
 	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained
