@@ -116,23 +116,32 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            6. Delete Episodes
+            6. Delete Episode Breaks In Learning
+            ===========================================================*/
+            DELETE ebil
+            FROM dbo.EpisodeBreakInLearning ebil
+            JOIN dbo.Episode e ON ebil.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            7. Delete Episodes
             ===========================================================*/
             DELETE e
             FROM dbo.Episode e
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            7. Delete Learnings
+            8. Delete Learnings
             ===========================================================*/
             DELETE l
             FROM dbo.Learning l
             WHERE EXISTS (
                 SELECT 1 
                 FROM dbo.Episode e 
-                WHERE e.LearningKey = l.[Key] AND e.Ukprn = @Ukprn
+                WHERE e.LearningKey = l.[Key]
+                  AND e.Ukprn = @Ukprn
             );
-    ";
+        ";
 
         _sqlServerClient.Execute(sql, new { Ukprn = ukprn });
     }

@@ -49,8 +49,20 @@ Examples:
 	| start_date       | end_date         | agreed_price | training_code | pc_from_date     | new_total_price | training_price | epao | new_inst_amount | academic_year_string | delivery_period |
 	| previousAY-07-23 | nextAY-03-23     |        15000 |             2 | previousAY-07-23 |           18000 |          18000 | null |             750 | previousAY           |              12 |
 	| previousAY-07-23 | nextAY-03-23     |        15000 |             2 | null             |               0 | null           | null |             750 | previousAY           |              12 |
-	| previousAY-08-01 | previousAY-07-31 |        15000 |             2 | null             |           15000 |          15000 | null |            1000 | previousAY           |               1 |
 	| previousAY-08-01 | previousAY-07-31 |        15000 |             2 | null             |           18000 |          15000 | 3000 |            1200 | previousAY           |               1 |
+
+@regression
+Scenario: Price change; new total price is the same but training and epao costs changed
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the apprenticeship commitment is approved
+	And the total price is above or below or at the funding band maximum
+	When SLD record on-programme training price <training_price> with epao as <epao> from date <pc_from_date> to date <end_date>
+	And SLD record on-prog start date as <start_date>
+	And SLD submit updated learners details
+	Then the AgreedPrice on the earnings entity is updated to <new_total_price>
+Examples:
+	| start_date       | end_date         | agreed_price | training_code | pc_from_date     | new_total_price | training_price | epao | new_inst_amount | academic_year_string | delivery_period |
+	| previousAY-08-01 | previousAY-07-31 |        15000 |             2 | null             |           15000 |          15000 | null |            1000 | previousAY           |               1 |
 
 
 

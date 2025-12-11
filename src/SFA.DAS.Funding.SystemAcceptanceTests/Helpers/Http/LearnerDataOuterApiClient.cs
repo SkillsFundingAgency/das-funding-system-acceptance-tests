@@ -150,7 +150,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class Delivery
         {
-            public OnProgramme[] OnProgramme { get; set; } = [];
+            public List<OnProgramme> OnProgramme { get; set; } = [];
 
             public List<EnglishAndMaths> EnglishAndMaths { get; set; } = [];
         }
@@ -165,6 +165,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? WithdrawalDate { get; set; }
             public DateTime? PauseDate { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
+            public string AgreementId { get; set; }
+            public DateTime? ActualEndDate { get; set; }
         }
 
         public class CostDetails

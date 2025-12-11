@@ -122,7 +122,7 @@ public class EarningsSqlClient
         var sql = @"
 
             /*===========================================================
-                1. Delete Maths & English Instalments
+            1. Delete Maths & English Instalments
             ===========================================================*/
             DELETE mei
             FROM Domain.MathsAndEnglishInstalment AS mei
@@ -132,7 +132,7 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-                2. Delete Maths & English
+            2. Delete Maths & English
             ===========================================================*/
             DELETE me
             FROM Domain.MathsAndEnglish AS me
@@ -141,7 +141,7 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-                3. Delete Additional Payments
+            3. Delete Additional Payments
             ===========================================================*/
             DELETE ap
             FROM Domain.AdditionalPayment AS ap
@@ -150,7 +150,7 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-                4. Delete Instalments
+            4. Delete Instalments
             ===========================================================*/
             DELETE i
             FROM Domain.Instalment AS i
@@ -159,7 +159,7 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-                5. Delete Episode Prices
+            5. Delete Episode Prices
             ===========================================================*/
             DELETE epc
             FROM Domain.EpisodePrice AS epc
@@ -167,7 +167,7 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-                6. Delete Earnings Profile History
+            6. Delete Earnings Profile History
             ===========================================================*/
             DELETE eph
             FROM History.EarningsProfileHistory AS eph
@@ -176,7 +176,7 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-                7. Delete Earnings Profiles
+            7. Delete Earnings Profiles
             ===========================================================*/
             DELETE ep
             FROM Domain.EarningsProfile ep
@@ -184,15 +184,23 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-                8. Delete Episodes
+            8. Delete Episode BreakInLearning
+            ===========================================================*/
+            DELETE eb
+            FROM Domain.EpisodeBreakInLearning eb
+            JOIN Domain.Episode e ON eb.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            9. Delete Episodes
             ===========================================================*/
             DELETE e
             FROM Domain.Episode e
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-                9. Delete Apprenticeships
-                   Only those now orphaned by deleted Episodes
+            10. Delete Apprenticeships
+                Only those now orphaned by deleted Episodes
             ===========================================================*/
             DELETE a
             FROM Domain.Apprenticeship a
@@ -201,7 +209,7 @@ public class EarningsSqlClient
                 FROM Domain.Episode e
                 WHERE e.ApprenticeshipKey = a.[Key]
             );
-    ";
+        ";
 
         _sqlServerClient.Execute(sql, new { Ukprn = ukprn });
     }

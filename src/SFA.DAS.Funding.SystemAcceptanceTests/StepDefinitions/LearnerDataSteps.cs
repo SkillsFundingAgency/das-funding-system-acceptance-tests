@@ -1,4 +1,5 @@
-﻿using NUnit.Framework.Interfaces;
+﻿using System.Text.Json;
+using NUnit.Framework.Interfaces;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -91,6 +92,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithExpectedEndDate(toDate.Value);
 
             learnerDataBuilder.WithStandardCode(Convert.ToInt32(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode));
+        }
+
+        [When("SLD record latest on-programme cost as total price (.*)")]
+        public void SLDRecordOnProgrammeCostFromDate(int totalPrice)
+        {
+            var testData = context.Get<TestData>();
+
+            var trainingPrice = totalPrice * 0.8;
+            var epaoPrice = totalPrice * 0.2;
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder.WithLatestPeriodOfLearningHavingCost((int)trainingPrice, (int)epaoPrice);
         }
 
         [Given("SLD record on-programme cost as total price (.*) from date (.*) with duration (.*)")]

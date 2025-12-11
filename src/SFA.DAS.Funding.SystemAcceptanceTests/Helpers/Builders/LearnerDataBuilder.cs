@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
@@ -9,7 +9,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         {
             Delivery = new Delivery
             {
-                OnProgramme = new[] { new OnProgramme() }
+                OnProgramme = new List<OnProgramme> { new OnProgramme{ AgreementId = "1" } }
             },
             Learner = new LearnerRequestDetails
             {
@@ -29,7 +29,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
         public LearnerDataBuilder WithCostDetails(int? trainingPrice, int? epaoPrice, DateTime? fromDate)
         {
-            _request.Delivery.OnProgramme.First().Costs.Add(new CostDetails
+            _request.Delivery.OnProgramme.Latest().Costs.Add(new CostDetails
             {
                 TrainingPrice = trainingPrice,
                 EpaoPrice = epaoPrice,
@@ -37,53 +37,60 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             });
 
             return this;
+        }
 
+        public LearnerDataBuilder WithLatestPeriodOfLearningHavingCost(int? trainingPrice, int? epaoPrice)
+        {
+            _request.Delivery.OnProgramme.Latest().Costs.First().TrainingPrice = trainingPrice;
+            _request.Delivery.OnProgramme.Latest().Costs.First().EpaoPrice = epaoPrice;
+
+            return this;
         }
 
         public LearnerDataBuilder WithEmptyCostDetails()
         {
-            _request.Delivery.OnProgramme.First().Costs ??= new List<CostDetails>();
+            _request.Delivery.OnProgramme.Latest().Costs ??= new List<CostDetails>();
 
             return this;
         }
 
         public LearnerDataBuilder WithStartDate(DateTime startDate)
         {
-            _request.Delivery.OnProgramme.First().StartDate = startDate;
+            _request.Delivery.OnProgramme.Latest().StartDate = startDate;
 
             return this;
         }
 
         public LearnerDataBuilder WithExpectedEndDate(DateTime Date)
         {
-            _request.Delivery.OnProgramme.First().ExpectedEndDate = Date;
+            _request.Delivery.OnProgramme.Latest().ExpectedEndDate = Date;
             return this;
         }
 
         public LearnerDataBuilder WithCompletionDate(DateTime? completionDate)
         {
-            _request.Delivery.OnProgramme.First().CompletionDate = completionDate;
+            _request.Delivery.OnProgramme.Latest().CompletionDate = completionDate;
 
             return this;
         }
 
         public LearnerDataBuilder WithPauseDate(DateTime? pauseDate)
         {
-            _request.Delivery.OnProgramme.First().PauseDate = pauseDate;
+            _request.Delivery.OnProgramme.Latest().PauseDate = pauseDate;
 
             return this;
         }
 
         public LearnerDataBuilder WithWithdrawalDate(DateTime? withdrawalDate)
         {
-            _request.Delivery.OnProgramme.First().WithdrawalDate = withdrawalDate;
+            _request.Delivery.OnProgramme.Latest().WithdrawalDate = withdrawalDate;
 
             return this;
         }
 
         public LearnerDataBuilder WithOnProgrammeLearningSupport(DateTime startDate, DateTime endDate)
         {
-            _request.Delivery.OnProgramme.First().LearningSupport.Add(new LearningSupport
+            _request.Delivery.OnProgramme.Latest().LearningSupport.Add(new LearningSupport
             {
                 StartDate = startDate,
                 EndDate = endDate
@@ -93,14 +100,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
         public LearnerDataBuilder WithStandardCode(int standardCode)
         {
-            _request.Delivery.OnProgramme.First().StandardCode = standardCode;
+            _request.Delivery.OnProgramme.Latest().StandardCode = standardCode;
 
             return this;
         }
 
         public LearnerDataBuilder WithNoOnProgrammeLearningSupport()
         {
-            _request.Delivery.OnProgramme.First().LearningSupport.Clear();
+            _request.Delivery.OnProgramme.Latest().LearningSupport.Clear();
             return this;
         }
 
@@ -143,6 +150,53 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         public LearnerDataBuilder WithNoMathsAndEnglish()
         {
             _request.Delivery.EnglishAndMaths.Clear();
+            return this;
+        }
+
+        public LearnerDataBuilder WithAgreementId(string agreementId)
+        {
+            _request.Delivery.OnProgramme.Latest().AgreementId = agreementId;
+            return this;
+        }
+
+        public LearnerDataBuilder WithReturnFromBreakInLearning(DateTime newLearningStartDate, bool correction = false, DateTime? newExpectedEndDate = null)
+        {
+            if(correction) _request.Delivery.OnProgramme.RemoveAt(1); //assume we are dealing with a single return being corrected for now
+
+            _request.Delivery.OnProgramme.Latest().ActualEndDate = _request.Delivery.OnProgramme.Latest().PauseDate;
+            _request.Delivery.OnProgramme.Add(new OnProgramme
+            {
+                AgreementId = _request.Delivery.OnProgramme.Latest().AgreementId,
+                Costs = new List<CostDetails>
+                {
+                    new CostDetails
+                    {
+                        EpaoPrice = _request.Delivery.OnProgramme.Latest().Costs.First().EpaoPrice,
+                        TrainingPrice = _request.Delivery.OnProgramme.Latest().Costs.First().TrainingPrice,
+                        FromDate = newLearningStartDate
+                    }
+                },
+                ExpectedEndDate = newExpectedEndDate ?? _request.Delivery.OnProgramme.Latest().ExpectedEndDate,
+                LearningSupport = _request.Delivery.OnProgramme.Latest().LearningSupport,
+                StandardCode = _request.Delivery.OnProgramme.Latest().StandardCode,
+                StartDate = newLearningStartDate
+            });
+
+            return this;
+        }
+
+        public LearnerDataBuilder WithBreakInLearningReturnRemoved()
+        {
+            _request.Delivery.OnProgramme.RemoveAt(1); //assume we are dealing with a single return being removed for now
+
+            return this;
+        }
+
+        public LearnerDataBuilder WithEntireBreakInLearningRemoved()
+        {
+            _request.Delivery.OnProgramme.RemoveAt(1); //assume we are dealing with a single return being removed for now
+            _request.Delivery.OnProgramme.Latest().PauseDate = null;
+
             return this;
         }
 

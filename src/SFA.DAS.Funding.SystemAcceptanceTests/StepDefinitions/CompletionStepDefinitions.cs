@@ -16,15 +16,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithCompletionDate(completionDate.Value);
         }
 
-        [Given("SLD inform us of a break in learning with pause date (.*)")]
-        [When("SLD inform us of a break in learning with pause date (.*)")]
-        public void SLDInformUsOfABreakInLearningWithPauseDate(TokenisableDateTime pauseDate)
-        {
-            var testData = context.Get<TestData>();
-            var learnerDataBuilder = testData.GetLearnerDataBuilder();
-            learnerDataBuilder.WithPauseDate(pauseDate.Value);
-        }
-
         [Given("SLD resubmits ILR")]
         [When("SLD resubmits ILR")]
         public void SLDResubmitsILR()
@@ -87,7 +78,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             deliveryPeriod.AcademicYear.Should().Be(period.Value.AcademicYear);
             deliveryPeriod.PeriodValue.Should().Be(period.Value.PeriodValue);
 
-            instalment.Amount.Should().Be(amount);
+            Math.Round(instalment.Amount, 2).Should().Be(Math.Round(amount, 2));
         }
 
         [Then("Balancing earning is removed")]

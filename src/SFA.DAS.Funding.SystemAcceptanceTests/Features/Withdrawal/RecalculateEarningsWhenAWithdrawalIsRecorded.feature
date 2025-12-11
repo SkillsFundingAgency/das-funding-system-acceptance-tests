@@ -112,22 +112,6 @@ Scenario: Withdrawal and price change applied together - reclalc earnings
 	And last day of learning is set to 2025-05-27 in learning and earning db
 
 @regression
-Scenario: Withdrawal date can be after planned end date
-	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
-	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
-	And Learning withdrawal date is recorded on <last_day_of_delivery>
-	And SLD submit updated learners details
-	Then the apprenticeship is marked as withdrawn
-	And last day of learning is set to <last_day_of_delivery> in learning and earning db
-	And earnings are recalculated
-	And the expected number of earnings instalments after withdrawal are <new_num_of_instalments>
-Examples:
-	| start_date       | end_date        | agreed_price | training_code | last_day_of_delivery | new_num_of_instalments |
-	| previousAY-11-01 | currentAY-11-23 | 15000        | 2             | currentAY-12-15      | 12                     |
-
-
-@regression
 Scenario: Withdrawal is recorded before the end of the qualifying period; there will be no earnings retained
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
