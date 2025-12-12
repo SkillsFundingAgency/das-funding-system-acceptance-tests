@@ -14,7 +14,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             Learner = new LearnerRequestDetails
             {
                 FirstName = testData.LearningCreatedEvent.FirstName,
-                LastName = testData.LearningCreatedEvent.LastName
+                LastName = testData.LearningCreatedEvent.LastName,
+                Dob = testData.LearningCreatedEvent.DateOfBirth
             }
         };
 
