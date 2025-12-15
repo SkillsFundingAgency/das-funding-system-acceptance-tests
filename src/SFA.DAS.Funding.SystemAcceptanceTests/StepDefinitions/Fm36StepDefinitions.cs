@@ -5,6 +5,8 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Learning.Types;
+using System.Collections.Generic;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -155,7 +157,7 @@ public class Fm36StepDefinitions
 
         int daysInLearningThisAY = 1 + (TokenisableDateTime.FromString("currentAY-07-31").Value - apprenticeshipCreatedEvent.StartDate.Date).Days; ;
         int plannedTotalDaysInLearning = 1 + (apprenticeshipCreatedEvent.EndDate.Date - apprenticeshipCreatedEvent.StartDate.Date).Days;
-        var ageAtStartOfApprenticeship = earnings?.Episodes.FirstOrDefault()?.AgeAtStartOfApprenticeship;
+        var ageAtStartOfApprenticeship =  CalculateAgeAtStart(apprenticeshipCreatedEvent.StartDate, apprenticeshipCreatedEvent.DateOfBirth);
         var fundLineType = ageAtStartOfApprenticeship > 18 ? "19+ Apprenticeship (Employer on App Service)" : "16-18 Apprenticeship (Employer on App Service)";
 
         var firstIncentivePeriod = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DeliveryPeriod;
@@ -370,7 +372,7 @@ public class Fm36StepDefinitions
             Assert.AreEqual(EarningsFM36Constants.ActualDaysIL, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualDaysIL, "Unexpected ActualDaysIL found!");
             Assert.AreEqual(null, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ActualNumInstalm, "Unexpected ActualNumInstalm found!");
             Assert.AreEqual(apprenticeshipCreatedEvent.ActualStartDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AdjStartDate, "Unexpected AdjStartDate found!");
-            Assert.AreEqual(earnings!.Episodes.FirstOrDefault()?.AgeAtStartOfApprenticeship, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AgeAtProgStart, "Unexpected AgeAtProgStart found!");
+            Assert.AreEqual(ageAtStartOfApprenticeship, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AgeAtProgStart, "Unexpected AgeAtProgStart found!");
             Assert.AreEqual(apprenticeshipCreatedEvent.ActualStartDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AppAdjLearnStartDate, "Unexpected AppAdjLearnStartDate found!");
             Assert.AreEqual(apprenticeshipCreatedEvent.ActualStartDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.AppAdjLearnStartDateMatchPathway, "Unexpected AppAdjLearnStartDateMatchPathway found!");
             Assert.AreEqual(EarningsFM36Constants.ApplicCompDate, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.ApplicCompDate, "Unexpected ApplicCompDate found!");
@@ -826,5 +828,17 @@ public class Fm36StepDefinitions
 
         var linksHeader = testData.Fm36HttpResponseMessage.Headers.SingleOrDefault(x=>x.Key == "links");
         linksHeader.Should().NotBeNull("Links header is missing in the response");
+    }
+
+    private int CalculateAgeAtStart (DateTime startDate, DateTime dateOfBirth)
+    {
+        int age = startDate.Year - dateOfBirth.Year;
+
+        if (startDate < dateOfBirth.AddYears(age))
+        {
+            age--;
+        }
+
+        return age;
     }
 }

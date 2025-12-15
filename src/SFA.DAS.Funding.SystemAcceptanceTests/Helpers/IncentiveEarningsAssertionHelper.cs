@@ -12,7 +12,7 @@ public static class IncentiveEarningsAssertionHelper
     /// <param name="incentiveNumber">The incentive number (1 or 2)</param>
     /// <param name="paymentType">The type of incentive to look for (ProviderIncentive or EmployerIncentive).</param>
     /// <returns>True if a matching incentive earning exists; otherwise, false.</returns>
-    public static bool IncentiveEarningExists(this List<AdditionalPaymentsModel> additionalPayments, DateTime startDate, byte incentiveNumber, AdditionalPaymentType paymentType)
+    public static bool IncentiveEarningExists(this List<AdditionalPaymentsModel> additionalPayments, DateTime startDate, byte incentiveNumber, AdditionalPaymentType paymentType, DateTime? dueDate = null)
     {
         if (incentiveNumber is not (1 or 2))
             throw new Exception("Assertion helper only supports incentive earning number of 1 or 2");
@@ -26,6 +26,9 @@ public static class IncentiveEarningsAssertionHelper
             && x.DeliveryPeriod == expectedPeriod.Period
             && x.AdditionalPaymentType == paymentType
             && x.Amount == 500
-            && x.IsAfterLearningEnded == false);
+            && x.IsAfterLearningEnded == false
+            && (dueDate == null || x.DueDate == dueDate));
     }
+
+
 }

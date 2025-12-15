@@ -14,7 +14,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             Learner = new LearnerRequestDetails
             {
                 FirstName = testData.LearningCreatedEvent.FirstName,
-                LastName = testData.LearningCreatedEvent.LastName
+                LastName = testData.LearningCreatedEvent.LastName,
+                Dob = testData.LearningCreatedEvent.DateOfBirth
             }
         };
 
@@ -23,6 +24,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             _request.Learner.FirstName = firstName;
             _request.Learner.LastName = lastName;
             _request.Learner.Email = email;
+
+            return this;
+        }
+
+        public LearnerDataBuilder WithDateOfBirth (DateTime dob)
+        {
+            _request.Learner.Dob = dob;
 
             return this;
         }
