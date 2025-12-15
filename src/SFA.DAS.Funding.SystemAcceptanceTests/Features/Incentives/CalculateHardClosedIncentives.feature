@@ -8,7 +8,7 @@ So we both get paid incentives correctly
 # FLP-1036 AC2
 
 @regression
-Scenario: Don't Generate Incentive Earnings For Hard Closed Years 19-24
+Scenario: Generate Incentive Earnings For Hard Closed Years 19-24
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
@@ -21,7 +21,7 @@ Examples:
 	| 2022-08-01 | 2024-07-31       | 15,000       | 614           | 20  |
 
 @regression
-Scenario: Don't Generate Incentive Earnings For Hard Closed Years 16-18
+Scenario: Generate Incentive Earnings For Hard Closed Years 16-18
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
