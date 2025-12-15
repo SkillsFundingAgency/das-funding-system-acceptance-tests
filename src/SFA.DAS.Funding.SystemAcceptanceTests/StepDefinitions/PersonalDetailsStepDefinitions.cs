@@ -3,6 +3,7 @@ using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -30,6 +31,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithLearnersPersonalDetails(firstName, lastName, email);
         }
 
+        [When("Learner's date of birth is updated to (.*)")]
+        public void LearnersDateOfBirthIsUpdated(DateTime dob)
+        {
+            var testData = _context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder.WithDateOfBirth(dob);
+        }
+
+
         [Then("Learner's personal details are updated in learning db with first name (.*) last name (.*) and email (.*)")]
         public void LearnersPersonalDetailsAreUpdatedInLearningDb(string firstName, string lastName, string? email)
         {
@@ -50,6 +60,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 Assert.AreEqual(email, apprenticeship.EmailAddress, "Unexpected Email address found");
             });
         }
+
+        [Then("Learner's date of birth is updated in learning db to (.*)")]
+        public void LearnersDateOfBirthIsUpdatedInTheLearningDb(DateTime dob)
+        {
+            var testData = _context.Get<TestData>();
+            SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.Learning? apprenticeship = null;
+
+            apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
+
+            Assert.AreEqual(dob, apprenticeship.DateOfBirth, "Unexpected dob found in learning db");
+        }
+
 
 
         [Then("a personal details changed event is published to approvals with first name (.*) last name (.*) and email (.*)")]

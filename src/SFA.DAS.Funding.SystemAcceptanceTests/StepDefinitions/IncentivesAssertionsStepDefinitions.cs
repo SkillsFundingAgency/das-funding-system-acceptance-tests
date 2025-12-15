@@ -1,8 +1,9 @@
-using SFA.DAS.Learning.Types;
+using Microsoft.Azure.Amqp.Framing;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Learning.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -14,8 +15,8 @@ public class IncentivesAssertionsStepDefinitions
     private readonly EarningsInnerApiHelper _earningsInnerApiHelper;
 
     public IncentivesAssertionsStepDefinitions(
-        ScenarioContext context, 
-        EarningsSqlClient earningsEntitySqlClient, 
+        ScenarioContext context,
+        EarningsSqlClient earningsEntitySqlClient,
         EarningsInnerApiHelper earningsInnerApiHelper)
     {
         _context = context;
@@ -31,7 +32,7 @@ public class IncentivesAssertionsStepDefinitions
         testData.IsMarkedAsCareLeaver = true;
     }
 
-
+    [Given(@"the (first|second) incentive earning (is|is not) generated for provider & employer")]
     [Then(@"the (first|second) incentive earning (is|is not) generated for provider & employer")]
     public async Task VerifyIncentiveEarnings(string incentiveEarningNumber, string outcome)
     {
@@ -65,7 +66,7 @@ public class IncentivesAssertionsStepDefinitions
                     .Should().Be(incentiveExpected, $"First Incentive Earning {expectation} For Provider");
                 additionalPayments!
                     .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.EmployerIncentive)
-                    .Should().Be(incentiveExpected,$"First Incentive Earning {expectation} For Employer");
+                    .Should().Be(incentiveExpected, $"First Incentive Earning {expectation} For Employer");
                 break;
             case "second":
                 additionalPayments!
@@ -103,5 +104,48 @@ public class IncentivesAssertionsStepDefinitions
 
         additionalPayments.Should().NotContain(x => x.AdditionalPaymentType == AdditionalPaymentType.ProviderIncentive);
         additionalPayments.Should().NotContain(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive);
+    }
+
+    [Then(@"the (first|second) incentive due date for provider & employer is (.*)")]
+    public async Task VerifyIncentiveEarningsDueDate(string incentiveEarningNumber, DateTime dueDate)
+    {
+        var testData = _context.Get<TestData>();
+
+        EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
+        }, "Failed to find updated earnings entity.");
+
+        var additionalPayments = earningsApprenticeshipModel
+            .Episodes
+            .SingleOrDefault()
+            ?.AdditionalPayments;
+
+        additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
+
+        switch (incentiveEarningNumber)
+        {
+            case "first":
+                additionalPayments!
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.ProviderIncentive, dueDate)
+                    .Should().Be(true, $"Incorrect First Incentive Earning For Provider");
+                additionalPayments!
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.EmployerIncentive, dueDate)
+                    .Should().Be(true, $"Incorrect First Incentive Earning For Provider");
+                break;
+            case "second":
+                additionalPayments!
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.ProviderIncentive, dueDate)
+                    .Should().Be(true, $"Incorrect Second Incentive Earning For Provider");
+                additionalPayments!
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.EmployerIncentive, dueDate)
+                    .Should().Be(true, $"Incorrect Second Incentive Earning For Provider");
+                break;
+            default:
+                throw new Exception("Step definition requires 'first' or 'second' to be specified for incentive earning");
+        }
     }
 }

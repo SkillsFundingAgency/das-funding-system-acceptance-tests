@@ -28,6 +28,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
+        public LearnerDataBuilder WithDateOfBirth (DateTime dob)
+        {
+            _request.Learner.Dob = dob;
+
+            return this;
+        }
+
         public LearnerDataBuilder WithCostDetails(int? trainingPrice, int? epaoPrice, DateTime? fromDate)
         {
             _request.Delivery.OnProgramme.Latest().Costs.Add(new CostDetails
