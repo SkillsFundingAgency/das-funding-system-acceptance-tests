@@ -49,6 +49,8 @@ public class EarningsSqlClient
                     episode.MathsAndEnglishInstalments.AddRange(instalments);
                 }
             }
+
+            episode.EpisodeBreakInLearning = _sqlServerClient.GetList<EpisodeBreakInLearning>($" SELECT * FROM [Domain].[EpisodeBreakInLearning] WHERE EpisodeKey ='{episode.Key}'");
         }
 
         apprenticeship.Episodes = apprenticeshipEpisodes;
@@ -63,6 +65,7 @@ public class EarningsSqlClient
         foreach(var episodeKey in episodeKeys)
         {
             _sqlServerClient.Execute($"DELETE FROM [Domain].[EpisodePrice] WHERE EpisodeKey = '{episodeKey}'");
+            _sqlServerClient.Execute($"DELETE FROM [Domain].[EpisodeBreakInLearning] WHERE EpisodeKey = '{episodeKey}'");
 
             DeleteEarningProfileHistory(episodeKey);
             DeleteEnglishAndMaths(episodeKey);

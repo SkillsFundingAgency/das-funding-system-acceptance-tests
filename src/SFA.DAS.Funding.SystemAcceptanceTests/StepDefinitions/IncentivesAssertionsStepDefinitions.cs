@@ -106,6 +106,7 @@ public class IncentivesAssertionsStepDefinitions
         additionalPayments.Should().NotContain(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive);
     }
 
+    [Given(@"the (first|second) incentive due date for provider & employer is (.*)")]
     [Then(@"the (first|second) incentive due date for provider & employer is (.*)")]
     public async Task VerifyIncentiveEarningsDueDate(string incentiveEarningNumber, DateTime dueDate)
     {
@@ -126,22 +127,27 @@ public class IncentivesAssertionsStepDefinitions
 
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
+        var breaksInLearning = earningsApprenticeshipModel
+            .Episodes.
+            SingleOrDefault()
+            ?.EpisodeBreakInLearning;
+
         switch (incentiveEarningNumber)
         {
             case "first":
                 additionalPayments!
-                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.ProviderIncentive, dueDate)
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.ProviderIncentive, dueDate, breaksInLearning)
                     .Should().Be(true, $"Incorrect First Incentive Earning For Provider");
                 additionalPayments!
-                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.EmployerIncentive, dueDate)
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.EmployerIncentive, dueDate, breaksInLearning)
                     .Should().Be(true, $"Incorrect First Incentive Earning For Provider");
                 break;
             case "second":
                 additionalPayments!
-                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.ProviderIncentive, dueDate)
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.ProviderIncentive, dueDate, breaksInLearning)
                     .Should().Be(true, $"Incorrect Second Incentive Earning For Provider");
                 additionalPayments!
-                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.EmployerIncentive, dueDate)
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.EmployerIncentive, dueDate, breaksInLearning)
                     .Should().Be(true, $"Incorrect Second Incentive Earning For Provider");
                 break;
             default:

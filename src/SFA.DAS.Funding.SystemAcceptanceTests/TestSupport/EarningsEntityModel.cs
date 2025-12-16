@@ -30,6 +30,7 @@ public class EpisodeModel
     public List<AdditionalPaymentsModel> AdditionalPayments { get; set; }
     public List<MathsAndEnglishModel> MathsAndEnglish { get; set; }
     public List<MathsAndEnglishInstalment> MathsAndEnglishInstalments { get; set; }
+    public List<EpisodeBreakInLearning> EpisodeBreakInLearning { get; set; }
 }
 
 public class EpisodePriceModel
@@ -92,6 +93,15 @@ public class MathsAndEnglishModel
     public DateTime EndDate { get; set; }
     public string Course { get; set; } = null!; 
     public decimal Amount { get; set; }
+}
+
+public class EpisodeBreakInLearning
+{
+    public Guid Key { get; set; }
+    public Guid EpisodeKey { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public DateTime PriorPeriodExpectedEndDate { get; set; }
 }
 
 public class MathsAndEnglishInstalment : InstalmentModelBase
