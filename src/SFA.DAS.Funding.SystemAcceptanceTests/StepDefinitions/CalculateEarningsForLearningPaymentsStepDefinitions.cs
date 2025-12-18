@@ -21,10 +21,12 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     {
         var testData = _context.Get<TestData>();
         var commitmentsApprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
-        var apprenticeshipCreatedEvent = testData.LearningCreatedEvent;
+        var earnings = _earningsSqlClient.GetEarningsEntityModel(_context);
 
-        if (condition == "below") Assert.Less(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost, apprenticeshipCreatedEvent.Episode!.FundingBandMaximum);
-        else Assert.Greater(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost, apprenticeshipCreatedEvent.Episode!.FundingBandMaximum);
+        if (condition == "below") Assert.Less(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost, 
+            earnings?.Episodes.FirstOrDefault()?.FundingBandMaximum);
+        else Assert.Greater(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost,
+            earnings?.Episodes.FirstOrDefault()?.FundingBandMaximum);
     }
 
     [Then(@"80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months (.*)")]

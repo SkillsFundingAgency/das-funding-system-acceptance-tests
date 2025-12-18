@@ -21,6 +21,7 @@ public class EpisodeModel
     public long? FundingEmployerAccountId { get; set; }
     public string LegalEntityName { get; set; }
     public string TrainingCode { get; set; } = null!;
+    public int FundingBandMaximum { get; set; }
     public int AgeAtStartOfApprenticeship { get; set; }
     public DateTime? CompletionDate { get; set; }
     public DateTime? WithdrawalDate { get; set; }
