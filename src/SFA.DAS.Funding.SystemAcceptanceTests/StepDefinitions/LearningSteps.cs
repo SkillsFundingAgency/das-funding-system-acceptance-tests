@@ -1,5 +1,7 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -25,6 +27,32 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             Assert.IsTrue(allExist, "Some learners in LearnerData outer response do not match with learners in learning db");
 
             Assert.AreEqual(expectedLearners.Count, actualLearners.Total, "Total count does not match");
+        }
+
+        [Then("the history of old learning is maintained")]
+        public async Task HistoryOfOldLearningIsMaintained()
+        {
+            var testData = context.Get<TestData>();
+
+            List<LearningHistoryModel> learningHistory = [];
+
+            await WaitHelper.WaitForIt(() =>
+            {
+                learningHistory = learningSqlClient
+                    .GetApprenticeship(testData.LearningKey)
+                    .LearningHistory;
+
+                return learningHistory.Count > 0;
+            }, "Expected 1 or more LearningHistory records");
+
+            var mostRecentHistory = learningHistory
+                .OrderByDescending(x => x.CreatedOn)
+                .First();
+
+            Assert.That(
+                mostRecentHistory.CreatedOn,
+                Is.InRange(DateTime.UtcNow.AddSeconds(-30), DateTime.UtcNow)
+            );
         }
     }
 }

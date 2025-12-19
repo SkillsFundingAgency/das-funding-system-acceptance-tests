@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+﻿using FluentAssertions.Equivalency;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
@@ -40,12 +41,18 @@ public class LearningSqlClient
         {
             throw new InvalidOperationException("No learning found");
         }
+
         learning.Episodes = _sqlServerClient.GetList<Episode>($"SELECT * FROM [dbo].[Episode] WHERE LearningKey = '{learning.Key}'");
+
         foreach (var episode in learning.Episodes)
         {
             episode.Prices = _sqlServerClient.GetList<EpisodePrice>($"SELECT * FROM [dbo].[EpisodePrice] WHERE EpisodeKey = '{episode.Key}'");
         }
+
         learning.FreezeRequests = _sqlServerClient.GetList<FreezeRequest>($"SELECT * FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learning.Key}'");
+
+        learning.LearningHistory = _sqlServerClient.GetList<LearningHistoryModel>($"SELECT * FROM [History].[LearningHistory] WHERE LearningId = '{learning.Key}'");
+
         return learning;
     }
 
@@ -89,7 +96,16 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            3. Delete Learning Supports
+            3. Delete Learning History 
+            ===========================================================*/
+            DELETE lh
+            FROM History.LearningHistory lh
+            JOIN dbo.Learning l ON lh.LearningId = l.[Key]
+            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            4. Delete Learning Supports
             ===========================================================*/
             DELETE ls
             FROM dbo.LearningSupport ls
@@ -98,7 +114,7 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            4. Delete Maths and English
+            5. Delete Maths and English
             ===========================================================*/
             DELETE me
             FROM dbo.MathsAndEnglish me
@@ -107,7 +123,7 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            5. Delete Approvals
+            6. Delete Approvals
             ===========================================================*/
             DELETE a
             FROM dbo.Approval a
@@ -116,7 +132,7 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            6. Delete Episode Breaks In Learning
+            7. Delete Episode Breaks In Learning
             ===========================================================*/
             DELETE ebil
             FROM dbo.EpisodeBreakInLearning ebil
@@ -124,14 +140,14 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            7. Delete Episodes
+            8. Delete Episodes
             ===========================================================*/
             DELETE e
             FROM dbo.Episode e
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            8. Delete Learnings
+            9. Delete Learnings
             ===========================================================*/
             DELETE l
             FROM dbo.Learning l
@@ -160,6 +176,8 @@ public class Learning
     public string? EmailAddress { get; set; }
     public List<FreezeRequest> FreezeRequests { get; set; }
     public List<Episode> Episodes { get; set; }
+    public List<LearningHistoryModel> LearningHistory { get; set; }
+
 }
 
 public class Episode
@@ -205,4 +223,11 @@ public class FreezeRequest
     public DateTime? UnfrozenDateTime { get; set; }
     public string? UnfrozenBy { get; set; }
     public string? Reason { get; set; }
+}
+
+public class LearningHistoryModel
+{
+    public Guid LearningId { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public string State { get; set; }
 }
