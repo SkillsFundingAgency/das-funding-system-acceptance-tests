@@ -20,13 +20,13 @@ public class EarningsInnerApiClient
     }
 
     /// <summary>
-    /// Sends a PATCH request to the earnings inner API to save care details for an apprenticeship.
+    /// Sends a PATCH request to the earnings inner API to save care details for a learning.
     /// </summary>
-    /// <param name="apprenticeshipKey">The apprenticeship key (Guid).</param>
+    /// <param name="learningKey">The learning key (Guid).</param>
     /// <param name="request">The care details request.</param>
-    public async Task<HttpResponseMessage> SaveCareDetails(Guid apprenticeshipKey, SaveCareDetailsRequest request)
+    public async Task<HttpResponseMessage> SaveCareDetails(Guid learningKey, SaveCareDetailsRequest request)
     {
-        var url = $"apprenticeship/{apprenticeshipKey}/careDetails";
+        var url = $"learning/{learningKey}/careDetails";
 
         var jsonContent = new StringContent(
             JsonSerializer.Serialize(request),

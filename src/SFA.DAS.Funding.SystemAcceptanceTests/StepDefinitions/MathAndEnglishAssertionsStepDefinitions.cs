@@ -187,7 +187,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         private async Task VerifyMathsAndEnglishEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
-            TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course, bool assertNoSubsequentEarningsExist, bool returnSoftDeleted = false)
+            TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course, bool assertNoSubsequentEarningsExist)
         {
             var testData = context.Get<TestData>();
             EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
@@ -211,7 +211,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 .Episodes
                 .SingleOrDefault()
                 ?.MathsAndEnglishInstalments.Where(x => x.MathsAndEnglishKey == mathsAndEnglishKey)
-                .Where(x => x.Type == "Regular" && x.IsAfterLearningEnded == returnSoftDeleted)
+                .Where(x => x.Type == "Regular")
                 .ToList();
 
             testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile
@@ -269,38 +269,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             Assert.Zero(mathsAndEnglishInstalments.Result.Count, "Unexpected Balancing earning for English and Maths found! ");
         }
 
-        [Then("Maths and English earnings for course (.*) are zero")]
-        public async Task VerifyMathsAndEnglishEarnings(string course)
+        [Then("Maths and English earnings for course (.*) are removed")]
+        public async Task VerifyMathsAndEnglishEarningsAreRemoved(string course)
         {
             var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(course, "Regular");
 
             mathsAndEnglishInstalments.Result.Should().BeEmpty("Unexpected Maths and English instalment data found on earnings apprenticeship model");
-        }
-
-        [Then("Maths and English earnings for course (.*) are soft deleted")]
-        public async Task MathsAndEnglishEarningsAreSoftDeleted(string course)
-        {
-            var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(course, "Regular");
-
-            Assert.IsTrue(mathsAndEnglishInstalments.Result.Count > 0, "No Maths and English instalments found!");
-
-            mathsAndEnglishInstalments.Result
-                .All(x => x.IsAfterLearningEnded == true)
-                .Should().BeTrue("Some Maths and English instalments are not soft deleted");
-
-        }
-
-        [Then("Maths and English earnings for course (.*) are reinstated")]
-        public void TMathsAndEnglishEarningsAreReinstated(string course)
-        {
-            var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(course, "Regular");
-
-            Assert.IsTrue(mathsAndEnglishInstalments.Result.Count > 0, "No Maths and English instalments found!");
-
-            mathsAndEnglishInstalments.Result
-                .All(x => x.IsAfterLearningEnded == false)
-                .Should().BeTrue("Some Maths and English instalments are still soft deleted");
-
         }
 
         private async Task<List<MathsAndEnglishInstalment>> GetLatestMathsAndEnglishInstalmentsOfType(string course, string type)
