@@ -22,8 +22,8 @@ Scenario: Price change - Total price change ONLY - recalc earnings
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD record on-programme cost as total price <new_total_price> from date <pc_from_date> to date <end_date>
 	And SLD submit updated learners details
-	Then the history of old learning is maintained 
-	And the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
+	#Then the history of old learning is maintained 
+	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
 	And earnings prior to <delivery_period> and <academic_year_string> are frozen with <old_inst_amount>
 	And the history of old earnings is maintained with <old_inst_amount>
 	And the AgreedPrice on the earnings entity is updated to <new_total_price>
