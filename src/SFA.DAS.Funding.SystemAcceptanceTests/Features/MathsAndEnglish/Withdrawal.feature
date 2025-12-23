@@ -62,7 +62,7 @@ Scenario: Earnings for Maths and English after Withdrawal during Qualifying Peri
 	When Maths and English learning is recorded from <start_date> for <duration_days> days with course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And SLD submit updated learners details
-	Then Maths and English earnings for course <course> are zero
+	Then Maths and English earnings for course <course> are removed
 
 Examples:
 	| start_date      | duration_days | course              | agreed_price | withdrawal_on_day |
@@ -81,7 +81,7 @@ Scenario: English and Maths course withdrawn from the start
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from currentAY-08-05 for 156 days with course Entry level English, amount 931 and withdrawal after 1 days
 	And SLD submit updated learners details
-	Then Maths and English earnings for course Entry level English are soft deleted
+	Then Maths and English earnings for course Entry level English are removed
 
 @regression
 Scenario: English and Maths course withdrawn from the start then removed
@@ -94,12 +94,12 @@ Scenario: English and Maths course withdrawn from the start then removed
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from currentAY-08-05 for 156 days with course Entry level English, amount 1000 and withdrawal after 1 days
 	And SLD submit updated learners details
-	Then Maths and English earnings for course Entry level English are soft deleted
+	Then Maths and English earnings for course Entry level English are removed
 	When SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And the maths and english courses are removed
 	And SLD submit updated learners details
-	Then Maths and English earnings for course Entry level English are zero
+	Then Maths and English earnings for course Entry level English are removed
 
 @regression
 Scenario: English and Maths course withdrawn from the start then reinstated
@@ -112,9 +112,9 @@ Scenario: English and Maths course withdrawn from the start then reinstated
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from currentAY-08-05 for 156 days with course Entry level English, amount 1000 and withdrawal after 1 days
 	And SLD submit updated learners details
-	Then Maths and English earnings for course Entry level English are soft deleted
+	Then Maths and English earnings for course Entry level English are removed
 	When SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with course Entry level English and amount 1000
 	And SLD submit updated learners details
-	Then Maths and English earnings for course Entry level English are reinstated
+	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R05 with instalment amount 200 for course Entry level English
