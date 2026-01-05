@@ -10,12 +10,14 @@ public class EnglishAndMathsBuilder
         DateTime startDate,
         DateTime endDate,
         string course,
-        decimal amount)
+        decimal amount, 
+        string learnAimRef)
     {
         _course.Course = course;
         _course.StartDate = startDate;
         _course.EndDate = endDate;
         _course.Amount = amount;
+        _course.LearnAimRef = learnAimRef;
         return this;
     }
 
