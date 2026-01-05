@@ -9,7 +9,7 @@ Background:
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	And a Maths and English learning is recorded from currentAY-08-05 to currentAY-04-10 with course English Foundation, amount 800, learning support from currentAY-08-05 to currentAY-04-10
+	And a Maths and English learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, learning support from currentAY-08-05 to currentAY-04-10
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R08 with instalment amount 100 for course English Foundation
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R08
@@ -18,7 +18,7 @@ Background:
 Scenario: Training provider records a break in learning without specifying a return
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with course English Foundation, amount 800, pause date currentAY-02-25, learning support from currentAY-08-05 to currentAY-04-10
+	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, pause date currentAY-02-25, learning support from currentAY-08-05 to currentAY-04-10
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R06 with instalment amount 100 for course English Foundation
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R06
@@ -27,11 +27,11 @@ Scenario: Training provider records a break in learning without specifying a ret
 Scenario: Training provider corrects a previously recorded a break in learning without specifying a return
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with course English Foundation, amount 800, pause date currentAY-02-25, learning support from currentAY-08-05 to currentAY-04-10
+	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, pause date currentAY-02-25, learning support from currentAY-08-05 to currentAY-04-10
 	And SLD submit updated learners details
 	And SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with course English Foundation, amount 800, pause date currentAY-03-25, learning support from currentAY-08-05 to currentAY-04-10
+	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, pause date currentAY-03-25, learning support from currentAY-08-05 to currentAY-04-10
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R07 with instalment amount 100 for course English Foundation
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R07
@@ -40,11 +40,11 @@ Scenario: Training provider corrects a previously recorded a break in learning w
 Scenario: Training provider removes a previously recorded break in learning
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with course English Foundation, amount 800, pause date currentAY-02-25, learning support from currentAY-08-05 to currentAY-04-10
+	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, pause date currentAY-02-25, learning support from currentAY-08-05 to currentAY-04-10
 	And SLD submit updated learners details
 	And SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	When a Maths and English learning is recorded from currentAY-08-05 to currentAY-04-10 with course English Foundation, amount 800, learning support from currentAY-08-05 to currentAY-04-10
+	When a Maths and English learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, learning support from currentAY-08-05 to currentAY-04-10
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R08 with instalment amount 100 for course English Foundation
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R08

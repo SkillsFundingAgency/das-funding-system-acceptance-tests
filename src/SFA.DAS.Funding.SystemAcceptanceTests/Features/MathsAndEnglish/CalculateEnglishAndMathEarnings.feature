@@ -10,7 +10,7 @@ Scenario: Calculate Single Math and English earnings
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date nextAY-08-23
-	And Maths and English learning is recorded from <start_date> to <end_date> with course <course> and amount <amount>
+	And Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course> and amount <amount>
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
 
@@ -28,8 +28,8 @@ Scenario: Calculate Multiple Math and English earnings
 	And the age at the start of the apprenticeship is 22
 	When the apprenticeship commitment is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-23 to date nextAY-08-23
-	And Maths and English learning is recorded from <course1_start_date> to <course1_end_date> with course <course1_name> and amount <course1_amount>
-	And Maths and English learning is recorded from <course2_start_date> to <course2_end_date> with course <course2_name> and amount <course2_amount>
+	And Maths and English learning is recorded from <course1_start_date> to <course1_end_date> with learnAimRef 60342843, course <course1_name> and amount <course1_amount>
+	And Maths and English learning is recorded from <course2_start_date> to <course2_end_date> with learnAimRef 60342844, course <course2_name> and amount <course2_amount>
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <course1_first_payment_period> to <course1_last_payment_period> with instalment amount <course1_instalment> for course <course1_name>
 	And Maths and English earnings are generated from periods <course2_first_payment_period> to <course2_last_payment_period> with instalment amount <course2_instalment> for course <course2_name>
@@ -45,7 +45,7 @@ Scenario: Learning Support for Maths and English Earnings
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date <end_date>
-	And a Maths and English learning is recorded from <start_date> to <maths_and_english_end_date> with course <course>, amount 12000, learning support from <start_date> to <maths_and_english_end_date>
+	And a Maths and English learning is recorded from <start_date> to <maths_and_english_end_date> with learnAimRef 60342843, course <course>, amount 12000, learning support from <start_date> to <maths_and_english_end_date>
 	And SLD submit updated learners details
 	Then learning support earnings are generated from periods <expected_first_earning_period> to <expected_last_earning_period>
 
@@ -60,7 +60,7 @@ Scenario: Maths and English instalments removed if maths and english courses rem
 	And the age at the start of the apprenticeship is 22
 	When the apprenticeship commitment is approved
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date <end_date>
-	And Maths and English learning is recorded from <start_date> to <end_date> with course <course> and amount <amount>
+	And Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course> and amount <amount>
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
 	When SLD resubmits ILR

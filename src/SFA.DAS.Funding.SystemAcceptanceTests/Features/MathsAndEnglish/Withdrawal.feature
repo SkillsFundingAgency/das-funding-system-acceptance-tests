@@ -13,7 +13,7 @@ The Qualifying Period varies depending upon the length of the course:
 @regression
 Scenario: Earnings for Maths and English after Withdrawal after Qualifying Period
 	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
-	When Maths and English learning is recorded from <start_date> for <duration_days> days with course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
+	When Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
@@ -29,7 +29,7 @@ Examples:
 @regression
 Scenario: Withdrawal for Maths and English can be after Planned end date
 	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
-	When Maths and English learning is recorded from <start_date> for <duration_days> days with course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
+	When Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
@@ -43,11 +43,11 @@ Examples:
 Scenario: Earnings for Maths and English are recalculated when withdrawal details have changed
 	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
-	And Maths and English learning is recorded from <start_date> for <duration_days> days with course <course>, amount <agreed_price> and withdrawal after <first_withdrawal_on_day> days
+	And Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <first_withdrawal_on_day> days
 	And SLD submit updated learners details
 	And Maths and English earnings are generated from periods <first_withdrawal_earnings_start_period> to <first_withdrawal_earnings_end_period> with instalment amount <instalment> for course <course>
 	When SLD inform us that Maths and English details have changed
-	And Maths and English learning is recorded from <start_date> for <duration_days> days with course <course>, amount <agreed_price> and withdrawal after <second_withdrawal_on_day> days
+	And Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <second_withdrawal_on_day> days
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <second_withdrawal_earnings_start_period> to <second_withdrawal_earnings_end_period> with instalment amount <instalment> for course <course>
@@ -59,7 +59,7 @@ Examples:
 @regression
 Scenario: Earnings for Maths and English after Withdrawal during Qualifying Period
 	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
-	When Maths and English learning is recorded from <start_date> for <duration_days> days with course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
+	When Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And SLD submit updated learners details
 	Then Maths and English earnings for course <course> are removed
@@ -75,11 +75,11 @@ Scenario: English and Maths course withdrawn from the start
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with course Entry level English and amount 931
+	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with learnAimRef 60342843, course Entry level English and amount 931
 	And SLD submit updated learners details
 	When SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	And Maths and English learning is recorded from currentAY-08-05 for 156 days with course Entry level English, amount 931 and withdrawal after 1 days
+	And Maths and English learning is recorded from currentAY-08-05 for 156 days with learnAimRef 60342843, course Entry level English, amount 931 and withdrawal after 1 days
 	And SLD submit updated learners details
 	Then Maths and English earnings for course Entry level English are removed
 
@@ -88,11 +88,11 @@ Scenario: English and Maths course withdrawn from the start then removed
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with course Entry level English and amount 1000
+	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with learnAimRef 60342843, course Entry level English and amount 1000
 	And SLD submit updated learners details
 	When SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	And Maths and English learning is recorded from currentAY-08-05 for 156 days with course Entry level English, amount 1000 and withdrawal after 1 days
+	And Maths and English learning is recorded from currentAY-08-05 for 156 days with learnAimRef 60342843, course Entry level English, amount 1000 and withdrawal after 1 days
 	And SLD submit updated learners details
 	Then Maths and English earnings for course Entry level English are removed
 	When SLD resubmits ILR
@@ -106,15 +106,15 @@ Scenario: English and Maths course withdrawn from the start then reinstated
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with course Entry level English and amount 1000
+	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with learnAimRef 60342843, course Entry level English and amount 1000
 	And SLD submit updated learners details
 	When SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	And Maths and English learning is recorded from currentAY-08-05 for 156 days with course Entry level English, amount 1000 and withdrawal after 1 days
+	And Maths and English learning is recorded from currentAY-08-05 for 156 days with learnAimRef 60342843, course Entry level English, amount 1000 and withdrawal after 1 days
 	And SLD submit updated learners details
 	Then Maths and English earnings for course Entry level English are removed
 	When SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
-	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with course Entry level English and amount 1000
+	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with learnAimRef 60342843, course Entry level English and amount 1000
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R05 with instalment amount 200 for course Entry level English
