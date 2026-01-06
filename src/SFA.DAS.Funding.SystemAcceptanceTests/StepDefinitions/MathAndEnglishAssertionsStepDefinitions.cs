@@ -11,94 +11,94 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         ScenarioContext context,
         EarningsSqlClient earningsEntitySqlClient)
     {
-        [Given("Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*)")]
-        [When("Maths and English learning is recorded from (.*) to (.*) with course (.*) and amount (.*)")]
-        public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount)
+        [Given("Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*) and amount (.*)")]
+        [When("Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*) and amount (.*)")]
+        public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount)
         {
             var testData = context.Get<TestData>();
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
-            learnerDataBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount);
+            learnerDataBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, learnAimRef);
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
-        [When("Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*) and completion on (.*)")]
-        public async Task AddMathsAndEnglishLearningWithCompletion(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount, TokenisableDateTime completionDate)
+        [When("Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*) and completion on (.*)")]
+        public async Task AddMathsAndEnglishLearningWithCompletion(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime completionDate)
         {
             var testData = context.Get<TestData>();
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-            learnerDataBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, completionDate: completionDate.Value);
+            learnerDataBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, learnAimRef, completionDate: completionDate.Value);
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
-        [Given("a Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*), learning support from (.*) to (.*)")]
-        [When("a Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*), learning support from (.*) to (.*)")]
-        public async Task AddMathsAndEnglishLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount,
+        [Given("a Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), learning support from (.*) to (.*)")]
+        [When("a Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), learning support from (.*) to (.*)")]
+        public async Task AddMathsAndEnglishLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount,
             TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
         {
             var testData = context.Get<TestData>();
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount)
+            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef)
                         .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
 
-        [When("English and Maths learning is recorded from (.*) to (.*) with course (.*), amount (.*), withdrawal date (.*), learning support from (.*) to (.*)")]
-        public async Task AddMathsAndEnglishWithWithdrawalAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount, TokenisableDateTime withdrawalDate,
+        [When("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), withdrawal date (.*), learning support from (.*) to (.*)")]
+        public async Task AddMathsAndEnglishWithWithdrawalAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime withdrawalDate,
             TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
         {
             var testData = context.Get<TestData>();
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount)
+            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef)
                         .WithWithdrawalDate(withdrawalDate.Value)
                         .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
-        [When("English and Maths learning is recorded from (.*) to (.*) with course (.*), amount (.*), pause date (.*), learning support from (.*) to (.*)")]
-        public async Task AddMathsAndEnglishWithPauseAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount, TokenisableDateTime pauseDate,
+        [When("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), pause date (.*), learning support from (.*) to (.*)")]
+        public async Task AddMathsAndEnglishWithPauseAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime pauseDate,
             TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
         {
             var testData = context.Get<TestData>();
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount)
+            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef)
                         .WithPauseDate(pauseDate.Value)
                         .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
-        [When("an English and Maths learning is recorded from (.*) to (.*) with course (.*), amount (.*), completion date as (.*), learning support from (.*) to (.*)")]
-        public async Task AddMathsAndEnglishWithCompletionAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount, TokenisableDateTime completionDate,
+        [When("an English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), completion date as (.*), learning support from (.*) to (.*)")]
+        public async Task AddMathsAndEnglishWithCompletionAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime completionDate,
             TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
         {
             var testData = context.Get<TestData>();
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount)
+            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef)
             .WithCompletionDate(completionDate.Value)
             .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
-        [Given("Maths and English learning is recorded from (.*) for (.*) days with course (.*), amount (.*) and withdrawal after (.*) days")]
-        [When("Maths and English learning is recorded from (.*) for (.*) days with course (.*), amount (.*) and withdrawal after (.*) days")]
-        public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, int duration, string course, decimal amount, int withdrawalOnDay)
+        [Given("Maths and English learning is recorded from (.*) for (.*) days with learnAimRef (.*), course (.*), amount (.*) and withdrawal after (.*) days")]
+        [When("Maths and English learning is recorded from (.*) for (.*) days with learnAimRef (.*), course (.*), amount (.*) and withdrawal after (.*) days")]
+        public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, int duration, string learnAimRef, string course, decimal amount, int withdrawalOnDay)
         {
             var testData = context.Get<TestData>();
 
@@ -107,19 +107,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var learnerBuilder = testData.GetLearnerDataBuilder();
 
-            learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate, course, amount, withdrawalDate: withdrawalDate);
+            learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate, course, amount, learnAimRef, withdrawalDate: withdrawalDate);
 
             testData.IsMathsAndEnglishAdded = true;
         }
 
 
-        [When("Maths and English learning is recorded from (.*) to (.*) with course (.*), amount (.*) and prior learning adjustment of (.*) percent")]
-        public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string course, decimal amount, int? priorLearning)
+        [When("Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*) and prior learning adjustment of (.*) percent")]
+        public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, int? priorLearning)
         {
             var testData = context.Get<TestData>();
 
             var learnerBuilder = testData.GetLearnerDataBuilder();
-            learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, priorLearningPercentage: priorLearning);
+            learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, learnAimRef, priorLearningPercentage: priorLearning);
 
             testData.IsMathsAndEnglishAdded = true;
         }

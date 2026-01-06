@@ -180,6 +180,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         public class EnglishAndMaths
         {
             public string Course { get; set; }
+            public string LearnAimRef { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
             public DateTime? CompletionDate { get; set; }
@@ -255,6 +256,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? StartDate { get; set; }
             public DateTime? EndDate { get; set; }
             public int? CourseCode { get; set; }
+            public string LearnAimRef {  get; set; }
             public int? PriorLearningPercentage { get; set; }
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
