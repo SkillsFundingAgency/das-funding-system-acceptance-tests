@@ -109,13 +109,6 @@ public class Fm36StepDefinitions
         testData.Fm36HttpResponseMessage = await _learnerDataOuterApiClient.GetFm36BlockHttpResponseMessage(Constants.UkPrn, collectionYear, collectionPeriod, pageSize, pageNumber);
     }
 
-    [Given(@"the apprentice is marked as a care leaver")]
-    public async Task GivenTheApprenticeIsMarkedAsACareLeaver()
-    {
-        var testData = _context.Get<TestData>();
-        await _earningsInnerApiHelper.MarkAsCareLeaver(testData.LearningKey);
-    }
-
     [Then("incentives earnings are generated for learners aged 15")]
     [Then(@"fm36 data exists for that apprenticeship")]
     public void Fm36DataExists()

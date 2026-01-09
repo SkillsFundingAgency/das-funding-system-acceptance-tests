@@ -146,6 +146,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public string LastName { get; set; } 
             public string? Email { get; set; }
             public DateTime Dob {  get; set; }
+            public bool HasEhcp { get; set; }
         }
 
 
@@ -159,15 +160,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         public class OnProgramme
         {
             public int StandardCode {  get; set; }
+            public string AgreementId { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime ExpectedEndDate { get; set; }
             public List<CostDetails> Costs { get; set; } = new List<CostDetails>();
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
             public DateTime? PauseDate { get; set; }
-            public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
-            public string AgreementId { get; set; }
             public DateTime? ActualEndDate { get; set; }
+            public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
+            public Care Care { get; set; }
         }
 
         public class CostDetails
@@ -231,7 +233,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class StubOnProgramme
         {
-            public StubCare Care { get; set; }
+            public Care Care { get; set; }
             public int? StandardCode { get; set; }
             public string? AgreementId { get; set; }
             public DateTime? StartDate { get; set; }
@@ -245,10 +247,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public bool? IsFlexiJob { get; set; }
         }
 
-        public class StubCare
+        public class Care
         {
-            public bool? Careleaver { get; set; }
-            public bool? EmployerConsent { get; set; }
+            public bool Careleaver { get; set; }
+            public bool EmployerConsent { get; set; }
         }
 
         public class StubEnglishAndMaths
