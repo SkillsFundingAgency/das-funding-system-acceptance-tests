@@ -1,6 +1,7 @@
 using Microsoft.Azure.Amqp.Framing;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Learning.Types;
@@ -24,12 +25,14 @@ public class IncentivesAssertionsStepDefinitions
         _earningsInnerApiHelper = earningsInnerApiHelper;
     }
 
+    [Given(@"the apprentice is marked as a care leaver")]
     [When(@"the apprentice is marked as a care leaver")]
-    public async Task MarkAsCareLeaver()
+    public void MarkAsCareLeaver()
     {
         var testData = _context.Get<TestData>();
-        await _earningsInnerApiHelper.MarkAsCareLeaver(testData.LearningKey);
-        testData.IsMarkedAsCareLeaver = true;
+
+        var learnerDataBuilder = testData.GetLearnerDataBuilder();
+        learnerDataBuilder.WithCareLeaver(true, true);
     }
 
     [Given(@"the (first|second) incentive earning (is|is not) generated for provider & employer")]
