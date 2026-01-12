@@ -9,7 +9,7 @@ So we both get paid incentives correctly
 # FLP-1036 AC1(19-24 part)
 
 @regression
-Scenario: 19-24 Incentive Earnings
+Scenario: 19-24 Incentive Earnings - Learner is a Care Leaver with Employer consent
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
@@ -24,6 +24,36 @@ Examples:
 	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  19 |
 	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  21 |
 	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  24 |
+
+@regression
+Scenario: 19-24 Incentive Earnings - Learner is a Care Leaver without Employer Consent
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the age at the start of the apprenticeship is <age>
+	When the apprenticeship commitment is approved
+	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
+	And the apprentice is marked as a care leaver without employer consent
+	And SLD submit updated learners details
+	Then the first incentive earning is not generated for employer
+	And the second incentive earning is not generated for employer
+
+Examples:
+	| start_date      | planned_end_date | agreed_price | training_code | age |
+	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  19 |
+
+@regression
+Scenario: 19-24 Incentive Earnings - Learner has EHCP
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the age at the start of the apprenticeship is <age>
+	When the apprenticeship commitment is approved
+	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
+	And the apprentice is on a EHCP plan
+	And SLD submit updated learners details
+	Then the first incentive earning is generated for provider & employer
+	And the second incentive earning is generated for provider & employer
+
+Examples:
+	| start_date      | planned_end_date | agreed_price | training_code | age |
+	| currentAY-08-01 | currentAY-07-31  |        15000 |             1 |  19 |
 
 
 @regression
