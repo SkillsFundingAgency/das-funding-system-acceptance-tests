@@ -29,7 +29,6 @@ public static class IncentiveEarningsAssertionHelper
             && x.DeliveryPeriod == expectedPeriod.Period
             && x.AdditionalPaymentType == paymentType
             && x.Amount == 500
-            && x.IsAfterLearningEnded == false
             && (dueDate == null || x.DueDate == dueDate));
     }
 

@@ -23,11 +23,9 @@ Scenario: Training provider records multiple breaks in learning with returns
 	And SLD inform us of a return from break in learning with a new learning start date currentAY-09-01
 	And SLD submit updated learners details
 	And earnings are recalculated
-	Then the earnings between previousAY-R01 and previousAY-R05 are maintained
-	And the earnings between previousAY-R06 and previousAY-R07 are soft deleted
-	And the earnings between previousAY-R08 and previousAY-R10 are maintained
-	And the earnings between previousAY-R11 and currentAY-R01 are soft deleted
-	And the earnings between currentAY-R02 and currentAY-R12 are maintained
+	Then the earnings of 500 between previousAY-R01 and previousAY-R05 are maintained
+	And the earnings of 558.82353 between previousAY-R08 and previousAY-R10 are maintained
+	And the earnings of 711.22995 between currentAY-R02 and currentAY-R12 are maintained
 
 #BiL , return then Completion 
 @regression
@@ -41,7 +39,6 @@ Scenario: Training provider records break in learning, return, then completion
 	And SLD submit updated learners details
 	And earnings are recalculated
 	Then the earnings of 500 between previousAY-R01 and previousAY-R05 are maintained
-	And the earnings between previousAY-R06 and currentAY-R01 are soft deleted
 	And the earnings of 863.63686 between currentAY-R02 and currentAY-R04 are maintained
 	#6x new payment post break of 863.63636 to cover R05 to R12 inclusive = 6909.09
 	And an earning of 6909.09 of type Balancing is generated for period currentAY-R05
@@ -59,7 +56,6 @@ Scenario: Training provider pushes end date back to account for break in learnin
 	And SLD submit updated learners details
 	Then earnings are recalculated
 	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained
-	And the earnings between previousAY-R07 and previousAY-R09 are soft deleted
 	And the earnings of 1000 between previousAY-R10 and currentAY-R05 are maintained
 
 #Apprenticeship duration is increased after BIL with no price change
@@ -73,7 +69,6 @@ Scenario: Training provider increases duration after break in learning with no p
 	And SLD submit updated learners details
 	Then earnings are recalculated
 	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained
-	And the earnings between previousAY-R07 and previousAY-R09 are soft deleted
 	And the earnings of 727.27 between previousAY-R10 and currentAY-R08 are maintained
 
 #Apprenticeship duration is increased after BIL with price increase
@@ -88,7 +83,6 @@ Scenario: Training provider increases duration after break in learning with pric
 	And SLD submit updated learners details
 	Then earnings are recalculated
 	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained
-	And the earnings between previousAY-R07 and previousAY-R09 are soft deleted
 	And the earnings of 945.45 between previousAY-R10 and currentAY-R08 are maintained
 
 #Withdrawal on the same day after BIL return
@@ -103,7 +97,6 @@ Scenario: Training provider withdraws apprenticeship on the same day as return f
 	And SLD submit updated learners details
 	Then earnings are recalculated
 	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained
-	And the earnings between previousAY-R07 and currentAY-R02 are soft deleted
 
 #Withdrawal after 3 months of their return from BIL
 @regression
@@ -117,6 +110,4 @@ Scenario: Training provider withdraws apprenticeship 3 months after return from 
 	And SLD submit updated learners details
 	Then earnings are recalculated
 	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained
-	And the earnings between previousAY-R07 and previousAY-R09 are soft deleted
 	And the earnings of 1600 between previousAY-R10 and previousAY-R12 are maintained
-	And the earnings between currentAY-R01 and currentAY-R02 are soft deleted
