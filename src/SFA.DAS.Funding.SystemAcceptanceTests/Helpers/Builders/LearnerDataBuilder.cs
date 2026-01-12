@@ -9,7 +9,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         {
             Delivery = new Delivery
             {
-                OnProgramme = new List<OnProgramme> { new OnProgramme{ AgreementId = "1" } }
+                OnProgramme = new List<OnProgramme> { new OnProgramme { AgreementId = "1", Care = new Care()}}
             },
             Learner = new LearnerRequestDetails
             {
@@ -96,6 +96,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
+        public LearnerDataBuilder WithEhcp (bool hasEhcp)
+        {
+            _request.Learner.HasEhcp = hasEhcp;
+
+            return this;
+        }
+
+        public LearnerDataBuilder WithCareLeaver (bool careLeaver, bool employerConsent)
+        {
+            _request.Delivery.OnProgramme.Latest().Care.Careleaver = careLeaver;
+            _request.Delivery.OnProgramme.Latest().Care.EmployerConsent = employerConsent;
+
+            return this;
+        }
+
         public LearnerDataBuilder WithOnProgrammeLearningSupport(DateTime startDate, DateTime endDate)
         {
             _request.Delivery.OnProgramme.Latest().LearningSupport.Add(new LearningSupport
@@ -177,6 +192,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             _request.Delivery.OnProgramme.Add(new OnProgramme
             {
                 AgreementId = _request.Delivery.OnProgramme.Latest().AgreementId,
+                Care = new Care (),
                 Costs = new List<CostDetails>
                 {
                     new CostDetails

@@ -1,6 +1,7 @@
 using Microsoft.Azure.Amqp.Framing;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Learning.Types;
@@ -24,13 +25,35 @@ public class IncentivesAssertionsStepDefinitions
         _earningsInnerApiHelper = earningsInnerApiHelper;
     }
 
+    [Given(@"the apprentice is marked as a care leaver")]
     [When(@"the apprentice is marked as a care leaver")]
-    public async Task MarkAsCareLeaver()
+    public void MarkAsCareLeaver()
     {
         var testData = _context.Get<TestData>();
-        await _earningsInnerApiHelper.MarkAsCareLeaver(testData.LearningKey);
-        testData.IsMarkedAsCareLeaver = true;
+
+        var learnerDataBuilder = testData.GetLearnerDataBuilder();
+        learnerDataBuilder.WithCareLeaver(true, true);
     }
+
+    [When("the apprentice is marked as a care leaver without employer consent")]
+    public void ApprenticeIsMarkedAsACareLeaverWithoutEmployerConsent()
+    {
+        var testData = _context.Get<TestData>();
+
+        var learnerDataBuilder = testData.GetLearnerDataBuilder();
+        learnerDataBuilder.WithCareLeaver(true, false);
+    }
+
+
+    [When("the apprentice is on a EHCP plan")]
+    public void ApprenticeIsOnAEHCPPlan()
+    {
+        var testData = _context.Get<TestData>();
+
+        var learnerDataBuilder = testData.GetLearnerDataBuilder();
+        learnerDataBuilder.WithEhcp(true);
+    }
+
 
     [Given(@"the (first|second) incentive earning (is|is not) generated for provider & employer")]
     [Then(@"the (first|second) incentive earning (is|is not) generated for provider & employer")]
@@ -153,5 +176,49 @@ public class IncentivesAssertionsStepDefinitions
             default:
                 throw new Exception("Step definition requires 'first' or 'second' to be specified for incentive earning");
         }
+    }
+
+    [Then(@"the (first|second) incentive earning (is|is not) generated for employer")]
+    public async Task VerifyIncentiveEarningsGeneratedForEmployer (string incentiveEarningNumber, string outcome)
+    {
+        var testData = _context.Get<TestData>();
+
+        EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
+        }, "Failed to find updated earnings entity.");
+
+        var additionalPayments = earningsApprenticeshipModel
+            .Episodes
+            .SingleOrDefault()
+            ?.AdditionalPayments;
+
+        testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId;
+
+        additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
+
+        var incentiveExpected = outcome == "is";
+        var expectation = incentiveExpected ? "Expected" : "Not Expected";
+
+        switch (incentiveEarningNumber)
+        {
+            case "first":
+                additionalPayments!
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.EmployerIncentive)
+                    .Should().Be(incentiveExpected, $"First Incentive Earning {expectation} For Employer");
+                break;
+            case "second":
+                additionalPayments!
+                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.EmployerIncentive)
+                    .Should().Be(incentiveExpected, $"Second Incentive Earning {expectation} For Employer");
+                break;
+            default:
+                throw new Exception("Step definition requires 'first' or 'second' to be specified for incentive earning");
+        }
+
+        additionalPayments!.Count(x => x.AdditionalPaymentType == AdditionalPaymentType.ProviderIncentive).Should().BeLessThanOrEqualTo(2, "No more than two provider incentive payments should be made.");
     }
 }
