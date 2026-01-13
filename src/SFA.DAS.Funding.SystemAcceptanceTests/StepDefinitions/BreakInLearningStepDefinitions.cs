@@ -57,38 +57,6 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
         learnerDataBuilder.WithEntireBreakInLearningRemoved();
     }
 
-    [Then("the earnings between (.*) and (.*) are soft deleted")]
-    public void EarningsBetweenDeliveryPeriodsAreSoftDeleted(TokenisablePeriod firstPeriod, TokenisablePeriod secondPeriod)
-    {
-        var testData = context.Get<TestData>();
-
-        var instalments = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments
-            ?.OrderBy(x => x.AcademicYear).ThenBy(x => x.DeliveryPeriod).ToList();
-
-        instalments?
-            .AssertBetweenRange(
-                firstPeriod.Value,
-                secondPeriod.Value, 
-                x => x.IsAfterLearningEnded, 
-                x => $"Found instalment for AcademicYear {x.AcademicYear} DeliveryPeriod {x.DeliveryPeriod} that is not soft deleted in earnings db.");
-    }
-
-    [Then("the earnings between (.*) and (.*) are maintained")]
-    public void EarningsBetweenDeliveryPeriodsAreMaintained(TokenisablePeriod firstPeriod, TokenisablePeriod secondPeriod)
-    {
-        var testData = context.Get<TestData>();
-
-        var instalments = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments
-            ?.OrderBy(x => x.AcademicYear).ThenBy(x => x.DeliveryPeriod).ToList();
-
-        instalments?
-            .AssertBetweenRange(
-                firstPeriod.Value,
-                secondPeriod.Value,
-                x => !x.IsAfterLearningEnded,
-                x => $"Found instalment for AcademicYear {x.AcademicYear} DeliveryPeriod {x.DeliveryPeriod} that has been soft deleted in earnings db.");
-    }
-
     [Then("the earnings of (.*) between (.*) and (.*) are maintained")]
     public void EarningsOfAmountBetweenDeliveryPeriodsAreMaintained(decimal amount, TokenisablePeriod firstPeriod, TokenisablePeriod secondPeriod)
     {
@@ -101,7 +69,7 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
             .AssertBetweenRange(
                 firstPeriod.Value,
                 secondPeriod.Value,
-                x => Math.Round(x.Amount, 2) == Math.Round(amount, 2) && !x.IsAfterLearningEnded,
+                x => Math.Round(x.Amount, 2) == Math.Round(amount, 2),
                 x => $"Expected instalment of amount {amount} for AcademicYear {x.AcademicYear} DeliveryPeriod {x.DeliveryPeriod} but one was not found, the wrong amount, or soft deleted.");
     }
 }

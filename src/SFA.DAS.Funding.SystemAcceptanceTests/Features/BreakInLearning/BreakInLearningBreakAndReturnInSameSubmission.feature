@@ -16,9 +16,8 @@ Scenario: Training provider records a break and return at the same time in previ
 	And SLD inform us of a return from break in learning with a new learning start date previousAY-03-15
 	And SLD submit updated learners details
 	Then earnings are recalculated
-	And the earnings between previousAY-R01 and previousAY-R05 are maintained
-	And the earnings between previousAY-R06 and previousAY-R07 are soft deleted
-	And the earnings between previousAY-R08 and currentAY-R12 are maintained
+	And the earnings of 500 between previousAY-R01 and previousAY-R05 are maintained
+	And the earnings of 558.82352 between previousAY-R08 and currentAY-R12 are maintained
 
 #@regression
 #FLP-1360 AC2 SLD informs us of break and return at the same time current AY
@@ -31,6 +30,5 @@ Scenario: Training provider records a break and return at the same time in curre
 	And SLD inform us of a return from break in learning with a new learning start date currentAY-03-15
 	And SLD submit updated learners details
 	Then earnings are recalculated
-	And the earnings between previousAY-R01 and previousAY-R05 are maintained
-	And the earnings between previousAY-R06 and currentAY-R07 are soft deleted
-	And the earnings between currentAY-R08 and currentAY-R12 are maintained
+	And the earnings of 500 between previousAY-R01 and previousAY-R05 are maintained
+	And the earnings of 1900 between currentAY-R08 and currentAY-R12 are maintained

@@ -75,7 +75,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         var actualInstalmentsNumber = testData.EarningsApprenticeshipModel.Episodes
             .FirstOrDefault()?
             .EarningsProfile?.Instalments?
-            .Where(x => x.Type.Contains("Regular") && !x.IsAfterLearningEnded)
+            .Where(x => x.Type.Contains("Regular"))
             .Count() ?? 0;
 
         Assert.AreEqual(expectedInstalmentsNumber, actualInstalmentsNumber, "Unexpected number of instalments after withdrawal has been recorded in earnings db!");
@@ -90,7 +90,6 @@ internal class WithdrawApprenticeshipStepDefinitions
         if (deliveryPeriod != "null")
         {
             bool isValidEarningInDb = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?
-               .Where(x => !x.IsAfterLearningEnded)
                .All(i => i.AcademicYear < academicYear.Value
                || (i.AcademicYear == academicYear.Value && i.DeliveryPeriod <= Convert.ToInt16(deliveryPeriod))) ?? true;
 
