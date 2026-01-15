@@ -72,4 +72,14 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
                 x => Math.Round(x.Amount, 2) == Math.Round(amount, 2),
                 x => $"Expected instalment of amount {amount} for AcademicYear {x.AcademicYear} DeliveryPeriod {x.DeliveryPeriod} but one was not found, the wrong amount, or soft deleted.");
     }
+
+    [Then("Break in Learning record is removed from earnings db")]
+    public void BreakInLearningRecordIsRemovedFromEarningsDb()
+    {
+        var testData = context.Get<TestData>();
+
+        var breakInLearnings = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EpisodeBreakInLearning;
+
+        Assert.IsTrue(breakInLearnings?.Count == 0, "Unexpected Break in Learnings records found for the apprenticeship");
+    }
 }
