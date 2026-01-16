@@ -78,7 +78,7 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
     {
         var testData = context.Get<TestData>();
 
-        var breakInLearnings = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EpisodeBreakInLearning;
+        var breakInLearnings = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EpisodePeriodInLearning;
 
         Assert.IsTrue(breakInLearnings?.Count == 0, "Unexpected Break in Learnings records found for the apprenticeship");
     }

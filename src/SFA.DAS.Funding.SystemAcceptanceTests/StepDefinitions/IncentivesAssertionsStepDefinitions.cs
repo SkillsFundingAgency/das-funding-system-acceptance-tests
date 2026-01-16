@@ -1,4 +1,5 @@
 using Microsoft.Azure.Amqp.Framing;
+using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
@@ -14,15 +15,18 @@ public class IncentivesAssertionsStepDefinitions
     private readonly ScenarioContext _context;
     private readonly EarningsSqlClient _earningsEntitySqlClient;
     private readonly EarningsInnerApiHelper _earningsInnerApiHelper;
+    private readonly LearningSqlClient _learningSqlClient;
 
     public IncentivesAssertionsStepDefinitions(
         ScenarioContext context,
         EarningsSqlClient earningsEntitySqlClient,
-        EarningsInnerApiHelper earningsInnerApiHelper)
+        EarningsInnerApiHelper earningsInnerApiHelper,
+        LearningSqlClient learningSqlClient)
     {
         _context = context;
         _earningsEntitySqlClient = earningsEntitySqlClient;
         _earningsInnerApiHelper = earningsInnerApiHelper;
+        _learningSqlClient = learningSqlClient;
     }
 
     [Given(@"the apprentice is marked as a care leaver")]
@@ -143,6 +147,8 @@ public class IncentivesAssertionsStepDefinitions
             return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
+        var learning = _learningSqlClient.GetApprenticeship(testData.LearningKey);
+
         var additionalPayments = earningsApprenticeshipModel
             .Episodes
             .SingleOrDefault()
@@ -150,7 +156,7 @@ public class IncentivesAssertionsStepDefinitions
 
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
-        var breaksInLearning = earningsApprenticeshipModel
+        var breaksInLearning = learning
             .Episodes.
             SingleOrDefault()
             ?.EpisodeBreakInLearning;

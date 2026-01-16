@@ -89,6 +89,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
             learnerDataBuilder.WithCostDetails((int)trainingPrice , (int)epaoPrice, fromDate.Value);
 
+            learnerDataBuilder.WithStartDate(fromDate.Value);
             learnerDataBuilder.WithExpectedEndDate(toDate.Value);
 
             learnerDataBuilder.WithStandardCode(Convert.ToInt32(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode));
@@ -120,6 +121,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
             learnerDataBuilder.WithCostDetails((int)trainingPrice, (int)epaoPrice, fromDate.Value);
 
+            learnerDataBuilder.WithStartDate(fromDate.Value);
             learnerDataBuilder.WithExpectedEndDate(plannedEndDate);
         }
 
@@ -143,6 +145,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             learnerDataBuilder.WithCostDetails(tp, epao, fd == null? null : fd.Value);
 
+            learnerDataBuilder.WithStartDate(fd.Value);
             learnerDataBuilder.WithExpectedEndDate(toDate.Value);
 
             learnerDataBuilder.WithStandardCode(Convert.ToInt32(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode));
