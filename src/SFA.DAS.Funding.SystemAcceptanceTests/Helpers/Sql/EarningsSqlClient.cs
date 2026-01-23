@@ -50,7 +50,7 @@ public class EarningsSqlClient
                 }
             }
 
-            episode.EpisodeBreakInLearning = _sqlServerClient.GetList<EpisodeBreakInLearning>($" SELECT * FROM [Domain].[EpisodeBreakInLearning] WHERE EpisodeKey ='{episode.Key}'");
+            episode.EpisodePeriodInLearning = _sqlServerClient.GetList<EpisodePeriodInLearning>($" SELECT * FROM [Domain].[EpisodePeriodInLearning] WHERE EpisodeKey ='{episode.Key}'");
         }
 
         apprenticeship.Episodes = apprenticeshipEpisodes;
@@ -65,7 +65,7 @@ public class EarningsSqlClient
         foreach(var episodeKey in episodeKeys)
         {
             _sqlServerClient.Execute($"DELETE FROM [Domain].[EpisodePrice] WHERE EpisodeKey = '{episodeKey}'");
-            _sqlServerClient.Execute($"DELETE FROM [Domain].[EpisodeBreakInLearning] WHERE EpisodeKey = '{episodeKey}'");
+            _sqlServerClient.Execute($"DELETE FROM [Domain].[EpisodePeriodInLearning] WHERE EpisodeKey = '{episodeKey}'");
 
             DeleteEarningProfileHistory(episodeKey);
             DeleteEnglishAndMaths(episodeKey);
@@ -187,11 +187,11 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            8. Delete Episode BreakInLearning
+            8. Delete Episode PeriodInLearning
             ===========================================================*/
-            DELETE eb
-            FROM Domain.EpisodeBreakInLearning eb
-            JOIN Domain.Episode e ON eb.EpisodeKey = e.[Key]
+            DELETE ep
+            FROM Domain.EpisodePeriodInLearning ep
+            JOIN Domain.Episode e ON ep.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================

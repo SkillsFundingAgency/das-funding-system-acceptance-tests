@@ -79,11 +79,11 @@ Scenario: Training provider increases duration after break in learning with pric
 	And SLD inform us of a break in learning with pause date previousAY-02-01
 	And SLD submit updated learners details
 	And SLD inform us of a return from break in learning with both a new learning start date previousAY-05-01 and new expected end date currentAY-03-31
-	And SLD record latest on-programme cost as total price 18000
+	And SLD record latest on-programme cost as total price 17000
 	And SLD submit updated learners details
 	Then earnings are recalculated
 	And the earnings of 1000 between previousAY-R03 and previousAY-R06 are maintained
-	And the earnings of 945.45 between previousAY-R10 and currentAY-R08 are maintained
+	And the earnings of 872.72727 between previousAY-R10 and currentAY-R08 are maintained
 
 #Withdrawal on the same day after BIL return
 @regression

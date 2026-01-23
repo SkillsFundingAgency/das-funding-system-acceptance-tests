@@ -72,4 +72,46 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
                 x => Math.Round(x.Amount, 2) == Math.Round(amount, 2),
                 x => $"Expected instalment of amount {amount} for AcademicYear {x.AcademicYear} DeliveryPeriod {x.DeliveryPeriod} but one was not found, the wrong amount, or soft deleted.");
     }
+
+    [Then("earnings are updated with (first|second) period in learning from (.*) to (.*)")]
+    public void EarningsAreUpdatedWithPeriodInLearning(string periodNumber, TokenisableDateTime startDate, TokenisableDateTime endDate)
+    {
+        if (string.IsNullOrWhiteSpace(periodNumber))
+        {
+            throw new ArgumentException("periodNumber cannot be null or empty.", nameof(periodNumber));
+        }
+
+        var normalisedPeriod = periodNumber.Trim().ToLowerInvariant();
+
+        if (normalisedPeriod != "first" && normalisedPeriod != "second")
+        {
+            throw new ArgumentException(
+                $"Invalid periodNumber '{periodNumber}'. Expected 'first' or 'second' (case-insensitive).",
+                nameof(periodNumber));
+        }
+
+        var testData = context.Get<TestData>();
+
+        var periodsInLearning = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault().EpisodePeriodInLearning
+            ?.OrderBy(x => x.StartDate).ToList();
+
+        var index = normalisedPeriod == "first" ? 0 : 1;
+
+        var period = periodsInLearning[index];
+
+        Assert.AreEqual(startDate.Value.Date, period.StartDate.Date, $"{normalisedPeriod} Period in learning start date mismatch!");
+
+        Assert.AreEqual(endDate.Value.Date, period.EndDate.Date, $"{normalisedPeriod} Period in learning end date mismatch!");
+    }
+
+
+    [Then("Break in Learning record is removed from earnings db")]
+    public void BreakInLearningRecordIsRemovedFromEarningsDb()
+    {
+        var testData = context.Get<TestData>();
+
+        var breakInLearnings = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EpisodePeriodInLearning;
+
+        Assert.IsTrue(breakInLearnings?.Count == 0, "Unexpected Break in Learnings records found for the apprenticeship");
+    }
 }

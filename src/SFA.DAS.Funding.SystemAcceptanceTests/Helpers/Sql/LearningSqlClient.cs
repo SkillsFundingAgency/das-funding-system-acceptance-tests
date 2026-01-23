@@ -47,6 +47,9 @@ public class LearningSqlClient
         foreach (var episode in learning.Episodes)
         {
             episode.Prices = _sqlServerClient.GetList<EpisodePrice>($"SELECT * FROM [dbo].[EpisodePrice] WHERE EpisodeKey = '{episode.Key}'");
+
+            episode.EpisodeBreakInLearning = _sqlServerClient.GetList<EpisodeBreakInLearning>($" SELECT * FROM [dbo].[EpisodeBreakInLearning] WHERE EpisodeKey ='{episode.Key}'");
+
         }
 
         learning.FreezeRequests = _sqlServerClient.GetList<FreezeRequest>($"SELECT * FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learning.Key}'");
@@ -199,6 +202,7 @@ public class Episode
     public List<EpisodePrice> Prices { get; set; }
     public DateTime? LastDayOfLearning { get; set; }
     public DateTime? PauseDate { get; set; }
+    public List<EpisodeBreakInLearning> EpisodeBreakInLearning { get; set; }
 }
 
 public class EpisodePrice
@@ -230,4 +234,13 @@ public class LearningHistoryModel
     public Guid LearningId { get; set; }
     public DateTime CreatedOn { get; set; }
     public string State { get; set; }
+}
+
+public class EpisodeBreakInLearning
+{
+    public Guid Key { get; set; }
+    public Guid EpisodeKey { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public DateTime PriorPeriodExpectedEndDate { get; set; }
 }

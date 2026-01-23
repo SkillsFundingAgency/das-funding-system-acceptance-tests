@@ -5,6 +5,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 {
     public class LearnerDataBuilder(TestData testData)
     {
+        private bool _startDateSetExplicitly = false;
+
         private readonly UpdateLearnerRequest _request = new()
         {
             Delivery = new Delivery
@@ -65,6 +67,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         public LearnerDataBuilder WithStartDate(DateTime startDate)
         {
             _request.Delivery.OnProgramme.Latest().StartDate = startDate;
+            _startDateSetExplicitly = true;
 
             return this;
         }
@@ -228,7 +231,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
         public UpdateLearnerRequest Build()
         {
+            CalculateStartDate();
             return _request;
+        }
+
+        private void CalculateStartDate()
+        {
+            if (_startDateSetExplicitly) return;
+
+            foreach (var onProgramme in _request.Delivery.OnProgramme)
+            {
+                onProgramme.StartDate = onProgramme.Costs.MinBy(x => x.FromDate)!.FromDate.GetValueOrDefault();
+            }
         }
     }
 }

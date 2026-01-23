@@ -31,7 +31,7 @@ public class EpisodeModel
     public List<AdditionalPaymentsModel> AdditionalPayments { get; set; }
     public List<MathsAndEnglishModel> MathsAndEnglish { get; set; }
     public List<MathsAndEnglishInstalment> MathsAndEnglishInstalments { get; set; }
-    public List<EpisodeBreakInLearning> EpisodeBreakInLearning { get; set; }
+    public List<EpisodePeriodInLearning> EpisodePeriodInLearning { get; set; }
 }
 
 public class EpisodePriceModel
@@ -95,7 +95,7 @@ public class MathsAndEnglishModel
     public decimal Amount { get; set; }
 }
 
-public class EpisodeBreakInLearning
+public class EpisodePeriodInLearning
 {
     public Guid Key { get; set; }
     public Guid EpisodeKey { get; set; }
