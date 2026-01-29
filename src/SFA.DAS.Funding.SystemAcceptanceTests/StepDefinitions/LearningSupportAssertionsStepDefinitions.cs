@@ -59,7 +59,7 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
                 learningSupportEnd.Value.IsBefore(new Period(x.AcademicYear, x.DeliveryPeriod)),
             $"Expected no Learning Support earnings after {learningSupportEnd.Value.ToCollectionPeriodString()}");
 
-        while (learningSupportStart.Value.IsBefore(learningSupportEnd.Value))
+        while (learningSupportStart.Value.IsBefore(learningSupportEnd.Value.GetNextPeriod()))
         {
             additionalPayments.Should().ContainSingle(x =>
                     x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport
