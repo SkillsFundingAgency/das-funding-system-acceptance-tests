@@ -33,4 +33,13 @@ Examples:
 	| start_date      | end_date        | ls_start_date   | ls_end_date     |
 	| currentAY-09-25 | currentAY-04-15 | currentAY-11-15 | currentAY-03-10 |
 
+@regression
+Scenario: No LSF earnings after learner withdraws from the programme aim
+	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	When learning support is recorded from currentAY-11-15 to currentAY-03-10
+	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
+	And Learning withdrawal date is recorded on currentAY-01-15
+	And SLD submit updated learners details
+	Then learning support earnings are generated from periods currentAY-R04 to currentAY-R05
+
 

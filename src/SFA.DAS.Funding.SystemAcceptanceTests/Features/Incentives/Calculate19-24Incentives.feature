@@ -106,3 +106,20 @@ Examples:
 	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  21 | currentAY-10-29 | is                       | is not                    |
 	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  23 | currentAY-07-29 | is                       | is not                    |
 	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  24 | currentAY-07-31 | is                       | is                        |
+
+@regression
+Scenario: No Incentives for 19+ learner withdrawn before 90-365 day threshold date
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 614
+	And the age at the start of the apprenticeship is 19
+	And the apprenticeship commitment is approved
+	When SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
+	And the apprentice is marked as a care leaver
+	And Learning withdrawal date is recorded on <withdrawal_date>
+	And SLD submit updated learners details
+	Then the first incentive earning <first_earnings_generated> generated for provider & employer
+	And the second incentive earning <second_earnings_generated> generated for provider & employer
+
+Examples:
+	| withdrawal_date | first_earnings_generated | second_earnings_generated |
+	| currentAY-10-28 | is not                   | is not                    |
+	| currentAY-07-30 | is                       | is not                    |
