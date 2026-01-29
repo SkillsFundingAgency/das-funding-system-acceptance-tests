@@ -55,5 +55,11 @@ public class EnglishAndMathsBuilder
         return this;
     }
 
+    public EnglishAndMathsBuilder WithActualEndDate(DateTime actualEndDate)
+    {
+        _course.ActualEndDate = actualEndDate;
+        return this;
+    }
+
     public EnglishAndMaths Build() => _course;
 }

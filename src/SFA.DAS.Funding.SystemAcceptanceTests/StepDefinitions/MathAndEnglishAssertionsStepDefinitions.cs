@@ -81,6 +81,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
+        [When("SLD record a return from break in learning for English and Maths course with new start date (.*)")]
+        public async Task WithEnglishAndMathsReturnFromBreakInLearning(TokenisableDateTime newStartDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            
+            learnerDataBuilder.WithEnglishAndMAthsReturnFromBreakInLearning(newStartDate.Value);
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
         [When("an English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), completion date as (.*), learning support from (.*) to (.*)")]
         public async Task AddMathsAndEnglishWithCompletionAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime completionDate,
             TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
@@ -187,7 +199,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         private async Task VerifyMathsAndEnglishEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
-            TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course, bool assertNoSubsequentEarningsExist)
+            TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course, bool assertNoSubsequentEarningsExist, bool assertNoPriorEarningsExist = false)
         {
             var testData = context.Get<TestData>();
             EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
@@ -220,9 +232,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             mathsAndEnglishInstalments.Should()
                 .NotBeNull("No Maths and English instalment data found on earnings apprenticeship model");
 
-            mathsAndEnglishInstalments.Should().NotContain(x =>
-                    new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(mathsAndEnglishStartPeriod.Value),
+            if (assertNoPriorEarningsExist)
+            {
+                mathsAndEnglishInstalments.Should().NotContain(x =>
+                new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(mathsAndEnglishStartPeriod.Value),
                 $"Expected no Maths and English earnings before {mathsAndEnglishStartPeriod.Value.ToCollectionPeriodString()}");
+
+            }
 
             if (assertNoSubsequentEarningsExist)
             {
