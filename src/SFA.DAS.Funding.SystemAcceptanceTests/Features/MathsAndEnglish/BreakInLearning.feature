@@ -15,7 +15,7 @@ Background:
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R08
 	
 @regression
-Scenario: Training provider records a break in learning without specifying a return
+Scenario: Training provider records an E&M break in learning without specifying a return
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, pause date currentAY-02-25, learning support from currentAY-08-05 to currentAY-04-10
@@ -24,7 +24,7 @@ Scenario: Training provider records a break in learning without specifying a ret
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R06
 
 @regression
-Scenario: Training provider corrects a previously recorded a break in learning without specifying a return
+Scenario: Training provider corrects a previously recorded E&M break in learning without specifying a return
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, pause date currentAY-02-25, learning support from currentAY-08-05 to currentAY-04-10
@@ -37,7 +37,7 @@ Scenario: Training provider corrects a previously recorded a break in learning w
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R07
 
 @regression
-Scenario: Training provider removes a previously recorded break in learning
+Scenario: Training provider removes a previously recorded E&M break in learning
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, pause date currentAY-02-25, learning support from currentAY-08-05 to currentAY-04-10

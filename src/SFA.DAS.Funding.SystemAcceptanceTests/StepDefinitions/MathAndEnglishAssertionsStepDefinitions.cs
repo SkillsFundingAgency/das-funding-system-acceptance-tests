@@ -66,6 +66,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
+        [Given("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), pause date (.*), learning support from (.*) to (.*)")]
         [When("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), pause date (.*), learning support from (.*) to (.*)")]
         public async Task AddMathsAndEnglishWithPauseAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime pauseDate,
             TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
@@ -81,7 +82,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
+        [Given("SLD record a return from break in learning for English and Maths course with new start date (.*)")]
         [When("SLD record a return from break in learning for English and Maths course with new start date (.*)")]
+        [When("SLD corrects a return from break in learning for English and Maths course with new start date (.*)")]
         public async Task WithEnglishAndMathsReturnFromBreakInLearning(TokenisableDateTime newStartDate)
         {
             var testData = context.Get<TestData>();
@@ -154,6 +157,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.ResetLearnerDataBuilder();
         }
 
+        [Given("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
         [When("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
         [Then("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
         public async Task VerifyRegularMathsAndEnglishInstalmentEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,

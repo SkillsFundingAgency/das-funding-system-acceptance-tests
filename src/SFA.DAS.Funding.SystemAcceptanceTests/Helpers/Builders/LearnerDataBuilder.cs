@@ -217,8 +217,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         public LearnerDataBuilder WithEnglishAndMAthsReturnFromBreakInLearning(DateTime newLearningStartDate, bool correction = false, DateTime? newExpectedEndDate = null)
         {
             if (correction) _request.Delivery.EnglishAndMaths.RemoveAt(1); //assume we are dealing with a single return being corrected for now
-
-            _request.Delivery.EnglishAndMaths.Last().ActualEndDate = _request.Delivery.EnglishAndMaths.Last().PauseDate;
             
             _request.Delivery.EnglishAndMaths.Add(new EnglishAndMaths
             {
