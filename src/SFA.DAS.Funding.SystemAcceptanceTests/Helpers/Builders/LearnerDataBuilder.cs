@@ -214,7 +214,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
-        public LearnerDataBuilder WithEnglishAndMAthsReturnFromBreakInLearning(DateTime newLearningStartDate, bool correction = false, DateTime? newExpectedEndDate = null)
+        public LearnerDataBuilder WithEnglishAndMathsReturnFromBreakInLearning(DateTime newLearningStartDate, bool correction = false, DateTime? newExpectedEndDate = null,
+            decimal? newAmount = null, DateTime? newWithdrawalDate = null, DateTime? newCompletionDate = null)
         {
             if (correction) _request.Delivery.EnglishAndMaths.RemoveAt(1); //assume we are dealing with a single return being corrected for now
             
@@ -224,9 +225,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
                 LearnAimRef = _request.Delivery.EnglishAndMaths.Last().LearnAimRef,
                 StartDate = newLearningStartDate,
                 EndDate = newExpectedEndDate ?? _request.Delivery.EnglishAndMaths.Last().EndDate,
-                Amount = _request.Delivery.EnglishAndMaths.Last().Amount,
+                Amount = newAmount ??_request.Delivery.EnglishAndMaths.Last().Amount,
                 LearningSupport = _request.Delivery.EnglishAndMaths.Last().LearningSupport,
+                WithdrawalDate = newWithdrawalDate,
+                CompletionDate = newCompletionDate,
             });
+
+            return this;
+        }
+
+        public LearnerDataBuilder WithEnglishAndMathsReturnFromBreakInLearningRemoved()
+        {
+            _request.Delivery.EnglishAndMaths.RemoveAt(1); //assume we are dealing with a single return being corrected for now
 
             return this;
         }

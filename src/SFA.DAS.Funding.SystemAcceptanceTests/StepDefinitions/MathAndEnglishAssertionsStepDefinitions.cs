@@ -84,17 +84,51 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
         [Given("SLD record a return from break in learning for English and Maths course with new start date (.*)")]
         [When("SLD record a return from break in learning for English and Maths course with new start date (.*)")]
-        [When("SLD corrects a return from break in learning for English and Maths course with new start date (.*)")]
         public async Task WithEnglishAndMathsReturnFromBreakInLearning(TokenisableDateTime newStartDate)
         {
             var testData = context.Get<TestData>();
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
             
-            learnerDataBuilder.WithEnglishAndMAthsReturnFromBreakInLearning(newStartDate.Value);
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value);
 
             testData.IsMathsAndEnglishAdded = true;
         }
+
+        [When("SLD record a return from break in learning for English and Maths course with a new start date (.*) and end date (.*)")]
+        public async Task WithEnglishAndMathsReturnFromBreakInLearningWithAmountChange(TokenisableDateTime newStartDate, TokenisableDateTime expectedEndDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value, false, expectedEndDate.Value);
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+        [When("SLD inform us of a correction to an English and Maths return from break in learning with new start date (.*)")]
+        public async Task CorrectionToEnglishAndMathsReturnFromBreakInLearning(TokenisableDateTime newStartDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value, true);
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+        [When("SLD inform us that a previously recorded english and maths return from break in learning is removed")]
+        public void PreviouslyRecordedEnglishAndMathsReturnFromBreakInLearningIsRemoved()
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearningRemoved();
+        }
+
 
         [When("an English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), completion date as (.*), learning support from (.*) to (.*)")]
         public async Task AddMathsAndEnglishWithCompletionAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime completionDate,
