@@ -96,7 +96,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [When("SLD record a return from break in learning for English and Maths course with a new start date (.*) and end date (.*)")]
-        public async Task WithEnglishAndMathsReturnFromBreakInLearningWithAmountChange(TokenisableDateTime newStartDate, TokenisableDateTime expectedEndDate)
+        public async Task WithEnglishAndMathsReturnFromBreakInLearningWithExpectedEndDate(TokenisableDateTime newStartDate, TokenisableDateTime expectedEndDate)
         {
             var testData = context.Get<TestData>();
 
@@ -106,6 +106,32 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             testData.IsMathsAndEnglishAdded = true;
         }
+
+        [When("SLD record a return from break in learning for English and Maths course with a new start date (.*) and withdrawal date (.*)")]
+        public void WithEnglishAndMathsReturnFromBreakInLearningWithWithdrawalDate(TokenisableDateTime newStartDate, TokenisableDateTime withdrawalDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value, false,null,null,withdrawalDate.Value);
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+        [When("SLD record a return from break in learning for English and Maths course with a new start date (.*) and completion date (.*)")]
+        public void WithEnglishAndMathsReturnFromBreakInLearningWithCompletionDate(TokenisableDateTime newStartDate, TokenisableDateTime completionDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value, false, null, null, null, completionDate.Value);
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+
 
         [When("SLD inform us of a correction to an English and Maths return from break in learning with new start date (.*)")]
         public async Task CorrectionToEnglishAndMathsReturnFromBreakInLearning(TokenisableDateTime newStartDate)
