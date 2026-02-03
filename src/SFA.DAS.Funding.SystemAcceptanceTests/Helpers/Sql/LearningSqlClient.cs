@@ -59,7 +59,7 @@ public class LearningSqlClient
         return learning;
     }
 
-    public List<Http.LearnerDataOuterApiClient.Learning> GetApprovedLearners (long ukprn, int academicYear)
+    public List<Http.LearnerDataOuterApiClient.Learning> GetApprovedLearners(long ukprn, int academicYear)
     {
         var dates = AcademicYearParser.ParseFrom(academicYear);
 
@@ -117,7 +117,25 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            5. Delete Maths and English
+            5. Delete Episode Breaks In Learning
+            ===========================================================*/
+            DELETE ebil
+            FROM dbo.EpisodeBreakInLearning ebil
+            JOIN dbo.Episode e ON ebil.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            6. Delete Maths and English Breaks In Learning
+            ===========================================================*/
+            DELETE mebil
+            FROM dbo.MathsAndEnglishBreakInLearning mebil
+            JOIN dbo.MathsAndEnglish me on mebil.MathsAndEnglishKey = me.[Key]
+            JOIN dbo.Learning l ON me.LearningKey = l.[Key]
+            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            7. Delete Maths and English
             ===========================================================*/
             DELETE me
             FROM dbo.MathsAndEnglish me
@@ -126,7 +144,7 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            6. Delete Approvals
+            8. Delete Approvals
             ===========================================================*/
             DELETE a
             FROM dbo.Approval a
@@ -135,22 +153,14 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            7. Delete Episode Breaks In Learning
-            ===========================================================*/
-            DELETE ebil
-            FROM dbo.EpisodeBreakInLearning ebil
-            JOIN dbo.Episode e ON ebil.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
-
-            /*===========================================================
-            8. Delete Episodes
+            9. Delete Episodes
             ===========================================================*/
             DELETE e
             FROM dbo.Episode e
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            9. Delete Learnings
+            10. Delete Learnings
             ===========================================================*/
             DELETE l
             FROM dbo.Learning l

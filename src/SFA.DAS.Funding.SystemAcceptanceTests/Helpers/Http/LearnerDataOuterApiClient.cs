@@ -191,6 +191,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public int? PriorLearningPercentage { get; set; }
             public decimal Amount { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
+            public DateTime? ActualEndDate { get; set; }
         }
 
         public class LearningSupport

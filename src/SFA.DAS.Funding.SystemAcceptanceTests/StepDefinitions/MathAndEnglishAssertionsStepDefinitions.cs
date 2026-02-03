@@ -66,6 +66,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.IsMathsAndEnglishAdded = true;
         }
 
+        [Given("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), pause date (.*), learning support from (.*) to (.*)")]
         [When("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), pause date (.*), learning support from (.*) to (.*)")]
         public async Task AddMathsAndEnglishWithPauseAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime pauseDate,
             TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
@@ -80,6 +81,80 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             testData.IsMathsAndEnglishAdded = true;
         }
+
+        [Given("SLD record a return from break in learning for English and Maths course with new start date (.*)")]
+        [When("SLD record a return from break in learning for English and Maths course with new start date (.*)")]
+        public async Task WithEnglishAndMathsReturnFromBreakInLearning(TokenisableDateTime newStartDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value);
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+        [When("SLD record a return from break in learning for English and Maths course with a new start date (.*) and end date (.*)")]
+        public async Task WithEnglishAndMathsReturnFromBreakInLearningWithExpectedEndDate(TokenisableDateTime newStartDate, TokenisableDateTime expectedEndDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value, false, expectedEndDate.Value);
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+        [When("SLD record a return from break in learning for English and Maths course with a new start date (.*) and withdrawal date (.*)")]
+        public void WithEnglishAndMathsReturnFromBreakInLearningWithWithdrawalDate(TokenisableDateTime newStartDate, TokenisableDateTime withdrawalDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value, false,null,null,withdrawalDate.Value);
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+        [When("SLD record a return from break in learning for English and Maths course with a new start date (.*) and completion date (.*)")]
+        public void WithEnglishAndMathsReturnFromBreakInLearningWithCompletionDate(TokenisableDateTime newStartDate, TokenisableDateTime completionDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value, false, null, null, null, completionDate.Value);
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+
+
+        [When("SLD inform us of a correction to an English and Maths return from break in learning with new start date (.*)")]
+        public async Task CorrectionToEnglishAndMathsReturnFromBreakInLearning(TokenisableDateTime newStartDate)
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value, true);
+
+            testData.IsMathsAndEnglishAdded = true;
+        }
+
+        [When("SLD inform us that a previously recorded english and maths return from break in learning is removed")]
+        public void PreviouslyRecordedEnglishAndMathsReturnFromBreakInLearningIsRemoved()
+        {
+            var testData = context.Get<TestData>();
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearningRemoved();
+        }
+
 
         [When("an English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), completion date as (.*), learning support from (.*) to (.*)")]
         public async Task AddMathsAndEnglishWithCompletionAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime completionDate,
@@ -142,6 +217,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.ResetLearnerDataBuilder();
         }
 
+        [Given("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
         [When("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
         [Then("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
         public async Task VerifyRegularMathsAndEnglishInstalmentEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
@@ -187,7 +263,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         private async Task VerifyMathsAndEnglishEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
-            TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course, bool assertNoSubsequentEarningsExist)
+            TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course, bool assertNoSubsequentEarningsExist, bool assertNoPriorEarningsExist = false)
         {
             var testData = context.Get<TestData>();
             EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
@@ -220,9 +296,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             mathsAndEnglishInstalments.Should()
                 .NotBeNull("No Maths and English instalment data found on earnings apprenticeship model");
 
-            mathsAndEnglishInstalments.Should().NotContain(x =>
-                    new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(mathsAndEnglishStartPeriod.Value),
+            if (assertNoPriorEarningsExist)
+            {
+                mathsAndEnglishInstalments.Should().NotContain(x =>
+                new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(mathsAndEnglishStartPeriod.Value),
                 $"Expected no Maths and English earnings before {mathsAndEnglishStartPeriod.Value.ToCollectionPeriodString()}");
+
+            }
 
             if (assertNoSubsequentEarningsExist)
             {

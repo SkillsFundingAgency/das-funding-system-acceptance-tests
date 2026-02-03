@@ -40,14 +40,26 @@ public class EarningsSqlClient
                 episode.MathsAndEnglishInstalments = new List<MathsAndEnglishInstalment>();
             }
 
+            if (episode.MathsAndEnglishPeriodInLearning == null)
+            {
+                episode.MathsAndEnglishPeriodInLearning = new List<MathsAndEnglishPeriodInLearning>();
+            }
+
             foreach (var learning in episode.MathsAndEnglish)
             {
                 var instalments = _sqlServerClient.GetList<MathsAndEnglishInstalment>($"SELECT * FROM [Domain].[MathsAndEnglishInstalment] WHERE MathsAndEnglishKey = '{learning.Key}'");
+                var mathsAndEnglishPeriodInLearning = _sqlServerClient.GetList<MathsAndEnglishPeriodInLearning>($"SELECT * FROM [Domain].[MathsAndEnglishPeriodInLearning] WHERE MathsAndEnglishKey = '{learning.Key}'");
 
                 if (instalments != null)
                 {
                     episode.MathsAndEnglishInstalments.AddRange(instalments);
                 }
+
+                if (mathsAndEnglishPeriodInLearning != null)
+                {
+                    episode.MathsAndEnglishPeriodInLearning.AddRange(mathsAndEnglishPeriodInLearning);
+                }
+
             }
 
             episode.EpisodePeriodInLearning = _sqlServerClient.GetList<EpisodePeriodInLearning>($" SELECT * FROM [Domain].[EpisodePeriodInLearning] WHERE EpisodeKey ='{episode.Key}'");
@@ -115,6 +127,7 @@ public class EarningsSqlClient
             var keyList = string.Join(",", mathsAndEnglishKeys.Select(k => $"'{k}'"));
 
             _sqlServerClient.Execute($"DELETE FROM [Domain].[MathsAndEnglishInstalment] WHERE MathsAndEnglishKey IN ({keyList})");
+            _sqlServerClient.Execute($"DELETE FROM [Domain].[MathsAndEnglishPeriodInLearning] WHERE MathsAndEnglishKey IN ({keyList})");
         }
 
         _sqlServerClient.Execute($"DELETE FROM [Domain].[MathsAndEnglish] WHERE EarningsProfileId IN ({profileIdList})");
@@ -135,7 +148,17 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            2. Delete Maths & English
+            2. Delete Maths & English Period In Learning
+            ===========================================================*/
+            DELETE mepil
+            FROM Domain.MathsAndEnglishPeriodInLearning AS mepil
+            JOIN Domain.MathsAndEnglish AS me ON mepil.MathsAndEnglishKey = me.[Key]
+            JOIN Domain.EarningsProfile AS ep ON me.EarningsProfileId = ep.EarningsProfileId
+            JOIN Domain.Episode e ON ep.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            3. Delete Maths & English
             ===========================================================*/
             DELETE me
             FROM Domain.MathsAndEnglish AS me
@@ -144,7 +167,7 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            3. Delete Additional Payments
+            4. Delete Additional Payments
             ===========================================================*/
             DELETE ap
             FROM Domain.AdditionalPayment AS ap
@@ -153,7 +176,7 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            4. Delete Instalments
+            5. Delete Instalments
             ===========================================================*/
             DELETE i
             FROM Domain.Instalment AS i
@@ -162,7 +185,7 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            5. Delete Episode Prices
+            6. Delete Episode Prices
             ===========================================================*/
             DELETE epc
             FROM Domain.EpisodePrice AS epc
@@ -170,7 +193,7 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            6. Delete Earnings Profile History
+            7. Delete Earnings Profile History
             ===========================================================*/
             DELETE eph
             FROM History.EarningsProfileHistory AS eph
@@ -179,7 +202,7 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            7. Delete Earnings Profiles
+            8. Delete Earnings Profiles
             ===========================================================*/
             DELETE ep
             FROM Domain.EarningsProfile ep
@@ -187,7 +210,7 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            8. Delete Episode PeriodInLearning
+            9. Delete Episode PeriodInLearning
             ===========================================================*/
             DELETE ep
             FROM Domain.EpisodePeriodInLearning ep
@@ -195,14 +218,14 @@ public class EarningsSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            9. Delete Episodes
+            10. Delete Episodes
             ===========================================================*/
             DELETE e
             FROM Domain.Episode e
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            10. Delete Apprenticeships
+            11. Delete Apprenticeships
                 Only those now orphaned by deleted Episodes
             ===========================================================*/
             DELETE a
