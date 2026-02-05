@@ -311,7 +311,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     $"Expected no Maths and English earnings after {mathsAndEnglishEndPeriod.Value.ToCollectionPeriodString()}");
             }
 
-            while (mathsAndEnglishStartPeriod.Value.IsBefore(mathsAndEnglishEndPeriod.Value))
+            while (mathsAndEnglishStartPeriod.Value.IsBefore(mathsAndEnglishEndPeriod.Value.GetNextPeriod()))
             {
                 mathsAndEnglishInstalments.Should().Contain(x =>
                         x.MathsAndEnglishKey == mathsAndEnglishKey
@@ -340,6 +340,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                     x.Amount == amount);
         }
 
+        [Then("No Maths and English balancing earning for course (.*) is generated")]
         [Then("Maths and English balancing earning is removed for course (.*)")]
         public void MathsAndEnglishBalancingEarningIsRemovedForCourse(string course)
         {

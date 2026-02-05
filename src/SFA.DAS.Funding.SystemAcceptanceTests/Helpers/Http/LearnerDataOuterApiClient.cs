@@ -167,7 +167,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
             public DateTime? PauseDate { get; set; }
-            public DateTime? ActualEndDate { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
             public Care Care { get; set; }
         }
@@ -191,7 +190,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public int? PriorLearningPercentage { get; set; }
             public decimal Amount { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
-            public DateTime? ActualEndDate { get; set; }
         }
 
         public class LearningSupport

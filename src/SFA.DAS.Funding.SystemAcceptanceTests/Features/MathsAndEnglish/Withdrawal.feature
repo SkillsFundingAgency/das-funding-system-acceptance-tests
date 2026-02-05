@@ -22,8 +22,8 @@ Examples:
 	| start_date      | duration_days | course              | agreed_price | withdrawal_on_day | expected_first_earning_period | expected_last_period | instalment |
 	| currentAY-09-25 |           240 | Entry level English |         5000 |                42 | currentAY-R02                 | currentAY-R03        |        625 |
 	| currentAY-09-25 |           180 | Entry level English |         5000 |                42 | currentAY-R02                 | currentAY-R03        |     833.33 |
-	| currentAY-09-25 |            14 | Entry level English |         5000 |                14 | currentAY-R02                 | currentAY-R02        |        133 |
-	| currentAY-09-25 |            13 | Entry level English |         5000 |                 1 | currentAY-R02                 | currentAY-R02        |        133 |
+	| currentAY-09-25 |            14 | Entry level English |         5000 |                14 | currentAY-R02                 | currentAY-R02        |       5000 |
+	#| currentAY-09-25 |            13 | Entry level English |         5000 |                 1 | currentAY-R02                 | currentAY-R02        |       5000 | -- Uncomment this example as part of FLP-1424 
 
 
 @regression
@@ -36,7 +36,7 @@ Scenario: Withdrawal for Maths and English can be after Planned end date
 
 Examples:
 	| start_date      | duration_days | course              | agreed_price | withdrawal_on_day | expected_first_earning_period | expected_last_period | instalment |
-	| currentAY-09-25 |           240 | Entry level English |         5000 |               270 | currentAY-R02                 | currentAY-R10        |        625 |
+	| currentAY-09-25 |           240 | Entry level English |         5000 |               270 | currentAY-R02                 | currentAY-R09        |        625 |
 	
 
 @regression

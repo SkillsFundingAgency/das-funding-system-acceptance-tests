@@ -16,10 +16,10 @@ Scenario: Earnings for Maths and English with prior learning %
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
 
 Examples:
-	| start_date      | end_date        | course              | agreed_price | completion_date | amount | expected_first_earning_period | expected_last_period | prior_learning | instalment |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English | 5000         | currentAY-01-01 | 931    | currentAY-R02                 | currentAY-R09        | 100            | 133        |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English | 5000         | currentAY-01-01 | 931    | currentAY-R02                 | currentAY-R09        | 0              | 133        |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English | 5000         | currentAY-01-01 | 931    | currentAY-R02                 | currentAY-R09        | 10             | 13.3       |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English | 5000         | currentAY-01-01 | 931    | currentAY-R02                 | currentAY-R09        | 110            | 146.3      |
+	| start_date      | end_date        | course              | agreed_price | amount | expected_first_earning_period | expected_last_period | prior_learning | instalment |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |    931 | currentAY-R02                 | currentAY-R08        |            100 |        133 |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |    931 | currentAY-R02                 | currentAY-R08        |              0 |        133 |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |    931 | currentAY-R02                 | currentAY-R08        |             10 |       13.3 |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |    931 | currentAY-R02                 | currentAY-R08        |            110 |      146.3 |
 
 	
