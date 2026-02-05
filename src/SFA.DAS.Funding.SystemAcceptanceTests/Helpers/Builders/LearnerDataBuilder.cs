@@ -191,7 +191,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         {
             if(correction) _request.Delivery.OnProgramme.RemoveAt(1); //assume we are dealing with a single return being corrected for now
 
-            _request.Delivery.OnProgramme.Latest().ActualEndDate = _request.Delivery.OnProgramme.Latest().PauseDate;
             _request.Delivery.OnProgramme.Add(new OnProgramme
             {
                 AgreementId = _request.Delivery.OnProgramme.Latest().AgreementId,
