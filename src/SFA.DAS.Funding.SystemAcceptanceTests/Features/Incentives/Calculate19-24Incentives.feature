@@ -132,7 +132,7 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And the apprenticeship commitment is approved
 	# Set learner as 25 years of age at app start and validate no incentives generated
 	When SLD record on-programme training price 12000 with epao as 3000 from date 2025-08-01 to date 2026-07-31
-	When Learner's date of birth is updated to 2000-08-01
+	And Learner's date of birth is updated to 2000-08-01
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
 	Then the first incentive earning is not generated for provider & employer
@@ -144,16 +144,16 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And the second incentive earning is generated for provider & employer
 	# Change start date so learner is 25 years again - incentives should clear 
 	When SLD resubmits ILR
-	When SLD record on-programme training price 12000 with epao as 3000 from date 2025-08-02 to date 2026-07-31
-	When Learner's date of birth is updated to 2000-08-02
+	And SLD record on-programme training price 12000 with epao as 3000 from date 2025-08-02 to date 2026-07-31
+	And Learner's date of birth is updated to 2000-08-02
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
 	Then the first incentive earning is not generated for provider & employer
 	And the second incentive earning is not generated for provider & employer
 	# Change start date so learner is below 25 years - incentives should generate
 	When SLD resubmits ILR
-	When SLD record on-programme training price 12000 with epao as 3000 from date 2025-08-01 to date 2026-07-31
-	When Learner's date of birth is updated to 2000-08-02
+	And SLD record on-programme training price 12000 with epao as 3000 from date 2025-08-01 to date 2026-07-31
+	And Learner's date of birth is updated to 2000-08-02
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
