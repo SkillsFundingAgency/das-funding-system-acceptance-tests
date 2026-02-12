@@ -23,8 +23,11 @@ Scenario: Start date change approved
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
 	And the apprenticeship commitment is approved
+	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
+	And SLD submit updated learners details
 	And the fm36 data is retrieved for currentDate
-	When SLD record on-programme cost as total price <agreed_price> from date <new_start_date> to date <end_date>
+	When SLD resubmits ILR
+	And SLD record on-programme cost as total price <agreed_price> from date <new_start_date> to date <end_date>
 	And SLD submit updated learners details
 	And the fm36 data is retrieved for previousAY-07-31
 	Then the fm36 PriceEpisodeInstalmentValue is <new_expected_earnings>
