@@ -145,10 +145,9 @@ public class Fm36StepDefinitions
             earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.FirstOrDefault()?.Amount;
         var currentPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
 
-        int daysInLearning =
-            1 + (apprenticeshipCreatedEvent.EndDate.Date - apprenticeshipCreatedEvent.StartDate.Date).Days;
+        var daysInLearningThisAY = 1 + (TokenisableDateTime.FromString("currentAY-07-31").Value - apprenticeshipCreatedEvent.StartDate.Date).Days;
+        var learnDelHistDaysThisApp = CalculateLearnDelHistDaysThisApp(TokenisableDateTime.FromString("currentAY-08-01").Value, apprenticeshipCreatedEvent.StartDate);
 
-        int daysInLearningThisAY = 1 + (TokenisableDateTime.FromString("currentAY-07-31").Value - apprenticeshipCreatedEvent.StartDate.Date).Days; ;
         int plannedTotalDaysInLearning = 1 + (apprenticeshipCreatedEvent.EndDate.Date - apprenticeshipCreatedEvent.StartDate.Date).Days;
         var ageAtStartOfApprenticeship =  CalculateAgeAtStart(apprenticeshipCreatedEvent.StartDate, apprenticeshipCreatedEvent.DateOfBirth);
         var fundLineType = ageAtStartOfApprenticeship > 18 ? "19+ Apprenticeship (Employer on App Service)" : "16-18 Apprenticeship (Employer on App Service)";
@@ -390,7 +389,7 @@ public class Fm36StepDefinitions
             Assert.AreEqual(EarningsFM36Constants.LearnDelEligDisadvPayment, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelEligDisadvPayment, "Unexpected LearnDelEligDisadvPayment found!");
             Assert.AreEqual(EarningsFM36Constants.LearnDelEmpIdFirstAdditionalPaymentThreshold, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelEmpIdFirstAdditionalPaymentThreshold, "Unexpected LearnDelEmpIdFirstAdditionalPaymentThreshold found!");
             Assert.AreEqual(EarningsFM36Constants.LearnDelEmpIdSecondAdditionalPaymentThreshold, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelEmpIdSecondAdditionalPaymentThreshold, "Unexpected LearnDelEmpIdSecondAdditionalPaymentThreshold found!");
-            Assert.AreEqual(daysInLearningThisAY, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelHistDaysThisApp, "Unexpected LearnDelHistDaysThisApp found!");
+            Assert.AreEqual(learnDelHistDaysThisApp, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelHistDaysThisApp, "Unexpected LearnDelHistDaysThisApp found!");
             Assert.AreEqual(12 * instalmentAmount, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelHistProgEarnings, "Unexpected LearnDelHistProgEarnings found!");
             Assert.AreEqual(fundLineType, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelInitialFundLineType, "Unexpected LearnDelInitialFundLineType found!");
             Assert.AreEqual(EarningsFM36Constants.LearnDelProgEarliestACT2Date, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelProgEarliestACT2Date, "Unexpected LearnDelProgEarliestACT2Date found!");
@@ -833,5 +832,16 @@ public class Fm36StepDefinitions
         }
 
         return age;
+    }
+
+    private int CalculateLearnDelHistDaysThisApp(DateTime academicYearStartDate, DateTime learningStartDate)
+    {
+        var start = learningStartDate;
+        var end = academicYearStartDate.AddDays(-1);
+
+        if (start > end)
+            return 0;
+
+        return (end - start).Days + 1; // inclusive
     }
 }
