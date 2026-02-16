@@ -7,6 +7,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Learning.Types;
 using System.Collections.Generic;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -19,6 +20,7 @@ public class Fm36StepDefinitions
     private readonly LearningSqlClient _apprenticeshipSqlClient;
     private readonly EarningsSqlClient _earningsSqlClient;
     private readonly EarningsInnerApiHelper _earningsInnerApiHelper;
+    private readonly LearnerDataOuterApiHelper _learnerDataOuterApiHelper;
 
     public Fm36StepDefinitions(
         ScenarioContext context,
@@ -26,7 +28,8 @@ public class Fm36StepDefinitions
         LearnerDataOuterApiClient learnerDataOuterApiClient,
         LearningSqlClient apprenticeshipSqlClient,
         EarningsSqlClient earningsSqlClient,
-        EarningsInnerApiHelper earningsInnerApiHelper)
+        EarningsInnerApiHelper earningsInnerApiHelper,
+        LearnerDataOuterApiHelper learnerDataOuterApiHelper)
     {
         _context = context;
         _earningsOuterClient = earningsOuterClient;
@@ -34,6 +37,7 @@ public class Fm36StepDefinitions
         _apprenticeshipSqlClient = apprenticeshipSqlClient;
         _earningsSqlClient = earningsSqlClient;
         _earningsInnerApiHelper = earningsInnerApiHelper;
+        _learnerDataOuterApiHelper = learnerDataOuterApiHelper;
     }
 
     [Given(@"the fm36 data is retrieved for (.*)")]
@@ -56,18 +60,12 @@ public class Fm36StepDefinitions
         // The purpose of this endpoint is to ensure paging tests can be run. There should be
         // at least 15 records of fm36 data from previous tests. If not then we create some test records here.
         // the content of the records is not important for paging tests.
+        // To ensure that data exists in the cache for FM36 retrieval, we must also PUT a record for at least
+        // 15 learners as well.
 
         var testData = _context.Get<TestData>();
-        var now = DateTime.Now;
-        var collectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", now));
-        var collectionPeriod = TableExtensions.Period[now.ToString("MMMM")];
 
-        var existingFm36Records = await _learnerDataOuterApiClient.GetFm36Block(Constants.UkPrn, collectionYear, collectionPeriod);
-
-        if(existingFm36Records.Count >= 15)
-            return;
-
-        var recordsToCreate = 15 - existingFm36Records.Count;
+        var recordsToCreate = 15; //always create 15
 
         for (int i = 0; i < recordsToCreate; i++)
         {
@@ -75,6 +73,19 @@ public class Fm36StepDefinitions
             var plannedEndDate = TokenisableDateTime.FromString("currentAYPlusTwo-08-23");
             testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, 15000, "2");
             await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder
+                .WithCostDetails(10000, 2000, startDate.Value)
+                .WithStartDate(startDate.Value)
+                .WithExpectedEndDate(plannedEndDate.Value)
+                .WithStandardCode(Convert.ToInt32(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode));
+
+            var learnerData = learnerDataBuilder.Build();
+
+            await _learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerData);
+
+            testData.ResetLearnerDataBuilder();
         }
     }
 
