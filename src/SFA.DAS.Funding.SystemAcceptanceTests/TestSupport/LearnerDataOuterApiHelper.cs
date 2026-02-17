@@ -56,6 +56,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 .With(x => x.StartDate, DateTime.UtcNow)
                 .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
                 .With(x => x.AgreementId, "AG1")
+                .With(x => x.LearnAimRef, "ZPROG001")
                 .With(x => x.StandardCode, 57)
                 .With(x => x.Costs, costs)
                 .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())

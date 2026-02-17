@@ -195,6 +195,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             _request.Delivery.OnProgramme.Add(new OnProgramme
             {
                 AgreementId = _request.Delivery.OnProgramme.Latest().AgreementId,
+                LearnAimRef = _request.Delivery.OnProgramme.Latest().LearnAimRef,
+                AimSequenceNumber = _request.Delivery.OnProgramme.Max(x => x.AimSequenceNumber) + 1,
                 Care = new Care (),
                 Costs = new List<CostDetails>
                 {

@@ -601,6 +601,15 @@ public class Fm36StepDefinitions
         fm36Learner.Should().NotBeNull();
     }
 
+    [Then(@"fm36 contains (.*) Learning Deliveries")]
+    public void ThenFM36ContainsLearningDeliveries(int expectedValue)
+    {
+        var testData = _context.Get<TestData>();
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+
+        Assert.AreEqual(expectedValue, fm36Learner!.LearningDeliveries.Count, "Unexpected number of Learning Deliveries found!");
+    }
+
     [Then(@"fm36 FundStart value is (.*)")]
     public void ThenFm36FundStartValueIsFalse(bool expectedValue)
     {

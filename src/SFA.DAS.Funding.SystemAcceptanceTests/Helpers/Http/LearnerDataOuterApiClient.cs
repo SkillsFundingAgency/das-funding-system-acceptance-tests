@@ -239,6 +239,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public Care Care { get; set; }
             public int? StandardCode { get; set; }
             public string? AgreementId { get; set; }
+            public string LearnAimRef { get; set; }
             public DateTime? StartDate { get; set; }
             public DateTime? ExpectedEndDate { get; set; }
             public int? OffTheJobHours { get; set; }
