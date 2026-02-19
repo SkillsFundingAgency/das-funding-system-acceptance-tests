@@ -36,11 +36,13 @@ public class LearningSqlClient
 
     public Learning GetApprenticeship(Guid learningKey)
     {
-        var learning = _sqlServerClient.GetList<Learning>("SELECT * FROM [dbo].[Learning] WHERE [KEY] = @learningKey", new { learningKey }).FirstOrDefault(); ;
+        var learning = _sqlServerClient.GetList<Learning>("SELECT * FROM [dbo].[ApprenticeshipLearning] WHERE [KEY] = @learningKey", new { learningKey }).FirstOrDefault(); ;
         if (learning == null)
         {
             throw new InvalidOperationException("No learning found");
         }
+
+        learning.Learner = _sqlServerClient.GetList<Learner>("SELECT * from [dbo].[Learner] WHERE [KEY] = @learnerKey", new { learnerKey = learning.LearnerKey }).FirstOrDefault();
 
         learning.Episodes = _sqlServerClient.GetList<Episode>($"SELECT * FROM [dbo].[Episode] WHERE LearningKey = '{learning.Key}'");
 
@@ -180,16 +182,22 @@ public class Learning
 {
     public Guid Key { get; set; }
     public long ApprovalsApprenticeshipId { get; set; }
+    //public string ApprenticeshipHashedId { get; set; } = null!; //todo: delete
+    public DateTime? CompletionDate { get; set; } = null;
+    public string? EmailAddress { get; set; }
+    public List<FreezeRequest> FreezeRequests { get; set; } //todo: delete
+    public List<Episode> Episodes { get; set; }
+    public List<LearningHistoryModel> LearningHistory { get; set; }
+    public Guid LearnerKey { get; set; }
+    public Learner Learner { get; set; }
+}
+
+public class Learner
+{
     public string Uln { get; set; } = null!;
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public DateTime DateOfBirth { get; set; }
-    public string ApprenticeshipHashedId { get; set; } = null!;
-    public DateTime? CompletionDate { get; set; } = null;
-    public string? EmailAddress { get; set; }
-    public List<FreezeRequest> FreezeRequests { get; set; }
-    public List<Episode> Episodes { get; set; }
-    public List<LearningHistoryModel> LearningHistory { get; set; }
 
 }
 
