@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.Requests;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
@@ -13,7 +14,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         {
             _context = context;
         }
-
 
         public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn)
         {
@@ -104,6 +104,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         public async Task RemoveLearner(Guid learningKey)
         {
             await _apiClient.DeleteLearner(Constants.UkPrn, learningKey);
+        }
+
+        public async Task PostShortCourse(long ukprn, ShortCourseRequest request)
+        {
+            await _apiClient.PostShortCourse(ukprn, request);
         }
     }
 }

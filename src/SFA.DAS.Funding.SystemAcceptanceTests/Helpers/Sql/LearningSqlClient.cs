@@ -174,6 +174,14 @@ public class LearningSqlClient
 
         _sqlServerClient.Execute(sql, new { Ukprn = ukprn });
     }
+
+    public List<ShortCourseEpisode> GetShortCourseEpisodes(long ukprn)
+    {
+        var learners = _sqlServerClient.GetList<ShortCourseEpisode>($"select * from dbo.ShortCourseEpisode e where " +
+            $" ep.Ukprn = {ukprn}");
+
+        return learners;
+    }
 }
 
 public class Learning
@@ -253,4 +261,9 @@ public class EpisodeBreakInLearning
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public DateTime PriorPeriodExpectedEndDate { get; set; }
+}
+
+public class ShortCourseEpisode
+{
+    public DateTime StartDate { get; set; }
 }

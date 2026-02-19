@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using System.Net;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.Requests;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
@@ -125,6 +126,30 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             var response = await _apiClient.SendAsync(request);
 
             Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, $"Expected HTTP 200 OK response from DeleteLearner request, but got {response.StatusCode}");
+        }
+
+        public async Task PostShortCourse(long ukprn, ShortCourseRequest shortCourseRequest)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, $"/learnerdata/providers/{ukprn}/shortCourses");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+
+            var jsonContent = new StringContent(
+                System.Text.Json.JsonSerializer.Serialize(shortCourseRequest),
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+            request.Content = jsonContent;
+
+            var response = await _apiClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+            }
+
+            response.EnsureSuccessStatusCode();
         }
 
         public class LearnerDataRequest

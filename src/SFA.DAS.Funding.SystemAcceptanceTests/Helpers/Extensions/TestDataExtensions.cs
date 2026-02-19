@@ -13,5 +13,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions
         {
             testData.LearnerDataBuilder = null;
         }
+
+        internal static ShortCourseRequestBuilder GetShortCourseRequestBuilder(this TestData testData)
+        {
+            return testData.ShortCourseRequestBuilder ??
+                   (testData.ShortCourseRequestBuilder = new ShortCourseRequestBuilder(testData));
+        }
     }
 }
