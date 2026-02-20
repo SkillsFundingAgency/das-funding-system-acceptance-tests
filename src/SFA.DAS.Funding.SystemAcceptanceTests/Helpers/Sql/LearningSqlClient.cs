@@ -98,8 +98,8 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE fr
             FROM dbo.FreezeRequest fr
-            JOIN dbo.Learning l ON fr.LearningKey = l.[Key]
-            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            JOIN dbo.ApprenticeshipLearning l ON fr.LearningKey = l.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -107,8 +107,8 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE lh
             FROM History.LearningHistory lh
-            JOIN dbo.Learning l ON lh.LearningId = l.[Key]
-            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            JOIN dbo.ApprenticeshipLearning l ON lh.LearningId = l.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -117,7 +117,7 @@ public class LearningSqlClient
             DELETE ls
             FROM dbo.LearningSupport ls
             JOIN dbo.Learning l ON ls.LearningKey = l.[Key]
-            JOIN dbo.Episode e ON ls.EpisodeKey = e.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON ls.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -152,35 +152,47 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE a
             FROM dbo.Approval a
-            JOIN dbo.Learning l ON a.ApprenticeshipKey = l.[Key]
-            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            JOIN dbo.ApprenticeshipLearning l ON a.ApprenticeshipKey = l.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
             9. Delete Episodes
             ===========================================================*/
             DELETE e
-            FROM dbo.Episode e
+            FROM dbo.ApprenticeshipEpisode e
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
             10. Delete ApprenticeshipLearnings
             ===========================================================*/
-            ;WITH ToDelete AS (
-                SELECT l.[Key] AS LearningKey,
-                       lr.[Key] AS LearnerKey
-                FROM dbo.ApprenticeshipLearning l
-                INNER JOIN dbo.Learner lr ON lr.[Key] = l.LearnerKey
-                INNER JOIN dbo.ApprenticeshipEpisode e ON e.LearningKey = l.[Key]
-                WHERE e.Ukprn = @Ukprn
-            )
-            -- Delete Learning rows first (child)
-            DELETE FROM dbo.ApprenticeshipLearning
-            WHERE [Key] IN (SELECT LearningKey FROM ToDelete);
 
-            -- Then delete Learner rows (parent)
+            -- Delete ApprenticeshipLearning rows for this UKPRN
+            ;WITH ToDeleteLearning AS (
+                SELECT l.[Key] AS LearningKey
+                FROM dbo.ApprenticeshipLearning l
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM dbo.ApprenticeshipEpisode e
+                    WHERE e.LearningKey = l.[Key]
+                      AND e.Ukprn = @Ukprn
+                )
+            )
+            DELETE FROM dbo.ApprenticeshipLearning
+            WHERE [Key] IN (SELECT LearningKey FROM ToDeleteLearning);
+
+            -- Delete Learners that now have no remaining learning rows
+            ;WITH OrphanLearners AS (
+                SELECT lr.[Key] AS LearnerKey
+                FROM dbo.Learner lr
+                WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM dbo.ApprenticeshipLearning l
+                    WHERE l.LearnerKey = lr.[Key]
+                )
+            )
             DELETE FROM dbo.Learner
-            WHERE [Key] IN (SELECT LearnerKey FROM ToDelete);
+            WHERE [Key] IN (SELECT LearnerKey FROM OrphanLearners);
         ";
 
         _sqlServerClient.Execute(sql, new { Ukprn = ukprn });
