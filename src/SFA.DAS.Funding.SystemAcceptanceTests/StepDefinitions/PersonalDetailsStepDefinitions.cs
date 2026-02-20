@@ -57,7 +57,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             {
                 Assert.AreEqual(firstName, apprenticeship.Learner.FirstName, "Unexpected First Name found!");
                 Assert.AreEqual(lastName, apprenticeship.Learner.LastName, "Unexpected Last Name found");
-                Assert.AreEqual(email, apprenticeship.EmailAddress, "Unexpected Email address found");
+                Assert.AreEqual(email, apprenticeship.Learner.EmailAddress, "Unexpected Email address found");
             });
         }
 

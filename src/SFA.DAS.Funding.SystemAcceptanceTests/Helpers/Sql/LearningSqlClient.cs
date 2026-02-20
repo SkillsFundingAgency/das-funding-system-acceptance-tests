@@ -159,13 +159,16 @@ public class LearningSqlClient
             /*===========================================================
             9. Delete Episodes, Learning and Learners
             ===========================================================*/
-            ;WITH LearningKeys AS (
-                SELECT DISTINCT l.[Key] AS LearningKey,
-                                l.LearnerKey
-                FROM dbo.ApprenticeshipLearning l
-                JOIN dbo.ApprenticeshipEpisode e ON e.LearningKey = l.[Key]
-                WHERE e.Ukprn = @Ukprn
-            )
+            CREATE TABLE #LearningKeys (
+                LearningKey BIGINT NOT NULL,
+                LearnerKey  BIGINT NOT NULL
+            );
+
+            INSERT INTO #LearningKeys (LearningKey, LearnerKey)
+            SELECT DISTINCT l.[Key], l.LearnerKey
+            FROM dbo.ApprenticeshipLearning l
+            JOIN dbo.ApprenticeshipEpisode e ON e.LearningKey = l.[Key]
+            WHERE e.Ukprn = @Ukprn;
 
             DELETE e
             FROM dbo.ApprenticeshipEpisode e
@@ -173,11 +176,13 @@ public class LearningSqlClient
 
             DELETE l
             FROM dbo.ApprenticeshipLearning l
-            JOIN LearningKeys lk ON lk.LearningKey = l.[Key];
+            JOIN #LearningKeys lk ON lk.LearningKey = l.[Key];
 
             DELETE lr
             FROM dbo.Learner lr
-            JOIN LearningKeys lk ON lk.LearnerKey = lr.[Key];
+            JOIN #LearningKeys lk ON lk.LearnerKey = lr.[Key];
+
+            DROP TABLE #LearningKeys;
         ";
 
         _sqlServerClient.Execute(sql, new { Ukprn = ukprn });
@@ -190,7 +195,6 @@ public class Learning
     public long ApprovalsApprenticeshipId { get; set; }
     //public string ApprenticeshipHashedId { get; set; } = null!; //todo: delete
     public DateTime? CompletionDate { get; set; } = null;
-    public string? EmailAddress { get; set; }
     public List<FreezeRequest> FreezeRequests { get; set; } //todo: delete
     public List<Episode> Episodes { get; set; }
     public List<LearningHistoryModel> LearningHistory { get; set; }
@@ -204,7 +208,7 @@ public class Learner
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public DateTime DateOfBirth { get; set; }
-
+    public string? EmailAddress { get; set; }
 }
 
 public class Episode
