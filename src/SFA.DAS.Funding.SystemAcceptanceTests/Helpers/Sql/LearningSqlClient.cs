@@ -116,7 +116,7 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE ls
             FROM dbo.LearningSupport ls
-            JOIN dbo.Learning l ON ls.LearningKey = l.[Key]
+            JOIN dbo.ApprenticeshipLearning l ON ls.LearningKey = l.[Key]
             JOIN dbo.ApprenticeshipEpisode e ON ls.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
