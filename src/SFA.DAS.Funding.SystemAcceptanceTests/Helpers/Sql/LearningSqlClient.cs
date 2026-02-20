@@ -44,7 +44,7 @@ public class LearningSqlClient
 
         learning.Learner = _sqlServerClient.GetList<Learner>("SELECT * from [dbo].[Learner] WHERE [KEY] = @learnerKey", new { learnerKey = learning.LearnerKey }).FirstOrDefault();
 
-        learning.Episodes = _sqlServerClient.GetList<Episode>($"SELECT * FROM [dbo].[Episode] WHERE LearningKey = '{learning.Key}'");
+        learning.Episodes = _sqlServerClient.GetList<Episode>($"SELECT * FROM [dbo].[ApprenticeshipEpisode] WHERE LearningKey = '{learning.Key}'");
 
         foreach (var episode in learning.Episodes)
         {
@@ -65,16 +65,18 @@ public class LearningSqlClient
     {
         var dates = AcademicYearParser.ParseFrom(academicYear);
 
-        var learners = _sqlServerClient.GetList<Http.LearnerDataOuterApiClient.Learning>($"select distinct lrn.[Uln], lrn.[Key] " +
-            $" from [dbo].[Learning] lrn " +
-            $" inner join [dbo].[Episode] ep on ep.LearningKey = lrn.[Key] " +
-            $" inner join [dbo].[EpisodePrice] eppr on eppr.EpisodeKey = ep.[Key] " +
-            $" WHERE (eppr.StartDate <= '{dates.End}' AND eppr.EndDate   >= '{dates.Start}') " +
-            $" AND ep.Ukprn = {ukprn} " +
-            $" AND (ep.LastDayOfLearning is null " +
-            $" OR ep.LastDayOfLearning >= '{dates.Start}' " +
-            $" AND  ep.LastDayOfLearning <> eppr.StartDate)");
-
+        var learners = _sqlServerClient.GetList<Http.LearnerDataOuterApiClient.Learning>(
+            $"SELECT DISTINCT lrn.[Uln], lrn.[Key] " +
+            $"FROM [dbo].[ApprenticeshipLearning] l " +
+            $"INNER JOIN [dbo].[Learner] lrn ON lrn.[Key] = l.[LearnerKey] " +
+            $"INNER JOIN [dbo].[ApprenticeshipEpisode] ep ON ep.LearningKey = l.[Key] " +
+            $"INNER JOIN [dbo].[EpisodePrice] eppr ON eppr.EpisodeKey = ep.[Key] " +
+            $"WHERE (eppr.StartDate <= '{dates.End}' AND eppr.EndDate >= '{dates.Start}') " +
+            $"AND ep.Ukprn = {ukprn} " +
+            $"AND (ep.WithdrawalDate IS NULL " +
+            $"     OR (ep.WithdrawalDate >= '{dates.Start}' " +
+            $"         AND ep.WithdrawalDate <> eppr.StartDate))"
+        );
 
         return learners;
     }
@@ -162,16 +164,23 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            10. Delete Learnings
+            10. Delete ApprenticeshipLearnings
             ===========================================================*/
-            DELETE l
-            FROM dbo.Learning l
-            WHERE EXISTS (
-                SELECT 1 
-                FROM dbo.Episode e 
-                WHERE e.LearningKey = l.[Key]
-                  AND e.Ukprn = @Ukprn
-            );
+            ;WITH ToDelete AS (
+                SELECT l.[Key] AS LearningKey,
+                       lr.[Key] AS LearnerKey
+                FROM dbo.ApprenticeshipLearning l
+                INNER JOIN dbo.Learner lr ON lr.[Key] = l.LearnerKey
+                INNER JOIN dbo.ApprenticeshipEpisode e ON e.LearningKey = l.[Key]
+                WHERE e.Ukprn = @Ukprn
+            )
+            -- Delete Learning rows first (child)
+            DELETE FROM dbo.ApprenticeshipLearning
+            WHERE [Key] IN (SELECT LearningKey FROM ToDelete);
+
+            -- Then delete Learner rows (parent)
+            DELETE FROM dbo.Learner
+            WHERE [Key] IN (SELECT LearnerKey FROM ToDelete);
         ";
 
         _sqlServerClient.Execute(sql, new { Ukprn = ukprn });
@@ -218,7 +227,7 @@ public class Episode
     public string? TrainingCourseVersion { get; set; }
     public bool PaymentsFrozen { get; set; }
     public List<EpisodePrice> Prices { get; set; }
-    public DateTime? LastDayOfLearning { get; set; }
+    public DateTime? WithdrawalDate { get; set; }
     public DateTime? PauseDate { get; set; }
     public List<EpisodeBreakInLearning> EpisodeBreakInLearning { get; set; }
 }
