@@ -160,8 +160,8 @@ public class LearningSqlClient
             9. Delete Episodes, Learning and Learners
             ===========================================================*/
             CREATE TABLE #LearningKeys (
-                LearningKey BIGINT NOT NULL,
-                LearnerKey  BIGINT NOT NULL
+                LearningKey UNIQUEIDENTIFIER NOT NULL,
+                LearnerKey  UNIQUEIDENTIFIER NOT NULL
             );
 
             INSERT INTO #LearningKeys (LearningKey, LearnerKey)
