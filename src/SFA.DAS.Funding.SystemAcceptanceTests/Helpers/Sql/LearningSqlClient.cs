@@ -90,7 +90,7 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE ep
             FROM dbo.EpisodePrice ep
-            JOIN dbo.Episode e ON ep.EpisodeKey = e.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON ep.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -125,7 +125,7 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE ebil
             FROM dbo.EpisodeBreakInLearning ebil
-            JOIN dbo.Episode e ON ebil.EpisodeKey = e.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON ebil.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -134,8 +134,8 @@ public class LearningSqlClient
             DELETE mebil
             FROM dbo.MathsAndEnglishBreakInLearning mebil
             JOIN dbo.MathsAndEnglish me on mebil.MathsAndEnglishKey = me.[Key]
-            JOIN dbo.Learning l ON me.LearningKey = l.[Key]
-            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            JOIN dbo.ApprenticeshipLearning l ON me.LearningKey = l.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -143,8 +143,8 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE me
             FROM dbo.MathsAndEnglish me
-            JOIN dbo.Learning l ON me.LearningKey = l.[Key]
-            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            JOIN dbo.ApprenticeshipLearning l ON me.LearningKey = l.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
