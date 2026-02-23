@@ -36,13 +36,15 @@ public class LearningSqlClient
 
     public Learning GetApprenticeship(Guid learningKey)
     {
-        var learning = _sqlServerClient.GetList<Learning>("SELECT * FROM [dbo].[Learning] WHERE [KEY] = @learningKey", new { learningKey }).FirstOrDefault(); ;
+        var learning = _sqlServerClient.GetList<Learning>("SELECT * FROM [dbo].[ApprenticeshipLearning] WHERE [KEY] = @learningKey", new { learningKey }).FirstOrDefault(); ;
         if (learning == null)
         {
             throw new InvalidOperationException("No learning found");
         }
 
-        learning.Episodes = _sqlServerClient.GetList<Episode>($"SELECT * FROM [dbo].[Episode] WHERE LearningKey = '{learning.Key}'");
+        learning.Learner = _sqlServerClient.GetList<Learner>("SELECT * from [dbo].[Learner] WHERE [KEY] = @learnerKey", new { learnerKey = learning.LearnerKey }).FirstOrDefault();
+
+        learning.Episodes = _sqlServerClient.GetList<Episode>($"SELECT * FROM [dbo].[ApprenticeshipEpisode] WHERE LearningKey = '{learning.Key}'");
 
         foreach (var episode in learning.Episodes)
         {
@@ -63,16 +65,18 @@ public class LearningSqlClient
     {
         var dates = AcademicYearParser.ParseFrom(academicYear);
 
-        var learners = _sqlServerClient.GetList<Http.LearnerDataOuterApiClient.Learning>($"select distinct lrn.[Uln], lrn.[Key] " +
-            $" from [dbo].[Learning] lrn " +
-            $" inner join [dbo].[Episode] ep on ep.LearningKey = lrn.[Key] " +
-            $" inner join [dbo].[EpisodePrice] eppr on eppr.EpisodeKey = ep.[Key] " +
-            $" WHERE (eppr.StartDate <= '{dates.End}' AND eppr.EndDate   >= '{dates.Start}') " +
-            $" AND ep.Ukprn = {ukprn} " +
-            $" AND (ep.LastDayOfLearning is null " +
-            $" OR ep.LastDayOfLearning >= '{dates.Start}' " +
-            $" AND  ep.LastDayOfLearning <> eppr.StartDate)");
-
+        var learners = _sqlServerClient.GetList<Http.LearnerDataOuterApiClient.Learning>(
+            $"SELECT DISTINCT lrn.[Uln], lrn.[Key] " +
+            $"FROM [dbo].[ApprenticeshipLearning] l " +
+            $"INNER JOIN [dbo].[Learner] lrn ON lrn.[Key] = l.[LearnerKey] " +
+            $"INNER JOIN [dbo].[ApprenticeshipEpisode] ep ON ep.LearningKey = l.[Key] " +
+            $"INNER JOIN [dbo].[EpisodePrice] eppr ON eppr.EpisodeKey = ep.[Key] " +
+            $"WHERE (eppr.StartDate <= '{dates.End}' AND eppr.EndDate >= '{dates.Start}') " +
+            $"AND ep.Ukprn = {ukprn} " +
+            $"AND (ep.WithdrawalDate IS NULL " +
+            $"     OR (ep.WithdrawalDate >= '{dates.Start}' " +
+            $"         AND ep.WithdrawalDate <> eppr.StartDate))"
+        );
 
         return learners;
     }
@@ -86,7 +90,7 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE ep
             FROM dbo.EpisodePrice ep
-            JOIN dbo.Episode e ON ep.EpisodeKey = e.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON ep.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -94,8 +98,8 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE fr
             FROM dbo.FreezeRequest fr
-            JOIN dbo.Learning l ON fr.LearningKey = l.[Key]
-            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            JOIN dbo.ApprenticeshipLearning l ON fr.LearningKey = l.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -103,8 +107,8 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE lh
             FROM History.LearningHistory lh
-            JOIN dbo.Learning l ON lh.LearningId = l.[Key]
-            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            JOIN dbo.ApprenticeshipLearning l ON lh.LearningId = l.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -112,8 +116,8 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE ls
             FROM dbo.LearningSupport ls
-            JOIN dbo.Learning l ON ls.LearningKey = l.[Key]
-            JOIN dbo.Episode e ON ls.EpisodeKey = e.[Key]
+            JOIN dbo.ApprenticeshipLearning l ON ls.LearningKey = l.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON ls.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -121,7 +125,7 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE ebil
             FROM dbo.EpisodeBreakInLearning ebil
-            JOIN dbo.Episode e ON ebil.EpisodeKey = e.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON ebil.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -130,8 +134,8 @@ public class LearningSqlClient
             DELETE mebil
             FROM dbo.MathsAndEnglishBreakInLearning mebil
             JOIN dbo.MathsAndEnglish me on mebil.MathsAndEnglishKey = me.[Key]
-            JOIN dbo.Learning l ON me.LearningKey = l.[Key]
-            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            JOIN dbo.ApprenticeshipLearning l ON me.LearningKey = l.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -139,8 +143,8 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE me
             FROM dbo.MathsAndEnglish me
-            JOIN dbo.Learning l ON me.LearningKey = l.[Key]
-            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            JOIN dbo.ApprenticeshipLearning l ON me.LearningKey = l.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
@@ -148,28 +152,37 @@ public class LearningSqlClient
             ===========================================================*/
             DELETE a
             FROM dbo.Approval a
-            JOIN dbo.Learning l ON a.ApprenticeshipKey = l.[Key]
-            JOIN dbo.Episode e ON l.[Key] = e.LearningKey
+            JOIN dbo.ApprenticeshipLearning l ON a.ApprenticeshipKey = l.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            9. Delete Episodes
+            9. Delete Episodes, Learning and Learners
             ===========================================================*/
-            DELETE e
-            FROM dbo.Episode e
-            WHERE e.Ukprn = @Ukprn;
-
-            /*===========================================================
-            10. Delete Learnings
-            ===========================================================*/
-            DELETE l
-            FROM dbo.Learning l
-            WHERE EXISTS (
-                SELECT 1 
-                FROM dbo.Episode e 
-                WHERE e.LearningKey = l.[Key]
-                  AND e.Ukprn = @Ukprn
+            CREATE TABLE #LearningKeys (
+                LearningKey UNIQUEIDENTIFIER NOT NULL,
+                LearnerKey  UNIQUEIDENTIFIER NOT NULL
             );
+
+            INSERT INTO #LearningKeys (LearningKey, LearnerKey)
+            SELECT DISTINCT l.[Key], l.LearnerKey
+            FROM dbo.ApprenticeshipLearning l
+            JOIN dbo.ApprenticeshipEpisode e ON e.LearningKey = l.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+            DELETE e
+            FROM dbo.ApprenticeshipEpisode e
+            WHERE e.Ukprn = @Ukprn;
+
+            DELETE l
+            FROM dbo.ApprenticeshipLearning l
+            JOIN #LearningKeys lk ON lk.LearningKey = l.[Key];
+
+            DELETE lr
+            FROM dbo.Learner lr
+            JOIN #LearningKeys lk ON lk.LearnerKey = lr.[Key];
+
+            DROP TABLE #LearningKeys;
         ";
 
         _sqlServerClient.Execute(sql, new { Ukprn = ukprn });
@@ -188,17 +201,22 @@ public class Learning
 {
     public Guid Key { get; set; }
     public long ApprovalsApprenticeshipId { get; set; }
+    //public string ApprenticeshipHashedId { get; set; } = null!; //todo: delete
+    public DateTime? CompletionDate { get; set; } = null;
+    public List<FreezeRequest> FreezeRequests { get; set; } //todo: delete
+    public List<Episode> Episodes { get; set; }
+    public List<LearningHistoryModel> LearningHistory { get; set; }
+    public Guid LearnerKey { get; set; }
+    public Learner Learner { get; set; }
+}
+
+public class Learner
+{
     public string Uln { get; set; } = null!;
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public DateTime DateOfBirth { get; set; }
-    public string ApprenticeshipHashedId { get; set; } = null!;
-    public DateTime? CompletionDate { get; set; } = null;
     public string? EmailAddress { get; set; }
-    public List<FreezeRequest> FreezeRequests { get; set; }
-    public List<Episode> Episodes { get; set; }
-    public List<LearningHistoryModel> LearningHistory { get; set; }
-
 }
 
 public class Episode
@@ -218,7 +236,7 @@ public class Episode
     public string? TrainingCourseVersion { get; set; }
     public bool PaymentsFrozen { get; set; }
     public List<EpisodePrice> Prices { get; set; }
-    public DateTime? LastDayOfLearning { get; set; }
+    public DateTime? WithdrawalDate { get; set; }
     public DateTime? PauseDate { get; set; }
     public List<EpisodeBreakInLearning> EpisodeBreakInLearning { get; set; }
 }

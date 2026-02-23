@@ -21,6 +21,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var actualLearners = testData.LearnersOnService;
 
+            var mismatches = actualLearners.Learners
+                .Where(l1 => !expectedLearners.Any(l2 => l2.Uln == l1.Uln && l2.Key == l1.Key))
+                .ToList();
+            foreach (var m in mismatches)
+            {
+                Console.WriteLine($"Mismatch: ULN={m.Uln}, Key={m.Key}");
+            }
+
             bool allExist = actualLearners.Learners
                 .All(l1 => expectedLearners.Any(l2 => l2.Uln == l1.Uln && l2.Key == l1.Key));
 
