@@ -7,6 +7,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Learning.Types;
 using System.Collections.Generic;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -19,6 +20,7 @@ public class Fm36StepDefinitions
     private readonly LearningSqlClient _apprenticeshipSqlClient;
     private readonly EarningsSqlClient _earningsSqlClient;
     private readonly EarningsInnerApiHelper _earningsInnerApiHelper;
+    private readonly LearnerDataOuterApiHelper _learnerDataOuterApiHelper;
 
     public Fm36StepDefinitions(
         ScenarioContext context,
@@ -26,7 +28,8 @@ public class Fm36StepDefinitions
         LearnerDataOuterApiClient learnerDataOuterApiClient,
         LearningSqlClient apprenticeshipSqlClient,
         EarningsSqlClient earningsSqlClient,
-        EarningsInnerApiHelper earningsInnerApiHelper)
+        EarningsInnerApiHelper earningsInnerApiHelper,
+        LearnerDataOuterApiHelper learnerDataOuterApiHelper)
     {
         _context = context;
         _earningsOuterClient = earningsOuterClient;
@@ -34,6 +37,7 @@ public class Fm36StepDefinitions
         _apprenticeshipSqlClient = apprenticeshipSqlClient;
         _earningsSqlClient = earningsSqlClient;
         _earningsInnerApiHelper = earningsInnerApiHelper;
+        _learnerDataOuterApiHelper = learnerDataOuterApiHelper;
     }
 
     [Given(@"the fm36 data is retrieved for (.*)")]
@@ -56,18 +60,12 @@ public class Fm36StepDefinitions
         // The purpose of this endpoint is to ensure paging tests can be run. There should be
         // at least 15 records of fm36 data from previous tests. If not then we create some test records here.
         // the content of the records is not important for paging tests.
+        // To ensure that data exists in the cache for FM36 retrieval, we must also PUT a record for at least
+        // 15 learners as well.
 
         var testData = _context.Get<TestData>();
-        var now = DateTime.Now;
-        var collectionYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", now));
-        var collectionPeriod = TableExtensions.Period[now.ToString("MMMM")];
 
-        var existingFm36Records = await _learnerDataOuterApiClient.GetFm36Block(Constants.UkPrn, collectionYear, collectionPeriod);
-
-        if(existingFm36Records.Count >= 15)
-            return;
-
-        var recordsToCreate = 15 - existingFm36Records.Count;
+        var recordsToCreate = 15; //always create 15
 
         for (int i = 0; i < recordsToCreate; i++)
         {
@@ -75,6 +73,19 @@ public class Fm36StepDefinitions
             var plannedEndDate = TokenisableDateTime.FromString("currentAYPlusTwo-08-23");
             testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, 15000, "2");
             await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
+
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder
+                .WithCostDetails(10000, 2000, startDate.Value)
+                .WithStartDate(startDate.Value)
+                .WithExpectedEndDate(plannedEndDate.Value)
+                .WithStandardCode(Convert.ToInt32(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode));
+
+            var learnerData = learnerDataBuilder.Build();
+
+            await _learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerData);
+
+            testData.ResetLearnerDataBuilder();
         }
     }
 
@@ -145,10 +156,9 @@ public class Fm36StepDefinitions
             earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.FirstOrDefault()?.Amount;
         var currentPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
 
-        int daysInLearning =
-            1 + (apprenticeshipCreatedEvent.EndDate.Date - apprenticeshipCreatedEvent.StartDate.Date).Days;
+        var daysInLearningThisAY = 1 + (TokenisableDateTime.FromString("currentAY-07-31").Value - apprenticeshipCreatedEvent.StartDate.Date).Days;
+        var learnDelHistDaysThisApp = CalculateLearnDelHistDaysThisApp(TokenisableDateTime.FromString("currentAY-08-01").Value, apprenticeshipCreatedEvent.StartDate);
 
-        int daysInLearningThisAY = 1 + (TokenisableDateTime.FromString("currentAY-07-31").Value - apprenticeshipCreatedEvent.StartDate.Date).Days; ;
         int plannedTotalDaysInLearning = 1 + (apprenticeshipCreatedEvent.EndDate.Date - apprenticeshipCreatedEvent.StartDate.Date).Days;
         var ageAtStartOfApprenticeship =  CalculateAgeAtStart(apprenticeshipCreatedEvent.StartDate, apprenticeshipCreatedEvent.DateOfBirth);
         var fundLineType = ageAtStartOfApprenticeship > 18 ? "19+ Apprenticeship (Employer on App Service)" : "16-18 Apprenticeship (Employer on App Service)";
@@ -390,7 +400,7 @@ public class Fm36StepDefinitions
             Assert.AreEqual(EarningsFM36Constants.LearnDelEligDisadvPayment, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelEligDisadvPayment, "Unexpected LearnDelEligDisadvPayment found!");
             Assert.AreEqual(EarningsFM36Constants.LearnDelEmpIdFirstAdditionalPaymentThreshold, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelEmpIdFirstAdditionalPaymentThreshold, "Unexpected LearnDelEmpIdFirstAdditionalPaymentThreshold found!");
             Assert.AreEqual(EarningsFM36Constants.LearnDelEmpIdSecondAdditionalPaymentThreshold, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelEmpIdSecondAdditionalPaymentThreshold, "Unexpected LearnDelEmpIdSecondAdditionalPaymentThreshold found!");
-            Assert.AreEqual(daysInLearningThisAY, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelHistDaysThisApp, "Unexpected LearnDelHistDaysThisApp found!");
+            Assert.AreEqual(learnDelHistDaysThisApp, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelHistDaysThisApp, "Unexpected LearnDelHistDaysThisApp found!");
             Assert.AreEqual(12 * instalmentAmount, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelHistProgEarnings, "Unexpected LearnDelHistProgEarnings found!");
             Assert.AreEqual(fundLineType, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelInitialFundLineType, "Unexpected LearnDelInitialFundLineType found!");
             Assert.AreEqual(EarningsFM36Constants.LearnDelProgEarliestACT2Date, fm36Learner.LearningDeliveries.First().LearningDeliveryValues.LearnDelProgEarliestACT2Date, "Unexpected LearnDelProgEarliestACT2Date found!");
@@ -589,6 +599,15 @@ public class Fm36StepDefinitions
         var testData = _context.Get<TestData>();
         var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
         fm36Learner.Should().NotBeNull();
+    }
+
+    [Then(@"fm36 contains (.*) Learning Deliveries")]
+    public void ThenFM36ContainsLearningDeliveries(int expectedValue)
+    {
+        var testData = _context.Get<TestData>();
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+
+        Assert.AreEqual(expectedValue, fm36Learner!.LearningDeliveries.Count, "Unexpected number of Learning Deliveries found!");
     }
 
     [Then(@"fm36 FundStart value is (.*)")]
@@ -833,5 +852,16 @@ public class Fm36StepDefinitions
         }
 
         return age;
+    }
+
+    private int CalculateLearnDelHistDaysThisApp(DateTime academicYearStartDate, DateTime learningStartDate)
+    {
+        var start = learningStartDate;
+        var end = academicYearStartDate.AddDays(-1);
+
+        if (start > end)
+            return 0;
+
+        return (end - start).Days + 1; // inclusive
     }
 }

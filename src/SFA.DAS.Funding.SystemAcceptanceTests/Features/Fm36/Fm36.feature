@@ -8,7 +8,9 @@ Scenario: Retrieve Valid Fm36 data
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	And the apprenticeship commitment is approved
-	When the fm36 data is retrieved for currentDate
+	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
+	And SLD submit updated learners details
+	And the fm36 data is retrieved for currentDate
 	Then fm36 data exists for that apprenticeship
 
 Examples:
@@ -21,6 +23,8 @@ Scenario: Retrieve Valid Fm36 data for learners aged 15
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
 	And the apprenticeship commitment is approved
+	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
+	And SLD submit updated learners details
 	When the fm36 data is retrieved for currentDate
 	Then incentives earnings are generated for learners aged 15
 
@@ -34,6 +38,8 @@ Scenario: Do not retrieve Fm36 data for Inactive learners
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
 	And the apprenticeship commitment is approved
+	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
+	And SLD submit updated learners details
 	When the fm36 data is retrieved for currentDate
 	Then fm36 data does not exist for that apprenticeship
 
@@ -49,6 +55,8 @@ Scenario: Retrieve Fm36 data for Active learners
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
 	And the apprenticeship commitment is approved
+	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
+	And SLD submit updated learners details
 	When the fm36 data is retrieved for currentDate
 	Then learner is returned in the fm36 response
 

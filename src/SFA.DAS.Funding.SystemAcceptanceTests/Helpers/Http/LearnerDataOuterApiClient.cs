@@ -142,6 +142,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class LearnerRequestDetails
         {
+            public string ULN { get; set; }
             public string FirstName { get; set; } 
             public string LastName { get; set; } 
             public string? Email { get; set; }
@@ -169,6 +170,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? PauseDate { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
             public Care Care { get; set; }
+            public int? AimSequenceNumber { get; set; } = 1;
+            public string LearnAimRef { get; set; }
         }
 
         public class CostDetails
@@ -190,6 +193,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public int? PriorLearningPercentage { get; set; }
             public decimal Amount { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
+            public int? AimSequenceNumber { get; set; } = 1;
         }
 
         public class LearningSupport
@@ -235,6 +239,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public Care Care { get; set; }
             public int? StandardCode { get; set; }
             public string? AgreementId { get; set; }
+            public string LearnAimRef { get; set; }
             public DateTime? StartDate { get; set; }
             public DateTime? ExpectedEndDate { get; set; }
             public int? OffTheJobHours { get; set; }

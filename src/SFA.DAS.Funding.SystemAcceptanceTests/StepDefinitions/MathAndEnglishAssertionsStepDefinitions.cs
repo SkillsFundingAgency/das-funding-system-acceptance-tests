@@ -44,7 +44,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef)
+            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef, 2)
                         .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
             testData.IsMathsAndEnglishAdded = true;
@@ -59,7 +59,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef)
+            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef, 2)
                         .WithWithdrawalDate(withdrawalDate.Value)
                         .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
@@ -75,7 +75,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef)
+            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef, 2)
                         .WithPauseDate(pauseDate.Value)
                         .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
@@ -164,7 +164,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef)
+            learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef, 2)
             .WithCompletionDate(completionDate.Value)
             .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
