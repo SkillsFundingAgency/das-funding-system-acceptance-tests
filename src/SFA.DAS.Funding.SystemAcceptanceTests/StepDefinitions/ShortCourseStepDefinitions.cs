@@ -7,34 +7,54 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     [Binding]
     public class ShortCourseStepDefinitions(ScenarioContext scenarioContext, LearnerDataOuterApiHelper learnerDataOuterApiHelper, LearningSqlClient learningSqlClient, LearnerDataSqlClient learnerDataSqlClient)
     {
-        [When(@"SLD inform us of a new Short Course")]
-        public async Task WhenSLDInformUsOfANewShortCourse()
+        [When(@"SLD record a new Short Course with a start date of (.*) and an expected end date of (.*)")]
+        public async Task WhenSLDInformUsOfANewShortCourseWithAStartDateOfStart_DateAndAnExpectedEndDateOfEnd_Date(TokenisableDateTime start, TokenisableDateTime end)
         {
             var testData = scenarioContext.Get<TestData>();
             var shortCourseRequestBuilder = testData.GetShortCourseRequestBuilder();
 
-            var shortCourseRequest = shortCourseRequestBuilder.Build();
+            shortCourseRequestBuilder
+                .WithStartDate(start.Value)
+                .WithExpectedEndDate(end.Value);
+        }
 
+        [When(@"SLD submit the Short Course details")]
+        public async Task WhenSLDSubmitTheShortCourseDetails()
+        {
+            var testData = scenarioContext.Get<TestData>();
+            var shortCourseRequestBuilder = testData.GetShortCourseRequestBuilder();
+            var shortCourseRequest = shortCourseRequestBuilder.Build();
             await learnerDataOuterApiHelper.PostShortCourse(Constants.UkPrn, shortCourseRequest);
         }
 
         [Then(@"the Short Course details are recorded in Learning")]
         public void ThenTheShortCourseDetailsAreRecordedInLearning()
         {
-            //todo: what to assert?
-            var shortCourses = learningSqlClient.GetShortCourseEpisodes(Constants.UkPrn);
-            shortCourses.Count.Should().BeGreaterThan(0);
+            var testData = scenarioContext.Get<TestData>();
+            var request = testData.GetShortCourseRequestBuilder().Build();
+
+            var shortCourseEpisodes = learningSqlClient.GetShortCourseEpisodes(Constants.UkPrn, testData.Uln);
+
+            shortCourseEpisodes.Count.Should().BeGreaterThan(0);
+
+            var firstEpisode = shortCourseEpisodes.First();
+
+            firstEpisode.StartDate.Date.Should().Be(request.Delivery.OnProgramme.First().StartDate);
+            firstEpisode.ExpectedEndDate.Date.Should().Be(request.Delivery.OnProgramme.First().ExpectedEndDate);
         }
 
-        [Then(@"a LearnerData event is published to approvals")]
-        public void ThenALearnerDataEventIsPublishedToApprovals()
-        {
-            var uln = 123;
+        //[Then(@"a LearnerData event is published to approvals")]
+        //public void ThenALearnerDataEventIsPublishedToApprovals()
+        //{
+        //    var testData = scenarioContext.Get<TestData>();
+        //    var request = testData.GetShortCourseRequestBuilder().Build();
 
-            var learnerData = learnerDataSqlClient.GetLearnerData(uln);
-            
-            //todo: what to assert?
-        }
+        //    var uln = long.Parse(testData.Uln);
 
+        //    var learnerData = learnerDataSqlClient.GetLearnerData(uln);
+
+        //    learnerData.StartDate.Should().Be(request.Delivery.OnProgramme.First().StartDate);
+        //    learnerData.PlannedEndDate.Should().Be(request.Delivery.OnProgramme.First().ExpectedEndDate);
+        //}
     }
 }

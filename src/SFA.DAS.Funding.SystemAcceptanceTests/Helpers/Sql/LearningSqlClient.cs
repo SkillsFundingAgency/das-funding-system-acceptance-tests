@@ -188,11 +188,9 @@ public class LearningSqlClient
         _sqlServerClient.Execute(sql, new { Ukprn = ukprn });
     }
 
-    public List<ShortCourseEpisode> GetShortCourseEpisodes(long ukprn)
+    public List<ShortCourseEpisode> GetShortCourseEpisodes(long ukprn, string uln)
     {
-        var learners = _sqlServerClient.GetList<ShortCourseEpisode>($"select * from dbo.ShortCourseEpisode e where " +
-            $" ep.Ukprn = {ukprn}");
-
+        var learners = _sqlServerClient.GetList<ShortCourseEpisode>($"select e.* from dbo.Learner l join dbo.ShortCourseLearning lrn on lrn.LearnerKey = l.[Key] join dbo.ShortCourseEpisode e on e.LearningKey = lrn.[Key] where e.Ukprn = {ukprn} and l.Uln = {uln}");
         return learners;
     }
 }
@@ -283,5 +281,13 @@ public class EpisodeBreakInLearning
 
 public class ShortCourseEpisode
 {
+    public Guid Key { get; set; }
+    public Guid LearningKey { get; set; }
+    public long Ukprn { get; set; }
     public DateTime StartDate { get; set; }
+    public DateTime ExpectedEndDate { get; set; }
+    public DateTime? WithdrawalDate { get; set; }
+    public int EmployerAccountId { get; set; }
+    public string TrainingCode { get; set; }
+    public bool IsApproved { get; set; }
 }

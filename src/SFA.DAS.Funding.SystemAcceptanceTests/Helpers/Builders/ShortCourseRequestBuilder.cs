@@ -13,8 +13,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
                 FirstName = "Sys acceptance",
                 LastName = "Test",
                 Dob = DateTime.UtcNow.AddYears(-25),
-                Email = "test@test.com",
-                HasEhcp = false
+                Email = "test@test.com"
             },
             Delivery = new ShortCourseDelivery
             {
