@@ -11,10 +11,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         {
             Delivery = new Delivery
             {
-                OnProgramme = new List<OnProgramme> { new OnProgramme { AgreementId = "1", Care = new Care()}}
+                OnProgramme = new List<OnProgramme> { new OnProgramme { AgreementId = "1", AimSequenceNumber = 1, LearnAimRef = "ZPROG001", Care = new Care()}}
             },
             Learner = new LearnerRequestDetails
             {
+                ULN = testData.Uln,
                 FirstName = testData.LearningCreatedEvent.FirstName,
                 LastName = testData.LearningCreatedEvent.LastName,
                 Dob = testData.LearningCreatedEvent.DateOfBirth
@@ -194,6 +195,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             _request.Delivery.OnProgramme.Add(new OnProgramme
             {
                 AgreementId = _request.Delivery.OnProgramme.Latest().AgreementId,
+                LearnAimRef = _request.Delivery.OnProgramme.Latest().LearnAimRef,
+                AimSequenceNumber = _request.Delivery.OnProgramme.Max(x => x.AimSequenceNumber) + 1,
                 Care = new Care (),
                 Costs = new List<CostDetails>
                 {
