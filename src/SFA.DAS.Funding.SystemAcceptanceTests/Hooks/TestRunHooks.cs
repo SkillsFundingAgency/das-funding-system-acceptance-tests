@@ -14,7 +14,7 @@ public class TestRunHooks
     private readonly ScenarioContext _context;
 
 
-    public TestRunHooks (ScenarioContext context)
+    public TestRunHooks(ScenarioContext context)
     {
         _context = context;
     }
@@ -50,7 +50,7 @@ public class TestRunHooks
         await azureClient.CreateQueueAsync(queueName);
         await azureClient.CreateSubscriptionWithFiltersAsync(
             TestServiceBus.Config.FundingSystemAcceptanceTestSubscription,
-            TestServiceBus.Config.SharedServiceBusTopicEndpoint, queueName, 
+            TestServiceBus.Config.SharedServiceBusTopicEndpoint, queueName,
             EventList.GetEventTypes());
     }
 
@@ -119,7 +119,7 @@ public class TestRunHooks
     private static int GetTestCount()
     {
         var methods = Assembly.GetExecutingAssembly().GetTypes()
-            .SelectMany(t => t.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
+            .SelectMany(t => t.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly));
 
         var testCount = 0;
 
@@ -138,6 +138,9 @@ public class TestRunHooks
                 testCount++;
             }
         }
+
+        Console.WriteLine($"[TestRunHooks] Total tests/scenarios counted: {testCount}");
+
         return testCount;
     }
 
