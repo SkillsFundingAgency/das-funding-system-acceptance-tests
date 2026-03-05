@@ -17,11 +17,11 @@ public class EarningsSqlClient
         var testData = context.Get<TestData>();
         var apprenticeshipKey = testData.LearningKey;
 
-        var apprenticeship = _sqlServerClient.GetList<EarningsApprenticeshipModel>($"SELECT * FROM [Domain].[Apprenticeship] Where [key] ='{apprenticeshipKey}'").SingleOrDefault();
+        var apprenticeship = _sqlServerClient.GetList<EarningsApprenticeshipModel>($"SELECT * FROM [Domain].[Learning] Where [LearningKey] ='{apprenticeshipKey}'").SingleOrDefault();
         if (apprenticeship == null)
             return null;
 
-        var apprenticeshipEpisodes = _sqlServerClient.GetList<EpisodeModel>($"SELECT * FROM [Domain].[Episode] Where ApprenticeshipKey ='{apprenticeshipKey}'");
+        var apprenticeshipEpisodes = _sqlServerClient.GetList<EpisodeModel>($"SELECT * FROM [Domain].[Episode] Where LearningKey ='{apprenticeshipKey}'");
 
         foreach (var episode in apprenticeshipEpisodes)
         {
@@ -72,7 +72,7 @@ public class EarningsSqlClient
 
     public void DeleteEarnings(Guid apprenticeshipKey)
     {
-        var episodeKeys = _sqlServerClient.GetList<Guid>($"SELECT [Key] FROM [Domain].[Episode] WHERE ApprenticeshipKey = '{apprenticeshipKey}'");
+        var episodeKeys = _sqlServerClient.GetList<Guid>($"SELECT [Key] FROM [Domain].[Episode] WHERE LearningKey = '{apprenticeshipKey}'");
 
         foreach(var episodeKey in episodeKeys)
         {
@@ -85,7 +85,7 @@ public class EarningsSqlClient
             _sqlServerClient.Execute($"DELETE FROM [Domain].[Episode] WHERE [Key] = '{episodeKey}'");
         }
 
-        _sqlServerClient.Execute($"DELETE FROM [Domain].[Apprenticeship] WHERE [Key] = '{apprenticeshipKey}'");
+        _sqlServerClient.Execute($"DELETE FROM [Domain].[Learning] WHERE [LearningKey] = '{apprenticeshipKey}'");
     }
 
     private void DeleteEarningProfile(Guid episodeKey)
@@ -142,98 +142,111 @@ public class EarningsSqlClient
             ===========================================================*/
             DELETE mei
             FROM Domain.MathsAndEnglishInstalment AS mei
-            JOIN Domain.MathsAndEnglish AS me ON mei.MathsAndEnglishKey = me.[Key]
-            JOIN Domain.EarningsProfile AS ep ON me.EarningsProfileId = ep.EarningsProfileId
-            JOIN Domain.Episode e ON ep.EpisodeKey = e.[Key]
+            JOIN Domain.MathsAndEnglish AS me 
+                ON mei.MathsAndEnglishKey = me.[Key]
+            JOIN Domain.EarningsProfile AS ep 
+                ON me.EarningsProfileId = ep.EarningsProfileId
+            JOIN Domain.Episode e 
+                ON ep.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
-            /*===========================================================
-            2. Delete Maths & English Period In Learning
-            ===========================================================*/
-            DELETE mepil
-            FROM Domain.MathsAndEnglishPeriodInLearning AS mepil
-            JOIN Domain.MathsAndEnglish AS me ON mepil.MathsAndEnglishKey = me.[Key]
-            JOIN Domain.EarningsProfile AS ep ON me.EarningsProfileId = ep.EarningsProfileId
-            JOIN Domain.Episode e ON ep.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            3. Delete Maths & English
+            2. Delete Maths & English
             ===========================================================*/
             DELETE me
             FROM Domain.MathsAndEnglish AS me
-            JOIN Domain.EarningsProfile AS ep ON me.EarningsProfileId = ep.EarningsProfileId
-            JOIN Domain.Episode e ON ep.EpisodeKey = e.[Key]
+            JOIN Domain.EarningsProfile AS ep 
+                ON me.EarningsProfileId = ep.EarningsProfileId
+            JOIN Domain.Episode e 
+                ON ep.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
+
             /*===========================================================
-            4. Delete Additional Payments
+            3. Delete Additional Payments
             ===========================================================*/
             DELETE ap
             FROM Domain.AdditionalPayment AS ap
-            JOIN Domain.EarningsProfile ep ON ap.EarningsProfileId = ep.EarningsProfileId
-            JOIN Domain.Episode e ON ep.EpisodeKey = e.[Key]
+            JOIN Domain.EarningsProfile ep 
+                ON ap.EarningsProfileId = ep.EarningsProfileId
+            JOIN Domain.Episode e 
+                ON ep.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
+
             /*===========================================================
-            5. Delete Instalments
+            4. Delete Instalments
             ===========================================================*/
             DELETE i
             FROM Domain.Instalment AS i
-            JOIN Domain.EarningsProfile ep ON i.EarningsProfileId = ep.EarningsProfileId
-            JOIN Domain.Episode e ON ep.EpisodeKey = e.[Key]
+            JOIN Domain.EarningsProfile ep 
+                ON i.EarningsProfileId = ep.EarningsProfileId
+            JOIN Domain.Episode e 
+                ON ep.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
+
             /*===========================================================
-            6. Delete Episode Prices
+            5. Delete Episode Prices
             ===========================================================*/
             DELETE epc
             FROM Domain.EpisodePrice AS epc
-            JOIN Domain.Episode e ON epc.EpisodeKey = e.[Key]
+            JOIN Domain.Episode e 
+                ON epc.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
+
             /*===========================================================
-            7. Delete Earnings Profile History
+            6. Delete Earnings Profile History
             ===========================================================*/
             DELETE eph
             FROM History.EarningsProfileHistory AS eph
-            JOIN Domain.EarningsProfile ep ON eph.EarningsProfileId = ep.EarningsProfileId
-            JOIN Domain.Episode e ON ep.EpisodeKey = e.[Key]
+            JOIN Domain.EarningsProfile ep 
+                ON eph.EarningsProfileId = ep.EarningsProfileId
+            JOIN Domain.Episode e 
+                ON ep.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
+
             /*===========================================================
-            8. Delete Earnings Profiles
+            7. Delete Earnings Profiles
             ===========================================================*/
             DELETE ep
             FROM Domain.EarningsProfile ep
-            JOIN Domain.Episode e ON ep.EpisodeKey = e.[Key]
+            JOIN Domain.Episode e 
+                ON ep.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
+
             /*===========================================================
-            9. Delete Episode PeriodInLearning
+            8. Delete Episode PeriodInLearning
             ===========================================================*/
-            DELETE ep
-            FROM Domain.EpisodePeriodInLearning ep
-            JOIN Domain.Episode e ON ep.EpisodeKey = e.[Key]
+            DELETE epil
+            FROM Domain.EpisodePeriodInLearning epil
+            JOIN Domain.Episode e 
+                ON epil.EpisodeKey = e.[Key]
             WHERE e.Ukprn = @Ukprn;
 
+
             /*===========================================================
-            10. Delete Episodes
+            9. Delete Episodes
             ===========================================================*/
             DELETE e
             FROM Domain.Episode e
             WHERE e.Ukprn = @Ukprn;
 
+
             /*===========================================================
-            11. Delete Apprenticeships
-                Only those now orphaned by deleted Episodes
+            10. Delete Learning records
+                (Only those orphaned by deleted Episodes)
             ===========================================================*/
-            DELETE a
-            FROM Domain.Apprenticeship a
+            DELETE l
+            FROM Domain.Learning l
             WHERE NOT EXISTS (
                 SELECT 1
                 FROM Domain.Episode e
-                WHERE e.ApprenticeshipKey = a.[Key]
+                WHERE e.LearningKey = l.LearningKey
             );
         ";
 

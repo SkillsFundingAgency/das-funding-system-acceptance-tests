@@ -65,35 +65,30 @@ public class Fm36StepDefinitions
 
         var testData = _context.Get<TestData>();
 
-        var recordsToCreate = 15; //always create 15
-
-        var existingLearners = _apprenticeshipSqlClient.GetApprovedLearners(Constants.UkPrn, Convert.ToInt16(TableExtensions.CalculateAcademicYear("0")));
-
-        if (existingLearners.Count < recordsToCreate)
+        var recordsToCreate = 15; //always create 15 fresh records without re-using ulns (and therefore cache keys)
+        
+        for (int i = 0; i < recordsToCreate; i++)
         {
-            for (int i = 0; i < recordsToCreate; i++)
-            {
-                var startDate = TokenisableDateTime.FromString("currentAY-08-23");
-                var plannedEndDate = TokenisableDateTime.FromString("currentAYPlusTwo-08-23");
-                testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, 15000, "2");
+            var startDate = TokenisableDateTime.FromString("currentAY-08-23");
+            var plannedEndDate = TokenisableDateTime.FromString("currentAYPlusTwo-08-23");
+            testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, 15000, "2");
 
-                testData.CommitmentsApprenticeshipCreatedEvent.Uln = TestUlnProvider.GetNext(); // create a new learner in every iteration
+            testData.CommitmentsApprenticeshipCreatedEvent.Uln = TestUlnProvider.GetNext(); // create a new learner in every iteration
 
-                await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
+            await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
 
-                var learnerDataBuilder = testData.GetLearnerDataBuilder();
-                learnerDataBuilder
-                    .WithCostDetails(10000, 2000, startDate.Value)
-                    .WithStartDate(startDate.Value)
-                    .WithExpectedEndDate(plannedEndDate.Value)
-                    .WithStandardCode(Convert.ToInt32(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode));
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder
+                .WithCostDetails(10000, 2000, startDate.Value)
+                .WithStartDate(startDate.Value)
+                .WithExpectedEndDate(plannedEndDate.Value)
+                .WithStandardCode(Convert.ToInt32(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode));
 
-                var learnerData = learnerDataBuilder.Build();
+            var learnerData = learnerDataBuilder.Build();
 
-                await _learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerData);
+            await _learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerData);
 
-                testData.ResetLearnerDataBuilder();
-            }
+            testData.ResetLearnerDataBuilder();
         }
     }
 
