@@ -65,13 +65,17 @@ public class Fm36StepDefinitions
 
         var testData = _context.Get<TestData>();
 
-        var recordsToCreate = 15; //always create 15
-
+        var recordsToCreate = 15; //always create 15 fresh records without re-using ulns (and therefore cache keys)
+        
         for (int i = 0; i < recordsToCreate; i++)
         {
             var startDate = TokenisableDateTime.FromString("currentAY-08-23");
             var plannedEndDate = TokenisableDateTime.FromString("currentAYPlusTwo-08-23");
             testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, 15000, "2");
+
+            testData.CommitmentsApprenticeshipCreatedEvent.Uln = TestUlnProvider.GetNext(); // create a new learner in every iteration
+            testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId = TestUlnProvider.GetNextApprovalsApprenticeshipId();
+
             await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();

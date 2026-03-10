@@ -55,9 +55,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             Assert.Multiple(() =>
             {
-                Assert.AreEqual(firstName, apprenticeship.FirstName, "Unexpected First Name found!");
-                Assert.AreEqual(lastName, apprenticeship.LastName, "Unexpected Last Name found");
-                Assert.AreEqual(email, apprenticeship.EmailAddress, "Unexpected Email address found");
+                Assert.AreEqual(firstName, apprenticeship.Learner.FirstName, "Unexpected First Name found!");
+                Assert.AreEqual(lastName, apprenticeship.Learner.LastName, "Unexpected Last Name found");
+                Assert.AreEqual(email, apprenticeship.Learner.EmailAddress, "Unexpected Email address found");
             });
         }
 
@@ -69,7 +69,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
 
-            Assert.AreEqual(dob, apprenticeship.DateOfBirth, "Unexpected dob found in learning db");
+            Assert.AreEqual(dob, apprenticeship.Learner.DateOfBirth, "Unexpected dob found in learning db");
         }
 
 

@@ -6,7 +6,9 @@ public static class TestUlnProvider
 {
     private static bool _isInitialised = false;
     private static ConcurrentQueue<string> _values = new ConcurrentQueue<string>();
+    private static ConcurrentQueue<long> _approvalsApprenticehipIdValues = new ConcurrentQueue<long>();
     private static readonly object _lock = new();
+    private static readonly Random _random = new();
 
     public static List<string> Initialise(int numberOfUlns)
     {
@@ -22,6 +24,7 @@ public static class TestUlnProvider
                 var uln = GenerateRandomUln();
                 _values.Enqueue(uln);
                 ulns.Add(uln);
+                _approvalsApprenticehipIdValues.Enqueue(_random.NextInt64());
             }
 
             _isInitialised = true;
@@ -40,6 +43,18 @@ public static class TestUlnProvider
         }
 
         throw new Exception("No more ULNs available. Please generate more.");
+    }
+
+    internal static long GetNextApprovalsApprenticeshipId()
+    {
+        long value;
+
+        if (_approvalsApprenticehipIdValues.TryDequeue(out value))
+        {
+            return value;
+        }
+
+        throw new Exception("No more approvals apprenticeship ids available. Please generate more.");
     }
 
     private static String GenerateRandomUln()
