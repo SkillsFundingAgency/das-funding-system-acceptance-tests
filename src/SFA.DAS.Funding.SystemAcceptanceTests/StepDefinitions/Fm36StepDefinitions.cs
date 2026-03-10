@@ -74,6 +74,7 @@ public class Fm36StepDefinitions
             testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, 15000, "2");
 
             testData.CommitmentsApprenticeshipCreatedEvent.Uln = TestUlnProvider.GetNext(); // create a new learner in every iteration
+            testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId = TestUlnProvider.GetNextApprovalsApprenticeshipId();
 
             await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
 
