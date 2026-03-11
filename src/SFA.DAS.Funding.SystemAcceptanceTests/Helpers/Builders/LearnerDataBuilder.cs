@@ -1,4 +1,5 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders

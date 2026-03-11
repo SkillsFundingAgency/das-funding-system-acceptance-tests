@@ -1,20 +1,24 @@
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using NUnit.Framework;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
 [Binding]
-public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient learnerDataOuterApiHelper)
+public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient learnerDataOuterApiHelper, EarningsSqlClient earningsSqlClient)
 {
-    [When(@"SLD informs us of a short course for the learner starting in (.*)")]
+    [When(@"SLD informs us of a short course for the learner starting on (.*)")]
     public async Task WhenTheProviderAddsAShortCourseForTheLearnerInTheCurrentAcademicYear(TokenisableDateTime startDate)
     {
         var testData = context.Get<TestData>();
         
-        var endDate = startDate.AddMonths(3);
+        var endDate = startDate.Value.AddMonths(3);
 
         var shortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
-            .WithStartDate(startDate)
+            .WithStartDate(startDate.Value)
             .WithEndDate(endDate)
             .Build();
 
@@ -24,10 +28,47 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
     }
 
     [Then(@"the basic short course earnings are generated")]
-    public void ThenTheShortCourseIsSuccessfullyProcessed()
+    public async Task ThenTheShortCourseIsSuccessfullyProcessed()
     {
         var testData = context.Get<TestData>();
         Assert.IsNotNull(testData.ShortCourseLearnerData);
-        //todo
+
+        var expectedCourse = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single();
+        var expectedStartDate = expectedCourse.StartDate;
+        var expectedEndDate = expectedCourse.ExpectedEndDate;
+
+        EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsApprenticeshipModel = earningsSqlClient.GetEarningsEntityModel(context);
+            return earningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.Count == 2;
+        }, "Failed to find short course earnings entity.");
+
+        var instalments = earningsApprenticeshipModel!.Episodes.Single().EarningsProfile.Instalments;
+
+        var duration = (expectedEndDate - expectedStartDate).Days + 1;
+        var daysToFirstPayment = (int)Math.Floor(duration * 0.3);
+        var firstPaymentDate = expectedStartDate.AddDays(daysToFirstPayment);
+        var secondPaymentDate = expectedEndDate;
+
+        var expectedFirstPeriod = TableExtensions.Period[firstPaymentDate.ToString("MMMM")];
+        var expectedFirstAcademicYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", firstPaymentDate));
+
+        var expectedSecondPeriod = TableExtensions.Period[secondPaymentDate.ToString("MMMM")];
+        var expectedSecondAcademicYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", secondPaymentDate));
+
+        var firstInstalment = instalments.SingleOrDefault(x => x.DeliveryPeriod == expectedFirstPeriod && x.AcademicYear == expectedFirstAcademicYear);
+        Assert.IsNotNull(firstInstalment, $"Could not find first instalment in period {expectedFirstPeriod} of AY {expectedFirstAcademicYear}");
+
+        var secondInstalment = instalments.SingleOrDefault(x => x.DeliveryPeriod == expectedSecondPeriod && x.AcademicYear == expectedSecondAcademicYear);
+        Assert.IsNotNull(secondInstalment, $"Could not find second instalment in period {expectedSecondPeriod} of AY {expectedSecondAcademicYear}");
+
+        var totalPrice = earningsApprenticeshipModel.Episodes.Single().Prices.First().AgreedPrice; //todo this should come from test data
+
+        var expectedFirstAmount = Math.Round(totalPrice * 0.3m, 5);
+        var expectedSecondAmount = Math.Round(totalPrice * 0.7m, 5);
+
+        Assert.AreEqual((double)expectedFirstAmount, (double)firstInstalment.Amount, 0.01, "First instalment amount does not match exactly 30% of total price.");
+        Assert.AreEqual((double)expectedSecondAmount, (double)secondInstalment.Amount, 0.01, "Second instalment amount does not match exactly 70% of total price.");
     }
 }
