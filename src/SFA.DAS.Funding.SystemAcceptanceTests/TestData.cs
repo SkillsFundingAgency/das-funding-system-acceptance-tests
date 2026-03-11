@@ -45,6 +45,7 @@ public class TestData
     internal List<FinalisedOnProgammeLearningPaymentEvent> FinalisedPaymentsList { get; set; }
     internal List<CalculateOnProgrammePayment> CalculatedOnProgrammePaymentList { get; set; }
     internal LearnerDataOuterApiClient.LearnerDataRequest? LearnerData { get; set; }
+    internal LearnerDataOuterApiClient.ShortCourseRequest? ShortCourseLearnerData { get; set; }
     internal LearnerDataOuterApiClient.GetLearnerResponse? LearnersOnService { get; set; }
     internal LearnerDataBuilder? LearnerDataBuilder { get; set; }
     internal EndDateChangedEvent EndDateChangedEvent { get; set; }

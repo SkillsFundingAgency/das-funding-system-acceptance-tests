@@ -43,6 +43,29 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             response.EnsureSuccessStatusCode();
         }
 
+        public async Task AddShortCourseLearnerData(long ukprn, ShortCourseRequest requestBody)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, $"/learnerdata/providers/{ukprn}/shortCourses");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+
+            var jsonContent = new StringContent(
+                System.Text.Json.JsonSerializer.Serialize(requestBody),
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+            request.Content = jsonContent;
+            var response = await _apiClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+            }
+
+            response.EnsureSuccessStatusCode();
+        }
+
         public async Task<GetLearnerResponse> GetLearners(long ukprn, int academicYear)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/Learners/providers/{ukprn}/academicyears/{academicYear}/learners");
@@ -132,6 +155,49 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public string ConsumerReference { get; set; } 
             public StubLearner Learner { get; set; }
             public StubDelivery Delivery { get; set; }
+        }
+
+        public class ShortCourseRequest
+        {
+            public ShortCourseLearnerRequestDetails Learner { get; set; } = new();
+            public ShortCourseDelivery Delivery { get; set; } = new();
+        }
+
+        public class ShortCourseLearnerRequestDetails : LearnerRequestDetails
+        {
+            public long Uln { get; set; }
+        }
+
+        public class ShortCourseDelivery
+        {
+            public List<ShortCourseOnProgramme> OnProgramme { get; set; } = [];
+        }
+
+        public class ShortCourseOnProgramme
+        {
+            public string CourseCode { get; set; }
+            public string? AgreementId { get; set; }
+            public DateTime StartDate { get; set; }
+            public DateTime ExpectedEndDate { get; set; }
+            public DateTime? CompletionDate { get; set; }
+            public DateTime? WithdrawalDate { get; set; }
+            public List<LearningSupportRequestDetails> LearningSupport { get; set; } = [];
+            public DateTime? PauseDate { get; set; }
+            public int? AimSequenceNumber { get; set; }
+            public DateTime? ActualEndDate { get; set; }
+            public Milestone[] Milestones { get; set; } = [];
+        }
+
+        public enum Milestone
+        {
+            ThirtyPercentLearningComplete = 1,
+            LearningComplete = 2
+        }
+
+        public class LearningSupportRequestDetails
+        {
+            public DateTime StartDate { get; set; }
+            public DateTime EndDate { get; set; }
         }
 
         public class UpdateLearnerRequest
