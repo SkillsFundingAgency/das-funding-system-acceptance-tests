@@ -39,7 +39,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"earnings of (.*) are generated from periods (.*) to (.*)")]
         public async Task ThenEarningsOfAreGeneratedBetweenPeriods(decimal amount, TokenisablePeriod periodFrom, TokenisablePeriod periodTo)
         {
-            var earnings = earningsSqlClient.GetEarningsEntityModel(context);
+            var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
 
             var episode = earnings.Episodes.SingleOrDefault();
 
@@ -68,7 +68,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"an earning of (.*) of type (.*) is generated for period (.*)")]
         public async Task ThenABalancingEarningOfIsGeneratedForPeriod(decimal amount, string earningType, TokenisablePeriod period)
         {
-            var earnings = earningsSqlClient.GetEarningsEntityModel(context);
+            var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
             var episode = earnings.Episodes.SingleOrDefault();
 
             var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(x => x.Type.Trim() == earningType);
@@ -84,7 +84,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then("Balancing earning is removed")]
         public async Task BalancingEarningIsRemoved()
         {
-            var earnings = earningsSqlClient.GetEarningsEntityModel(context);
+            var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
             var episode = earnings.Episodes.SingleOrDefault();
 
             var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(x => x.Type.Trim() == "Balancing");
@@ -95,7 +95,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then("Completion earning is removed")]
         public void CompletionEarningIsRemoved()
         {
-            var earnings = earningsSqlClient.GetEarningsEntityModel(context);
+            var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
             var episode = earnings.Episodes.SingleOrDefault();
 
             var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(x => x.Type.Trim() == "Completion");

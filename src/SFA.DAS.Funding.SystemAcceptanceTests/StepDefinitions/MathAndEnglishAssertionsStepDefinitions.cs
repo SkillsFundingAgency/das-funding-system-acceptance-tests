@@ -243,7 +243,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await WaitHelper.WaitForIt(() =>
             {
-                earningsApprenticeshipModel = earningsEntitySqlClient.GetEarningsEntityModel(context);
+                earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
                 return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault()
                     .EarningsProfileHistory.Any();
             }, "Failed to find updated earnings entity.");
@@ -270,7 +270,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await WaitHelper.WaitForIt(() =>
             {
-                earningsApprenticeshipModel = earningsEntitySqlClient.GetEarningsEntityModel(context);
+                earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
                 return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault()
                     .EarningsProfileHistory.Any();
             }, "Failed to find updated earnings entity.");
@@ -365,7 +365,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await WaitHelper.WaitForIt(() =>
             {
-                earningsApprenticeshipModel = earningsEntitySqlClient.GetEarningsEntityModel(context);
+                earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
                 return !testData.IsMathsAndEnglishAdded
                        || earningsApprenticeshipModel.Episodes.SingleOrDefault()
                            .EarningsProfileHistory.Any();

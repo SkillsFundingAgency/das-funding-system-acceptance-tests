@@ -21,7 +21,7 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     {
         var testData = _context.Get<TestData>();
         var commitmentsApprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
-        var earnings = _earningsSqlClient.GetEarningsEntityModel(_context);
+        var earnings = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
         if (condition == "below") Assert.Less(commitmentsApprenticeshipCreatedEvent.PriceEpisodes.MaxBy(x => x.FromDate)!.Cost, 
             earnings?.Episodes.FirstOrDefault()?.FundingBandMaximum);
@@ -60,7 +60,7 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]
     public void VerifyCompletionAmountIsCalculatedCorrectly(decimal completionAmount)
     {
-        var apprenticeshipEntity = _earningsSqlClient.GetEarningsEntityModel(_context);
+        var apprenticeshipEntity = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
         Assert.AreEqual(completionAmount, apprenticeshipEntity!.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)!.StartDate)!.EarningsProfile.CompletionPayment);
     }

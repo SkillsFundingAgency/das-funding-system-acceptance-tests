@@ -31,20 +31,19 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
     public async Task ThenTheShortCourseIsSuccessfullyProcessed()
     {
         var testData = context.Get<TestData>();
-        Assert.IsNotNull(testData.ShortCourseLearnerData);
 
         var expectedCourse = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single();
         var expectedStartDate = expectedCourse.StartDate;
         var expectedEndDate = expectedCourse.ExpectedEndDate;
 
-        EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+        ShortCourseEarningsModel? earningsModel = null;
         await WaitHelper.WaitForIt(() =>
         {
-            earningsApprenticeshipModel = earningsSqlClient.GetEarningsEntityModel(context);
-            return earningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.Count == 2;
+            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+            return earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.Count == 2;
         }, "Failed to find short course earnings entity.");
 
-        var instalments = earningsApprenticeshipModel!.Episodes.Single().EarningsProfile.Instalments;
+        var instalments = earningsModel!.Episodes.Single().EarningsProfile.Instalments;
 
         var duration = (expectedEndDate - expectedStartDate).Days + 1;
         var daysToFirstPayment = (int)Math.Floor(duration * 0.3);
@@ -63,7 +62,7 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         var secondInstalment = instalments.SingleOrDefault(x => x.DeliveryPeriod == expectedSecondPeriod && x.AcademicYear == expectedSecondAcademicYear);
         Assert.IsNotNull(secondInstalment, $"Could not find second instalment in period {expectedSecondPeriod} of AY {expectedSecondAcademicYear}");
 
-        var totalPrice = earningsApprenticeshipModel.Episodes.Single().Prices.First().AgreedPrice; //todo this should come from test data
+        var totalPrice = earningsModel.Episodes.Single().CoursePrice;
 
         var expectedFirstAmount = Math.Round(totalPrice * 0.3m, 5);
         var expectedSecondAmount = Math.Round(totalPrice * 0.7m, 5);

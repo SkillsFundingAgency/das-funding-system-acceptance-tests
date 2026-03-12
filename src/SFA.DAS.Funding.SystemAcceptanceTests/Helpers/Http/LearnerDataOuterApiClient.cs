@@ -1,4 +1,4 @@
-﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
+using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
 using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using System.Net;
@@ -165,7 +165,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class ShortCourseLearnerRequestDetails : LearnerRequestDetails
         {
-            public long Uln { get; set; }
         }
 
         public class ShortCourseDelivery
@@ -208,7 +207,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class LearnerRequestDetails
         {
-            public string ULN { get; set; }
+            public long Uln { get; set; }
             public string FirstName { get; set; } 
             public string LastName { get; set; } 
             public string? Email { get; set; }

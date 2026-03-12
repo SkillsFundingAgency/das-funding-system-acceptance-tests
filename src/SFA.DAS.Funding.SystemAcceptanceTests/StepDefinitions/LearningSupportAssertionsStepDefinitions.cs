@@ -38,7 +38,7 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
 
         await WaitHelper.WaitForIt(() =>
         {
-            earningsApprenticeshipModel = earningsEntitySqlClient.GetEarningsEntityModel(context);
+            earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
             return !testData.IsLearningSupportAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
@@ -78,7 +78,7 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
 
         await WaitHelper.WaitForIt(() =>
         {
-            earningsApprenticeshipModel = earningsEntitySqlClient.GetEarningsEntityModel(context);
+            earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
             return earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 

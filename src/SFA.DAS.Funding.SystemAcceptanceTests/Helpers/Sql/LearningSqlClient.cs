@@ -1,4 +1,4 @@
-﻿using FluentAssertions.Equivalency;
+using FluentAssertions.Equivalency;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -170,13 +170,43 @@ public class LearningSqlClient
             JOIN dbo.ApprenticeshipEpisode e ON e.LearningKey = l.[Key]
             WHERE e.Ukprn = @Ukprn;
 
+            INSERT INTO #LearningKeys (LearningKey, LearnerKey)
+            SELECT DISTINCT l.[Key], l.LearnerKey
+            FROM dbo.ShortCourseLearning l
+            JOIN dbo.ShortCourseEpisode e ON e.LearningKey = l.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            10. Delete Short Course Milestones
+            ===========================================================*/
+            DELETE scm
+            FROM dbo.ShortCourseMilestone scm
+            JOIN dbo.ShortCourseEpisode e ON scm.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            11. Delete Short Course Learning Support
+            ===========================================================*/
+            DELETE scls
+            FROM dbo.ShortCourseLearningSupport scls
+            JOIN dbo.ShortCourseEpisode e ON scls.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
             DELETE e
             FROM dbo.ApprenticeshipEpisode e
             WHERE e.Ukprn = @Ukprn;
 
+            DELETE sce
+            FROM dbo.ShortCourseEpisode sce
+            WHERE sce.Ukprn = @Ukprn;
+
             DELETE l
             FROM dbo.ApprenticeshipLearning l
             JOIN #LearningKeys lk ON lk.LearningKey = l.[Key];
+
+            DELETE scl
+            FROM dbo.ShortCourseLearning scl
+            JOIN #LearningKeys lk ON lk.LearningKey = scl.[Key];
 
             DELETE lr
             FROM dbo.Learner lr

@@ -45,7 +45,7 @@ public class ApproveApprenticeshipStepDefinition
 
         await WaitHelper.WaitForIt(() =>
         {
-            earningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
+            earningsApprenticeshipModel = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
             if (earningsApprenticeshipModel != null)
             {
                 return true;

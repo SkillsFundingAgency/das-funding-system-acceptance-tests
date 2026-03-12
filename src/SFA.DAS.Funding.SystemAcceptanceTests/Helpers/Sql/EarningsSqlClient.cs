@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
@@ -12,7 +12,7 @@ public class EarningsSqlClient
         _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
     }
 
-    public EarningsApprenticeshipModel? GetEarningsEntityModel(ScenarioContext context)
+    public EarningsApprenticeshipModel? GetApprenticeshipEarningsEntityModel(ScenarioContext context)
     {
         var testData = context.Get<TestData>();
         var apprenticeshipKey = testData.LearningKey;
@@ -68,6 +68,25 @@ public class EarningsSqlClient
         apprenticeship.Episodes = apprenticeshipEpisodes;
 
         return apprenticeship;
+    }
+
+    public ShortCourseEarningsModel? GetShortCourseEarningsEntityModel(string uln)
+    {
+        var shortCourse = _sqlServerClient.GetList<ShortCourseEarningsModel>($"SELECT * FROM [Domain].[ShortCourseLearning] Where [Uln] ='{uln}'").SingleOrDefault();
+        if (shortCourse == null)
+            return null;
+
+        var episodes = _sqlServerClient.GetList<ShortCourseEpisodeModel>($"SELECT * FROM [Domain].[ShortCourseEpisode] Where LearningKey ='{shortCourse.LearningKey}'");
+
+        foreach (var episode in episodes)
+        {
+            episode.EarningsProfile = _sqlServerClient.GetList<ShortCourseEarningsProfileModel>($"SELECT * FROM [Domain].[ShortCourseEarningsProfile] Where EpisodeKey ='{episode.Key}'").Single();
+            episode.EarningsProfile.Instalments = _sqlServerClient.GetList<ShortCourseInstalmentModel>($"SELECT * FROM [Domain].[ShortCourseInstalment] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
+        }
+
+        shortCourse.Episodes = episodes;
+
+        return shortCourse;
     }
 
     public void DeleteEarnings(Guid apprenticeshipKey)
@@ -247,6 +266,61 @@ public class EarningsSqlClient
                 SELECT 1
                 FROM Domain.ApprenticeshipEpisode e
                 WHERE e.LearningKey = l.LearningKey
+            );
+
+
+            /*===========================================================
+            11. Delete Short Course Instalments
+            ===========================================================*/
+            DELETE sci
+            FROM Domain.ShortCourseInstalment AS sci
+            JOIN Domain.ShortCourseEarningsProfile AS sep 
+                ON sci.EarningsProfileId = sep.EarningsProfileId
+            JOIN Domain.ShortCourseEpisode e 
+                ON sep.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+
+            /*===========================================================
+            12. Delete Short Course Earnings Profile History
+            ===========================================================*/
+            DELETE seph
+            FROM History.ShortCourseEarningsProfileHistory AS seph
+            JOIN Domain.ShortCourseEarningsProfile sep 
+                ON seph.EarningsProfileId = sep.EarningsProfileId
+            JOIN Domain.ShortCourseEpisode e 
+                ON sep.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+
+            /*===========================================================
+            13. Delete Short Course Earnings Profiles
+            ===========================================================*/
+            DELETE sep
+            FROM Domain.ShortCourseEarningsProfile sep
+            JOIN Domain.ShortCourseEpisode e 
+                ON sep.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+
+            /*===========================================================
+            14. Delete Short Course Episodes
+            ===========================================================*/
+            DELETE e
+            FROM Domain.ShortCourseEpisode e
+            WHERE e.Ukprn = @Ukprn;
+
+
+            /*===========================================================
+            15. Delete Short Course Learning records
+                (Only those orphaned by deleted Episodes)
+            ===========================================================*/
+            DELETE scl
+            FROM Domain.ShortCourseLearning scl
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM Domain.ShortCourseEpisode e
+                WHERE e.LearningKey = scl.LearningKey
             );
         ";
 

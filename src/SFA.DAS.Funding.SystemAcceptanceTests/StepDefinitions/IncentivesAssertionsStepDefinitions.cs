@@ -69,7 +69,7 @@ public class IncentivesAssertionsStepDefinitions
 
         await WaitHelper.WaitForIt(() =>
         {
-            earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+            earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
             return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
@@ -120,7 +120,7 @@ public class IncentivesAssertionsStepDefinitions
 
         await WaitHelper.WaitForIt(() =>
         {
-            earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+            earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
             return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId == testData.EarningsProfileId;
         }, "Failed to find earnings entity.");
 
@@ -143,7 +143,7 @@ public class IncentivesAssertionsStepDefinitions
 
         await WaitHelper.WaitForIt(() =>
         {
-            earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+            earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
             return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
@@ -193,7 +193,7 @@ public class IncentivesAssertionsStepDefinitions
 
         await WaitHelper.WaitForIt(() =>
         {
-            earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+            earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
             return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
