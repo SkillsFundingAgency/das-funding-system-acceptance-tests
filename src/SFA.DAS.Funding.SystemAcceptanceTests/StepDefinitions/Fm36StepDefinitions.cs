@@ -73,8 +73,8 @@ public class Fm36StepDefinitions
             var plannedEndDate = TokenisableDateTime.FromString("currentAYPlusTwo-08-23");
             testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, 15000, "2");
 
-            testData.CommitmentsApprenticeshipCreatedEvent.Uln = TestUlnProvider.GetNext(); // create a new learner in every iteration
-            testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId = TestUlnProvider.GetNextApprovalsApprenticeshipId();
+            testData.CommitmentsApprenticeshipCreatedEvent.Uln = TestIdentifierProvider.GetNextUln(); // create a new learner in every iteration
+            testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId = TestIdentifierProvider.GetNextApprovalsApprenticeshipId();
 
             await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
 

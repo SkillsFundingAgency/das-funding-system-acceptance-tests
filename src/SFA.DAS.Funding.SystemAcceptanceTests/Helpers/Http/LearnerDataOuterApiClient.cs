@@ -86,6 +86,26 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             return JsonConvert.DeserializeObject<GetLearnerResponse>(await response.Content.ReadAsStringAsync())!;
         }
 
+        public async Task<GetLearnerResponse> GetShortCourseLearners(long ukprn, int academicYear)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/providers/{ukprn}/academicyears/{academicYear}/shortCourses");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+
+            var response = await _apiClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return JsonConvert.DeserializeObject<GetLearnerResponse>(await response.Content.ReadAsStringAsync())!;
+        }
+
         public async Task UpdateLearning(long ukprn, Guid learningKey, UpdateLearnerRequest learningData)
         {
             var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/providers/{ukprn}/learning/{learningKey}");

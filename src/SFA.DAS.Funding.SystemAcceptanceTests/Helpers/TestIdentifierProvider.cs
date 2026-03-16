@@ -1,30 +1,40 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
+using Microsoft.AspNetCore.Http;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 
-public static class TestUlnProvider
+public static class TestIdentifierProvider
 {
     private static bool _isInitialised = false;
-    private static ConcurrentQueue<string> _values = new ConcurrentQueue<string>();
+    private static ConcurrentQueue<string> _ulnValues = new ConcurrentQueue<string>();
     private static ConcurrentQueue<long> _approvalsApprenticehipIdValues = new ConcurrentQueue<long>();
+    private static HashSet<string> _dbUlns = new HashSet<string>();
+    private static HashSet<long> _dbApprenticeshipIds = new HashSet<long>();
     private static readonly object _lock = new();
     private static readonly Random _random = new();
 
-    public static List<string> Initialise(int numberOfUlns)
+    public static List<string> Initialise(int numberOfUlns, string learningDbConnectionString)
     {
+        numberOfUlns *= 2;
         lock (_lock)
         {
             if (_isInitialised)
                 throw new Exception("TestUlnProvider has already been initialised.");
 
+            var sqlServerClient = Sql.SqlServerClientProvider.GetSqlServerClient(learningDbConnectionString);
+
+            var dbUlnsList = sqlServerClient.GetList<string>("SELECT Uln FROM [dbo].[Learner]");
+            var dbApprenticeshipsList = sqlServerClient.GetList<long>("SELECT ApprovalsApprenticeshipId FROM [dbo].[ApprenticeshipLearning]");
+
+            _dbUlns = new HashSet<string>(dbUlnsList);
+            _dbApprenticeshipIds = new HashSet<long>(dbApprenticeshipsList);
+
             var ulns = new List<string>();
 
             for (int i = 0; i < numberOfUlns; i++)
             {
-                var uln = GenerateRandomUln();
-                _values.Enqueue(uln);
-                ulns.Add(uln);
-                _approvalsApprenticehipIdValues.Enqueue(_random.NextInt64());
+                ulns.Add(AddUniqueUln());
+                AddUniqueApprovalsApprenticeshipId();
             }
 
             _isInitialised = true;
@@ -33,11 +43,11 @@ public static class TestUlnProvider
         }
     }
 
-    internal static string GetNext()
+    internal static string GetNextUln()
     {
         string? uln;
 
-        if (_values.TryDequeue(out uln))
+        if (_ulnValues.TryDequeue(out uln))
         {
             return uln;
         }
@@ -55,6 +65,31 @@ public static class TestUlnProvider
         }
 
         throw new Exception("No more approvals apprenticeship ids available. Please generate more.");
+    }
+
+    private static string AddUniqueUln()
+    {
+        var uln = GenerateRandomUln();
+        if (_ulnValues.Any(x => x == uln) || _dbUlns.Contains(uln))
+        {
+            return AddUniqueUln();
+        }
+        else
+        {
+            _ulnValues.Enqueue(uln);
+            return uln;
+        }
+    }
+
+    private static void AddUniqueApprovalsApprenticeshipId()
+    {
+        var approvalsApprenticeshipId = _random.Next(1000000, int.MaxValue);
+        if(_approvalsApprenticehipIdValues.Any(x => x == approvalsApprenticeshipId) || _dbApprenticeshipIds.Contains(approvalsApprenticeshipId))
+            AddUniqueApprovalsApprenticeshipId();
+        else
+        {
+            _approvalsApprenticehipIdValues.Enqueue(approvalsApprenticeshipId);
+        }
     }
 
     private static String GenerateRandomUln()

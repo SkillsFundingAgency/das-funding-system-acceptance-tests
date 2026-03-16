@@ -14,7 +14,7 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
     [Given(@"SLD informs us of a new learner with a short course starting on (.*)")]
     public async Task GivenANewLearnerWithAShortCourse(TokenisableDateTime startDate)
     {
-        context.Set(new TestData(TestUlnProvider.GetNext()));
+        context.Set(new TestData(TestIdentifierProvider.GetNextUln()));
         await WhenTheProviderAddsAShortCourseForTheLearnerInTheCurrentAcademicYear(startDate);
     }
 
@@ -78,6 +78,7 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         testData.ShortCourseLearnerData = shortCourseRequest;
     }
 
+    [Given(@"the short course is approved")]
     [When(@"the short course is approved")]
     public async Task WhenTheShortCourseIsApproved()
     {
@@ -86,7 +87,7 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
 
         var apprenticeshipCreatedEvent = new SFA.DAS.CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent
         {
-            ApprenticeshipId = 123456,
+            ApprenticeshipId = TestIdentifierProvider.GetNextApprovalsApprenticeshipId(),
             TrainingCode = shortCourseOnProgramme.CourseCode,
             ActualStartDate = shortCourseOnProgramme.StartDate,
             StartDate = shortCourseOnProgramme.StartDate,
@@ -130,6 +131,7 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
     }
 
+    [Given(@"the basic short course earnings are generated")]
     [Then(@"the basic short course earnings are generated")]
     public async Task ThenTheShortCourseIsSuccessfullyProcessed()
     {
@@ -245,5 +247,30 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         var expectedSecondAmount = Math.Round(totalPrice * 0.7m, 5);
 
         Assert.AreEqual((double)expectedSecondAmount, (double)secondInstalment.Amount, 0.01, "Second instalment amount (70% of total price) not found in expected delivery period.");
+    }
+
+    [When(@"SLD requests short course learners for academic year (.*)")]
+    public async Task WhenSldRequestsShortCourseLearnersForAcademicYear(TokenisableAcademicYear academicYear)
+    {
+        var testData = context.Get<TestData>();
+        testData.ShortCourseLearnersResponse = await learnerDataOuterApiHelper.GetShortCourseLearners(Constants.UkPrn, academicYear.Value);
+    }
+
+    [Then(@"the short course learner is returned in the response without duplicates")]
+    public void ThenTheShortCourseLearnerIsReturnedInTheResponse()
+    {
+        var testData = context.Get<TestData>();
+        
+        var learnerCount = testData.ShortCourseLearnersResponse.Learners.Count(x => x.Uln == testData.Uln.ToString());
+        Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the response for this academic year, but found a different count.");
+    }
+
+    [Then(@"the short course learner is not returned in the response")]
+    public void ThenTheShortCourseLearnerIsNotReturnedInTheResponse()
+    {
+        var testData = context.Get<TestData>();
+        
+        var learner = testData.ShortCourseLearnersResponse.Learners.SingleOrDefault(x => x.Uln == testData.Uln.ToString());
+        Assert.IsNull(learner, "Short course learner was unexpectedly found in the response for this academic year.");
     }
 }

@@ -1,4 +1,4 @@
-﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
+using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
 using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
@@ -47,6 +47,7 @@ public class TestData
     internal LearnerDataOuterApiClient.LearnerDataRequest? LearnerData { get; set; }
     internal LearnerDataOuterApiClient.ShortCourseRequest? ShortCourseLearnerData { get; set; }
     internal LearnerDataOuterApiClient.GetLearnerResponse? LearnersOnService { get; set; }
+    internal LearnerDataOuterApiClient.GetLearnerResponse? ShortCourseLearnersResponse { get; set; }
     internal LearnerDataBuilder? LearnerDataBuilder { get; set; }
     internal EndDateChangedEvent EndDateChangedEvent { get; set; }
     internal LearningWithdrawnEvent LearningWithdrawnEvent { get; set; }
