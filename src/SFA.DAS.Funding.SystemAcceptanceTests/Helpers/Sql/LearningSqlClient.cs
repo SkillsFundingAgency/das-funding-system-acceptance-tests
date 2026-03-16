@@ -61,6 +61,27 @@ public class LearningSqlClient
         return learning;
     }
 
+    public ShortCourseLearning? GetShortCourseLearning(string uln)
+    {
+        var learner = _sqlServerClient.GetList<Learner>("SELECT * from [dbo].[Learner] WHERE Uln = @uln", new { uln }).FirstOrDefault();
+        if (learner == null) return null;
+
+        var learning = _sqlServerClient.GetList<ShortCourseLearning>("SELECT * FROM [dbo].[ShortCourseLearning] WHERE LearnerKey = @learnerKey", new { learnerKey = learner.Key }).FirstOrDefault();
+        if (learning == null) return null;
+
+        learning.Learner = learner;
+
+        learning.Episodes = _sqlServerClient.GetList<ShortCourseEpisode>($"SELECT * FROM [dbo].[ShortCourseEpisode] WHERE LearningKey = '{learning.Key}'");
+
+        foreach (var episode in learning.Episodes)
+        {
+            episode.LearningSupport = _sqlServerClient.GetList<ShortCourseLearningSupport>($"SELECT * FROM [dbo].[ShortCourseLearningSupport] WHERE EpisodeKey = '{episode.Key}'");
+            episode.Milestones = _sqlServerClient.GetList<ShortCourseMilestone>($"SELECT * FROM [dbo].[ShortCourseMilestone] WHERE EpisodeKey = '{episode.Key}'");
+        }
+
+        return learning;
+    }
+
     public List<Http.LearnerDataOuterApiClient.Learning> GetApprovedLearners(long ukprn, int academicYear)
     {
         var dates = AcademicYearParser.ParseFrom(academicYear);
@@ -234,6 +255,7 @@ public class Learning
 
 public class Learner
 {
+    public Guid Key { get; set; }
     public string Uln { get; set; } = null!;
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
@@ -301,4 +323,44 @@ public class EpisodeBreakInLearning
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public DateTime PriorPeriodExpectedEndDate { get; set; }
+}
+
+public class ShortCourseLearning
+{
+    public Guid Key { get; set; }
+    public Guid LearnerKey { get; set; }
+    public DateTime? CompletionDate { get; set; }
+    public Learner Learner { get; set; }
+    public List<ShortCourseEpisode> Episodes { get; set; }
+}
+
+public class ShortCourseEpisode
+{
+    public Guid Key { get; set; }
+    public Guid LearningKey { get; set; }
+    public long Ukprn { get; set; }
+    public long EmployerAccountId { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime ExpectedEndDate { get; set; }
+    public DateTime? WithdrawalDate { get; set; }
+    public string TrainingCode { get; set; } = null!;
+    public bool IsApproved { get; set; }
+    public List<ShortCourseLearningSupport> LearningSupport { get; set; }
+    public List<ShortCourseMilestone> Milestones { get; set; }
+}
+
+public class ShortCourseLearningSupport
+{
+    public Guid Key { get; set; }
+    public Guid LearningKey { get; set; }
+    public Guid EpisodeKey { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+}
+
+public class ShortCourseMilestone
+{
+    public Guid Key { get; set; }
+    public Guid EpisodeKey { get; set; }
+    public string Milestone { get; set; } = null!;
 }

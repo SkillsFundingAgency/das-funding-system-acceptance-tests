@@ -46,6 +46,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
+        public ShortCourseLearnerDataBuilder WithLearnerDetails(string firstName, string lastName, string email)
+        {
+            _request.Learner.FirstName = firstName;
+            _request.Learner.LastName = lastName;
+            _request.Learner.Email = email;
+            return this;
+        }
+
+        public ShortCourseLearnerDataBuilder WithDateOfBirth(DateTime dob)
+        {
+            _request.Learner.Dob = dob;
+            return this;
+        }
+
         public ShortCourseRequest Build()
         {
             return _request;
