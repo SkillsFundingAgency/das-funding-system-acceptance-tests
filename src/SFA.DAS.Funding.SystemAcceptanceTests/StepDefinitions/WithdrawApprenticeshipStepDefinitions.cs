@@ -47,7 +47,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
-            var earnings  = _earningsSqlClient.GetEarningsEntityModel(_context);
+            var earnings  = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
             return apprenticeship.Episodes.First().WithdrawalDate == withdrawalDate.Value && earnings.Episodes.First().WithdrawalDate == withdrawalDate.Value;
         }, $"LastDayOfLearning did not change to {withdrawalDate} in learning db episode table");
@@ -60,7 +60,7 @@ internal class WithdrawApprenticeshipStepDefinitions
     {
         var testData = _context.Get<TestData>();
         await _context.ReceiveEarningsRecalculatedEvent(testData.LearningKey);
-        testData.EarningsApprenticeshipModel = _earningsSqlClient.GetEarningsEntityModel(_context);
+        testData.EarningsApprenticeshipModel = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
     }
 
     [Given("the expected number of earnings instalments after withdrawal are (.*)")]

@@ -1,4 +1,4 @@
-﻿using FluentAssertions.Equivalency;
+using FluentAssertions.Equivalency;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -57,6 +57,27 @@ public class LearningSqlClient
         learning.FreezeRequests = _sqlServerClient.GetList<FreezeRequest>($"SELECT * FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learning.Key}'");
 
         learning.LearningHistory = _sqlServerClient.GetList<LearningHistoryModel>($"SELECT * FROM [History].[LearningHistory] WHERE LearningId = '{learning.Key}'");
+
+        return learning;
+    }
+
+    public ShortCourseLearning? GetShortCourseLearning(string uln)
+    {
+        var learner = _sqlServerClient.GetList<Learner>("SELECT * from [dbo].[Learner] WHERE Uln = @uln", new { uln }).FirstOrDefault();
+        if (learner == null) return null;
+
+        var learning = _sqlServerClient.GetList<ShortCourseLearning>("SELECT * FROM [dbo].[ShortCourseLearning] WHERE LearnerKey = @learnerKey", new { learnerKey = learner.Key }).FirstOrDefault();
+        if (learning == null) return null;
+
+        learning.Learner = learner;
+
+        learning.Episodes = _sqlServerClient.GetList<ShortCourseEpisode>($"SELECT * FROM [dbo].[ShortCourseEpisode] WHERE LearningKey = '{learning.Key}'");
+
+        foreach (var episode in learning.Episodes)
+        {
+            episode.LearningSupport = _sqlServerClient.GetList<ShortCourseLearningSupport>($"SELECT * FROM [dbo].[ShortCourseLearningSupport] WHERE EpisodeKey = '{episode.Key}'");
+            episode.Milestones = _sqlServerClient.GetList<ShortCourseMilestone>($"SELECT * FROM [dbo].[ShortCourseMilestone] WHERE EpisodeKey = '{episode.Key}'");
+        }
 
         return learning;
     }
@@ -170,13 +191,43 @@ public class LearningSqlClient
             JOIN dbo.ApprenticeshipEpisode e ON e.LearningKey = l.[Key]
             WHERE e.Ukprn = @Ukprn;
 
+            INSERT INTO #LearningKeys (LearningKey, LearnerKey)
+            SELECT DISTINCT l.[Key], l.LearnerKey
+            FROM dbo.ShortCourseLearning l
+            JOIN dbo.ShortCourseEpisode e ON e.LearningKey = l.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            10. Delete Short Course Milestones
+            ===========================================================*/
+            DELETE scm
+            FROM dbo.ShortCourseMilestone scm
+            JOIN dbo.ShortCourseEpisode e ON scm.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
+            /*===========================================================
+            11. Delete Short Course Learning Support
+            ===========================================================*/
+            DELETE scls
+            FROM dbo.ShortCourseLearningSupport scls
+            JOIN dbo.ShortCourseEpisode e ON scls.EpisodeKey = e.[Key]
+            WHERE e.Ukprn = @Ukprn;
+
             DELETE e
             FROM dbo.ApprenticeshipEpisode e
             WHERE e.Ukprn = @Ukprn;
 
+            DELETE sce
+            FROM dbo.ShortCourseEpisode sce
+            WHERE sce.Ukprn = @Ukprn;
+
             DELETE l
             FROM dbo.ApprenticeshipLearning l
             JOIN #LearningKeys lk ON lk.LearningKey = l.[Key];
+
+            DELETE scl
+            FROM dbo.ShortCourseLearning scl
+            JOIN #LearningKeys lk ON lk.LearningKey = scl.[Key];
 
             DELETE lr
             FROM dbo.Learner lr
@@ -204,6 +255,7 @@ public class Learning
 
 public class Learner
 {
+    public Guid Key { get; set; }
     public string Uln { get; set; } = null!;
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
@@ -271,4 +323,44 @@ public class EpisodeBreakInLearning
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public DateTime PriorPeriodExpectedEndDate { get; set; }
+}
+
+public class ShortCourseLearning
+{
+    public Guid Key { get; set; }
+    public Guid LearnerKey { get; set; }
+    public DateTime? CompletionDate { get; set; }
+    public Learner Learner { get; set; }
+    public List<ShortCourseEpisode> Episodes { get; set; }
+}
+
+public class ShortCourseEpisode
+{
+    public Guid Key { get; set; }
+    public Guid LearningKey { get; set; }
+    public long Ukprn { get; set; }
+    public long EmployerAccountId { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime ExpectedEndDate { get; set; }
+    public DateTime? WithdrawalDate { get; set; }
+    public string TrainingCode { get; set; } = null!;
+    public bool IsApproved { get; set; }
+    public List<ShortCourseLearningSupport> LearningSupport { get; set; }
+    public List<ShortCourseMilestone> Milestones { get; set; }
+}
+
+public class ShortCourseLearningSupport
+{
+    public Guid Key { get; set; }
+    public Guid LearningKey { get; set; }
+    public Guid EpisodeKey { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+}
+
+public class ShortCourseMilestone
+{
+    public Guid Key { get; set; }
+    public Guid EpisodeKey { get; set; }
+    public string Milestone { get; set; } = null!;
 }

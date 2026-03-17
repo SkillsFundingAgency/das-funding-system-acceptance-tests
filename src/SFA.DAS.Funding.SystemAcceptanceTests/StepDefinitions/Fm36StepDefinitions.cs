@@ -73,8 +73,8 @@ public class Fm36StepDefinitions
             var plannedEndDate = TokenisableDateTime.FromString("currentAYPlusTwo-08-23");
             testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, 15000, "2");
 
-            testData.CommitmentsApprenticeshipCreatedEvent.Uln = TestUlnProvider.GetNext(); // create a new learner in every iteration
-            testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId = TestUlnProvider.GetNextApprovalsApprenticeshipId();
+            testData.CommitmentsApprenticeshipCreatedEvent.Uln = TestIdentifierProvider.GetNextUln(); // create a new learner in every iteration
+            testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId = TestIdentifierProvider.GetNextApprovalsApprenticeshipId();
 
             await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
 
@@ -132,7 +132,7 @@ public class Fm36StepDefinitions
         var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
         var apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
-        var earnings = _earningsSqlClient.GetEarningsEntityModel(_context);
+        var earnings = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
         if(earnings == null)
         {
             throw new Exception("Earnings data not found for the apprenticeship.");
@@ -662,7 +662,7 @@ public class Fm36StepDefinitions
         var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
         // Fetch earnings data
-        var earnings = _earningsSqlClient.GetEarningsEntityModel(_context);
+        var earnings = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
         // Get the learner associated with the apprenticeship
         var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
@@ -722,7 +722,7 @@ public class Fm36StepDefinitions
     {
         var testData = _context.Get<TestData>();
         // learner has to be eligible for incentive earnings 
-        var earnings = _earningsSqlClient.GetEarningsEntityModel(_context);
+        var earnings = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
         // get your learner data 
 

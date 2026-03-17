@@ -110,7 +110,7 @@ public class RecalculateEarningsStepDefinitions
     [Then(@"the AgreedPrice on the earnings entity is updated to (.*)")]
     public void AgreedPriceOnTheEarningsEntityIsUpdated(decimal agreedPrice)
     {
-        var apprenticeshipEntity = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+        var apprenticeshipEntity = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
         Assert.AreEqual(agreedPrice, apprenticeshipEntity.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).Prices.MaxBy(x => x.StartDate).AgreedPrice);
     }
@@ -118,7 +118,7 @@ public class RecalculateEarningsStepDefinitions
     [Then(@"the ActualStartDate (.*) and PlannedEndDate (.*) are updated on earnings entity")]
     public void ActualStartDateAndPlannedEndDateAreUpdatedOnEarningsEntity(TokenisableDateTime startDate, TokenisableDateTime endDate)
     {
-        var apprenticeshipEntity = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+        var apprenticeshipEntity = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
         Assert.IsNotNull(apprenticeshipEntity);
         Assert.AreEqual(startDate.Value, apprenticeshipEntity.Episodes.MinBy(x => x.Prices.MinBy(y => y.StartDate).StartDate).Prices.MinBy(x => x.StartDate).StartDate);
@@ -130,7 +130,7 @@ public class RecalculateEarningsStepDefinitions
     public void OldEarningsMaintainTheirInitialProfileId()
     {
         var testData = _context.Get<TestData>();
-        var earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+        var earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
         Assert.AreEqual(testData.InitialEarningsProfileId, earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate)
             .EarningsProfileHistory.FirstOrDefault().EarningsProfileId, "EarningsProfileId in EarningsProfileHistory table does not match the initial EarningsProfileId");
@@ -143,7 +143,7 @@ public class RecalculateEarningsStepDefinitions
     {
         var academicYear = TableExtensions.GetAcademicYear(academicYearString);
 
-        var earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+        var earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
         var newEarningsProfile = earningsApprenticeshipModel.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate).StartDate).EarningsProfile.Instalments;
 
@@ -163,7 +163,7 @@ public class RecalculateEarningsStepDefinitions
     {
         await WaitHelper.WaitForIt(() =>
         {
-            var earningsApprenticeshipModel = _earningsEntitySqlClient.GetEarningsEntityModel(_context);
+            var earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
             var historicalInstalmentsString = earningsApprenticeshipModel?.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)?.StartDate)?
             .EarningsProfileHistory

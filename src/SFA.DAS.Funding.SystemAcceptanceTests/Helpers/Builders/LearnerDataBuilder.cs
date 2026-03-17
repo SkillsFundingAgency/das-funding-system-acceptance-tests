@@ -1,8 +1,71 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 {
+    public class ShortCourseLearnerDataBuilder(TestData testData)
+    {
+        private readonly ShortCourseRequest _request = new LearnerDataOuterApiClient.ShortCourseRequest
+        {
+            Learner = new LearnerDataOuterApiClient.ShortCourseLearnerRequestDetails
+            {
+                Uln = long.Parse(testData.Uln),
+                FirstName = "Short",
+                LastName = "CourseLearner",
+                Dob = new DateTime(2000, 1, 1),
+                Email = "learner@test.com",
+                HasEhcp = false
+            },
+            Delivery = new LearnerDataOuterApiClient.ShortCourseDelivery    
+            {
+                OnProgramme =
+                [
+                    new LearnerDataOuterApiClient.ShortCourseOnProgramme
+                    {
+                        CourseCode = "109",
+                        AgreementId = "SCAgreement1",
+                        StartDate = new DateTime(2024, 08, 01),
+                        ExpectedEndDate = new DateTime(2024, 11, 01),
+                        LearningSupport = [],
+                        Milestones = []
+                    }
+                ]
+            }
+        };
+
+        public ShortCourseLearnerDataBuilder WithStartDate(DateTime startDate)
+        {
+            _request.Delivery.OnProgramme.Single().StartDate = startDate;
+            return this;
+        }
+
+        public ShortCourseLearnerDataBuilder WithEndDate(DateTime endDate)
+        {
+            _request.Delivery.OnProgramme.Single().ExpectedEndDate = endDate;
+            return this;
+        }
+
+        public ShortCourseLearnerDataBuilder WithLearnerDetails(string firstName, string lastName, string email)
+        {
+            _request.Learner.FirstName = firstName;
+            _request.Learner.LastName = lastName;
+            _request.Learner.Email = email;
+            return this;
+        }
+
+        public ShortCourseLearnerDataBuilder WithDateOfBirth(DateTime dob)
+        {
+            _request.Learner.Dob = dob;
+            return this;
+        }
+
+        public ShortCourseRequest Build()
+        {
+            return _request;
+        }
+    }
+
     public class LearnerDataBuilder(TestData testData)
     {
         private bool _startDateSetExplicitly = false;
@@ -15,7 +78,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             },
             Learner = new LearnerRequestDetails
             {
-                ULN = testData.Uln,
+                Uln = long.Parse(testData.Uln),
                 FirstName = testData.LearningCreatedEvent.FirstName,
                 LastName = testData.LearningCreatedEvent.LastName,
                 Dob = testData.LearningCreatedEvent.DateOfBirth

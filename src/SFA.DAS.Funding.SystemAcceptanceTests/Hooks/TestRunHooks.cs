@@ -74,7 +74,7 @@ public class TestRunHooks
     [BeforeTestRun(Order = 4)]
     public static async Task GenerateSharedTestData()
     {
-        var ulns = TestUlnProvider.Initialise(GetTestCount());// automatically generate the number of ULNs needed for a test run
+        var ulns = TestIdentifierProvider.Initialise(GetTestCount(), Configurator.GetConfiguration().LearningDbConnectionString);// automatically generate the number of ULNs & approvals apprenticeship ids needed for a test run
         var testLearners = ulns.Select(uln => DcLearnerDataHelper.GetLearner(uln)).ToList();
         var wireMockClient = new WireMockClient();
         var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
