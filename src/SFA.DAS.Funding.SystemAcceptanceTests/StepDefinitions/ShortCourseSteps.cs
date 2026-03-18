@@ -15,24 +15,45 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
     public async Task GivenANewLearnerWithAShortCourse(TokenisableDateTime startDate)
     {
         context.Set(new TestData(TestIdentifierProvider.GetNextUln()));
-        await WhenTheProviderAddsAShortCourseForTheLearnerInTheCurrentAcademicYear(startDate);
+        await AddShortCourse(startDate.Value);
+    }
+
+    [Given(@"SLD informs us of a new learner with a short course starting on (.*) and ending on (.*)")]
+    public async Task GivenANewLearnerWithAShortCourseExplicitEndDate(TokenisableDateTime startDate, TokenisableDateTime endDate)
+    {
+        context.Set(new TestData(TestIdentifierProvider.GetNextUln()));
+        await AddShortCourse(startDate.Value, endDate.Value);
     }
 
     [When(@"SLD informs us of a short course for the learner starting on (.*)")]
-    public async Task WhenTheProviderAddsAShortCourseForTheLearnerInTheCurrentAcademicYear(TokenisableDateTime startDate)
+    public async Task WhenTheProviderAddsAShortCourseForTheLearnerStartingOn(TokenisableDateTime startDate)
     {
+        await AddShortCourse(startDate.Value);
+    }
+
+    private async Task AddShortCourse(DateTime startDate, DateTime? endDate = null)
+    {
+        endDate ??= startDate.AddMonths(3);
+
         var testData = context.Get<TestData>();
 
-        var endDate = startDate.Value.AddMonths(3);
-
         var shortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
-            .WithStartDate(startDate.Value)
-            .WithEndDate(endDate)
+            .WithStartDate(startDate)
+            .WithEndDate(endDate.Value)
             .Build();
+
+        context.Set(shortCourseRequest);
 
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
 
         testData.ShortCourseLearnerData = shortCourseRequest;
+    }
+
+    [Given(@"SLD informs us of a the same new short course learner again")]
+    public async Task GivenTheSameNewShortCourseLearner()
+    {
+        var shortCourseRequest = context.Get<LearnerDataOuterApiClient.ShortCourseRequest>();
+        await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
     }
 
     [When(@"SLD informs us of a change to the short course dates pre approval")]
@@ -118,10 +139,16 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         };
 
         await TestServiceBus.Das.SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+            return (earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile.IsApproved).GetValueOrDefault();
+        }, "Failed to find approved short course earnings entity.");
     }
 
-    [When(@"SLD informs us a short course learning has completed on (.*)")]
-    public async Task WhenSLDInformsUsAShortCourseLearningHasCompletedOn(TokenisableDateTime completionDate)
+    [When(@"SLD informs us the short course learning has completed on (.*)")]
+    public async Task WhenSLDInformsUsTheShortCourseLearningHasCompletedOn(TokenisableDateTime completionDate)
     {
         var testData = context.Get<TestData>();
         
@@ -176,6 +203,35 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         Assert.AreEqual((double)expectedSecondAmount, (double)secondInstalment.Amount, 0.01, "Second instalment amount does not match exactly 70% of total price.");
     }
 
+    [Then(@"the short course earnings are set to approved")]
+    public async Task ThenTheShortCourseEarningsAreSetToApproved()
+    {
+        var testData = context.Get<TestData>();
+
+        ShortCourseEarningsModel? earningsModel = null;
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+            return earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile != null;
+        }, "Failed to find short course earnings entity.");
+
+        Assert.IsTrue(earningsModel!.Episodes.Single().EarningsProfile.IsApproved, "Short course earnings should be approved.");
+    }
+
+    [Then("the short course earnings do not contain duplicates")]
+    public async Task ThenTheShortCourseEarningsAreGeneratedWithoutDuplication()
+    {
+        var testData = context.Get<TestData>();
+        ShortCourseEarningsModel? earningsModel = null;
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+            return earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.Count == 2;
+        }, "Failed to find short course earnings entity.");
+        var instalments = earningsModel!.Episodes.Single().EarningsProfile.Instalments;
+        Assert.AreEqual(2, instalments.Count, "Expected exactly 2 instalments for the short course, but found a different count.");
+    }
+
     [Then(@"the learning domain is updated correctly")]
     public async Task ThenTheLearningDbIsUpdatedWithTheShortCourse()
     {
@@ -221,6 +277,13 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
     {
         var learningModel = context.Get<ShortCourseLearning>();
         Assert.IsFalse(learningModel.Episodes.Single().IsApproved, "Short course should not be approved.");
+    }
+
+    [Then(@"the short course is set to approved")]
+    public void ThenTheShortCourseIsSetToApproved()
+    {
+        var learningModel = context.Get<ShortCourseLearning>();
+        Assert.IsTrue(learningModel.Episodes.Single().IsApproved, "Short course should be approved.");
     }
 
     [Then(@"the second instalment is earnt in period (.*)")]
