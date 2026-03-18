@@ -138,12 +138,21 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
             TransferSenderId = null
         };
 
+        testData.CommitmentsApprenticeshipCreatedEvent = apprenticeshipCreatedEvent;
+
         await TestServiceBus.Das.SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
 
         await WaitHelper.WaitForIt(() =>
         {
             var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            return (earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile.IsApproved).GetValueOrDefault();
+
+            if ((earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile.IsApproved).GetValueOrDefault())
+            {
+                testData.ApprovedShortCourseLearningKey = earningsModel.LearningKey;
+                return true;
+            }
+
+            return false;
         }, "Failed to find approved short course earnings entity.");
     }
 
@@ -256,7 +265,6 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
 
         var episode = learningModel.Episodes.Single();
         Assert.AreEqual(expectedCourse.CourseCode, episode.TrainingCode, "TrainingCode does not match.");
-        Assert.AreEqual(0, episode.EmployerAccountId, "EmployerId does not match.");
         Assert.AreEqual(Constants.UkPrn, episode.Ukprn, "Ukprn does not match.");
         Assert.AreEqual(expectedCourse.StartDate, episode.StartDate, "StartDate does not match.");
         Assert.AreEqual(expectedCourse.ExpectedEndDate, episode.ExpectedEndDate, "ExpectedEndDate does not match.");
@@ -284,6 +292,7 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
     {
         var learningModel = context.Get<ShortCourseLearning>();
         Assert.IsTrue(learningModel.Episodes.Single().IsApproved, "Short course should be approved.");
+        Assert.AreEqual(context.Get<TestData>().CommitmentsApprenticeshipCreatedEvent.AccountId, learningModel.Episodes.Single().EmployerAccountId, "EmployerId should have been updated from the approvals event.");
     }
 
     [Then(@"the second instalment is earnt in period (.*)")]
@@ -312,28 +321,53 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         Assert.AreEqual((double)expectedSecondAmount, (double)secondInstalment.Amount, 0.01, "Second instalment amount (70% of total price) not found in expected delivery period.");
     }
 
-    [When(@"SLD requests short course learners for academic year (.*)")]
-    public async Task WhenSldRequestsShortCourseLearnersForAcademicYear(TokenisableAcademicYear academicYear)
+    [When(@"SLD requests short course approved ulns for academic year (.*)")]
+    public async Task WhenSldRequestsShortCourseLearnerApprovedUlnsForAcademicYear(TokenisableAcademicYear academicYear)
     {
         var testData = context.Get<TestData>();
-        testData.ShortCourseLearnersResponse = await learnerDataOuterApiHelper.GetShortCourseLearners(Constants.UkPrn, academicYear.Value);
+        testData.ShortCourseLearnersResponse = await learnerDataOuterApiHelper.GetShortCourseLearnerApprovedUlns(Constants.UkPrn, academicYear.Value);
     }
 
-    [Then(@"the short course learner is returned in the response without duplicates")]
-    public void ThenTheShortCourseLearnerIsReturnedInTheResponse()
+    [When(@"SLD requests short course earnings data for collection period (.*)")]
+    public async Task WhenSldRequestsShortCourseEarningsDataForCollectionPeriod(TokenisablePeriod period)
+    {
+        var testData = context.Get<TestData>();
+        testData.ShortCourseEarningsResponse = await learnerDataOuterApiHelper.GetShortCourseEarningsData(Constants.UkPrn, period.Value.AcademicYear, (byte)period.Value.PeriodValue);
+    }
+
+    [Then(@"the short course learner is returned in the approved ulns response without duplicates")]
+    public void ThenTheShortCourseLearnerIsReturnedInTheApprovedUlnsResponse()
     {
         var testData = context.Get<TestData>();
         
         var learnerCount = testData.ShortCourseLearnersResponse.Learners.Count(x => x.Uln == testData.Uln.ToString());
-        Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the response for this academic year, but found a different count.");
+        Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the approved ulns response for this academic year, but found a different count.");
     }
 
-    [Then(@"the short course learner is not returned in the response")]
-    public void ThenTheShortCourseLearnerIsNotReturnedInTheResponse()
+    [Then(@"the short course learner is not returned in the approved ulns response")]
+    public void ThenTheShortCourseLearnerIsNotReturnedInTheApprovedUlnsResponse()
     {
         var testData = context.Get<TestData>();
         
         var learner = testData.ShortCourseLearnersResponse.Learners.SingleOrDefault(x => x.Uln == testData.Uln.ToString());
-        Assert.IsNull(learner, "Short course learner was unexpectedly found in the response for this academic year.");
+        Assert.IsNull(learner, "Short course learner was unexpectedly found in the approved ulns response for this academic year.");
+    }
+
+    [Then(@"the short course learner is returned in the earnings response without duplicates")]
+    public void ThenTheShortCourseLearnerIsReturnedInTheEarningsResponse()
+    {
+        var testData = context.Get<TestData>();
+
+        var learnerCount = testData.ShortCourseEarningsResponse.Items.Count(x => x.LearningKey == testData.ApprovedShortCourseLearningKey.ToString());
+        Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the earnings response for this collection period, but found a different count.");
+    }
+
+    [Then(@"the short course learner is not returned in the earnings response")]
+    public void ThenTheShortCourseLearnerIsNotReturnedInTheEarningsResponse()
+    {
+        var testData = context.Get<TestData>();
+
+        var learner = testData.ShortCourseEarningsResponse.Items.SingleOrDefault(x => x.LearningKey == testData.ApprovedShortCourseLearningKey.ToString());
+        Assert.IsNull(learner, "Short course learner was unexpectedly found in the earnings response for this collection period.");
     }
 }
