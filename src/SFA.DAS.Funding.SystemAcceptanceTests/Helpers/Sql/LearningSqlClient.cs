@@ -18,7 +18,7 @@ public class LearningSqlClient
     {
         var sql = $@"
             DELETE FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learningKey}';
-            DELETE FROM [dbo].[MathsAndEnglish] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[EnglishAndMaths] WHERE LearningKey = '{learningKey}';
             DELETE FROM [dbo].[ApprenticeshipLearningSupport] WHERE LearningKey = '{learningKey}';
         ";
         _sqlServerClient.Execute(sql);
@@ -150,20 +150,20 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            6. Delete Maths and English Breaks In Learning
+            6. Delete English and Maths Breaks In Learning
             ===========================================================*/
             DELETE mebil
-            FROM dbo.MathsAndEnglishBreakInLearning mebil
-            JOIN dbo.MathsAndEnglish me on mebil.MathsAndEnglishKey = me.[Key]
+            FROM dbo.EnglishAndMathsBreakInLearning mebil
+            JOIN dbo.EnglishAndMaths me on mebil.EnglishAndMathsKey = me.[Key]
             JOIN dbo.ApprenticeshipLearning l ON me.LearningKey = l.[Key]
             JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn = @Ukprn;
-
+ 
             /*===========================================================
-            7. Delete Maths and English
+            7. Delete English and Maths
             ===========================================================*/
             DELETE me
-            FROM dbo.MathsAndEnglish me
+            FROM dbo.EnglishAndMaths me
             JOIN dbo.ApprenticeshipLearning l ON me.LearningKey = l.[Key]
             JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn = @Ukprn;
