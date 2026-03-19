@@ -86,7 +86,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             return JsonConvert.DeserializeObject<GetLearnerResponse>(await response.Content.ReadAsStringAsync())!;
         }
 
-        public async Task<GetLearnerResponse> GetShortCourseLearners(long ukprn, int academicYear)
+        public async Task<GetLearnerResponse> GetShortCourseLearnerApprovedUlns(long ukprn, int academicYear)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/providers/{ukprn}/academicyears/{academicYear}/shortCourses");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
@@ -104,6 +104,25 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             response.EnsureSuccessStatusCode();
 
             return JsonConvert.DeserializeObject<GetLearnerResponse>(await response.Content.ReadAsStringAsync())!;
+        }
+
+        public async Task<GetShortCourseEarningsResponse> GetShortCourseEarningsData(long ukprn, int collectionYear, byte collectionPeriod)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/providers/{ukprn}/collectionPeriods/{collectionYear}/{collectionPeriod}/shortCourses");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+
+            var response = await _apiClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return JsonConvert.DeserializeObject<GetShortCourseEarningsResponse>(await response.Content.ReadAsStringAsync())!;
         }
 
         public async Task UpdateLearning(long ukprn, Guid learningKey, UpdateLearnerRequest learningData)
@@ -352,6 +371,36 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
             public List<LearningSupport> LearningSupport { get; set; }
+        }
+
+        public class GetShortCourseEarningsResponse
+        {
+            public List<ShortCourseActiveEarnings> Items { get; set; } = [];
+            public int TotalItems { get; set; }
+            public int Page { get; set; }
+            public int PageSize { get; set; }
+            public int TotalPages { get; set; }
+        }
+
+        public class ShortCourseActiveEarnings
+        {
+            public string LearningKey { get; set; }
+            public List<ShortCourseCourse> Courses { get; set; }
+        }
+
+        public class ShortCourseCourse
+        {
+            public decimal CoursePrice { get; set; }
+            public bool Approved { get; set; }
+            public List<ShortCourseEarning> Earnings { get; set; }
+        }
+
+        public class ShortCourseEarning
+        {
+            public int CollectionYear { get; set; }
+            public int CollectionPeriod { get; set; }
+            public string Milestone { get; set; }
+            public decimal Amount { get; set; }
         }
     }
 }

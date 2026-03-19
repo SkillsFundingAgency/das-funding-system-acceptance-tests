@@ -15,6 +15,7 @@ public class TestData
 {
     internal string Uln { get; }
     internal Guid LearningKey { get; set; } = Guid.Empty;
+    internal Guid ApprovedShortCourseLearningKey { get; set; } = Guid.Empty;
     internal Guid InitialEarningsProfileId { get; set; } = Guid.Empty;
     internal Guid EarningsProfileId { get; set; } = Guid.Empty;
     internal bool IsMarkedAsCareLeaver { get; set; } = false;
@@ -48,6 +49,7 @@ public class TestData
     internal LearnerDataOuterApiClient.ShortCourseRequest? ShortCourseLearnerData { get; set; }
     internal LearnerDataOuterApiClient.GetLearnerResponse? LearnersOnService { get; set; }
     internal LearnerDataOuterApiClient.GetLearnerResponse? ShortCourseLearnersResponse { get; set; }
+    internal LearnerDataOuterApiClient.GetShortCourseEarningsResponse? ShortCourseEarningsResponse { get; set; }
     internal LearnerDataBuilder? LearnerDataBuilder { get; set; }
     internal EndDateChangedEvent EndDateChangedEvent { get; set; }
     internal LearningWithdrawnEvent LearningWithdrawnEvent { get; set; }
