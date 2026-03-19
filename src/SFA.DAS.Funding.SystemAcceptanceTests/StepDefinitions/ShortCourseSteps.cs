@@ -358,7 +358,7 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
     {
         var testData = context.Get<TestData>();
 
-        var learnerCount = testData.ShortCourseEarningsResponse.Items.Count(x => x.LearningKey == testData.ApprovedShortCourseLearningKey.ToString());
+        var learnerCount = testData.ShortCourseEarningsResponse.Learners.Count(x => x.LearningKey == testData.ApprovedShortCourseLearningKey.ToString());
         Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the earnings response for this collection period, but found a different count.");
     }
 
@@ -367,7 +367,7 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
     {
         var testData = context.Get<TestData>();
 
-        var learner = testData.ShortCourseEarningsResponse.Items.SingleOrDefault(x => x.LearningKey == testData.ApprovedShortCourseLearningKey.ToString());
+        var learner = testData.ShortCourseEarningsResponse.Learners.SingleOrDefault(x => x.LearningKey == testData.ApprovedShortCourseLearningKey.ToString());
         Assert.IsNull(learner, "Short course learner was unexpectedly found in the earnings response for this collection period.");
     }
 }
