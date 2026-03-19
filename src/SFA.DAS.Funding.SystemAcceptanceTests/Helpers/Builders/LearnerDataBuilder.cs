@@ -321,6 +321,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
+        public LearnerDataBuilder WithUln(long uln)
+        {
+            _request.Learner.Uln = uln;
+
+            return this;
+        }
+
         public UpdateLearnerRequest Build()
         {
             CalculateStartDate();
