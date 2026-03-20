@@ -1,4 +1,4 @@
-﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
+using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
 using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
@@ -64,17 +64,17 @@ public class Fm36StepDefinitions
         // 15 learners as well.
 
         var testData = _context.Get<TestData>();
-
         var recordsToCreate = 15; //always create 15 fresh records without re-using ulns (and therefore cache keys)
-        
+
         for (int i = 0; i < recordsToCreate; i++)
         {
+            var uln = TestIdentifierProvider.GetNextUln();
+
             var startDate = TokenisableDateTime.FromString("currentAY-08-23");
             var plannedEndDate = TokenisableDateTime.FromString("currentAYPlusTwo-08-23");
             testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, 15000, "2");
-
-            testData.CommitmentsApprenticeshipCreatedEvent.Uln = TestIdentifierProvider.GetNextUln(); // create a new learner in every iteration
             testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId = TestIdentifierProvider.GetNextApprovalsApprenticeshipId();
+            testData.CommitmentsApprenticeshipCreatedEvent.Uln = uln;
 
             await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
 
@@ -83,7 +83,8 @@ public class Fm36StepDefinitions
                 .WithCostDetails(10000, 2000, startDate.Value)
                 .WithStartDate(startDate.Value)
                 .WithExpectedEndDate(plannedEndDate.Value)
-                .WithStandardCode(Convert.ToInt32(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode));
+                .WithStandardCode(Convert.ToInt32(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode))
+                .WithUln(long.Parse(uln));
 
             var learnerData = learnerDataBuilder.Build();
 
