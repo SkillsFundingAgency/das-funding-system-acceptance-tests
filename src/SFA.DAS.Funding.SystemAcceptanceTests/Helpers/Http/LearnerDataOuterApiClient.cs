@@ -106,6 +106,30 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             return JsonConvert.DeserializeObject<GetLearnerResponse>(await response.Content.ReadAsStringAsync())!;
         }
 
+        public async Task UpdateShortCourseLearning(long ukprn, Guid learningKey, ShortCourseRequest requestData)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/providers/{ukprn}/shortCourses/{learningKey}");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+
+            var jsonContent = new StringContent(
+                JsonConvert.SerializeObject(requestData),
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+            request.Content = jsonContent;
+
+            var response = await _apiClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+            }
+
+            response.EnsureSuccessStatusCode();
+        }
+
         public async Task<GetShortCourseEarningsResponse> GetShortCourseEarningsData(long ukprn, int collectionYear, byte collectionPeriod)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/providers/{ukprn}/collectionPeriods/{collectionYear}/{collectionPeriod}/shortCourses");
@@ -223,7 +247,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? PauseDate { get; set; }
             public int? AimSequenceNumber { get; set; }
             public DateTime? ActualEndDate { get; set; }
-            public Milestone[] Milestones { get; set; } = [];
+            public List<Milestone> Milestones { get; set; } = [];
         }
 
         public enum Milestone

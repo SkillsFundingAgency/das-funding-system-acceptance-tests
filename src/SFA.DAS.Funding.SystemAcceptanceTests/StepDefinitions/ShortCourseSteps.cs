@@ -167,6 +167,126 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
     }
 
+    [Given(@"the training provider recorded that the 30% milestone has been reached")]
+    public async Task GivenTheTrainingProviderRecordedThatThe30PercentMilestoneHasBeenReached()
+    {
+        var testData = context.Get<TestData>();
+        var shortCourseRequest = testData.ShortCourseLearnerData;
+        
+        var builder = new ShortCourseLearnerDataBuilder(testData)
+            .WithStartDate(shortCourseRequest.Delivery.OnProgramme.Single().StartDate)
+            .WithEndDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate)
+            .WithMilestone(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete);
+
+        var updatedRequest = builder.Build();
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, updatedRequest);
+        testData.ShortCourseLearnerData = updatedRequest;
+    }
+
+    [Given(@"the training provider also recorded that the learner completed")]
+    public async Task GivenTheTrainingProviderAlsoRecordedThatTheLearnerCompleted()
+    {
+        var testData = context.Get<TestData>();
+        var shortCourseRequest = testData.ShortCourseLearnerData;
+
+        var builder = new ShortCourseLearnerDataBuilder(testData)
+            .WithStartDate(shortCourseRequest.Delivery.OnProgramme.Single().StartDate)
+            .WithEndDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate)
+            .WithCompletionDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate);
+
+        var updatedRequest = builder.Build();
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, updatedRequest);
+        testData.ShortCourseLearnerData = updatedRequest;
+    }
+
+    [When(@"SLD inform us that the learner has withdrawn")]
+    public async Task WhenSLDInformUsThatTheLearnerHasWithdrawn()
+    {
+        var testData = context.Get<TestData>();
+        var shortCourseRequest = testData.ShortCourseLearnerData;
+        
+        shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalDate = DateTime.Now;
+        shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = null; 
+
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, shortCourseRequest);
+    }
+
+    [When(@"SLD also inform us that the 30% milestone was removed")]
+    public async Task WhenSLDAlsoInformUsThatThe30PercentMilestoneWasRemoved()
+    {
+        var testData = context.Get<TestData>();
+        var shortCourseRequest = testData.ShortCourseLearnerData;
+        
+        shortCourseRequest.Delivery.OnProgramme.Single().Milestones = [];
+
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, shortCourseRequest);
+    }
+
+    [When(@"SLD also inform us that the 30% milestone was not removed")]
+    public void WhenSLDAlsoInformUsThatThe30PercentMilestoneWasNotRemoved()
+    {
+        // No action needed
+    }
+
+    [Then(@"remove all earnings for that ""short course""")]
+    public async Task ThenRemoveAllEarningsForThatShortCourse()
+    {
+        var testData = context.Get<TestData>();
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+            return earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.Count == 0;
+        }, "Failed to verify that all earnings were removed.");
+    }
+
+    [Then(@"remove the remaining completion earning")]
+    [Then(@"remove the completion earning")]
+    public async Task ThenRemoveTheRemainingCompletionEarning()
+    {
+        var testData = context.Get<TestData>();
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+            var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
+            return instalments != null && instalments.All(x => x.Type != "LearningComplete");
+        }, "Failed to verify that the completion earning was removed.");
+    }
+
+    [Then(@"remove the 30% milestone earning")]
+    public async Task ThenRemoveThe30PercentMilestoneEarning()
+    {
+        var testData = context.Get<TestData>();
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+            var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
+            return instalments != null && instalments.All(x => x.Type != "ThirtyPercentLearningComplete");
+        }, "Failed to verify that the 30% milestone earning was removed.");
+    }
+
+    [Then(@"retain the 30% milestone earning")]
+    public async Task ThenRetainThe30PercentMilestoneEarning()
+    {
+        var testData = context.Get<TestData>();
+
+        ShortCourseEarningsModel? earningsModel = null;
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+            var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
+            return instalments != null && instalments.Any(x => x.Type == "ThirtyPercentLearningComplete");
+        }, "Failed to find short course earnings with 30% milestone earning.");
+
+        var instalment = earningsModel!.Episodes.Single().EarningsProfile.Instalments.Single(x => x.Type == "ThirtyPercentLearningComplete");
+        var totalPrice = earningsModel.Episodes.Single().CoursePrice;
+        var expectedAmount = Math.Round(totalPrice * 0.3m, 5);
+
+        Assert.AreEqual((double)expectedAmount, (double)instalment.Amount, 0.01, "The retained instalment is not the 30% milestone earning.");
+    }
+
     [Given(@"the basic short course earnings are generated")]
     [Then(@"the basic short course earnings are generated")]
     public async Task ThenTheShortCourseIsSuccessfullyProcessed()
