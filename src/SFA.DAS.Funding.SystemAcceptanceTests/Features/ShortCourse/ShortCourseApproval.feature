@@ -6,3 +6,4 @@ Scenario: Short course is approved
 	Then the short course earnings are set to approved
 	And the learning domain is updated correctly
 	And the short course is set to approved
+	And the episode keys match between the learning and earnings databases

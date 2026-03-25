@@ -184,6 +184,7 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
     }
 
     [Given(@"the training provider also recorded that the learner completed")]
+    [Given(@"the training provider recorded that the learner completed")]
     public async Task GivenTheTrainingProviderAlsoRecordedThatTheLearnerCompleted()
     {
         var testData = context.Get<TestData>();
@@ -192,7 +193,8 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         var builder = new ShortCourseLearnerDataBuilder(testData)
             .WithStartDate(shortCourseRequest.Delivery.OnProgramme.Single().StartDate)
             .WithEndDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate)
-            .WithCompletionDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate);
+            .WithCompletionDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate)
+            .WithMilestone(LearnerDataOuterApiClient.Milestone.LearningComplete);
 
         var updatedRequest = builder.Build();
         await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, updatedRequest);
@@ -236,12 +238,13 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         await WaitHelper.WaitForIt(() =>
         {
             var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            return earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.Count == 0;
+            return earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.All(x => !x.IsPayable) ?? true;
         }, "Failed to verify that all earnings were removed.");
     }
 
     [Then(@"remove the remaining completion earning")]
     [Then(@"remove the completion earning")]
+    [Then(@"a completion earning is not generated")]
     public async Task ThenRemoveTheRemainingCompletionEarning()
     {
         var testData = context.Get<TestData>();
@@ -250,11 +253,12 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         {
             var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
             var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
-            return instalments != null && instalments.All(x => x.Type != "LearningComplete");
+            return instalments != null && instalments.All(x => x.Type != "LearningComplete" || !x.IsPayable);
         }, "Failed to verify that the completion earning was removed.");
     }
 
     [Then(@"remove the 30% milestone earning")]
+    [Then(@"a 30% milestone earning is not generated")]
     public async Task ThenRemoveThe30PercentMilestoneEarning()
     {
         var testData = context.Get<TestData>();
@@ -263,11 +267,12 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         {
             var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
             var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
-            return instalments != null && instalments.All(x => x.Type != "ThirtyPercentLearningComplete");
+            return instalments != null && instalments.All(x => x.Type != "ThirtyPercentLearningComplete" || !x.IsPayable);
         }, "Failed to verify that the 30% milestone earning was removed.");
     }
 
     [Then(@"retain the 30% milestone earning")]
+    [Then(@"a 30% milestone earning is generated")]
     public async Task ThenRetainThe30PercentMilestoneEarning()
     {
         var testData = context.Get<TestData>();
@@ -277,14 +282,27 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         {
             earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
             var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
-            return instalments != null && instalments.Any(x => x.Type == "ThirtyPercentLearningComplete");
+            return instalments != null && instalments.Any(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable);
         }, "Failed to find short course earnings with 30% milestone earning.");
 
-        var instalment = earningsModel!.Episodes.Single().EarningsProfile.Instalments.Single(x => x.Type == "ThirtyPercentLearningComplete");
+        var instalment = earningsModel!.Episodes.Single().EarningsProfile.Instalments.Single(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable);
         var totalPrice = earningsModel.Episodes.Single().CoursePrice;
         var expectedAmount = Math.Round(totalPrice * 0.3m, 5);
 
         Assert.AreEqual((double)expectedAmount, (double)instalment.Amount, 0.01, "The retained instalment is not the 30% milestone earning.");
+    }
+
+    [Then(@"a completion earning is generated")]
+    public async Task ThenACompletionEarningIsGenerated()
+    {
+        var testData = context.Get<TestData>();
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+            var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
+            return instalments != null && instalments.Any(x => x.Type == "LearningComplete" && x.IsPayable);
+        }, "Failed to verify that the completion earning was generated.");
     }
 
     [Given(@"the basic short course earnings are generated")]
@@ -413,6 +431,22 @@ public class ShortCourseSteps(ScenarioContext context, LearnerDataOuterApiClient
         var learningModel = context.Get<ShortCourseLearning>();
         Assert.IsTrue(learningModel.Episodes.Single().IsApproved, "Short course should be approved.");
         Assert.AreEqual(context.Get<TestData>().CommitmentsApprenticeshipCreatedEvent.AccountId, learningModel.Episodes.Single().EmployerAccountId, "EmployerId should have been updated from the approvals event.");
+    }
+
+    [Then(@"the episode keys match between the learning and earnings databases")]
+    public async Task ThenTheEpisodeKeysMatchBetweenTheLearningAndEarningsDatabases()
+    {
+        var testData = context.Get<TestData>();
+
+        var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+        Assert.IsNotNull(earningsModel, "Earnings model not found.");
+        var earningsEpisodeKey = earningsModel.Episodes.Single().Key;
+
+        var learningModel = learningSqlClient.GetShortCourseLearning(testData.Uln.ToString());
+        Assert.IsNotNull(learningModel, "Learning model not found.");
+        var learningEpisodeKey = learningModel.Episodes.Single().Key;
+
+        Assert.AreEqual(learningEpisodeKey, earningsEpisodeKey, "Episode keys do not match between learning and earnings databases.");
     }
 
     [Then(@"the second instalment is earnt in period (.*)")]

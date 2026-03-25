@@ -228,6 +228,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class ShortCourseLearnerRequestDetails : LearnerRequestDetails
         {
+            public string LearnerRef { get; set; }
         }
 
         public class ShortCourseDelivery
