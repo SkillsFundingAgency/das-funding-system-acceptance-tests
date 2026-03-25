@@ -49,6 +49,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         
         shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalDate = DateTime.Now;
         shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = null; 
+        shortCourseRequest.Delivery.OnProgramme.Single().Milestones.Remove(LearnerDataOuterApiClient.Milestone.LearningComplete);
 
         await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, shortCourseRequest);
     }
