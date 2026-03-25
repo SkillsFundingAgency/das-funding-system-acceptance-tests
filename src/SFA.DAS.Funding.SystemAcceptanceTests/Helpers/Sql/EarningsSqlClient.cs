@@ -27,7 +27,7 @@ public class EarningsSqlClient
         {
             episode.Prices = _sqlServerClient.GetList<EpisodePriceModel>($"SELECT * FROM [Domain].[ApprenticeshipEpisodePrice] Where EpisodeKey ='{episode.Key}'");
             episode.EarningsProfile = _sqlServerClient.GetList<EarningsProfileModel>($"SELECT * FROM [Domain].[ApprenticeshipEarningsProfile] Where EpisodeKey ='{episode.Key}'").Single();
-            episode.EarningsProfile.Instalments = _sqlServerClient.GetList<InstalmentModel>($"SELECT EarningsProfileId, AcademicYear, DeliveryPeriod, Amount, EpisodePriceKey, IsPayable, Type FROM [Domain].[ApprenticeshipInstalment] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
+            episode.EarningsProfile.Instalments = _sqlServerClient.GetList<InstalmentModel>($"SELECT EarningsProfileId, AcademicYear, DeliveryPeriod, Amount, EpisodePriceKey, Type FROM [Domain].[ApprenticeshipInstalment] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
 
             episode.EarningsProfileHistory = _sqlServerClient.GetList<EarningsProfileHistoryModel>($"SELECT * FROM [History].[ApprenticeshipEarningsProfileHistory] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
 
