@@ -9,7 +9,7 @@ public class ShortCourseLearnerDataBuilder(TestData testData)
         Learner = new LearnerDataOuterApiClient.ShortCourseLearnerRequestDetails
         {
             Uln = long.Parse(testData.Uln),
-            LearnerRef = testData.Uln,
+            LearnerRef = "test",
             FirstName = "Short",
             LastName = "CourseLearner",
             Dob = new DateTime(2000, 1, 1),

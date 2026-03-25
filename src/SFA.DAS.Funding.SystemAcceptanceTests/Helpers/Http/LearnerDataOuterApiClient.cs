@@ -272,6 +272,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         public class LearnerRequestDetails
         {
             public long Uln { get; set; }
+            public string LearnerRef { get; set; }
             public string FirstName { get; set; } 
             public string LastName { get; set; } 
             public string? Email { get; set; }
