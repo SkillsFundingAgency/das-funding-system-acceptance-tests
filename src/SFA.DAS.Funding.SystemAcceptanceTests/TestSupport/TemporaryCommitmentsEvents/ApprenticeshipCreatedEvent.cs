@@ -36,15 +36,17 @@ namespace SFA.DAS.CommitmentsV2.Messages.Events
 
         public PriceEpisode[] PriceEpisodes { get; set; }
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ProgrammeType TrainingType { get; set; }
 
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public DeliveryModel DeliveryModel { get; set; }
 
         public string TrainingCode { get; set; }
 
         public long? TransferSenderId { get; set; }
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ApprenticeshipEmployerType? ApprenticeshipEmployerTypeOnApproval { get; set; }
 
         public long? ContinuationOfId { get; set; }
@@ -61,6 +63,7 @@ namespace SFA.DAS.CommitmentsV2.Messages.Events
 
         public long? LearnerDataId { get; set; }
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public LearningType LearningType { get; set; }
         /// <summary>
         /// IsOnFlexiPaymentPilot has been removed from Commitments, but is still referenced by Learning in order to determine
