@@ -224,6 +224,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         {
             public ShortCourseLearnerRequestDetails Learner { get; set; } = new();
             public ShortCourseDelivery Delivery { get; set; } = new();
+            public string ConsumerReference => "AcceptanceTests";
         }
 
         public class ShortCourseLearnerRequestDetails : LearnerRequestDetails
