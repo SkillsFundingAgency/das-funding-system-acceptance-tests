@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Serialization;
 using SFA.DAS.Learning.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -73,6 +73,7 @@ public abstract class InstalmentModelBase
     public byte DeliveryPeriod { get; set; }
     public decimal Amount { get; set; }
     public string Type { get; set; }
+    public bool IsPayable { get; set; }
 }
 
 public class InstalmentModel : InstalmentModelBase
