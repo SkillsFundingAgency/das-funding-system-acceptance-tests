@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure;
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure;
 
 public static class EventList
 {
@@ -13,7 +13,8 @@ public static class EventList
             typeof(Learning.Types.EndDateChangedEvent).FullName!,
             typeof(Learning.Types.LearningWithdrawnEvent).FullName!,
             typeof(Learning.Types.WithdrawalRevertedEvent).FullName!,
-            typeof(Learning.Types.PersonalDetailsChangedEvent).FullName!
+            typeof(Learning.Types.PersonalDetailsChangedEvent).FullName!,
+            typeof(SFA.DAS.LearnerData.Events.LearnerDataEvent).FullName!
         };
 
         return events;
