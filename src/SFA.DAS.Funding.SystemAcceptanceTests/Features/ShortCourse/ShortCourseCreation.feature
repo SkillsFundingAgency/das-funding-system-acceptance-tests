@@ -29,3 +29,9 @@ Scenario: Prevent duplication of unapproved short course earnings
 	And SLD informs us of a the same new short course learner again
 	Then the basic short course earnings are generated
 	And the short course earnings do not contain duplicates
+
+@regression
+Scenario: Don't throw an error on pre-approval change of provider
+	Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+	When SLD informs us the short course changes provider
+	Then the second POST call returns a 200

@@ -107,4 +107,21 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
 
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
     }
+
+    [When(@"SLD informs us the short course changes provider")]
+    public async Task WhenSLDInformsUsTheShortCourseChangesProvider()
+    {
+        var testData = context.Get<TestData>();
+        var shortCourseRequest = testData.ShortCourseLearnerData;
+
+        var response = await learnerDataOuterApiHelper.AddShortCourseLearnerDataWithResponse(Constants.AlternativeUkPrn, shortCourseRequest);
+        context.Set(response, "ShortCourseChangeProviderResponse");
+    }
+
+    [Then(@"the second POST call returns a 200")]
+    public void ThenTheSecondPOSTCallReturnsA200()
+    {
+        var response = context.Get<HttpResponseMessage>("ShortCourseChangeProviderResponse");
+        Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
+    }
 }
