@@ -22,7 +22,7 @@ public class ShortCourseLearnerDataBuilder(TestData testData)
             [
                 new LearnerDataOuterApiClient.ShortCourseOnProgramme
                 {
-                    CourseCode = "109",
+                    CourseCode = "ZSC00001",
                     AgreementId = "SCAgreement1",
                     StartDate = new DateTime(2024, 08, 01),
                     ExpectedEndDate = new DateTime(2024, 11, 01),
@@ -68,6 +68,13 @@ public class ShortCourseLearnerDataBuilder(TestData testData)
     public ShortCourseLearnerDataBuilder WithMilestone(LearnerDataOuterApiClient.Milestone milestone)
     {
         _request.Delivery.OnProgramme.Single().Milestones.Add(milestone);
+
+        return this;
+    }
+
+    public ShortCourseLearnerDataBuilder WithCourseCode(string courseCode)
+    {
+        _request.Delivery.OnProgramme.Single().CourseCode = courseCode;
 
         return this;
     }

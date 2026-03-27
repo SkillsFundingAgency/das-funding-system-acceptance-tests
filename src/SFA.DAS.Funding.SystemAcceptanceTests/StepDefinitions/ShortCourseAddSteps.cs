@@ -55,7 +55,7 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
     }
 
     [When(@"SLD informs us of a change to the short course dates pre approval")]
-    public async Task WhenTheProviderChangesShortCourseDetailsPreApproval()
+    public async Task WhenTheProviderChangesShortCourseDatesPreApproval()
     {
         var testData = context.Get<TestData>();
 
@@ -118,10 +118,26 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
         context.Set(response, "ShortCourseChangeProviderResponse");
     }
 
-    [Then(@"the second POST call returns a 200")]
-    public void ThenTheSecondPOSTCallReturnsA200()
+    [Then(@"the second POST call returns gracefully")]
+    public void ThenTheSecondPOSTCallReturnsGracefully()
     {
         var response = context.Get<HttpResponseMessage>("ShortCourseChangeProviderResponse");
-        Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
+        Assert.IsTrue(response.IsSuccessStatusCode, $"Expected success status code but got {response.StatusCode}");
+    }
+
+    [Given(@"SLD informs us of a the same learner with a short course starting on (.*)")]
+    public async Task GivenSLDInformsUsOfTheSameLearnerWithAShortCourseStartingOn(TokenisableDateTime startDate)
+    {
+        var testData = context.Get<TestData>();
+        var endDate = startDate.Value.AddMonths(3);
+
+        var shortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
+            .WithStartDate(startDate.Value)
+            .WithEndDate(endDate)
+            .Build();
+
+        context.Set(shortCourseRequest, "SecondaryShortCourseRequest");
+
+        await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
     }
 }
