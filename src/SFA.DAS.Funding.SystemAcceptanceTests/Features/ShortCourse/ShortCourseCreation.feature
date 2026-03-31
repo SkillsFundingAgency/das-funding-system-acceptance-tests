@@ -6,6 +6,7 @@ Scenario: New learner is created with a short course
 	Then the basic short course earnings are generated
 	And the learning domain is updated correctly
 	And the short course is set to unapproved
+	And the learner ref is stored in the learning db
 
 @regression
 Scenario: Existing learner is updated when a short course is added with updated learner details
@@ -15,6 +16,7 @@ Scenario: Existing learner is updated when a short course is added with updated 
 		| FirstName | LastName | DateOfBirth | EmailAddress      |
 		| Shaun     | Murphy   | 1999-09-09  | shaun@example.com |
 	Then the learning domain is updated correctly
+	And the learner ref is stored in the learning db
 
 @regression
 Scenario: Initial short course earnings are calculated for a learner in a hard closed academic year
@@ -22,6 +24,7 @@ Scenario: Initial short course earnings are calculated for a learner in a hard c
 	Then the basic short course earnings are generated
 	And the learning domain is updated correctly
 	And the short course is set to unapproved
+	And the learner ref is stored in the learning db
 
 @regression
 Scenario: Prevent duplication of unapproved short course earnings

@@ -344,7 +344,9 @@ public class ShortCourseEpisode
     public DateTime ExpectedEndDate { get; set; }
     public DateTime? WithdrawalDate { get; set; }
     public string TrainingCode { get; set; } = null!;
+    public string LearnerRef { get; set; } = null!;
     public bool IsApproved { get; set; }
+    public byte LearningType { get; set; }
     public List<ShortCourseLearningSupport> LearningSupport { get; set; }
     public List<ShortCourseMilestone> Milestones { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -90,6 +90,15 @@ public class TestRunHooks
         StaticObjects.ApprenticeshipsInnerApiHelper = new ApprenticeshipsInnerApiHelper();
         StaticObjects.EarningsInnerApiHelper = new EarningsInnerApiHelper();
         StaticObjects.LearnerDataOuterApiHelper = new LearnerDataOuterApiHelper();
+        StaticObjects.CoursesSqlClient = new CoursesSqlClient();
+    }
+
+    [BeforeTestRun(Order = 6)]
+    public static void SetEmployerMaxLevyCapForShortCourses()
+    {
+        var random = new Random();
+        StaticObjects.ShortCourseEmployerMaxLevyCap = random.Next(500, 10001);
+        StaticObjects.CoursesSqlClient!.UpdateEmployerMaxLevyCap(StaticObjects.ShortCourseEmployerMaxLevyCap);
     }
 
 
@@ -114,6 +123,12 @@ public class TestRunHooks
     {
         TestServiceBus.Das?.Stop();
         // TestServiceBus.Pv2?.Stop();
+    }
+
+    [AfterTestRun(Order = 5)]
+    public static void ResetEmployerMaxLevyCapForShortCourses()
+    {
+        StaticObjects.CoursesSqlClient!.ResetEmployerMaxLevyCap();
     }
 
     private static int GetTestCount()

@@ -184,6 +184,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         Assert.AreEqual(Constants.UkPrn, episode.Ukprn, "Ukprn does not match.");
         Assert.AreEqual(expectedCourse.StartDate, episode.StartDate, "StartDate does not match.");
         Assert.AreEqual(expectedCourse.ExpectedEndDate, episode.ExpectedEndDate, "ExpectedEndDate does not match.");
+        Assert.AreEqual((byte)LearnerData.Events.LearningType.ApprenticeshipUnit, episode.LearningType, "LearningType does not match.");
 
         var expectedLearningSupports = expectedCourse.LearningSupport ?? new();
         var actualLearningSupports = episode.LearningSupport ?? new();
@@ -209,6 +210,17 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var learningModel = context.Get<ShortCourseLearning>();
         Assert.IsTrue(learningModel.Episodes.Single().IsApproved, "Short course should be approved.");
         Assert.AreEqual(context.Get<TestData>().CommitmentsApprenticeshipCreatedEvent.AccountId, learningModel.Episodes.Single().EmployerAccountId, "EmployerId should have been updated from the approvals event.");
+    }
+
+    [Then(@"the learner ref is stored in the learning db")]
+    public void ThenTheLearnerRefIsStoredInTheLearningDb()
+    {
+        var testData = context.Get<TestData>();
+        var learningModel = context.Get<ShortCourseLearning>();
+        var expectedLearnerRef = testData.ShortCourseLearnerData.Learner.LearnerRef;
+        var actualLearnerRef = learningModel.Episodes.Single().LearnerRef;
+
+        Assert.AreEqual(expectedLearnerRef, actualLearnerRef, "LearnerRef does not match.");
     }
 
     [Then(@"the episode keys match between the learning and earnings databases")]

@@ -31,3 +31,12 @@ Scenario: Milestone Earnings - no milestones reached
 	And the short course is approved
     Then a 30% milestone earning is not generated
     And a completion earning is not generated
+
+@regression
+Scenario: Milestone Earnings - milestones recorded pre-approval
+    Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+    And the training provider recorded that the 30% milestone has been reached pre-approval
+    And the training provider also recorded that the learner completed pre-approval
+    And the short course is approved
+    Then a 30% milestone earning is generated
+    And a completion earning is generated
