@@ -302,4 +302,63 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var learner = testData.ShortCourseEarningsResponse.Learners.SingleOrDefault(x => x.LearningKey == testData.ApprovedShortCourseLearningKey.ToString());
         Assert.IsNull(learner, "Short course learner was unexpectedly found in the earnings response for this collection period.");
     }
+
+    [Then(@"only earnings are generated for the earliest short course")]
+    public async Task ThenOnlyEarningsAreGeneratedForTheEarliestShortCourse()
+    {
+        var testData = context.Get<TestData>();
+        
+        ShortCourseEarningsModel? earningsModel = null;
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+            return earningsModel?.Episodes?.Count > 0;
+        }, "Failed to find short course earnings entity.");
+
+        Assert.AreEqual(1, earningsModel!.Episodes.Count, "Expected exactly 1 episode for the earliest short course earnings, but found a different count.");
+    }
+
+    [Then(@"the earnings are still recorded against the first provider")]
+    public async Task ThenTheEarningsAreStillRecordedAgainstTheFirstProvider()
+    {
+        var testData = context.Get<TestData>();
+        
+        ShortCourseEarningsModel? earningsModel = null;
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+            return earningsModel?.Episodes?.Count > 0;
+        }, "Failed to find short course earnings entity.");
+
+        Assert.AreEqual(Constants.UkPrn, earningsModel!.Episodes.Single().Ukprn, "The earnings were not recorded against the first provider's UKPRN.");
+    }
+
+    [Then(@"the short course data is sent to approvals")]
+    public async Task ThenTheShortCourseDataIsSentToApprovals()
+    {
+        var testData = context.Get<TestData>();
+        var shortCourseOnProgramme = testData.ShortCourseLearnerData!.Delivery.OnProgramme.Single();
+
+        ShortCourseEarningsModel? earningsModel = null;
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+            return earningsModel?.Episodes?.Count > 0;
+        }, "Failed to find short course earnings entity.");
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var publishedEvent = Infrastructure.Events.LearnerDataEventHandler.GetMessage(x => x.ULN == long.Parse(testData.Uln));
+            if (publishedEvent != null)
+            {
+                Assert.AreEqual(Constants.UkPrn, publishedEvent.UKPRN, "UKPRN does not match");
+                Assert.AreEqual(LearnerData.Events.LearningType.ApprenticeshipUnit, publishedEvent.LearningType, "LearningType does not match");
+                //Assert.AreEqual(shortCourseOnProgramme.CourseCode, publishedEvent.StandardCode.ToString(), "StandardCode does not match"); TODO assert this correctly when we build 1607, might be called LARSCode on the event
+                Assert.AreEqual((int)earningsModel!.Episodes.Single().CoursePrice, publishedEvent.TrainingPrice, "TrainingPrice does not match CoursePrice");
+                
+                return true;
+            }
+            return false;
+        }, "Failed to find published LearnerDataEvent.");
+    }
 }

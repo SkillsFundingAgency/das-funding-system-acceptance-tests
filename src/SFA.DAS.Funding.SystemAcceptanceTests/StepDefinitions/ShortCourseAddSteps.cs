@@ -55,7 +55,7 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
     }
 
     [When(@"SLD informs us of a change to the short course dates pre approval")]
-    public async Task WhenTheProviderChangesShortCourseDetailsPreApproval()
+    public async Task WhenTheProviderChangesShortCourseDatesPreApproval()
     {
         var testData = context.Get<TestData>();
 
@@ -104,6 +104,39 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
 
         var shortCourseRequest = testData.ShortCourseLearnerData;
         shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = completionDate.Value;
+
+        await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
+    }
+
+    [When(@"SLD informs us the short course changes provider")]
+    public async Task WhenSLDInformsUsTheShortCourseChangesProvider()
+    {
+        var testData = context.Get<TestData>();
+        var shortCourseRequest = testData.ShortCourseLearnerData;
+
+        var response = await learnerDataOuterApiHelper.AddShortCourseLearnerDataWithResponse(Constants.AlternativeUkPrn, shortCourseRequest);
+        context.Set(response, "ShortCourseChangeProviderResponse");
+    }
+
+    [Then(@"the second POST call returns gracefully")]
+    public void ThenTheSecondPOSTCallReturnsGracefully()
+    {
+        var response = context.Get<HttpResponseMessage>("ShortCourseChangeProviderResponse");
+        Assert.IsTrue(response.IsSuccessStatusCode, $"Expected success status code but got {response.StatusCode}");
+    }
+
+    [Given(@"SLD informs us of a the same learner with a short course starting on (.*)")]
+    public async Task GivenSLDInformsUsOfTheSameLearnerWithAShortCourseStartingOn(TokenisableDateTime startDate)
+    {
+        var testData = context.Get<TestData>();
+        var endDate = startDate.Value.AddMonths(3);
+
+        var shortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
+            .WithStartDate(startDate.Value)
+            .WithEndDate(endDate)
+            .Build();
+
+        context.Set(shortCourseRequest, "SecondaryShortCourseRequest");
 
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
     }

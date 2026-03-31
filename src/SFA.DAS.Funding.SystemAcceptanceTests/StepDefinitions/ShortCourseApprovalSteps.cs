@@ -15,7 +15,57 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         var testData = context.Get<TestData>();
         var shortCourseOnProgramme = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single();
 
-        var apprenticeshipCreatedEvent = new SFA.DAS.CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent
+        var apprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, shortCourseOnProgramme, "ABC123");
+
+        testData.CommitmentsApprenticeshipCreatedEvent = apprenticeshipCreatedEvent;
+
+        await TestServiceBus.Das.SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+
+            if ((earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile.IsApproved).GetValueOrDefault())
+            {
+                testData.ApprovedShortCourseLearningKey = earningsModel.LearningKey;
+                return true;
+            }
+
+            return false;
+        }, "Failed to find approved short course earnings entity.");
+    }
+
+    [When(@"both short courses are approved")]
+    public async Task WhenBothShortCoursesAreApproved()
+    {
+        var testData = context.Get<TestData>();
+        
+        var firstCourseOnProgramme = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single();
+        var firstApprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, firstCourseOnProgramme, "ABC123");
+        await TestServiceBus.Das.SendApprenticeshipApprovedMessage(firstApprenticeshipCreatedEvent);
+
+        var secondCourseRequest = context.Get<Helpers.Http.LearnerDataOuterApiClient.ShortCourseRequest>("SecondaryShortCourseRequest");
+        var secondCourseOnProgramme = secondCourseRequest.Delivery.OnProgramme.Single();
+        var secondApprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, secondCourseOnProgramme, "XYZ987");
+        await TestServiceBus.Das.SendApprenticeshipApprovedMessage(secondApprenticeshipCreatedEvent);
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+
+            if ((earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile.IsApproved).GetValueOrDefault())
+            {
+                testData.ApprovedShortCourseLearningKey = earningsModel.LearningKey;
+                return true;
+            }
+
+            return false;
+        }, "Failed to find approved short course earnings entity.");
+    }
+
+    private SFA.DAS.CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent CreateApprenticeshipCreatedEvent(TestData testData, Helpers.Http.LearnerDataOuterApiClient.ShortCourseOnProgramme shortCourseOnProgramme, string apprenticshipHashedId)
+    {
+        return new SFA.DAS.CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent
         {
             ApprenticeshipId = TestIdentifierProvider.GetNextApprovalsApprenticeshipId(),
             TrainingCode = shortCourseOnProgramme.CourseCode,
@@ -42,26 +92,9 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
             IsOnFlexiPaymentPilot = true,
             LearningType = SFA.DAS.CommitmentsV2.Messages.Events.LearningType.ApprenticeshipUnit,
             TrainingCourseVersion = "1.0",
-            ApprenticeshipHashedId = "ABC123",
+            ApprenticeshipHashedId = apprenticshipHashedId,
             AccountLegalEntityId = 12345,
             TransferSenderId = null
         };
-
-        testData.CommitmentsApprenticeshipCreatedEvent = apprenticeshipCreatedEvent;
-
-        await TestServiceBus.Das.SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
-
-        await WaitHelper.WaitForIt(() =>
-        {
-            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-
-            if ((earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile.IsApproved).GetValueOrDefault())
-            {
-                testData.ApprovedShortCourseLearningKey = earningsModel.LearningKey;
-                return true;
-            }
-
-            return false;
-        }, "Failed to find approved short course earnings entity.");
     }
 }
