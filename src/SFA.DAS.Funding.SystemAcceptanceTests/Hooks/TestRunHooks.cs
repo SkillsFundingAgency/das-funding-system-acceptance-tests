@@ -94,11 +94,11 @@ public class TestRunHooks
     }
 
     [BeforeTestRun(Order = 6)]
-    public static void SetProposedMaxFundingForShortCourses()
+    public static void SetEmployerMaxLevyCapForShortCourses()
     {
         var random = new Random();
-        StaticObjects.ShortCourseProposedMaxFunding = random.Next(500, 10001);
-        StaticObjects.CoursesSqlClient!.UpdateProposedMaxFunding(StaticObjects.ShortCourseProposedMaxFunding);
+        StaticObjects.ShortCourseEmployerMaxLevyCap = random.Next(500, 10001);
+        StaticObjects.CoursesSqlClient!.UpdateEmployerMaxLevyCap(StaticObjects.ShortCourseEmployerMaxLevyCap);
     }
 
 
@@ -126,9 +126,9 @@ public class TestRunHooks
     }
 
     [AfterTestRun(Order = 5)]
-    public static void ResetProposedMaxFundingForShortCourses()
+    public static void ResetEmployerMaxLevyCapForShortCourses()
     {
-        StaticObjects.CoursesSqlClient!.ResetProposedMaxFunding();
+        StaticObjects.CoursesSqlClient!.ResetEmployerMaxLevyCap();
     }
 
     private static int GetTestCount()

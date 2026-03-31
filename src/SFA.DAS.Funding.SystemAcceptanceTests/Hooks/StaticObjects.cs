@@ -18,5 +18,5 @@ internal class StaticObjects
     internal static EarningsInnerApiHelper? EarningsInnerApiHelper;
     internal static LearnerDataOuterApiHelper? LearnerDataOuterApiHelper;
     internal static CoursesSqlClient? CoursesSqlClient;
-    internal static int ShortCourseProposedMaxFunding;
+    internal static int ShortCourseEmployerMaxLevyCap;
 }

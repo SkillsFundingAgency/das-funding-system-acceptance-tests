@@ -12,14 +12,14 @@ public class CoursesSqlClient
         _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
     }
 
-    public void UpdateProposedMaxFunding(int value)
+    public void UpdateEmployerMaxLevyCap(int value)
     {
         const string sql = "update [dbo].[ApprenticeshipFunding] set MaxEmployerLevyCap = @value where LarsCode = 'ZSC00005'";
         _sqlServerClient.Execute(sql, new { value });
         Console.WriteLine($"[CoursesSqlClient] Updated MaxEmployerLevyCap to {value} for LarsCode ZSC00005");
     }
 
-    public void ResetProposedMaxFunding()
+    public void ResetEmployerMaxLevyCap()
     {
         const string sql = "update [dbo].[ApprenticeshipFunding] set MaxEmployerLevyCap = 1000.00 where LarsCode = 'ZSC00005'";
         _sqlServerClient.Execute(sql);
