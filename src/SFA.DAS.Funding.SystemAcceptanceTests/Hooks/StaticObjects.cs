@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using WireMock.Server;
@@ -17,4 +17,6 @@ internal class StaticObjects
     internal static ApprenticeshipsInnerApiHelper? ApprenticeshipsInnerApiHelper;
     internal static EarningsInnerApiHelper? EarningsInnerApiHelper;
     internal static LearnerDataOuterApiHelper? LearnerDataOuterApiHelper;
+    internal static CoursesSqlClient? CoursesSqlClient;
+    internal static int ShortCourseProposedMaxFunding;
 }

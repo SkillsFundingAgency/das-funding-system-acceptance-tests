@@ -211,6 +211,17 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         Assert.AreEqual(context.Get<TestData>().CommitmentsApprenticeshipCreatedEvent.AccountId, learningModel.Episodes.Single().EmployerAccountId, "EmployerId should have been updated from the approvals event.");
     }
 
+    [Then(@"the learner ref is stored in the learning db")]
+    public void ThenTheLearnerRefIsStoredInTheLearningDb()
+    {
+        var testData = context.Get<TestData>();
+        var learningModel = context.Get<ShortCourseLearning>();
+        var expectedLearnerRef = testData.ShortCourseLearnerData.Learner.LearnerRef;
+        var actualLearnerRef = learningModel.Episodes.Single().LearnerRef;
+
+        Assert.AreEqual(expectedLearnerRef, actualLearnerRef, "LearnerRef does not match.");
+    }
+
     [Then(@"the episode keys match between the learning and earnings databases")]
     public async Task ThenTheEpisodeKeysMatchBetweenTheLearningAndEarningsDatabases()
     {

@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -90,6 +90,15 @@ public class TestRunHooks
         StaticObjects.ApprenticeshipsInnerApiHelper = new ApprenticeshipsInnerApiHelper();
         StaticObjects.EarningsInnerApiHelper = new EarningsInnerApiHelper();
         StaticObjects.LearnerDataOuterApiHelper = new LearnerDataOuterApiHelper();
+        StaticObjects.CoursesSqlClient = new CoursesSqlClient();
+    }
+
+    [BeforeTestRun(Order = 6)]
+    public static void SetProposedMaxFundingForShortCourses()
+    {
+        var random = new Random();
+        StaticObjects.ShortCourseProposedMaxFunding = random.Next(500, 10001);
+        StaticObjects.CoursesSqlClient!.UpdateProposedMaxFunding(StaticObjects.ShortCourseProposedMaxFunding);
     }
 
 
@@ -114,6 +123,12 @@ public class TestRunHooks
     {
         TestServiceBus.Das?.Stop();
         // TestServiceBus.Pv2?.Stop();
+    }
+
+    [AfterTestRun(Order = 5)]
+    public static void ResetProposedMaxFundingForShortCourses()
+    {
+        StaticObjects.CoursesSqlClient!.ResetProposedMaxFunding();
     }
 
     private static int GetTestCount()
