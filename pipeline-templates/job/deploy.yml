@@ -108,6 +108,7 @@ jobs:
             EarningsOuterSubscriptionKey: $(EarningsOuterSubscriptionKey)
             LearnerDataOuterApiSubscriptionKey: $(LearnerDataOuterApiSubscriptionKey)
             LearnerDataDbConnectionString: $(LearnerDataDbConnectionString)
+            CoursesDbConnectionString: $(CoursesDbConnectionString)
           inputs:
             testSelector: 'testAssemblies'
             testAssemblyVer2: |
@@ -174,6 +175,7 @@ jobs:
             EarningsOuterSubscriptionKey: $(EarningsOuterSubscriptionKey)
             LearnerDataOuterApiSubscriptionKey: $(LearnerDataOuterApiSubscriptionKey)
             LearnerDataDbConnectionString: $(LearnerDataDbConnectionString)
+            CoursesDbConnectionString: $(CoursesDbConnectionString)
           condition: failed()
           displayName: "Re-run failed tests (individually)"
 
