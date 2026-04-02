@@ -15,7 +15,7 @@ public class TestData
 {
     internal string Uln { get; }
     internal Guid LearningKey { get; set; } = Guid.Empty;
-    internal Guid ApprovedShortCourseLearningKey { get; set; } = Guid.Empty;
+    internal Guid ShortCourseLearningKey { get; set; } = Guid.Empty;
     internal Guid InitialEarningsProfileId { get; set; } = Guid.Empty;
     internal Guid EarningsProfileId { get; set; } = Guid.Empty;
     internal bool IsMarkedAsCareLeaver { get; set; } = false;

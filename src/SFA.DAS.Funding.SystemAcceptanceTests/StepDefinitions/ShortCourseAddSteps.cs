@@ -109,6 +109,15 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
     }
 
+    [Given(@"SLD informs us the short course learning has completed on (.*) if applicable")]
+    [When(@"SLD informs us the short course learning has completed on (.*) if applicable")]
+    public async Task WhenSLDInformsUsTheShortCourseLearningHasCompletedOnIfApplicable(string completionDate)
+    {
+        if (completionDate == "N/A" || string.IsNullOrWhiteSpace(completionDate)) return;
+
+        await WhenSLDInformsUsTheShortCourseLearningHasCompletedOn(TokenisableDateTime.FromString(completionDate));
+    }
+
     [When(@"SLD informs us the short course changes provider")]
     public async Task WhenSLDInformsUsTheShortCourseChangesProvider()
     {

@@ -27,12 +27,33 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
 
             if ((earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile.IsApproved).GetValueOrDefault())
             {
-                testData.ApprovedShortCourseLearningKey = earningsModel.LearningKey;
+                testData.ShortCourseLearningKey = earningsModel.LearningKey;
                 return true;
             }
 
             return false;
         }, "Failed to find approved short course earnings entity.");
+    }
+
+    [Given(@"the short course is not approved")]
+    [When(@"the short course is not approved")]
+    public async Task WhenTheShortCourseIsNotApproved()
+    {
+        var testData = context.Get<TestData>();
+        
+        await WaitHelper.WaitForIt(() =>
+        {
+            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+
+            if (earningsModel != null)
+            {
+                // Cache the learning key without approving so it's available in the assertions
+                testData.ShortCourseLearningKey = earningsModel.LearningKey;
+                return true;
+            }
+
+            return false;
+        }, "Failed to find short course earnings entity.");
     }
 
     [When(@"both short courses are approved")]
@@ -55,7 +76,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
 
             if ((earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile.IsApproved).GetValueOrDefault())
             {
-                testData.ApprovedShortCourseLearningKey = earningsModel.LearningKey;
+                testData.ShortCourseLearningKey = earningsModel.LearningKey;
                 return true;
             }
 

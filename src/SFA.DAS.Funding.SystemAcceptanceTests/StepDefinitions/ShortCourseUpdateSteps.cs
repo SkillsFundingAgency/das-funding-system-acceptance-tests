@@ -19,7 +19,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
             .WithMilestone(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete);
 
         var updatedRequest = builder.Build();
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, updatedRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ShortCourseLearningKey, updatedRequest);
         testData.ShortCourseLearnerData = updatedRequest;
     }
 
@@ -37,9 +37,10 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
             .WithMilestone(LearnerDataOuterApiClient.Milestone.LearningComplete);
 
         var updatedRequest = builder.Build();
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, updatedRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ShortCourseLearningKey, updatedRequest);
         testData.ShortCourseLearnerData = updatedRequest;
     }
+
 
     [When(@"SLD inform us that the learner has withdrawn")]
     public async Task WhenSLDInformUsThatTheLearnerHasWithdrawn()
@@ -51,7 +52,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = null; 
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones.Remove(LearnerDataOuterApiClient.Milestone.LearningComplete);
 
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, shortCourseRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ShortCourseLearningKey, shortCourseRequest);
     }
 
     [When(@"SLD also inform us that the 30% milestone was removed")]
@@ -62,7 +63,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones = [];
 
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, shortCourseRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ShortCourseLearningKey, shortCourseRequest);
     }
 
     [When(@"SLD also inform us that the 30% milestone was not removed")]
