@@ -11,11 +11,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events
             await WaitHelper.WaitForIt(() =>
             {
                 LearningWithdrawnEvent? learningWithdrawnEvent =
-                    LearningWithdrawnEventHandler.GetMessage(x => x.LearningKey == learningKey);
+                    ApprenticeshipWithdrawnEventHandler.GetMessage(x => x.LearningKey == learningKey);
 
                 if (learningWithdrawnEvent != null)
                 {
-                    testData.LearningWithdrawnEvent = learningWithdrawnEvent;
+                    testData.ApprenticeshipWithdrawnEvent = learningWithdrawnEvent;
                     return true;
                 }
                 return false;
