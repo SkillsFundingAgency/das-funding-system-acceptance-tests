@@ -108,6 +108,7 @@ jobs:
             EarningsOuterSubscriptionKey: $(EarningsOuterSubscriptionKey)
             LearnerDataOuterApiSubscriptionKey: $(LearnerDataOuterApiSubscriptionKey)
             LearnerDataDbConnectionString: $(LearnerDataDbConnectionString)
+            CoursesDbConnectionString: $(CoursesDbConnectionString)
           inputs:
             testSelector: 'testAssemblies'
             testAssemblyVer2: |

@@ -3,7 +3,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
+namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 
 [Binding]
 public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient earningsSqlClient)
@@ -84,9 +84,9 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         }, "Failed to find approved short course earnings entity.");
     }
 
-    private SFA.DAS.CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent CreateApprenticeshipCreatedEvent(TestData testData, Helpers.Http.LearnerDataOuterApiClient.ShortCourseOnProgramme shortCourseOnProgramme, string apprenticshipHashedId)
+    private CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent CreateApprenticeshipCreatedEvent(TestData testData, Helpers.Http.LearnerDataOuterApiClient.ShortCourseOnProgramme shortCourseOnProgramme, string apprenticshipHashedId)
     {
-        return new SFA.DAS.CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent
+        return new CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent
         {
             ApprenticeshipId = TestIdentifierProvider.GetNextApprovalsApprenticeshipId(),
             TrainingCode = shortCourseOnProgramme.CourseCode,
@@ -95,7 +95,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
             EndDate = shortCourseOnProgramme.ExpectedEndDate,
             PriceEpisodes = new[]
             {
-                new SFA.DAS.CommitmentsV2.Messages.Events.PriceEpisode
+                new CommitmentsV2.Messages.Events.PriceEpisode
                 {
                     FromDate = shortCourseOnProgramme.StartDate,
                     Cost = 2000,
@@ -111,7 +111,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
             ProviderId = Constants.UkPrn,
             LegalEntityName = "Test Legal Entity",
             IsOnFlexiPaymentPilot = true,
-            LearningType = SFA.DAS.CommitmentsV2.Messages.Events.LearningType.ApprenticeshipUnit,
+            LearningType = CommitmentsV2.Messages.Events.LearningType.ApprenticeshipUnit,
             TrainingCourseVersion = "1.0",
             ApprenticeshipHashedId = apprenticshipHashedId,
             AccountLegalEntityId = 12345,

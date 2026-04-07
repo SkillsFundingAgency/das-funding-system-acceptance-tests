@@ -4,7 +4,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
+namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 
 [Binding]
 public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiClient learnerDataOuterApiHelper)

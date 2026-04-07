@@ -3,7 +3,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
+namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 
 [Binding]
 public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuterApiClient learnerDataOuterApiHelper, EarningsSqlClient earningsSqlClient, LearningSqlClient learningSqlClient)
@@ -276,7 +276,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     public async Task WhenSldRequestsShortCourseEarningsDataForCollectionPeriod(TokenisablePeriod period)
     {
         var testData = context.Get<TestData>();
-        testData.ShortCourseEarningsResponse = await learnerDataOuterApiHelper.GetShortCourseEarningsData(Constants.UkPrn, period.Value.AcademicYear, (byte)period.Value.PeriodValue);
+        testData.ShortCourseEarningsResponse = await learnerDataOuterApiHelper.GetShortCourseEarningsData(Constants.UkPrn, period.Value.AcademicYear, period.Value.PeriodValue);
     }
 
     [Then(@"the short course learner is returned in the approved ulns response without duplicates")]
@@ -360,7 +360,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
 
         await WaitHelper.WaitForIt(() =>
         {
-            var publishedEvent = Infrastructure.Events.LearnerDataEventHandler.GetMessage(x => x.ULN == long.Parse(testData.Uln));
+            var publishedEvent = LearnerDataEventHandler.GetMessage(x => x.ULN == long.Parse(testData.Uln));
             if (publishedEvent != null)
             {
                 Assert.AreEqual(Constants.UkPrn, publishedEvent.UKPRN, "UKPRN does not match");
