@@ -1,23 +1,18 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 
 [Binding]
-public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuterApiClient learnerDataOuterApiHelper, EarningsSqlClient earningsSqlClient, LearningSqlClient learningSqlClient)
+public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuterApiClient learnerDataOuterApiHelper, EarningsSqlClient earningsSqlClient, LearningSqlClient learningSqlClient, ShortCourseEarningsAndPaymentsAssertionHelper assertionHelper)
 {
     [Then(@"remove all earnings for that ""short course""")]
     public async Task ThenRemoveAllEarningsForThatShortCourse()
     {
-        var testData = context.Get<TestData>();
-
-        await WaitHelper.WaitForIt(() =>
-        {
-            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            return earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.All(x => !x.IsPayable) ?? true;
-        }, "Failed to verify that all earnings were removed.");
+        await assertionHelper.AssertAllEarningsRemoved();
     }
 
     [Then(@"remove the remaining completion earning")]
@@ -25,136 +20,46 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     [Then(@"a completion earning is not generated")]
     public async Task ThenRemoveTheRemainingCompletionEarning()
     {
-        var testData = context.Get<TestData>();
-
-        await WaitHelper.WaitForIt(() =>
-        {
-            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
-            return instalments != null && instalments.All(x => x.Type != "LearningComplete" || !x.IsPayable);
-        }, "Failed to verify that the completion earning was removed.");
+        await assertionHelper.AssertRemainingCompletionEarningRemoved();
     }
 
     [Then(@"remove the 30% milestone earning")]
     [Then(@"a 30% milestone earning is not generated")]
     public async Task ThenRemoveThe30PercentMilestoneEarning()
     {
-        var testData = context.Get<TestData>();
-
-        await WaitHelper.WaitForIt(() =>
-        {
-            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
-            return instalments != null && instalments.All(x => x.Type != "ThirtyPercentLearningComplete" || !x.IsPayable);
-        }, "Failed to verify that the 30% milestone earning was removed.");
+        await assertionHelper.Assert30PercentMilestoneEarningRemoved();
     }
 
     [Then(@"retain the 30% milestone earning")]
     [Then(@"a 30% milestone earning is generated")]
     public async Task ThenRetainThe30PercentMilestoneEarning()
     {
-        var testData = context.Get<TestData>();
-
-        ShortCourseEarningsModel? earningsModel = null;
-        await WaitHelper.WaitForIt(() =>
-        {
-            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
-            return instalments != null && instalments.Any(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable);
-        }, "Failed to find short course earnings with 30% milestone earning.");
-
-        var instalment = earningsModel!.Episodes.Single().EarningsProfile.Instalments.Single(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable);
-        var totalPrice = earningsModel.Episodes.Single().CoursePrice;
-        var expectedAmount = Math.Round(totalPrice * 0.3m, 5);
-
-        Assert.AreEqual((double)expectedAmount, (double)instalment.Amount, 0.01, "The retained instalment is not the 30% milestone earning.");
+        await assertionHelper.Assert30PercentMilestoneEarningRetained();
     }
 
     [Then(@"a completion earning is generated")]
     public async Task ThenACompletionEarningIsGenerated()
     {
-        var testData = context.Get<TestData>();
-
-        await WaitHelper.WaitForIt(() =>
-        {
-            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
-            return instalments != null && instalments.Any(x => x.Type == "LearningComplete" && x.IsPayable);
-        }, "Failed to verify that the completion earning was generated.");
+        await assertionHelper.AssertCompletionEarningGenerated();
     }
 
     [Given(@"the basic short course earnings are generated")]
     [Then(@"the basic short course earnings are generated")]
     public async Task ThenTheShortCourseIsSuccessfullyProcessed()
     {
-        var testData = context.Get<TestData>();
-
-        var expectedCourse = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single();
-        var expectedStartDate = expectedCourse.StartDate;
-        var expectedEndDate = expectedCourse.ExpectedEndDate;
-
-        ShortCourseEarningsModel? earningsModel = null;
-        await WaitHelper.WaitForIt(() =>
-        {
-            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            return earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.Count == 2;
-        }, "Failed to find short course earnings entity.");
-
-        var instalments = earningsModel!.Episodes.Single().EarningsProfile.Instalments;
-
-        var duration = (expectedEndDate - expectedStartDate).Days + 1;
-        var daysToFirstPayment = (int)Math.Floor(duration * 0.3);
-        var firstPaymentDate = expectedStartDate.AddDays(daysToFirstPayment);
-        var secondPaymentDate = expectedEndDate;
-
-        var expectedFirstPeriod = TableExtensions.Period[firstPaymentDate.ToString("MMMM")];
-        var expectedFirstAcademicYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", firstPaymentDate));
-
-        var expectedSecondPeriod = TableExtensions.Period[secondPaymentDate.ToString("MMMM")];
-        var expectedSecondAcademicYear = Convert.ToInt16(TableExtensions.CalculateAcademicYear("0", secondPaymentDate));
-
-        var firstInstalment = instalments.SingleOrDefault(x => x.DeliveryPeriod == expectedFirstPeriod && x.AcademicYear == expectedFirstAcademicYear);
-        Assert.IsNotNull(firstInstalment, $"Could not find first instalment in period {expectedFirstPeriod} of AY {expectedFirstAcademicYear}");
-
-        var secondInstalment = instalments.SingleOrDefault(x => x.DeliveryPeriod == expectedSecondPeriod && x.AcademicYear == expectedSecondAcademicYear);
-        Assert.IsNotNull(secondInstalment, $"Could not find second instalment in period {expectedSecondPeriod} of AY {expectedSecondAcademicYear}");
-
-        var totalPrice = earningsModel.Episodes.Single().CoursePrice;
-
-        var expectedFirstAmount = Math.Round(totalPrice * 0.3m, 5);
-        var expectedSecondAmount = Math.Round(totalPrice * 0.7m, 5);
-
-        Assert.AreEqual((double)expectedFirstAmount, (double)firstInstalment.Amount, 0.01, "First instalment amount does not match exactly 30% of total price.");
-        Assert.AreEqual((double)expectedSecondAmount, (double)secondInstalment.Amount, 0.01, "Second instalment amount does not match exactly 70% of total price.");
+        await assertionHelper.AssertBasicShortCourseEarningsGenerated();
     }
 
     [Then(@"the short course earnings are set to approved")]
     public async Task ThenTheShortCourseEarningsAreSetToApproved()
     {
-        var testData = context.Get<TestData>();
-
-        ShortCourseEarningsModel? earningsModel = null;
-        await WaitHelper.WaitForIt(() =>
-        {
-            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            return earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile != null;
-        }, "Failed to find short course earnings entity.");
-
-        Assert.IsTrue(earningsModel!.Episodes.Single().EarningsProfile.IsApproved, "Short course earnings should be approved.");
+        await assertionHelper.AssertShortCourseEarningsSetToApproved();
     }
 
     [Then("the short course earnings do not contain duplicates")]
     public async Task ThenTheShortCourseEarningsAreGeneratedWithoutDuplication()
     {
-        var testData = context.Get<TestData>();
-        ShortCourseEarningsModel? earningsModel = null;
-        await WaitHelper.WaitForIt(() =>
-        {
-            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            return earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.Count == 2;
-        }, "Failed to find short course earnings entity.");
-        var instalments = earningsModel!.Episodes.Single().EarningsProfile.Instalments;
-        Assert.AreEqual(2, instalments.Count, "Expected exactly 2 instalments for the short course, but found a different count.");
+        await assertionHelper.AssertShortCourseEarningsAreGeneratedWithoutDuplication();
     }
 
     [Then(@"the learning domain is updated correctly")]
@@ -242,27 +147,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     [Then(@"the second instalment is earnt in period (.*)")]
     public async Task ThenTheSecondInstalmentIsEarntInPeriod(TokenisablePeriod period)
     {
-        var testData = context.Get<TestData>();
-
-        ShortCourseEarningsModel? earningsModel = null;
-        await WaitHelper.WaitForIt(() =>
-        {
-            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            return earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.Count == 2;
-        }, "Failed to find short course earnings entity.");
-
-        var instalments = earningsModel!.Episodes.Single().EarningsProfile.Instalments;
-
-        var expectedSecondPeriod = period.Value.PeriodValue;
-        var expectedSecondAcademicYear = period.Value.AcademicYear;
-
-        var secondInstalment = instalments.SingleOrDefault(x => x.DeliveryPeriod == expectedSecondPeriod && x.AcademicYear == expectedSecondAcademicYear);
-        Assert.IsNotNull(secondInstalment, $"Could not find second instalment in period {expectedSecondPeriod} of AY {expectedSecondAcademicYear}");
-
-        var totalPrice = earningsModel.Episodes.Single().CoursePrice;
-        var expectedSecondAmount = Math.Round(totalPrice * 0.7m, 5);
-
-        Assert.AreEqual((double)expectedSecondAmount, (double)secondInstalment.Amount, 0.01, "Second instalment amount (70% of total price) not found in expected delivery period.");
+        await assertionHelper.AssertSecondInstalmentIsEarntInPeriod(period);
     }
 
     [When(@"SLD requests short course approved ulns for academic year (.*)")]
@@ -318,31 +203,13 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     [Then(@"only earnings are generated for the earliest short course")]
     public async Task ThenOnlyEarningsAreGeneratedForTheEarliestShortCourse()
     {
-        var testData = context.Get<TestData>();
-        
-        ShortCourseEarningsModel? earningsModel = null;
-        await WaitHelper.WaitForIt(() =>
-        {
-            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            return earningsModel?.Episodes?.Count > 0;
-        }, "Failed to find short course earnings entity.");
-
-        Assert.AreEqual(1, earningsModel!.Episodes.Count, "Expected exactly 1 episode for the earliest short course earnings, but found a different count.");
+        await assertionHelper.AssertOnlyEarningsAreGeneratedForTheEarliestShortCourse();
     }
 
     [Then(@"the earnings are still recorded against the first provider")]
     public async Task ThenTheEarningsAreStillRecordedAgainstTheFirstProvider()
     {
-        var testData = context.Get<TestData>();
-        
-        ShortCourseEarningsModel? earningsModel = null;
-        await WaitHelper.WaitForIt(() =>
-        {
-            earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            return earningsModel?.Episodes?.Count > 0;
-        }, "Failed to find short course earnings entity.");
-
-        Assert.AreEqual(Constants.UkPrn, earningsModel!.Episodes.Single().Ukprn, "The earnings were not recorded against the first provider's UKPRN.");
+        await assertionHelper.AssertEarningsAreStillRecordedAgainstTheFirstProvider();
     }
 
     [Then(@"the short course data is sent to approvals")]
@@ -372,5 +239,34 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
             }
             return false;
         }, "Failed to find published LearnerDataEvent.");
+    }
+
+    [Then(@"(.*) earnings profile history records are created for the short course")]
+    public async Task ThenEarningsProfileHistoryRecordsAreCreatedForTheShortCourse(int expectedRecordCount)
+    {
+        var testData = context.Get<TestData>();
+        ShortCourseEarningsModel? earningsModel = null;
+        await WaitHelper.WaitForIt(() =>
+            {
+                earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+                if (earningsModel == null) return false;
+
+                var episodes = earningsModel.Episodes;
+                if (episodes == null || !episodes.Any()) return false;
+
+                var latestEpisode = episodes.OrderByDescending(e => e.StartDate).First();
+                if (latestEpisode.EarningsProfile == null) return false;
+
+                return latestEpisode.EarningsProfileHistory != null && latestEpisode.EarningsProfileHistory.Count == expectedRecordCount;
+            }, $"Failed to find exactly {expectedRecordCount} history records.");
+
+        var latestEpisode = earningsModel!.Episodes.OrderByDescending(e => e.StartDate).First();
+        var historyRecords = latestEpisode.EarningsProfileHistory;
+
+        foreach (var history in historyRecords)
+        {
+            Assert.AreEqual(latestEpisode.EarningsProfile.EarningsProfileId, history.EarningsProfileId, "EarningsProfileId in history does not match current EarningsProfileId");
+            Assert.AreNotEqual(Guid.Empty, history.Version, "Version is empty in history record");
+        }
     }
 }

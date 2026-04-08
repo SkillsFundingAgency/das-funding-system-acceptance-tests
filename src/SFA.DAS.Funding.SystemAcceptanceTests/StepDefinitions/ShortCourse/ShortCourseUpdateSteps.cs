@@ -71,4 +71,11 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
     {
         // No action needed
     }
+
+    [When(@"SLD inform us that the learner has been removed")]
+    public async Task WhenSLDInformUsThatTheLearnerHasBeenRemoved()
+    {
+        var testData = context.Get<TestData>();
+        await learnerDataOuterApiHelper.DeleteShortCourse(Constants.UkPrn, testData.ShortCourseLearningKey);
+    }
 }

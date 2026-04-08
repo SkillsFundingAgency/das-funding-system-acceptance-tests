@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages.Events;
+
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 
 internal static class EarningsRecalculatedEventHelper
 {

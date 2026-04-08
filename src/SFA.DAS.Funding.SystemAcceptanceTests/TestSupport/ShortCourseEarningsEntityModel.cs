@@ -24,6 +24,7 @@ public class ShortCourseEpisodeModel
     public DateTime EndDate { get; set; }
     public decimal CoursePrice { get; set; }
     public ShortCourseEarningsProfileModel EarningsProfile { get; set; }
+    public List<EarningsProfileHistoryModel> EarningsProfileHistory { get; set; }
 }
 
 public class ShortCourseEarningsProfileModel

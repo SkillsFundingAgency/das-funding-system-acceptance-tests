@@ -82,6 +82,7 @@ public class EarningsSqlClient
         {
             episode.EarningsProfile = _sqlServerClient.GetList<ShortCourseEarningsProfileModel>($"SELECT * FROM [Domain].[ShortCourseEarningsProfile] Where EpisodeKey ='{episode.Key}'").Single();
             episode.EarningsProfile.Instalments = _sqlServerClient.GetList<ShortCourseInstalmentModel>($"SELECT * FROM [Domain].[ShortCourseInstalment] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
+            episode.EarningsProfileHistory = _sqlServerClient.GetList<EarningsProfileHistoryModel>($"SELECT * FROM [History].[ShortCourseEarningsProfileHistory] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
         }
 
         shortCourse.Episodes = episodes;

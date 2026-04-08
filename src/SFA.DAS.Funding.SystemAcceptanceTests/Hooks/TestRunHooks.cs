@@ -3,6 +3,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure;
+using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using WireMock.Server;
 
