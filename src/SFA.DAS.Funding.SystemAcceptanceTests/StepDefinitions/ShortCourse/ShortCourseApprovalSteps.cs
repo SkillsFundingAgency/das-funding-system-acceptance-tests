@@ -1,3 +1,4 @@
+using SFA.DAS.CommitmentsV2.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
@@ -8,6 +9,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 [Binding]
 public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient earningsSqlClient)
 {
+    private Fixture _fixture = new Fixture();
+
     [Given(@"the short course is approved")]
     [When(@"the short course is approved")]
     public async Task WhenTheShortCourseIsApproved()
@@ -15,7 +18,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         var testData = context.Get<TestData>();
         var shortCourseOnProgramme = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single();
 
-        var apprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, shortCourseOnProgramme, "ABC123");
+        var apprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, shortCourseOnProgramme, "ABC123", _fixture.Create<ApprenticeshipEmployerType>());
 
         testData.CommitmentsApprenticeshipCreatedEvent = apprenticeshipCreatedEvent;
 
@@ -84,7 +87,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         }, "Failed to find approved short course earnings entity.");
     }
 
-    private CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent CreateApprenticeshipCreatedEvent(TestData testData, Helpers.Http.LearnerDataOuterApiClient.ShortCourseOnProgramme shortCourseOnProgramme, string apprenticshipHashedId)
+    private CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent CreateApprenticeshipCreatedEvent(TestData testData, Helpers.Http.LearnerDataOuterApiClient.ShortCourseOnProgramme shortCourseOnProgramme, string apprenticshipHashedId, ApprenticeshipEmployerType employerType = ApprenticeshipEmployerType.Levy)
     {
         return new CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent
         {
@@ -115,7 +118,8 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
             TrainingCourseVersion = "1.0",
             ApprenticeshipHashedId = apprenticshipHashedId,
             AccountLegalEntityId = 12345,
-            TransferSenderId = null
+            TransferSenderId = null,
+            ApprenticeshipEmployerTypeOnApproval = employerType
         };
     }
 }
