@@ -27,8 +27,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await context.ReceiveLearningWithdrawnEvent(testData.LearningCreatedEvent.LearningKey);
 
-            Assert.AreEqual(reason, testData.LearningWithdrawnEvent.Reason, "Unexpected withdrawal reason found in the event!");
-            Assert.AreEqual(lastDayOfLearning.Value.Date, testData.LearningWithdrawnEvent.LastDayOfLearning.Date, "Unexpected last day of learning found in the event!");
+            Assert.AreEqual(reason, testData.ApprenticeshipWithdrawnEvent.Reason, "Unexpected withdrawal reason found in the event!");
+            Assert.AreEqual(lastDayOfLearning.Value.Date, testData.ApprenticeshipWithdrawnEvent.LastDayOfLearning.Date, "Unexpected last day of learning found in the event!");
         }
 
         [When("a withdrawal reverted event is published to approvals")]
