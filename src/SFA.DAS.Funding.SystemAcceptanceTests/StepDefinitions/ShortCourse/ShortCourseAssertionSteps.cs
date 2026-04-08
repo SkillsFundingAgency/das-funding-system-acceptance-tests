@@ -1,5 +1,6 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -269,5 +270,18 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
             Assert.AreEqual(latestEpisode.EarningsProfile.EarningsProfileId, history.EarningsProfileId, "EarningsProfileId in history does not match current EarningsProfileId");
             Assert.AreNotEqual(Guid.Empty, history.Version, "Version is empty in history record");
         }
+    }
+
+    [Then(@"inform approvals that the learner has been withdrawn from the short course")]
+    public async Task ThenInformApprovalsThatTheLearnerHasBeenWithdrawnFromTheShortCourse()
+    {
+        var testData = context.Get<TestData>();
+        await context.ReceiveLearningWithdrawnEvent(testData.ShortCourseLearningKey);
+
+        var expectedLastDayOfLearning = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single().WithdrawalDate;
+
+        Assert.AreEqual(expectedLastDayOfLearning?.Date, testData.ApprenticeshipWithdrawnEvent.LastDayOfLearning.Date, "Unexpected last day of learning found in the event!");
+        
+        Assert.AreEqual("WithdrawDuringLearning", testData.ApprenticeshipWithdrawnEvent.Reason, "Unexpected withdrawal reason found in the event!"); 
     }
 }
