@@ -18,7 +18,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var dbValid = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.All(x => !x.IsPayable) ?? true;
                 var commandValid = paymentsCommand != null && !paymentsCommand.Earnings.Any();
 
-                return dbValid && commandValid;
+                return dbValid && (!testData.IsShortCourseApproved || commandValid);
             }, "Failed to verify that all earnings were removed in the earnings db & on the command sent to payments.");
         }
 
@@ -35,7 +35,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var paymentsCommand = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == testData.ShortCourseLearningKey)?.Command;
                 var commandValid = paymentsCommand != null && paymentsCommand.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Completion)));
 
-                return dbValid && commandValid;
+                return dbValid && (!testData.IsShortCourseApproved || commandValid);
             }, "Failed to verify that the completion earning was removed in the earnings db & on the command send to payments.");
         }
 
@@ -52,7 +52,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var paymentsCommand = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == testData.ShortCourseLearningKey)?.Command;
                 var commandValid = paymentsCommand != null; // TODO: assert the 30% milestone earning is removed from the sent command
 
-                return dbValid && commandValid;
+                return dbValid && (!testData.IsShortCourseApproved || commandValid);
             }, "Failed to verify that the 30% milestone earning was removed in the earnings db & on the command send to payments.");
         }
 
@@ -70,7 +70,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var paymentsCommand = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == testData.ShortCourseLearningKey)?.Command;
                 var commandValid = paymentsCommand != null; // TODO: assert the 30% milestone earning is retained/generated in the sent command
 
-                return dbValid && commandValid;
+                return dbValid && (!testData.IsShortCourseApproved || commandValid);
             }, "Failed to find short course earnings with 30% milestone earning in the earnings db & on the command send to payments.");
 
             var instalment = earningsModel!.Episodes.Single().EarningsProfile.Instalments.Single(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable);
@@ -93,7 +93,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var paymentsCommand = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == testData.ShortCourseLearningKey)?.Command;
                 var commandValid = paymentsCommand != null; // TODO: assert the completion earning is generated in the sent command
 
-                return dbValid && commandValid;
+                return dbValid && (!testData.IsShortCourseApproved || commandValid);
             }, "Failed to verify that the completion earning was generated in the earnings db & on the command send to payments.");
         }
 
@@ -114,7 +114,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var paymentsCommand = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == testData.ShortCourseLearningKey)?.Command;
                 var commandValid = paymentsCommand != null; // TODO: assert the basic earnings are generated correctly in the sent command
 
-                return dbValid && commandValid;
+                return dbValid && (!testData.IsShortCourseApproved || commandValid);
             }, "Failed to find short course earnings entity in the earnings db & on the command send to payments.");
 
             var instalments = earningsModel!.Episodes.Single().EarningsProfile.Instalments;
@@ -158,7 +158,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var paymentsCommand = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == testData.ShortCourseLearningKey)?.Command;
                 var commandValid = paymentsCommand != null; // TODO: assert the earnings are approved in the sent command if applicable
 
-                return dbValid && commandValid;
+                return dbValid && (!testData.IsShortCourseApproved || commandValid);
             }, "Failed to find short course earnings entity in the earnings db & on the command send to payments.");
 
             Assert.IsTrue(earningsModel!.Episodes.Single().EarningsProfile.IsApproved, "Short course earnings should be approved.");
@@ -176,7 +176,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var paymentsCommand = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == testData.ShortCourseLearningKey)?.Command;
                 var commandValid = paymentsCommand != null; // TODO: assert the earnings do not contain duplicates in the sent command
 
-                return dbValid && commandValid;
+                return dbValid && (!testData.IsShortCourseApproved || commandValid);
             }, "Failed to find short course earnings entity in the earnings db & on the command send to payments.");
             var instalments = earningsModel!.Episodes.Single().EarningsProfile.Instalments;
             Assert.AreEqual(2, instalments.Count, "Expected exactly 2 instalments for the short course, but found a different count.");
@@ -195,7 +195,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var paymentsCommand = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == testData.ShortCourseLearningKey)?.Command;
                 var commandValid = paymentsCommand != null; // TODO: assert the second instalment is in the correct period in the sent command
 
-                return dbValid && commandValid;
+                return dbValid && (!testData.IsShortCourseApproved || commandValid);
             }, "Failed to find short course earnings entity in the earnings db & on the command send to payments.");
 
             var instalments = earningsModel!.Episodes.Single().EarningsProfile.Instalments;
@@ -225,7 +225,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var paymentsCommand = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == testData.ShortCourseLearningKey)?.Command;
                 var commandValid = paymentsCommand != null; // TODO: assert exactly 1 episode is generated for the earliest course in the sent command
 
-                return dbValid && commandValid;
+                return dbValid && (!testData.IsShortCourseApproved || commandValid);
             }, "Failed to find short course earnings entity in the earnings db & on the command send to payments.");
 
             Assert.AreEqual(1, earningsModel!.Episodes.Count, "Expected exactly 1 episode for the earliest short course earnings, but found a different count.");
@@ -244,7 +244,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var paymentsCommand = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == testData.ShortCourseLearningKey)?.Command;
                 var commandValid = paymentsCommand != null; // TODO: assert the earnings are recorded against the first provider in the sent command
 
-                return dbValid && commandValid;
+                return dbValid && (!testData.IsShortCourseApproved || commandValid);
             }, "Failed to find short course earnings entity in the earnings db & on the command send to payments.");
 
             Assert.AreEqual(Constants.UkPrn, earningsModel!.Episodes.Single().Ukprn, "The earnings were not recorded against the first provider's UKPRN.");

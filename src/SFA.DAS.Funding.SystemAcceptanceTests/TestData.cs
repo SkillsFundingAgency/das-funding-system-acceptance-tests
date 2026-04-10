@@ -21,6 +21,7 @@ public class TestData
     internal bool IsMarkedAsCareLeaver { get; set; } = false;
     internal bool IsLearningSupportAdded { get; set; } = false;
     internal bool IsMathsAndEnglishAdded { get; set; } = false;
+    internal bool IsShortCourseApproved { get; set; } = false;
     internal string CurrentCollectionYear { get; set; }
     internal byte CurrentCollectionPeriod { get; set; }
     internal decimal NewTrainingPrice { get; set; }

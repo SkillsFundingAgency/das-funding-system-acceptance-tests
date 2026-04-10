@@ -16,6 +16,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
     public async Task WhenTheShortCourseIsApproved()
     {
         var testData = context.Get<TestData>();
+        testData.IsShortCourseApproved = true;
         var shortCourseOnProgramme = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single();
 
         var apprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, shortCourseOnProgramme, "ABC123", _fixture.Create<ApprenticeshipEmployerType>());
@@ -63,6 +64,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
     public async Task WhenBothShortCoursesAreApproved()
     {
         var testData = context.Get<TestData>();
+        testData.IsShortCourseApproved = true;
         
         var firstCourseOnProgramme = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single();
         var firstApprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, firstCourseOnProgramme, "ABC123");
