@@ -1,4 +1,4 @@
-﻿using Azure.Identity;
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 
@@ -28,24 +28,30 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 
         private async Task CreateNewSqlFilter(string subscriptionName, string topicName, IEnumerable<string> filterEventTypes)
         {
-            try
+            var eventTypeChunks = filterEventTypes.Chunk(5).ToList();
+            for (var i = 0; i < eventTypeChunks.Count; i++)
             {
-                var sqlExpression = "[NServiceBus.EnclosedMessageTypes] LIKE '%" +
-                                    string.Join("%' OR [NServiceBus.EnclosedMessageTypes] LIKE '%",
-                                        filterEventTypes) + "%'";
-                await _administrationClient.CreateRuleAsync(topicName, subscriptionName, new CreateRuleOptions
+                var chunk = eventTypeChunks[i];
+                var ruleName = eventTypeChunks.Count == 1 ? TopicSubscriptionFilterName : $"{TopicSubscriptionFilterName}_{i + 1}";
+                try
                 {
-                    Name = TopicSubscriptionFilterName,
-                    Filter = new SqlRuleFilter(sqlExpression)
-                });
-            }
-            catch (ServiceBusException serviceBusException)
-            {
-                // Do not fail if subscription filter already exists
-                if (serviceBusException.Reason != ServiceBusFailureReason.MessagingEntityAlreadyExists)
+                    var sqlExpression = "[NServiceBus.EnclosedMessageTypes] LIKE '%" +
+                                        string.Join("%' OR [NServiceBus.EnclosedMessageTypes] LIKE '%",
+                                            chunk) + "%'";
+                    await _administrationClient.CreateRuleAsync(topicName, subscriptionName, new CreateRuleOptions
+                    {
+                        Name = ruleName,
+                        Filter = new SqlRuleFilter(sqlExpression)
+                    });
+                }
+                catch (ServiceBusException serviceBusException)
                 {
-                    Assert.Fail(
-                        $"Attempted to create filter with name {TopicSubscriptionFilterName} for {subscriptionName} for topic {topicName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}.");
+                    // Do not fail if subscription filter already exists
+                    if (serviceBusException.Reason != ServiceBusFailureReason.MessagingEntityAlreadyExists)
+                    {
+                        Assert.Fail(
+                            $"Attempted to create filter with name {ruleName} for {subscriptionName} for topic {topicName} but unsuccessful due to: '{serviceBusException.Reason}' exception from Azure ServiceBus. Time: {DateTime.Now:G}.");
+                    }
                 }
             }
         }

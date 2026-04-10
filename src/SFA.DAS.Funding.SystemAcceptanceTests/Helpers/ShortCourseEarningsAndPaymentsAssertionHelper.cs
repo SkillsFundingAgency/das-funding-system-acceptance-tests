@@ -1,5 +1,6 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Payments.EarningEvents.Messages.External;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 {
@@ -12,15 +13,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             await WaitHelper.WaitForIt(() =>
             {
                 var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
-                // TODO: Retrieve the command/event tbc using CalculateGrowthAndSkillsPaymentsCommandHandler and assert the earnings are removed from the sent command
-                //var paymentsCommand = CalculateGrowthAndSkillsPaymentsCommandHandler.GetMessage(x => x.Learner.LearnerKey == context.Get<TestData>().LearningKey);
+                var paymentsCommand = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == testData.ShortCourseLearningKey)?.Command;
 
                 var dbValid = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.All(x => !x.IsPayable) ?? true;
-                //var commandValid = paymentsCommand != null && !paymentsCommand.Earnings.Any();
-                var commandValid = true; // TODO: Set this based on the retrieved command/event
+                var commandValid = paymentsCommand != null && !paymentsCommand.Earnings.Any();
 
                 return dbValid && commandValid;
-            }, "Failed to verify that all earnings were removed.");
+            }, "Failed to verify that all earnings were removed in the earnings db & on the command sent to payments.");
         }
 
         public async Task AssertRemainingCompletionEarningRemoved()
@@ -31,9 +30,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             {
                 var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
                 var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
-                // TODO: Retrieve the command/event tbc using CalculateGrowthAndSkillsPaymentsCommandHandler and assert the completion earning is removed from the sent command
-                return instalments != null && instalments.All(x => x.Type != "LearningComplete" || !x.IsPayable);
-            }, "Failed to verify that the completion earning was removed.");
+                var dbValid = instalments != null && instalments.All(x => x.Type != "LearningComplete" || !x.IsPayable);
+
+                var paymentsCommand = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == testData.ShortCourseLearningKey)?.Command;
+                var commandValid = paymentsCommand != null && paymentsCommand.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Completion)));
+
+                return dbValid && commandValid;
+            }, "Failed to verify that the completion earning was removed in the earnings db & on the command send to payments.");
         }
 
         public async Task Assert30PercentMilestoneEarningRemoved()
