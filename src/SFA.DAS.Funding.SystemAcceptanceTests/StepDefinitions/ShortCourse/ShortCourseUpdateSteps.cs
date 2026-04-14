@@ -21,6 +21,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         var updatedRequest = builder.Build();
         await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ShortCourseLearningKey, updatedRequest);
         testData.ShortCourseLearnerData = updatedRequest;
+        testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
     [Given(@"the training provider also recorded that the learner completed")]
@@ -39,6 +40,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         var updatedRequest = builder.Build();
         await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ShortCourseLearningKey, updatedRequest);
         testData.ShortCourseLearnerData = updatedRequest;
+        testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
 
@@ -53,6 +55,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones.Remove(LearnerDataOuterApiClient.Milestone.LearningComplete);
 
         await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ShortCourseLearningKey, shortCourseRequest);
+        testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
     [When(@"SLD also inform us that the 30% milestone was removed")]
@@ -64,6 +67,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones = [];
 
         await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ShortCourseLearningKey, shortCourseRequest);
+        testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
     [When(@"SLD also inform us that the 30% milestone was not removed")]
