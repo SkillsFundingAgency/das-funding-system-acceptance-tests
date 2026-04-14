@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages.External" Version="2.0.8-prerelease-4" />
+  </ItemGroup>
+
 </Project>

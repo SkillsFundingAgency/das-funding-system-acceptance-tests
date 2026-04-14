@@ -229,6 +229,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, $"Expected HTTP 200 OK response from DeleteLearner request, but got {response.StatusCode}");
         }
 
+        public async Task DeleteShortCourse(long ukprn, Guid learningKey)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"/learnerdata/providers/{ukprn}/shortCourses/{learningKey}");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+            var response = await _apiClient.SendAsync(request);
+
+            Assert.AreEqual(HttpStatusCode.Accepted, response.StatusCode, $"Expected HTTP 202 Accepted response from DeleteShortCourse request, but got {response.StatusCode}");
+        }
+
         public class LearnerDataRequest
         {
             public string ConsumerReference { get; set; } 

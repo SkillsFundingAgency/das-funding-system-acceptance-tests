@@ -3,7 +3,7 @@ using Azure.Messaging.ServiceBus;
 using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Events;
+namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages;
 
 #pragma warning disable 8618
 

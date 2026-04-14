@@ -9,6 +9,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
     [Binding]
     public class RemovalStepDefinitions(ScenarioContext context, LearnerDataOuterApiHelper learnerDataOuterApiHelper, EarningsSqlClient earningsSqlClient)
     {
+        private static string UniversalWithdrawalReason = "WithdrawDuringLearning";
+
         [Given("sld inform us that the learner is to removed")]
         [When("sld inform us that the learner is to removed")]
         public async Task WhenSldInformUThatTheLearnerIsToRemoved()
@@ -19,15 +21,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             testData.LastDayOfLearning = testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate;
         }
 
-        [Given("a learning withdrawn event is published to approvals with reason (.*) and last day of learning as (.*)")]
-        [Then("a learning withdrawn event is published to approvals with reason (.*) and last day of learning as (.*)")]
-        public async Task LearningWithdrawnEventIsPublishedToApprovals(string reason, TokenisableDateTime lastDayOfLearning)
+        [Given("a learning withdrawn event is published to approvals with last day of learning as (.*)")]
+        [Then("a learning withdrawn event is published to approvals with last day of learning as (.*)")]
+        public async Task LearningWithdrawnEventIsPublishedToApprovals(TokenisableDateTime lastDayOfLearning)
         {
             var testData = context.Get<TestData>();
 
             await context.ReceiveLearningWithdrawnEvent(testData.LearningCreatedEvent.LearningKey);
 
-            Assert.AreEqual(reason, testData.ApprenticeshipWithdrawnEvent.Reason, "Unexpected withdrawal reason found in the event!");
+            Assert.AreEqual(UniversalWithdrawalReason, testData.ApprenticeshipWithdrawnEvent.Reason, "Unexpected withdrawal reason found in the event!");
             Assert.AreEqual(lastDayOfLearning.Value.Date, testData.ApprenticeshipWithdrawnEvent.LastDayOfLearning.Date, "Unexpected last day of learning found in the event!");
         }
 

@@ -4,7 +4,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
+namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 
 [Binding]
 public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiClient learnerDataOuterApiHelper)
@@ -107,6 +107,15 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
         shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = completionDate.Value;
 
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
+    }
+
+    [Given(@"SLD informs us the short course learning has completed on (.*) if applicable")]
+    [When(@"SLD informs us the short course learning has completed on (.*) if applicable")]
+    public async Task WhenSLDInformsUsTheShortCourseLearningHasCompletedOnIfApplicable(string completionDate)
+    {
+        if (completionDate == "N/A" || string.IsNullOrWhiteSpace(completionDate)) return;
+
+        await WhenSLDInformsUsTheShortCourseLearningHasCompletedOn(TokenisableDateTime.FromString(completionDate));
     }
 
     [When(@"SLD informs us the short course changes provider")]

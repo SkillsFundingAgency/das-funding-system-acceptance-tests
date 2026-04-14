@@ -2,7 +2,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
+namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 
 [Binding]
 public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApiClient learnerDataOuterApiHelper)
@@ -19,8 +19,9 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
             .WithMilestone(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete);
 
         var updatedRequest = builder.Build();
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, updatedRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ShortCourseLearningKey, updatedRequest);
         testData.ShortCourseLearnerData = updatedRequest;
+        testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
     [Given(@"the training provider also recorded that the learner completed")]
@@ -37,9 +38,11 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
             .WithMilestone(LearnerDataOuterApiClient.Milestone.LearningComplete);
 
         var updatedRequest = builder.Build();
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, updatedRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ShortCourseLearningKey, updatedRequest);
         testData.ShortCourseLearnerData = updatedRequest;
+        testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
+
 
     [When(@"SLD inform us that the learner has withdrawn")]
     public async Task WhenSLDInformUsThatTheLearnerHasWithdrawn()
@@ -51,7 +54,8 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = null; 
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones.Remove(LearnerDataOuterApiClient.Milestone.LearningComplete);
 
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, shortCourseRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ShortCourseLearningKey, shortCourseRequest);
+        testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
     [When(@"SLD also inform us that the 30% milestone was removed")]
@@ -62,12 +66,20 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones = [];
 
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ApprovedShortCourseLearningKey, shortCourseRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(Constants.UkPrn, testData.ShortCourseLearningKey, shortCourseRequest);
+        testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
     [When(@"SLD also inform us that the 30% milestone was not removed")]
     public void WhenSLDAlsoInformUsThatThe30PercentMilestoneWasNotRemoved()
     {
         // No action needed
+    }
+
+    [When(@"SLD inform us that the learner has been removed")]
+    public async Task WhenSLDInformUsThatTheLearnerHasBeenRemoved()
+    {
+        var testData = context.Get<TestData>();
+        await learnerDataOuterApiHelper.DeleteShortCourse(Constants.UkPrn, testData.ShortCourseLearningKey);
     }
 }

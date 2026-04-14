@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Learning.Types;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages.Events;
+using SFA.DAS.Learning.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events
 {

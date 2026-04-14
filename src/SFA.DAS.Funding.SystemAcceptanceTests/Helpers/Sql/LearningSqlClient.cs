@@ -347,6 +347,7 @@ public class ShortCourseEpisode
     public string LearnerRef { get; set; } = null!;
     public bool IsApproved { get; set; }
     public byte LearningType { get; set; }
+    public byte EmployerType { get; set; }
     public List<ShortCourseLearningSupport> LearningSupport { get; set; }
     public List<ShortCourseMilestone> Milestones { get; set; }
 }

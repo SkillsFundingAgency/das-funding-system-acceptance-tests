@@ -3,7 +3,9 @@ using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.LearnerData.Events;
 using SFA.DAS.Learning.Types;
+using SFA.DAS.Payments.EarningEvents.Messages.External.Commands;
 using SFA.DAS.Payments.FundingSource.Messages.Commands;
 using CommitmentsMessages = SFA.DAS.CommitmentsV2.Messages.Events;
 
@@ -15,12 +17,14 @@ public class TestData
 {
     internal string Uln { get; }
     internal Guid LearningKey { get; set; } = Guid.Empty;
-    internal Guid ApprovedShortCourseLearningKey { get; set; } = Guid.Empty;
+    internal Guid ShortCourseLearningKey { get; set; } = Guid.Empty;
     internal Guid InitialEarningsProfileId { get; set; } = Guid.Empty;
     internal Guid EarningsProfileId { get; set; } = Guid.Empty;
     internal bool IsMarkedAsCareLeaver { get; set; } = false;
     internal bool IsLearningSupportAdded { get; set; } = false;
     internal bool IsMathsAndEnglishAdded { get; set; } = false;
+    internal bool IsShortCourseApproved { get; set; } = false;
+    internal bool ExpectGrowthAndSkillsPaymentsEvent { get; set; } = false;
     internal string CurrentCollectionYear { get; set; }
     internal byte CurrentCollectionPeriod { get; set; }
     internal decimal NewTrainingPrice { get; set; }
@@ -56,6 +60,7 @@ public class TestData
     internal WithdrawalRevertedEvent WithdrawalRevertedEvent { get; set; }
     internal PersonalDetailsChangedEvent PersonalDetailsChangedEvent { get; set; }
     internal HttpResponseMessage? Fm36HttpResponseMessage { get; set; }
+    internal CalculateGrowthAndSkillsPayments? CalculateGrowthAndSkillsPaymentsCommand { get; set; }
 
     public TestData(string uln)
     {
