@@ -44,6 +44,12 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         await assertionHelper.AssertCompletionEarningGenerated();
     }
 
+    [Then(@"the 30% milestone earning is (.*) and the completion earning is (.*)")]
+    public async Task ThenTheMilestoneEarningAndCompletionEarningAre(string milestoneStatus, string completionStatus)
+    {
+        await assertionHelper.AssertMilestoneAndCompletionEarningsStatus(milestoneStatus, completionStatus);
+    }
+
     [Given(@"the basic short course earnings are generated")]
     [Then(@"the basic short course earnings are generated")]
     public async Task ThenTheShortCourseIsSuccessfullyProcessed()
@@ -294,6 +300,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         
         await WaitHelper.WaitForIt(() =>
         {
+            var course = learningSqlClient.GetShortCourseLearning(testData.Uln);
             var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.Learner.Key;
             var command = GrowthAndSkillsPaymentsRecalculatedEventHandler
                 .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
