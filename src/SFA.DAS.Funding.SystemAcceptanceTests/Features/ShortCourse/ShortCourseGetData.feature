@@ -1,6 +1,6 @@
 Feature: Short Course Get Data
-#This file contains the 8 scenarios in order for FLP-1673
 
+#This test contains the 8 scenarios in order for FLP-1673
 @regression
 Scenario Outline: Get short course learners for academic year
 	Given SLD informs us of a new learner with a short course starting on <StartDate> and ending on <PlannedEndDate>
@@ -28,3 +28,24 @@ Examples:
 	| previousAY-05-01 | previousAY-09-01 | currentAY-09-01  | not approved   | the short course learner is returned in the earnings response without duplicates | # Get short course learners (completed this year, planned for last year) for academic year (not approved)
 	| previousAY-05-01 | currentAY-09-01  | currentAY-09-01  | not approved   | the short course learner is returned in the earnings response without duplicates | # Get short course learners (spanning both years and completed this year) for academic year (not approved)
 	| previousAY-05-01 | currentAY-09-01  | N/A              | not approved   | the short course learner is returned in the earnings response without duplicates | # Get short course learners (spanning both years and continuing) for academic year (not approved)
+
+
+@regression
+Scenario Outline: Set the funding line type for short courses
+	Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+	And the short course is approved with employer type <EmployerType>
+	When SLD requests short course earnings data for collection period currentAY-01
+	Then the funding line type for the short course is <FundingLineType>
+
+Examples:
+	| EmployerType | FundingLineType                                   |
+	| NonLevy      | GSO Short Courses (Apprenticeship Units) Non-Levy |
+	| Levy         | GSO Short Courses (Apprenticeship Units) Levy     |
+
+
+@regression
+Scenario: Set the default funding line type for unapproved short courses
+	Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+	And the short course is not approved
+	When SLD requests short course earnings data for collection period currentAY-01
+	Then the funding line type for the short course is GSO Short Courses (Apprenticeship Units) Non-Levy

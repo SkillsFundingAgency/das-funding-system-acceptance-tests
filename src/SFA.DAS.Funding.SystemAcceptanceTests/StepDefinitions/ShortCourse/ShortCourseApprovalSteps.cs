@@ -13,13 +13,24 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
 
     [Given(@"the short course is approved")]
     [When(@"the short course is approved")]
-    public async Task WhenTheShortCourseIsApproved()
+    public Task WhenTheShortCourseIsApproved()
+    {
+        return ApproveShortCourse(_fixture.Create<ApprenticeshipEmployerType>());
+    }
+
+    [Given(@"the short course is approved with employer type (.*)")]
+    public Task WhenTheShortCourseIsApprovedWithEmployerType(ApprenticeshipEmployerType employerType)
+    {
+        return ApproveShortCourse(employerType);
+    }
+
+    private async Task ApproveShortCourse(ApprenticeshipEmployerType employerType)
     {
         var testData = context.Get<TestData>();
         testData.IsShortCourseApproved = true;
         var shortCourseOnProgramme = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single();
 
-        var apprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, shortCourseOnProgramme, "ABC123", _fixture.Create<ApprenticeshipEmployerType>());
+        var apprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, shortCourseOnProgramme, "ABC123", employerType);
 
         testData.CommitmentsApprenticeshipCreatedEvent = apprenticeshipCreatedEvent;
 

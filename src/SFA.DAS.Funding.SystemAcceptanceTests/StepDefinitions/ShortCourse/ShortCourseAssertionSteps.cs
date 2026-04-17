@@ -210,6 +210,18 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         Assert.IsNull(learner, "Short course learner was unexpectedly found in the earnings response for this collection period.");
     }
 
+    [Then(@"the funding line type for the short course is (.*)")]
+    public void ThenTheFundingLineTypeForTheShortCourseIs(string expectedFundingLineType)
+    {
+        var testData = context.Get<TestData>();
+        
+        var learnerCount = testData.ShortCourseEarningsResponse?.Learners?.Count(x => x.LearningKey == testData.ShortCourseLearningKey.ToString()) ?? 0;
+        Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the earnings response but found a different count.");
+
+        var learner = testData.ShortCourseEarningsResponse.Learners.Single(x => x.LearningKey == testData.ShortCourseLearningKey.ToString());
+        Assert.AreEqual(expectedFundingLineType, learner.Courses.First().FundingLineType, "Funding Line Type does not match expected value.");
+    }
+
     [Then(@"only earnings are generated for the earliest short course")]
     public async Task ThenOnlyEarningsAreGeneratedForTheEarliestShortCourse()
     {
