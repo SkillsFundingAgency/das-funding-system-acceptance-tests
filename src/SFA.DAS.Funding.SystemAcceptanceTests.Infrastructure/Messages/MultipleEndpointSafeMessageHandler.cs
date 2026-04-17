@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using Newtonsoft.Json;
 using NServiceBus;
 
@@ -18,19 +18,25 @@ public class MultipleEndpointSafeMessageHandler<T> : IHandleMessages<T> where T 
     }
 
     /// <summary>
-    /// Gets the first message that matches the predicate and removes it from the list of received events.
+    /// Gets the latest message that matches the predicate and removes it from the list of received events.
     /// </summary>
     public static T? GetMessage(Func<T, bool> predicate)
     {
-        var messageObjects = ReceivedMessages.Where(m => predicate(m.Message));
+        var messageObjects = ReceivedMessages.Where(m => predicate(m.Message))
+                                             .OrderByDescending(m => m.ReceivedAt)
+                                             .ToList();
 
-        if (messageObjects == null || !messageObjects.Any())
+        if (!messageObjects.Any())
             return null;
 
-        var messageObject = messageObjects.First();
+        var latestMessageObject = messageObjects.First();
 
-        messageObject.Clear(); // Prevent message getting picked up again
-        return messageObject.Message;
+        foreach (var messageObject in messageObjects)
+        {
+            messageObject.Clear(); // Prevent these messages from being picked up again
+        }
+
+        return latestMessageObject.Message;
     }
 
     public Task Handle(T message, IMessageHandlerContext context)
@@ -58,6 +64,7 @@ public class MessageWrapper<T>
     public T Message { get; private set; }
     public string MessageId { get; private set; }
     public bool IsCleared { get; private set; } = false;
+    public DateTime ReceivedAt { get; private set; } = DateTime.UtcNow;
     public MessageWrapper(string messageId, T message)
     {
         Message = message;
