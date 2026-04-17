@@ -65,7 +65,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                         .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
                         ?.Command
                     ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
-                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null; // TODO: assert the 30% milestone earning is removed from the sent command
+                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null && testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Milestone1)));
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to verify that the 30% milestone earning was removed in the earnings db.");
@@ -88,7 +88,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                         .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
                         ?.Command
                     ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
-                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null; // TODO: assert the 30% milestone earning is retained/generated in the sent command
+                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null && testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Milestone1)));
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings with 30% milestone earning in the earnings db.");
@@ -116,7 +116,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                         .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
                         ?.Command
                     ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
-                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null; // TODO: assert the completion earning is generated in the sent command
+                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null && testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Completion)));
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to verify that the completion earning was generated in the earnings db.");
@@ -142,7 +142,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                         .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
                         ?.Command
                     ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
-                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null; // TODO: assert the basic earnings are generated correctly in the sent command
+                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null && testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Milestone1)))
+                    && testData.CalculateGrowthAndSkillsPaymentsCommand != null && testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Completion)));
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
@@ -191,7 +192,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                         .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
                         ?.Command
                     ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
-                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null; // TODO: assert the earnings are approved in the sent command if applicable
+                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null;
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
@@ -214,7 +215,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                         .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
                         ?.Command
                     ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
-                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null; // TODO: assert the earnings do not contain duplicates in the sent command
+                var periods = testData.CalculateGrowthAndSkillsPaymentsCommand?.Earnings.SelectMany(e => e.PricePeriods).SelectMany(p => p.Periods).ToList() ?? new();
+                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null && periods.Count == periods.DistinctBy(p => new { p.DeliveryPeriod, p.EarningType }).Count();
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
@@ -238,7 +240,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                         .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
                         ?.Command
                     ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
-                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null; // TODO: assert the second instalment is in the correct period in the sent command
+                var completionPeriod = period.Value.PeriodValue;
+                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null && testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.SelectMany(e => e.PricePeriods).SelectMany(p => p.Periods).Any(ep => ep.EarningType == EarningType.Completion && ep.DeliveryPeriod == completionPeriod);
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
@@ -273,7 +276,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                         .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
                         ?.Command
                     ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
-                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null; // TODO: assert exactly 1 episode is generated for the earliest course in the sent command
+                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null && testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Count() == 1;
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
@@ -297,7 +300,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                         .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
                         ?.Command
                     ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
-                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null; // TODO: assert the earnings are recorded against the first provider in the sent command
+                var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null && testData.CalculateGrowthAndSkillsPaymentsCommand.UKPRN == Constants.UkPrn;
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");

@@ -286,4 +286,23 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         
         Assert.AreEqual("WithdrawDuringLearning", testData.ApprenticeshipWithdrawnEvent.Reason, "Unexpected withdrawal reason found in the event!"); 
     }
+
+    [Then(@"inform payments that the learner has been withdrawn from the short course")]
+    public async Task ThenInformPaymentsThatTheLearnerHasBeenWithdrawnFromTheShortCourse()
+    {
+        var testData = context.Get<TestData>();
+        
+        await WaitHelper.WaitForIt(() =>
+        {
+            var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.Learner.Key;
+            var command = GrowthAndSkillsPaymentsRecalculatedEventHandler
+                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
+                ?.Command;
+
+            testData.CalculateGrowthAndSkillsPaymentsCommand = command ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
+            
+            return testData.CalculateGrowthAndSkillsPaymentsCommand != null && 
+                   testData.CalculateGrowthAndSkillsPaymentsCommand.Training.TrainingStatus.ToString() == "Withdrawn";
+        }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command.");
+    }
 }
