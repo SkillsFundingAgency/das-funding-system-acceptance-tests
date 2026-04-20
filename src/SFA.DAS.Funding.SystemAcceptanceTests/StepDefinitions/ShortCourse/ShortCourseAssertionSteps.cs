@@ -44,6 +44,12 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         await assertionHelper.AssertCompletionEarningGenerated();
     }
 
+    [Then(@"the 30% milestone earning is (.*) and the completion earning is (.*)")]
+    public async Task ThenTheMilestoneEarningAndCompletionEarningAre(string milestoneStatus, string completionStatus)
+    {
+        await assertionHelper.AssertMilestoneAndCompletionEarningsStatus(milestoneStatus, completionStatus);
+    }
+
     [Given(@"the basic short course earnings are generated")]
     [Then(@"the basic short course earnings are generated")]
     public async Task ThenTheShortCourseIsSuccessfullyProcessed()
@@ -204,6 +210,18 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         Assert.IsNull(learner, "Short course learner was unexpectedly found in the earnings response for this collection period.");
     }
 
+    [Then(@"the funding line type for the short course is (.*)")]
+    public void ThenTheFundingLineTypeForTheShortCourseIs(string expectedFundingLineType)
+    {
+        var testData = context.Get<TestData>();
+        
+        var learnerCount = testData.ShortCourseEarningsResponse?.Learners?.Count(x => x.LearningKey == testData.ShortCourseLearningKey.ToString()) ?? 0;
+        Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the earnings response but found a different count.");
+
+        var learner = testData.ShortCourseEarningsResponse.Learners.Single(x => x.LearningKey == testData.ShortCourseLearningKey.ToString());
+        Assert.AreEqual(expectedFundingLineType, learner.Courses.First().FundingLineType, "Funding Line Type does not match expected value.");
+    }
+
     [Then(@"only earnings are generated for the earliest short course")]
     public async Task ThenOnlyEarningsAreGeneratedForTheEarliestShortCourse()
     {
@@ -285,5 +303,25 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         Assert.AreEqual(expectedLastDayOfLearning?.Date, testData.ApprenticeshipWithdrawnEvent.LastDayOfLearning.Date, "Unexpected last day of learning found in the event!");
         
         Assert.AreEqual("WithdrawDuringLearning", testData.ApprenticeshipWithdrawnEvent.Reason, "Unexpected withdrawal reason found in the event!"); 
+    }
+
+    [Then(@"inform payments that the learner has been withdrawn from the short course")]
+    public async Task ThenInformPaymentsThatTheLearnerHasBeenWithdrawnFromTheShortCourse()
+    {
+        var testData = context.Get<TestData>();
+        
+        await WaitHelper.WaitForIt(() =>
+        {
+            var course = learningSqlClient.GetShortCourseLearning(testData.Uln);
+            var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.Learner.Key;
+            var command = GrowthAndSkillsPaymentsRecalculatedEventHandler
+                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
+                ?.Command;
+
+            testData.CalculateGrowthAndSkillsPaymentsCommand = command ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
+            
+            return testData.CalculateGrowthAndSkillsPaymentsCommand != null && 
+                   testData.CalculateGrowthAndSkillsPaymentsCommand.Training.TrainingStatus.ToString() == "Withdrawn";
+        }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command.");
     }
 }

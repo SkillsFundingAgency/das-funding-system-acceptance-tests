@@ -8,6 +8,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApiClient learnerDataOuterApiHelper)
 {
     [Given(@"the training provider recorded that the 30% milestone has been reached")]
+    [When(@"the training provider recorded that the 30% milestone has been reached")]
     public async Task GivenTheTrainingProviderRecordedThatThe30PercentMilestoneHasBeenReached()
     {
         var testData = context.Get<TestData>();
@@ -26,6 +27,8 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
 
     [Given(@"the training provider also recorded that the learner completed")]
     [Given(@"the training provider recorded that the learner completed")]
+    [When(@"the training provider recorded that the learner completed")]
+    [When(@"the training provider also recorded that the learner completed")]
     public async Task GivenTheTrainingProviderAlsoRecordedThatTheLearnerCompleted()
     {
         var testData = context.Get<TestData>();
