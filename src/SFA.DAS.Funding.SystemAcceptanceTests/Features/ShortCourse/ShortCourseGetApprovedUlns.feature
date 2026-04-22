@@ -2,7 +2,7 @@ Feature: Short Course Get Approved Ulns
 
 @regression
 Scenario: Get short course learners for academic year
-	Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+	Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the basic short course earnings are generated
 	And the short course is approved
 	When SLD requests short course approved ulns for academic year currentAY
@@ -10,7 +10,7 @@ Scenario: Get short course learners for academic year
 
 @regression
 Scenario: Get short course learners for academic year does not return learners from other academic years
-	Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+	Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the basic short course earnings are generated
 	And the short course is approved
 	When SLD requests short course approved ulns for academic year previousAY

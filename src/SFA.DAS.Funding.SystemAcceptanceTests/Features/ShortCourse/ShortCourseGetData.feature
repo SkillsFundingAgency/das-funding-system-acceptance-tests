@@ -32,7 +32,7 @@ Examples:
 
 @regression
 Scenario Outline: Set the funding line type for short courses
-	Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+	Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the short course is approved with employer type <EmployerType>
 	When SLD requests short course earnings data for collection period currentAY-01
 	Then the funding line type for the short course is <FundingLineType>
@@ -45,7 +45,7 @@ Examples:
 
 @regression
 Scenario: Set the default funding line type for unapproved short courses
-	Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+	Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the short course is not approved
 	When SLD requests short course earnings data for collection period currentAY-01
 	Then the funding line type for the short course is GSO Short Courses (Apprenticeship Units) Non-Levy

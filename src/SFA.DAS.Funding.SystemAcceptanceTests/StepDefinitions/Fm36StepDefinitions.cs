@@ -125,6 +125,20 @@ public class Fm36StepDefinitions
         testData.Fm36HttpResponseMessage = await _learnerDataOuterApiClient.GetFm36BlockHttpResponseMessage(Constants.UkPrn, collectionYear, collectionPeriod, pageSize, pageNumber);
     }
 
+    [Then(@"learner is found in the fm36 response")]
+    public void LearnerInFm36Data()
+    {
+        var testData = _context.Get<TestData>();
+        var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
+
+        var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == apprenticeshipCreatedEvent.Uln);
+        if (fm36Learner == null)
+        {
+            throw new Exception($"No FM36 data found for ULN {apprenticeshipCreatedEvent.Uln}");
+        }
+    }
+
+
     [Then("incentives earnings are generated for learners aged 15")]
     [Then(@"fm36 data exists for that apprenticeship")]
     public void Fm36DataExists()

@@ -14,15 +14,15 @@ public class CoursesSqlClient
 
     public void UpdateEmployerMaxLevyCap(int value)
     {
-        const string sql = "update [dbo].[ApprenticeshipFunding] set MaxEmployerLevyCap = @value where LarsCode = 'ZSC00005'";
+        const string sql = "update [dbo].[ApprenticeshipFunding] set MaxEmployerLevyCap = @value where LarsCode = 'ZSC00004'";
         _sqlServerClient.Execute(sql, new { value });
-        Console.WriteLine($"[CoursesSqlClient] Updated MaxEmployerLevyCap to {value} for LarsCode ZSC00005");
+        Console.WriteLine($"[CoursesSqlClient] Updated MaxEmployerLevyCap to {value} for LarsCode ZSC00004");
     }
 
     public void ResetEmployerMaxLevyCap()
     {
-        const string sql = "update [dbo].[ApprenticeshipFunding] set MaxEmployerLevyCap = 1000.00 where LarsCode = 'ZSC00005'";
+        const string sql = "update [dbo].[ApprenticeshipFunding] set MaxEmployerLevyCap = 1000.00 where LarsCode = 'ZSC00004'";
         _sqlServerClient.Execute(sql);
-        Console.WriteLine("[CoursesSqlClient] Reset MaxEmployerLevyCap to 1000 for LarsCode ZSC00005");
+        Console.WriteLine("[CoursesSqlClient] Reset MaxEmployerLevyCap to 1000 for LarsCode ZSC00004");
     }
 }

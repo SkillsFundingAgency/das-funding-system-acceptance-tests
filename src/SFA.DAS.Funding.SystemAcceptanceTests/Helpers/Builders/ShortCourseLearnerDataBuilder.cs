@@ -22,7 +22,7 @@ public class ShortCourseLearnerDataBuilder(TestData testData)
             [
                 new LearnerDataOuterApiClient.ShortCourseOnProgramme
                 {
-                    CourseCode = "ZSC00005",
+                    CourseCode = "ZSC00004",
                     AgreementId = "SCAgreement1",
                     StartDate = new DateTime(2026, 08, 01),
                     ExpectedEndDate = new DateTime(2026, 11, 01),

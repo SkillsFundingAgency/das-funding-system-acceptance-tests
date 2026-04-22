@@ -9,11 +9,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 [Binding]
 public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiClient learnerDataOuterApiHelper)
 {
-    [Given(@"SLD informs us of a new learner with a short course starting on (.*)")]
+    [Given(@"SLD informs us of a new learner with a short course start date (.*)")]
     public async Task GivenANewLearnerWithAShortCourse(TokenisableDateTime startDate)
     {
         context.Set(new TestData(TestIdentifierProvider.GetNextUln()));
-        await AddShortCourse(startDate.Value);
+        await AddShortCourse(startDate.Value); 
     }
 
     [Given(@"SLD informs us of a new learner with a short course starting on (.*) and ending on (.*)")]
@@ -97,8 +97,8 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
         testData.ShortCourseLearnerData = shortCourseRequest;
     }
 
-    [Given(@"SLD informs us the short course learning has completed on (.*)")]
-    [When(@"SLD informs us the short course learning has completed on (.*)")]
+    [Given(@"SLD informs us the short course learning was completed on (.*)")]
+    [When(@"SLD informs us the short course learning was completed on (.*)")]
     public async Task WhenSLDInformsUsTheShortCourseLearningHasCompletedOn(TokenisableDateTime completionDate)
     {
         var testData = context.Get<TestData>();
