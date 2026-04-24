@@ -22,4 +22,4 @@ Scenario: Apprentice removed from the ILR
 	And the second incentive earning is not generated for provider & employer
 	And no learning support earnings are generated
 	And Break in Learning record is removed from earnings db
-	#And a learning withdrawn event is published to approvals with reason WithdrawFromStart and last day of learning as currentAY-08-01
+	And a learning withdrawn event is published to approvals with reason WithdrawFromStart and last day of learning as currentAY-08-01
