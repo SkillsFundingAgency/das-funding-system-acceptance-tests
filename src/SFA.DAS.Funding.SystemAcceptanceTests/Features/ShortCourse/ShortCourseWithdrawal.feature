@@ -2,7 +2,7 @@ Feature: Short Course Withdrawal
 
 @regression
 Scenario: Learner withdrawn - 30% milestone reached (and subsequently removed)
-    Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+    Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the short course is approved
     And the training provider recorded that the 30% milestone has been reached
     When SLD inform us that the learner has withdrawn
@@ -13,7 +13,7 @@ Scenario: Learner withdrawn - 30% milestone reached (and subsequently removed)
 
 @regression
 Scenario: Learner withdrawn - 30% milestone reached (and retained despite the withdrawal)
-    Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+    Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the short course is approved
     And the training provider recorded that the 30% milestone has been reached
     When SLD inform us that the learner has withdrawn
@@ -25,7 +25,7 @@ Scenario: Learner withdrawn - 30% milestone reached (and retained despite the wi
 
 @regression
 Scenario: Learner withdrawn - milestone(s) not reached 
-    Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+    Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the short course is approved
     When SLD inform us that the learner has withdrawn
     Then remove all earnings for that "short course"
@@ -34,7 +34,7 @@ Scenario: Learner withdrawn - milestone(s) not reached
 
 @regression
 Scenario: Learner recorded as “Completed” and subsequently withdrawn with 30% milestone
-    Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+    Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the short course is approved
     And the training provider recorded that the 30% milestone has been reached
     And the training provider also recorded that the learner completed
@@ -46,7 +46,7 @@ Scenario: Learner recorded as “Completed” and subsequently withdrawn with 30
 
 @regression
 Scenario: Learner recorded as “Completed” and subsequently withdrawn without 30% milestone
-    Given SLD informs us of a new learner with a short course starting on currentAY-08-01
+    Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the short course is approved
     And the training provider also recorded that the learner completed
     When SLD inform us that the learner has withdrawn

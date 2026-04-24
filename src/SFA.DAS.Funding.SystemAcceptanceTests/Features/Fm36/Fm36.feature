@@ -11,12 +11,33 @@ Scenario: Retrieve Valid Fm36 data
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	And the fm36 data is retrieved for currentDate
-	Then fm36 data exists for that apprenticeship
+	Then learner is found in the fm36 response
 
 Examples:
-	| start_date      | end_date     | agreed_price | training_code | age |
-	| currentAY-08-01 | nextAY-07-31 | 15000        | 2             | 19  |
-	| currentAY-08-01 | nextAY-07-31 | 15000        | 2             | 17  |
+	| start_date       | end_date         | agreed_price | training_code | age |
+	| currentAY-08-01  | nextAY-07-31     |        15000 |             2 |  19 |
+	| currentAY-08-01  | nextAY-07-31     |        15000 |             2 |  17 |
+	| currentAY-08-01  | currentAY-07-31  |        15000 |             2 |  23 |
+	| previousAY-08-01 | PreviousAY-07-31 |        15000 |           614 |  26 |
+	| previousAY-08-01 | currentAY-08-31  |        15000 |             2 |  26 |
+
+
+
+@regression
+Scenario: Retrieve Fm36 data with Actual End Date
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the apprenticeship commitment is approved
+	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
+	And Learning Completion is recorded on <completion_date>
+	And SLD submit updated learners details
+	And the fm36 data is retrieved for currentDate
+	Then PriceEpisodeCompletionPayment for period <expected_completion_period> is amount <expected_completion_amount>
+
+Examples:
+	| start_date       | end_date         | agreed_price | training_code | completion_date | expected_completion_period | expected_completion_amount |
+	| currentAY-08-01  | currentAY-07-31  |        15000 |           614 | currentAY-07-20 | currentAY-R12              |                       3000 |
+	| previousAY-08-01 | previousAY-07-31 |        15000 |           614 | currentAY-08-20 | currentAY-R01              |                       3000 |
+	| previousAY-08-01 | currentAY-08-31  |        15000 |           614 | currentAY-08-20 | currentAY-R01              |                       3000 |
 
 @regression
 Scenario: Retrieve Valid Fm36 data for learners aged 15
@@ -25,29 +46,42 @@ Scenario: Retrieve Valid Fm36 data for learners aged 15
 	And the apprenticeship commitment is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	When the fm36 data is retrieved for currentDate
+	And the fm36 data is retrieved for currentDate
 	Then incentives earnings are generated for learners aged 15
 
 Examples:
 	| start_date      | end_date     | agreed_price | training_code | age |
-	| currentAY-08-01 | nextAY-11-15 | 15000        | 2             | 15  |
+	| currentAY-08-01 | nextAY-11-15 |        15000 |             2 |  15 |
 
 
 @regression
-Scenario: Do not retrieve Fm36 data for Inactive learners
+Scenario: Do not retrieve Fm36 data for future starts
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
 	And the apprenticeship commitment is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	When the fm36 data is retrieved for currentDate
+	And the fm36 data is retrieved for currentDate
 	Then fm36 data does not exist for that apprenticeship
 
 Examples:
-	| start_date        | end_date               | agreed_price | training_code | age |
-	| previousAy-08-01  | previousAY-07-31       | 15000        | 2             | 16  |
-	| nextAy-08-01      | CurrentAyPlusTwo-11-15 | 15000        | 2             | 18  |
-	| nextMonthFirstDay | CurrentAyPlusTwo-11-15 | 15000        | 2             | 19  |
+	| start_date   | end_date               | agreed_price | training_code | age |
+	| nextAy-08-01 | CurrentAyPlusTwo-11-15 |        15000 |             2 |  18 |
+
+@regression
+Scenario: Do not retrieve Fm36 data for learners with Actual Start Date in previous AY
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
+	And the apprenticeship commitment is approved
+	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
+	And Learning Completion is recorded on <completion_date>
+	And SLD submit updated learners details
+	And the fm36 data is retrieved for currentDate
+	Then fm36 data does not exist for that apprenticeship
+
+Examples:
+	| start_date       | end_date         | agreed_price | training_code | completion_date  |
+	| previousAy-08-01 | previousAy-07-31 |        15000 |             2 | previousAy-07-22 |
+	| previousAy-08-01 | CurrentAy-07-31  |        15000 |             2 | previousAy-07-28 |
 
 
 @regression
@@ -57,12 +91,12 @@ Scenario: Retrieve Fm36 data for Active learners
 	And the apprenticeship commitment is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	When the fm36 data is retrieved for currentDate
+	And the fm36 data is retrieved for currentDate
 	Then learner is returned in the fm36 response
 
 Examples:
 	| start_date            | end_date               | agreed_price | training_code | age |
-	| lastDayOfCurrentMonth | CurrentAyPlusTwo-11-15 | 15000        | 91            | 19  |
+	| lastDayOfCurrentMonth | CurrentAyPlusTwo-11-15 |        15000 |            91 |  19 |
 
 @regression
 Scenario: Retrieve Valid Fm36 19-24 incentives data
@@ -77,8 +111,8 @@ Scenario: Retrieve Valid Fm36 19-24 incentives data
 
 Examples:
 	| start_date      | end_date     | agreed_price | training_code | age |
-	| currentAY-08-01 | nextAY-07-31 | 15000        | 2             | 19  |
-	| currentAY-08-01 | nextAY-07-31 | 15000        | 2             | 24  |
+	| currentAY-08-01 | nextAY-07-31 |        15000 |             2 |  19 |
+	| currentAY-08-01 | nextAY-07-31 |        15000 |             2 |  24 |
 
 @regression
 Scenario: Retrieve Valid Fm36 learning support data
@@ -88,7 +122,7 @@ Scenario: Retrieve Valid Fm36 learning support data
 	And learning support is recorded from <learning_support_start> to <learning_support_end>
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And SLD submit updated learners details
-	When the fm36 data is retrieved for currentDate
+	And the fm36 data is retrieved for currentDate
 	Then learning support amounts and periods from <expected_first_payment_period> to <expected_last_payment_period> are updated in the fm36 response
 
 Examples:
