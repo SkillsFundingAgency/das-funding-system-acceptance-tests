@@ -101,6 +101,12 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         if(testData.IsShortCourseApproved && testData.CommitmentsApprenticeshipCreatedEvent?.ApprenticeshipEmployerTypeOnApproval != null)
             Assert.AreEqual((byte)testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipEmployerTypeOnApproval, episode.EmployerType, "EmployerType does not match.");
 
+        if (episode.IsApproved)
+        {
+            Assert.AreEqual(testData.CommitmentsApprenticeshipCreatedEvent?.AccountId, episode.EmployerAccountId, "Employer AccountId do not match.");
+            Assert.AreEqual(testData.CommitmentsApprenticeshipCreatedEvent?.TransferSenderId, episode.TransferSenderId, "TransferSenderId do not match.");
+            Assert.AreEqual(testData.CommitmentsApprenticeshipCreatedEvent?.ApprenticeshipId, episode.ApprovalsApprenticeshipId, "Approvals Apprenticeship Id do not match.");
+        }
         var expectedLearningSupports = expectedCourse.LearningSupport ?? new();
         var actualLearningSupports = episode.LearningSupport ?? new();
         Assert.AreEqual(expectedLearningSupports.Count, actualLearningSupports.Count, "LearningSupport count does not match.");
