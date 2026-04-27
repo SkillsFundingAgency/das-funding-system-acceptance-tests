@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.ApprenticeshipPayments.Types;
+﻿using NUnit.Framework.Interfaces;
+using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -61,6 +62,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 mostRecentHistory.CreatedOn,
                 Is.InRange(DateTime.UtcNow.AddMinutes(-5), DateTime.UtcNow)
             );
+        }
+
+        [Given("Approvals Apprenticeship Id is stored in ApprenticeshipEpisode table")]
+        public async Task ApprovalsApprenticeshipIdIsStoredInApprenticeshipEpisodeTable()
+        {
+            var testData = context.Get<TestData>();
+
+            var episode = learningSqlClient
+                    .GetApprenticeship(testData.LearningKey)
+                    .Episodes.First();
+
+            Assert.AreEqual(testData.CommitmentsApprenticeshipCreatedEvent?.ApprenticeshipId, episode.ApprovalsApprenticeshipId, "Approvals Apprenticeship Id do not match.");
         }
     }
 }

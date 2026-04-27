@@ -243,7 +243,7 @@ public class LearningSqlClient
 public class Learning
 {
     public Guid Key { get; set; }
-    public long ApprovalsApprenticeshipId { get; set; }
+    //public long ApprovalsApprenticeshipId { get; set; } //todo: delete
     //public string ApprenticeshipHashedId { get; set; } = null!; //todo: delete
     public DateTime? CompletionDate { get; set; } = null;
     public List<FreezeRequest> FreezeRequests { get; set; } //todo: delete
@@ -267,8 +267,8 @@ public class Episode
 {
     public Guid Key { get; set; }
     public Guid LearningKey { get; set; }
+    public long ApprovalsApprenticeshipId { get; set; }
     public bool IsDeleted { get; set; }
-
     public long Ukprn { get; set; }
     public long EmployerAccountId { get; set; }
     public DAS.Learning.Types.FundingType FundingType { get; set; }
@@ -344,10 +344,12 @@ public class ShortCourseEpisode
     public DateTime ExpectedEndDate { get; set; }
     public DateTime? WithdrawalDate { get; set; }
     public string TrainingCode { get; set; } = null!;
+    public long ApprovalsApprenticeshipId { get; set; }
     public string LearnerRef { get; set; } = null!;
     public bool IsApproved { get; set; }
     public byte LearningType { get; set; }
     public byte EmployerType { get; set; }
+    public long? TransferSenderId { get; set; }
     public List<ShortCourseLearningSupport> LearningSupport { get; set; }
     public List<ShortCourseMilestone> Milestones { get; set; }
 }

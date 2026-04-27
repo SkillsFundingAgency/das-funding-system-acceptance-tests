@@ -24,13 +24,20 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         return ApproveShortCourse(employerType);
     }
 
-    private async Task ApproveShortCourse(ApprenticeshipEmployerType employerType)
+    [Given(@"the short course is approved through a transfer with employer type (.*)")]
+    [When(@"the short course is approved through a transfer with employer type (.*)")]
+    public Task ShortCourseIsApprovedThroughATransferWithEmployerType(ApprenticeshipEmployerType employerType)
+    {
+        return ApproveShortCourse(employerType, true);
+    }
+
+    private async Task ApproveShortCourse(ApprenticeshipEmployerType employerType, bool withTransfer = false)
     {
         var testData = context.Get<TestData>();
         testData.IsShortCourseApproved = true;
         var shortCourseOnProgramme = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single();
 
-        var apprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, shortCourseOnProgramme, "ABC123", employerType);
+        var apprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, shortCourseOnProgramme, "ABC123", employerType, withTransfer);
 
         testData.CommitmentsApprenticeshipCreatedEvent = apprenticeshipCreatedEvent;
 
@@ -100,7 +107,9 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         }, "Failed to find approved short course earnings entity.");
     }
 
-    private CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent CreateApprenticeshipCreatedEvent(TestData testData, Helpers.Http.LearnerDataOuterApiClient.ShortCourseOnProgramme shortCourseOnProgramme, string apprenticshipHashedId, ApprenticeshipEmployerType employerType = ApprenticeshipEmployerType.Levy)
+    private CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent CreateApprenticeshipCreatedEvent(TestData testData, 
+        Helpers.Http.LearnerDataOuterApiClient.ShortCourseOnProgramme shortCourseOnProgramme, string apprenticshipHashedId, 
+        ApprenticeshipEmployerType employerType = ApprenticeshipEmployerType.Levy, bool isTransfer = false)
     {
         return new CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent
         {
@@ -131,7 +140,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
             TrainingCourseVersion = "1.0",
             ApprenticeshipHashedId = apprenticshipHashedId,
             AccountLegalEntityId = 12345,
-            TransferSenderId = null,
+            TransferSenderId = isTransfer ? 824 : null,
             ApprenticeshipEmployerTypeOnApproval = employerType
         };
     }
