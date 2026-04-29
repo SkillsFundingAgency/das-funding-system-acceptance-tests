@@ -81,3 +81,23 @@ Scenario: Balancing and Completion earnings on Completion - Change of price post
 	Then earnings of 1200 are generated from periods currentAY-R01 to currentAY-R10
 	And an earning of 2400 of type Balancing is generated for period currentAY-R11
 	And an earning of 3600 of type Completion is generated for period currentAY-R11
+
+@regression
+Scenario: Recalculate earnings based on qualifying period when completion date is recorded - qualifying period met
+	Given a learning has a start date of <start_date>, a planned end date of <planned_end_date> and an agreed price of <agreed_price>
+	When Learning Completion is recorded on <completion_date>
+	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
+	And SLD submit updated learners details
+	Then the expected number of earnings instalments after completion are <number_of_instalments>
+	And an earning of <balancing_amount> of type Balancing is generated for period <balancing_period>
+	And an earning of <completion_amount> of type Completion is generated for period <completion_period>
+
+Examples:
+	| start_date      | planned_end_date | agreed_price | completion_date | number_of_instalments | balancing_amount | balancing_period | completion_amount | completion_period |
+	| currentAY-08-01 | currentAY-08-13  |        15000 | currentAY-08-01 |                     0 |            12000 | currentAY-R01    |              3000 | currentAY-R01     |
+	| currentAY-08-01 | currentAY-08-14  |        15000 | currentAY-08-14 |                     0 |            12000 | currentAY-R01    |              3000 | currentAY-R01     |
+	| currentAY-08-20 | currentAY-09-02  |        15000 | currentAY-09-02 |                     1 |                0 | currentAY-R02    |              3000 | currentAY-R02     |
+	| currentAY-08-01 | currentAY-01-14  |        15000 | currentAY-11-08 |                     3 |             4800 | currentAY-R04    |              3000 | currentAY-R04     |
+	| currentAY-08-01 | currentAY-10-31  |        15000 | currentAY-08-14 |                     0 |            12000 | currentAY-R01    |              3000 | currentAY-R01     |
+	| currentAY-08-01 | currentAY-07-31  |        15000 | currentAY-01-15 |                     5 |             7000 | currentAY-R06    |              3000 | currentAY-R06     |
+
