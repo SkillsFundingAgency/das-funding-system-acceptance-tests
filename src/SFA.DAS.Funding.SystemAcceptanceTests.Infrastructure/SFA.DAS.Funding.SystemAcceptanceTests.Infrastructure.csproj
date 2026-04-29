@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -15,7 +15,7 @@
     <PackageReference Include="SFA.DAS.NServiceBus" Version="17.0.13" />
     <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages.External" Version="2.0.8-prerelease-9" />
     <PackageReference Include="SpecFlow" Version="3.9.40" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="7.0.1" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.7" />
 	<PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Messages" Version="0.0.14" />
   </ItemGroup>
 
