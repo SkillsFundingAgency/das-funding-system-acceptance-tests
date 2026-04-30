@@ -3,7 +3,7 @@ using SFA.DAS.Learning.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events
 {
-    internal static class WithdrawalRevertedEventHelper
+    internal static class LearningWithdrawalRevertedEventHelper
     {
         internal static async Task ReceiveWithdrawalRevertedEvent(this ScenarioContext context, Guid learningKey)
         {
@@ -11,12 +11,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events
 
             await WaitHelper.WaitForIt(() =>
             {
-                SFA.DAS.Learning.Types.WithdrawalRevertedEvent? withdrawalRevertedEvent =
-                    WithdrawalRevertedEventHandler.GetMessage(x => x.LearningKey == learningKey);
+                SFA.DAS.Learning.Types.LearningWithdrawalRevertedEvent? learningWithdrawalRevertedEvent =
+                    LearningWithdrawalRevertedEventHandler.GetMessage(x => x.LearningKey == learningKey);
 
-                if (withdrawalRevertedEvent != null)
+                if (learningWithdrawalRevertedEvent != null)
                 {
-                    testData.WithdrawalRevertedEvent = withdrawalRevertedEvent;
+                    testData.WithdrawalRevertedEvent = learningWithdrawalRevertedEvent;
                     return true;
                 }
                 return false;

@@ -29,20 +29,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             await context.ReceiveLearningWithdrawnEvent(testData.LearningCreatedEvent.LearningKey);
 
-            Assert.AreEqual(UniversalWithdrawalReason, testData.ApprenticeshipWithdrawnEvent.Reason, "Unexpected withdrawal reason found in the event!");
-            Assert.AreEqual(lastDayOfLearning.Value.Date, testData.ApprenticeshipWithdrawnEvent.LastDayOfLearning.Date, "Unexpected last day of learning found in the event!");
+            Assert.AreEqual(lastDayOfLearning.Value.Date, testData.LearningWithdrawnEvent.WithdrawalDate.Date, "Unexpected last day of learning found in the event!");
         }
 
-        [Given("a learning withdrawn event is published to approvals with reason (.*) and last day of learning as (.*)")]
-        [Then("a learning withdrawn event is published to approvals with reason (.*) and last day of learning as (.*)")]
-        public async Task ALearningWithdrawnEventIsPublishedWithReasonAndLastDayOfLearningAs(string reason, TokenisableDateTime lastDayOfLearning)
+        [Given("a learning removed event is published to approvals")]
+        [Then("a learning removed event is published to approvals")]
+        public async Task LearningRemovedEventIsPublishedToApprovals()
         {
             var testData = context.Get<TestData>();
 
-            await context.ReceiveLearningWithdrawnEvent(testData.LearningCreatedEvent.LearningKey);
-
-            Assert.AreEqual(reason, testData.ApprenticeshipWithdrawnEvent.Reason, "Unexpected withdrawal reason found in the event!");
-            Assert.AreEqual(lastDayOfLearning.Value.Date, testData.ApprenticeshipWithdrawnEvent.LastDayOfLearning.Date, "Unexpected last day of learning found in the event!");
+            await context.ReceiveLearningRemovedEvent(testData.LearningCreatedEvent.LearningKey);
         }
 
 

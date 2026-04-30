@@ -11,16 +11,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events
 
             await WaitHelper.WaitForIt(() =>
             {
-                ApprenticeshipWithdrawnEvent? apprenticeshipWithdrawnEvent =
-                    ApprenticeshipWithdrawnEventHandler.GetMessage(x => x.LearningKey == learningKey);
+                LearningWithdrawnEvent? learningWithdrawnEvent =
+                    LearningWithdrawnEventHandler.GetMessage(x => x.LearningKey == learningKey);
 
-                if (apprenticeshipWithdrawnEvent != null)
+                if (learningWithdrawnEvent != null)
                 {
-                    testData.ApprenticeshipWithdrawnEvent = apprenticeshipWithdrawnEvent;
+                    testData.LearningWithdrawnEvent = learningWithdrawnEvent;
                     return true;
                 }
                 return false;
-            }, "Failed to find published Apprenticeship Withdrawn Event");
+            }, "Failed to find published Learning Withdrawn Event");
         }
     }
 }
