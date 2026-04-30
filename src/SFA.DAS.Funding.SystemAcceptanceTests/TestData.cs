@@ -56,8 +56,8 @@ public class TestData
     internal LearnerDataOuterApiClient.GetShortCourseEarningsResponse? ShortCourseEarningsResponse { get; set; }
     internal LearnerDataBuilder? LearnerDataBuilder { get; set; }
     internal EndDateChangedEvent EndDateChangedEvent { get; set; }
-    internal ApprenticeshipWithdrawnEvent ApprenticeshipWithdrawnEvent { get; set; }
-    internal WithdrawalRevertedEvent WithdrawalRevertedEvent { get; set; }
+    internal LearningWithdrawnEvent LearningWithdrawnEvent { get; set; }
+    internal LearningWithdrawalRevertedEvent WithdrawalRevertedEvent { get; set; }
     internal PersonalDetailsChangedEvent PersonalDetailsChangedEvent { get; set; }
     internal HttpResponseMessage? Fm36HttpResponseMessage { get; set; }
     internal CalculateGrowthAndSkillsPayments? CalculateGrowthAndSkillsPaymentsCommand { get; set; }
