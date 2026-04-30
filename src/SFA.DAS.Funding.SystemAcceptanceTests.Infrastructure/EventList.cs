@@ -13,6 +13,7 @@ public static class EventList
             typeof(Learning.Types.EndDateChangedEvent).FullName!,
             typeof(Learning.Types.LearningWithdrawnEvent).FullName!,
             typeof(Learning.Types.LearningWithdrawalRevertedEvent).FullName!,
+            typeof(Learning.Types.LearningRemovedEvent).FullName!,
             typeof(Learning.Types.PersonalDetailsChangedEvent).FullName!,
             typeof(SFA.DAS.LearnerData.Events.LearnerDataEvent).FullName!,
             typeof(SFA.DAS.LearnerData.Events.GrowthAndSkillsPaymentsRecalculatedEvent).FullName!

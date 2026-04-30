@@ -32,6 +32,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             Assert.AreEqual(lastDayOfLearning.Value.Date, testData.LearningWithdrawnEvent.WithdrawalDate.Date, "Unexpected last day of learning found in the event!");
         }
 
+        [Given("a learning removed event is published to approvals")]
+        [Then("a learning removed event is published to approvals")]
+        public async Task LearningRemovedEventIsPublishedToApprovals()
+        {
+            var testData = context.Get<TestData>();
+
+            await context.ReceiveLearningRemovedEvent(testData.LearningCreatedEvent.LearningKey);
+        }
+
 
         [When("a withdrawal reverted event is published to approvals")]
         public async Task WithdrawalRevertedEventIsPublishedToApprovals()
