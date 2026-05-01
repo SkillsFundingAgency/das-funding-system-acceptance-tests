@@ -10,7 +10,7 @@ Scenario: On-program earnings generation for an approved apprenticeship
 	When the apprenticeship commitment is approved
 	Then 80% of the agreed price is calculated as total on-program payment which is divided equally into number of planned months <instalment_amount>
 	And the planned number of months must be the number of months from the start date to the planned end date <planned_number_of_months>
-	And the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year
+	And the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month and year
 		| Delivery Period | Academic Year | Calendar Period |
 		| 1               | 2223          | August          |
 		| 2               | 2223          | September       |

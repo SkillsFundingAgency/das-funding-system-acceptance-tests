@@ -51,8 +51,8 @@ Scenario: Apprentices age is updated to 19 years old without care leavers - ince
 	And Learner's date of birth is updated to 2006-08-01
 	And SLD submit updated learners details
 	Then Learner's date of birth is updated in learning db to 2006-08-01
-	And the first incentive earning is not generated for provider & employer
-	And the second incentive earning is not generated for provider & employer
+	And the first incentive earning is_not generated for provider & employer
+	And the second incentive earning is_not generated for provider & employer
 
 
 # In the below scenario, the learner is initially 24 yo and marked as care leaver. Employer and provider's incentives are generated.
@@ -72,8 +72,8 @@ Scenario: Apprentices age is updated to 25 years old - incentives removed
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
 	Then Learner's date of birth is updated in learning db to 2000-08-01
-	And the first incentive earning is not generated for provider & employer
-	And the second incentive earning is not generated for provider & employer
+	And the first incentive earning is_not generated for provider & employer
+	And the second incentive earning is_not generated for provider & employer
 
 
 # In the below scenario, the learner is initially 19 yo and NOT marked as care leaver. Employer and provider's incentives are NOT generated.
@@ -83,8 +83,8 @@ Scenario: Apprentices age is updated to 18 years old - incentives added
 	Given an apprenticeship has a start date of 2025-08-02, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 19
 	And the apprenticeship commitment is approved
-	And the first incentive earning is not generated for provider & employer
-	And the second incentive earning is not generated for provider & employer
+	And the first incentive earning is_not generated for provider & employer
+	And the second incentive earning is_not generated for provider & employer
 	When SLD record on-programme cost as total price 15000 from date 2025-08-02 to date 2027-07-31
 	And Learner's date of birth is updated to 2007-08-01
 	And SLD submit updated learners details

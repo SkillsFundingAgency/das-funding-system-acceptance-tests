@@ -33,8 +33,8 @@ Scenario: 19-24 Incentive Earnings - Learner is a Care Leaver without Employer C
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And the apprentice is marked as a care leaver without employer consent
 	And SLD submit updated learners details
-	Then the first incentive earning is not generated for employer
-	And the second incentive earning is not generated for employer
+	Then the first incentive earning is_not generated for employer
+	And the second incentive earning is_not generated for employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
@@ -65,7 +65,7 @@ Scenario: 19-24 Incentive Earnings (duration only long enough for first earning 
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
-	And the second incentive earning is not generated for provider & employer
+	And the second incentive earning is_not generated for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
@@ -102,9 +102,9 @@ Scenario: No Incentives for 19-24 learner completing before threshold date
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age | completion_date | first_earnings_generated | second_earnings_generated |
-	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  19 | currentAY-10-28 | is not                   | is not                    |
-	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  21 | currentAY-10-29 | is                       | is not                    |
-	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  23 | currentAY-07-29 | is                       | is not                    |
+	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  19 | currentAY-10-28 | is_not                   | is_not                    |
+	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  21 | currentAY-10-29 | is                       | is_not                    |
+	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  23 | currentAY-07-29 | is                       | is_not                    |
 	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  24 | currentAY-07-31 | is                       | is                        |
 
 @regression
@@ -121,8 +121,8 @@ Scenario: No Incentives for 19+ learner withdrawn before 90-365 day threshold da
 
 Examples:
 	| withdrawal_date | first_earnings_generated | second_earnings_generated |
-	| currentAY-10-28 | is not                   | is not                    |
-	| currentAY-07-30 | is                       | is not                    |
+	| currentAY-10-28 | is_not                   | is_not                    |
+	| currentAY-07-30 | is                       | is_not                    |
 
 #FLP-1512
 @regression
@@ -135,8 +135,8 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And Learner's date of birth is updated to 2000-08-01
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
-	Then the first incentive earning is not generated for provider & employer
-	And the second incentive earning is not generated for provider & employer
+	Then the first incentive earning is_not generated for provider & employer
+	And the second incentive earning is_not generated for provider & employer
 	# Change dob to a day less then 25 years and validate incentives are generated
 	When Learner's date of birth is updated to 2000-08-02
 	And SLD submit updated learners details
@@ -148,8 +148,8 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And Learner's date of birth is updated to 2000-08-02
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
-	Then the first incentive earning is not generated for provider & employer
-	And the second incentive earning is not generated for provider & employer
+	Then the first incentive earning is_not generated for provider & employer
+	And the second incentive earning is_not generated for provider & employer
 	# Change start date so learner is below 25 years - incentives should generate
 	When SLD resubmits ILR
 	And SLD record on-programme training price 12000 with epao as 3000 from date 2025-08-01 to date 2026-07-31
