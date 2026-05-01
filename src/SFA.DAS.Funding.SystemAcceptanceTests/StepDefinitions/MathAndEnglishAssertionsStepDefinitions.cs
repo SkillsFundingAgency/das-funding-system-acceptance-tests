@@ -89,7 +89,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var testData = context.Get<TestData>();
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
-            
+
             learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value);
 
             testData.IsMathsAndEnglishAdded = true;
@@ -114,7 +114,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value, false,null,null,withdrawalDate.Value);
+            learnerDataBuilder.WithEnglishAndMathsReturnFromBreakInLearning(newStartDate.Value, false, null, null, withdrawalDate.Value);
 
             testData.IsMathsAndEnglishAdded = true;
         }
@@ -188,13 +188,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
 
-        [When("Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*) and prior learning adjustment of (.*) percent")]
-        public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, int? priorLearning)
+        [When("Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*) and prior learning adjustment of (.*) percent and other funding adjustment of (.*) percent")]
+        public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course,
+            decimal amount, string? priorLearning, string? otherFunding)
         {
             var testData = context.Get<TestData>();
-
             var learnerBuilder = testData.GetLearnerDataBuilder();
-            learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, learnAimRef, priorLearningPercentage: priorLearning);
+
+            int? priorLearningPercentage = ToNullableInt(priorLearning);
+            int? otherFundingPercentage = ToNullableInt(otherFunding);
+
+
+            learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, learnAimRef, null, null,
+                priorLearningPercentage, otherFundingPercentage);
 
             testData.IsMathsAndEnglishAdded = true;
         }
@@ -390,6 +396,22 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             return episode.MathsAndEnglishInstalments
                 .Where(x => x.MathsAndEnglishKey == mathsAndEnglishKey && x.Type == type)
                 .ToList();
+        }
+
+        private int? ToNullableInt(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
+            var normalised = value.Trim().ToLower();
+
+            if (normalised == "null" || normalised == "none" || normalised == "n/a")
+                return null;
+
+            if (int.TryParse(value, out var result))
+                return result;
+
+            throw new ArgumentException($"'{value}' is not a valid integer.");
         }
     }
 }

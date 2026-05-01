@@ -10,16 +10,17 @@ M&E Earnings must be multipled by this percentage amount.
 @regression
 Scenario: Earnings for Maths and English with prior learning %
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of <agreed_price>
-	When Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount> and prior learning adjustment of <prior_learning> percent
+	When Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount> and prior learning adjustment of <prior_learning> percent and other funding adjustment of <other_funding_adjustment> percent
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
 
 Examples:
-	| start_date      | end_date        | course              | agreed_price | amount | expected_first_earning_period | expected_last_period | prior_learning | instalment |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |    931 | currentAY-R02                 | currentAY-R08        |            100 |        133 |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |    931 | currentAY-R02                 | currentAY-R08        |              0 |        133 |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |    931 | currentAY-R02                 | currentAY-R08        |             10 |       13.3 |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |    931 | currentAY-R02                 | currentAY-R08        |            110 |      146.3 |
+	| start_date      | end_date        | course              | agreed_price | amount | expected_first_earning_period | expected_last_period | prior_learning | other_funding_adjustment | instalment |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |   1000 | currentAY-R02                 | currentAY-R08        |             50 |                       50 |      35.71 |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |   1000 | currentAY-R02                 | currentAY-R08        |            120 |                        0 |     171.43 |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |   1000 | currentAY-R02                 | currentAY-R08        |              0 |                      120 |     171.43 |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |   1000 | currentAY-R02                 | currentAY-R08        | null           |                      120 |     171.43 |
+	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |   1000 | currentAY-R02                 | currentAY-R08        | null           | null                     |     142.86 |
 
 	
