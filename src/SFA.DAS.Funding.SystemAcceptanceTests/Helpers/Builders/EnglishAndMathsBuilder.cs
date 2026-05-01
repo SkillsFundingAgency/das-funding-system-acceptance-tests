@@ -33,9 +33,15 @@ public class EnglishAndMathsBuilder
         return this;
     }
 
-    public EnglishAndMathsBuilder WithPriorLearningPercentage(int? percentage)
+    public EnglishAndMathsBuilder WithPriorLearningAdjustment(int? percentage)
     {
-        _course.PriorLearningPercentage = percentage;
+        _course.PriorLearningAdjustment = percentage;
+        return this;
+    }
+
+    public EnglishAndMathsBuilder WithOtherLearningAdjustment(int? percentage)
+    {
+        _course.OtherFundingAdjustment = percentage;
         return this;
     }
 
