@@ -13,7 +13,7 @@ Scenario: Incentive Earnings for learner ending after 90 days not at the end of 
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
 	Then the first incentive earning is generated for provider & employer
-	And the second incentive earning is not generated for provider & employer
+	And the second incentive earning is_not generated for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |

@@ -18,8 +18,8 @@ Scenario: Apprentice removed from the ILR
 	And earnings are recalculated
 	And Maths and English earnings for course Entry level English are removed
 	And the expected number of earnings instalments after withdrawal are 0
-	And the first incentive earning is not generated for provider & employer
-	And the second incentive earning is not generated for provider & employer
+	And the first incentive earning is_not generated for provider & employer
+	And the second incentive earning is_not generated for provider & employer
 	And no learning support earnings are generated
 	And Break in Learning record is removed from earnings db
 	And a learning removed event is published to approvals

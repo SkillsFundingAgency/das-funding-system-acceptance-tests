@@ -16,7 +16,7 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         _earningsSqlClient = earningsSqlClient;
     }
 
-    [When(@"the agreed price is (below|above) the funding band maximum for the selected course")]
+    [When(@"the agreed price is {word} the funding band maximum for the selected course")]
     public void VerifyFundingBandMaxValue(string condition)
     {
         var testData = _context.Get<TestData>();
@@ -48,8 +48,8 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         deliveryPeriods.FilterByOnProg().Should().HaveCount(numberOfInstalments);
     }
 
-    [Given(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
-    [Then(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month/year")]
+    [Given(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month and year")]
+    [Then(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month and year")]
     public void ThenTheDeliveryPeriodForEachInstalmentMustBeTheDeliveryPeriodFromTheCollectionCalendarWithAMatchingCalendarMonthYear(Table table)
     {
         var testData = _context.Get<TestData>();

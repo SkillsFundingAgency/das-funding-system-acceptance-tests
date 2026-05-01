@@ -29,7 +29,7 @@ Scenario: 16-18 Incentive Earnings (duration only long enough for first earning 
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
 	Then the first incentive earning is generated for provider & employer
-	And the second incentive earning is not generated for provider & employer
+	And the second incentive earning is_not generated for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
@@ -42,8 +42,8 @@ Scenario: 16-18 Incentive Earnings (duration too short)
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
-	Then the first incentive earning is not generated for provider & employer
-	And the second incentive earning is not generated for provider & employer
+	Then the first incentive earning is_not generated for provider & employer
+	And the second incentive earning is_not generated for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
@@ -63,9 +63,9 @@ Scenario: No Incentives for 16-18 learner completing before threshold date
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age | completion_date | first_earnings_generated | second_earnings_generated |
-	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  17 | currentAY-10-28 | is not                   | is not                    |
-	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  18 | currentAY-10-29 | is                       | is not                    |
-	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  17 | currentAY-07-29 | is                       | is not                    |
+	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  17 | currentAY-10-28 | is_not                   | is_not                    |
+	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  18 | currentAY-10-29 | is                       | is_not                    |
+	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  17 | currentAY-07-29 | is                       | is_not                    |
 	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  18 | currentAY-07-31 | is                       | is                        |
 
 @regression
@@ -83,5 +83,5 @@ Scenario: No Incentives for 16-18 learner withdrawn before 90 day threshold date
 
 Examples:
 	| withdrawal_date | first_earnings_generated | second_earnings_generated |
-	| currentAY-10-28 | is not                   | is not                    |
-	| currentAY-07-30 | is                       | is not                    |
+	| currentAY-10-28 | is_not                   | is_not                    |
+	| currentAY-07-30 | is                       | is_not                    |
