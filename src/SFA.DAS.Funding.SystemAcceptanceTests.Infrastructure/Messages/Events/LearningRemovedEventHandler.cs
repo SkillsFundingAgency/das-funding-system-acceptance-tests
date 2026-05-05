@@ -2,5 +2,5 @@
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages.Events
 {
-    public class WithdrawalRevertedEventHandler : MultipleEndpointSafeMessageHandler<WithdrawalRevertedEvent> { }
+    public class LearningRemovedEventHandler : MultipleEndpointSafeMessageHandler<LearningRemovedEvent> { }
 }

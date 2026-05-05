@@ -24,7 +24,7 @@ public static class TestIdentifierProvider
             var sqlServerClient = Sql.SqlServerClientProvider.GetSqlServerClient(learningDbConnectionString);
 
             var dbUlnsList = sqlServerClient.GetList<string>("SELECT Uln FROM [dbo].[Learner]");
-            var dbApprenticeshipsList = sqlServerClient.GetList<long>("SELECT ApprovalsApprenticeshipId FROM [dbo].[ApprenticeshipLearning]");
+            var dbApprenticeshipsList = sqlServerClient.GetList<long>("SELECT ApprovalsApprenticeshipId FROM [dbo].[ApprenticeshipEpisode]");
 
             _dbUlns = new HashSet<string>(dbUlnsList);
             _dbApprenticeshipIds = new HashSet<long>(dbApprenticeshipsList);

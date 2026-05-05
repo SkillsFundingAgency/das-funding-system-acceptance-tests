@@ -6,6 +6,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Learning.Types;
+using Reqnroll;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -59,8 +60,8 @@ public class IncentivesAssertionsStepDefinitions
     }
 
 
-    [Given(@"the (first|second) incentive earning (is|is not) generated for provider & employer")]
-    [Then(@"the (first|second) incentive earning (is|is not) generated for provider & employer")]
+    [Given(@"the {word} incentive earning {word} generated for provider & employer")]
+    [Then(@"the {word} incentive earning {word} generated for provider & employer")]
     public async Task VerifyIncentiveEarnings(string incentiveEarningNumber, string outcome)
     {
         var testData = _context.Get<TestData>();
@@ -133,8 +134,8 @@ public class IncentivesAssertionsStepDefinitions
         additionalPayments.Should().NotContain(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive);
     }
 
-    [Given(@"the (first|second) incentive due date for provider & employer is (.*)")]
-    [Then(@"the (first|second) incentive due date for provider & employer is (.*)")]
+    [Given(@"the {word} incentive due date for provider & employer is {}")]
+    [Then(@"the {word} incentive due date for provider & employer is {}")]
     public async Task VerifyIncentiveEarningsDueDate(string incentiveEarningNumber, DateTime dueDate)
     {
         var testData = _context.Get<TestData>();
@@ -184,7 +185,7 @@ public class IncentivesAssertionsStepDefinitions
         }
     }
 
-    [Then(@"the (first|second) incentive earning (is|is not) generated for employer")]
+    [Then(@"the {word} incentive earning {word} generated for employer")]
     public async Task VerifyIncentiveEarningsGeneratedForEmployer (string incentiveEarningNumber, string outcome)
     {
         var testData = _context.Get<TestData>();

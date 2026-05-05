@@ -306,9 +306,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
 
         var expectedLastDayOfLearning = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single().WithdrawalDate;
 
-        Assert.AreEqual(expectedLastDayOfLearning?.Date, testData.ApprenticeshipWithdrawnEvent.LastDayOfLearning.Date, "Unexpected last day of learning found in the event!");
-        
-        Assert.AreEqual("WithdrawDuringLearning", testData.ApprenticeshipWithdrawnEvent.Reason, "Unexpected withdrawal reason found in the event!"); 
+        Assert.AreEqual(expectedLastDayOfLearning?.Date, testData.LearningWithdrawnEvent.WithdrawalDate.Date, "Unexpected last day of learning found in the event!");
     }
 
     [Then(@"inform payments that the learner has been withdrawn from the short course")]

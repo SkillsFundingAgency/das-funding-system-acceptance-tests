@@ -2,5 +2,5 @@
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages.Events
 {
-    public class ApprenticeshipWithdrawnEventHandler : MultipleEndpointSafeMessageHandler<ApprenticeshipWithdrawnEvent> { }
+    public class LearningWithdrawnEventHandler : MultipleEndpointSafeMessageHandler<LearningWithdrawnEvent> { }
 }
