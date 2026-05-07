@@ -19,10 +19,11 @@ Scenario: Earnings for Maths and English after Withdrawal after Qualifying Perio
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
 
 Examples:
-	| start_date      | duration_days | course              | agreed_price | withdrawal_on_day | expected_first_earning_period | expected_last_period | instalment |
-	| currentAY-09-25 |           240 | Entry level English |         5000 |                42 | currentAY-R02                 | currentAY-R03        |        625 |
-	| currentAY-09-25 |           180 | Entry level English |         5000 |                42 | currentAY-R02                 | currentAY-R03        |     833.33 |
-	| currentAY-09-25 |            14 | Entry level English |         5000 |                14 | currentAY-R02                 | currentAY-R02        |       5000 |
+	| start_date       | duration_days | course              | agreed_price | withdrawal_on_day | expected_first_earning_period | expected_last_period | instalment |
+	| currentAY-09-25  |           240 | Entry level English |         5000 |                42 | currentAY-R02                 | currentAY-R03        |        625 |
+	| currentAY-09-25  |           180 | Entry level English |         5000 |                42 | currentAY-R02                 | currentAY-R03        |     833.33 |
+	| currentAY-09-25  |            14 | Entry level English |         5000 |                14 | currentAY-R02                 | currentAY-R02        |       5000 |
+	| previousAY-09-25 |            14 | Entry level English |         5000 |                14 | previousAY-R02                | previousAY-R02       |       5000 |
 	#| currentAY-09-25 |            13 | Entry level English |         5000 |                 1 | currentAY-R02                 | currentAY-R02        |       5000 | -- Uncomment this example as part of FLP-1424 
 
 
@@ -82,6 +83,20 @@ Scenario: English and Maths course withdrawn from the start
 	And Maths and English learning is recorded from currentAY-08-05 for 156 days with learnAimRef 60342843, course Entry level English, amount 931 and withdrawal after 1 days
 	And SLD submit updated learners details
 	Then Maths and English earnings for course Entry level English are removed
+
+@regression
+Scenario: English and Maths course withdrawn when programme aim has completed
+	Given an apprenticeship has a start date of previousAY-08-01, a planned end date of currentAY-08-23, an agreed price of 15000, and a training code 2
+	And the apprenticeship commitment is approved
+	And SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date currentAY-08-23
+	And Maths and English learning is recorded from currentAY-08-25 to currentAY-01-07 with learnAimRef 60342843, course Entry level English and amount 931
+	And SLD submit updated learners details
+	When SLD resubmits ILR
+	And SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date currentAY-08-23
+	And Learning Completion is recorded on currentAY-08-30
+	And Maths and English learning is recorded from currentAY-08-25 for 156 days with learnAimRef 60342843, course Entry level English, amount 931 and withdrawal after 40 days
+	And SLD submit updated learners details
+	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R02 with instalment amount 186.20 for course Entry level English
 
 @regression
 Scenario: English and Maths course withdrawn from the start then removed
