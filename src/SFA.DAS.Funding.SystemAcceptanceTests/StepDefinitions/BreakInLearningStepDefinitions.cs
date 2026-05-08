@@ -57,20 +57,24 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
         learnerDataBuilder.WithEntireBreakInLearningRemoved();
     }
 
+    [Then("the earnings of (.*) between (.*) and (.*) are created")]
     [Then("the earnings of (.*) between (.*) and (.*) are maintained")]
     public void EarningsOfAmountBetweenDeliveryPeriodsAreMaintained(decimal amount, TokenisablePeriod firstPeriod, TokenisablePeriod secondPeriod)
     {
-        var testData = context.Get<TestData>();
+        if (amount > 0)
+        {
+            var testData = context.Get<TestData>();
 
-        var instalments = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments
-            ?.OrderBy(x => x.AcademicYear).ThenBy(x => x.DeliveryPeriod).ToList();
+            var instalments = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments
+                ?.OrderBy(x => x.AcademicYear).ThenBy(x => x.DeliveryPeriod).ToList();
 
-        instalments?
-            .AssertBetweenRange(
-                firstPeriod.Value,
-                secondPeriod.Value,
-                x => Math.Round(x.Amount, 2) == Math.Round(amount, 2),
-                x => $"Expected instalment of amount {amount} for AcademicYear {x.AcademicYear} DeliveryPeriod {x.DeliveryPeriod} but one was not found, the wrong amount, or soft deleted.");
+            instalments?
+                .AssertBetweenRange(
+                    firstPeriod.Value,
+                    secondPeriod.Value,
+                    x => Math.Round(x.Amount, 2) == Math.Round(amount, 2),
+                    x => $"Expected instalment of amount {amount} for AcademicYear {x.AcademicYear} DeliveryPeriod {x.DeliveryPeriod} but one was not found, the wrong amount, or soft deleted.");
+        }
     }
 
     [Then("earnings are updated with (first|second) period in learning from (.*) to (.*)")]

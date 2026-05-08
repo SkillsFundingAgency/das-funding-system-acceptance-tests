@@ -92,11 +92,11 @@ public class LearningSqlClient
             $"INNER JOIN [dbo].[Learner] lrn ON lrn.[Key] = l.[LearnerKey] " +
             $"INNER JOIN [dbo].[ApprenticeshipEpisode] ep ON ep.LearningKey = l.[Key] " +
             $"INNER JOIN [dbo].[EpisodePrice] eppr ON eppr.EpisodeKey = ep.[Key] " +
-            $"WHERE (eppr.StartDate <= '{dates.End}' AND eppr.EndDate >= '{dates.Start}') " +
+            $"WHERE (eppr.StartDate <= '{dates.End.ToString("yyyy-MM-dd")}' AND eppr.EndDate >= '{dates.Start.ToString("yyyy-MM-dd")}') " +
             $"AND ep.Ukprn = {ukprn} " +
             $"AND (ep.WithdrawalDate IS NULL " +
-            $"     OR (ep.WithdrawalDate >= '{dates.Start}' " +
-            $"         AND ep.WithdrawalDate <> eppr.StartDate))"
+            $"OR (ep.WithdrawalDate >= '{dates.Start.ToString("yyyy-MM-dd")}' " +
+            $"AND ep.WithdrawalDate <> eppr.StartDate))"
         );
 
         return learners;

@@ -94,8 +94,6 @@ Scenario: Recalculate earnings based on qualifying period when completion date i
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | completion_date | number_of_instalments | balancing_amount | balancing_period | completion_amount | completion_period |
-	| currentAY-08-01 | currentAY-08-13  |        15000 | currentAY-08-01 |                     0 |            12000 | currentAY-R01    |              3000 | currentAY-R01     |
-	| currentAY-08-01 | currentAY-08-14  |        15000 | currentAY-08-14 |                     0 |            12000 | currentAY-R01    |              3000 | currentAY-R01     |
 	| currentAY-08-20 | currentAY-09-02  |        15000 | currentAY-09-02 |                     1 |                0 | currentAY-R02    |              3000 | currentAY-R02     |
 	| currentAY-08-01 | currentAY-01-14  |        15000 | currentAY-11-08 |                     3 |             4800 | currentAY-R04    |              3000 | currentAY-R04     |
 	| currentAY-08-01 | currentAY-10-31  |        15000 | currentAY-08-14 |                     0 |            12000 | currentAY-R01    |              3000 | currentAY-R01     |

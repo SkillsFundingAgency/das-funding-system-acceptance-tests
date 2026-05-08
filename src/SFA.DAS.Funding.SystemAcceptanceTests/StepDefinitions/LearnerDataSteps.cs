@@ -157,6 +157,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithEmptyCostDetails();
         }
 
+        [Given("SLD record expected end date (.*)")]
         [When("SLD record expected end date (.*)")]
         public void SLDRecordExpectedEndDate(TokenisableDateTime plannedEndDate)
         {
