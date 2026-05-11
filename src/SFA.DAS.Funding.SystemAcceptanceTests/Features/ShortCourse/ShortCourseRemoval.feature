@@ -9,7 +9,10 @@ Scenario: Learner removed and then reinstated
     Then short course learning is removed from learning and earning dbs
     And remove all earnings for that "short course"
     And a learning removed event is published to approvals
+    And the 30% milestone earning is not generated and the completion earning is not generated
     #The below steps are to reinstate the learner
     When SLD inform us that the same learner has been reinstated by the training provider
+    And the training provider recorded that the 30% milestone has been reached
 	Then a learning reinstated event is published to approvals
     And short course learning is reinstated in learning and earning dbs
+    And the 30% milestone earning is generated and the completion earning is not generated
