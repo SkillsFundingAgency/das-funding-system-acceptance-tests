@@ -167,6 +167,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     }
 
     [When(@"SLD requests short course approved ulns for academic year (.*)")]
+    [Then(@"SLD requests short course approved ulns for academic year (.*)")]
     public async Task WhenSldRequestsShortCourseLearnerApprovedUlnsForAcademicYear(TokenisableAcademicYear academicYear)
     {
         var testData = context.Get<TestData>();
