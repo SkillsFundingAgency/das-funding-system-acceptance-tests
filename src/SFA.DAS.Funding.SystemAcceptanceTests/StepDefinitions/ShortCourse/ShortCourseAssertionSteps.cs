@@ -330,8 +330,8 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command.");
     }
 
-    [Then("short course learning is removed from learning and earning dbs")]
-    public async Task ShortCourseLearningIsRemovedFromLearningAndEarningDbs()
+    [Then("short course is marked as removed from learning and earning dbs")]
+    public async Task ShortCourseIsMarkedAsRemovedFromLearningAndEarningDbs()
     {
         var testData = context.Get<TestData>();
 

@@ -8,7 +8,7 @@ Background:
 @regression
 Scenario: Short Course Learner removed from the ILR   
     When SLD inform us that the learner has been removed
-    Then short course learning is removed from learning and earning dbs
+    Then short course is marked as removed from learning and earning dbs
     And remove all earnings for that "short course"
     And a learning removed event is published to approvals
     And the 30% milestone earning is not generated and the completion earning is not generated
