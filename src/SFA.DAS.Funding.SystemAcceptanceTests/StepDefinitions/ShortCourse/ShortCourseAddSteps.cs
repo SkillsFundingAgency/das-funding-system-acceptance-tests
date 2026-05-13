@@ -16,6 +16,14 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
         await AddShortCourse(startDate.Value); 
     }
 
+    [When("SLD inform us that the same learner has been reinstated by the training provider")]
+    public async Task SLDInformUsThatTheSameLearnerHasBeenReinstatedByTheTrainingProvider()
+    {
+        var testData = context.Get<TestData>();
+        await AddShortCourse(testData.ShortCourseLearnerData.Delivery.OnProgramme.FirstOrDefault().StartDate);
+    }
+
+
     [Given(@"SLD informs us of a new learner with a short course starting on (.*) and ending on (.*)")]
     public async Task GivenANewLearnerWithAShortCourseExplicitEndDate(TokenisableDateTime startDate, TokenisableDateTime endDate)
     {

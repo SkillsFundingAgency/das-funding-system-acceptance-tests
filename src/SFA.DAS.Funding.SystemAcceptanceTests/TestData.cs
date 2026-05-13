@@ -59,6 +59,7 @@ public class TestData
     internal LearningWithdrawnEvent LearningWithdrawnEvent { get; set; }
     internal LearningWithdrawalRevertedEvent WithdrawalRevertedEvent { get; set; }
     internal LearningRemovedEvent LearningRemovedEvent { get; set; }
+    internal LearningReinstatedEvent LearningReinstatedEvent { get; set; }
     internal PersonalDetailsChangedEvent PersonalDetailsChangedEvent { get; set; }
     internal HttpResponseMessage? Fm36HttpResponseMessage { get; set; }
     internal CalculateGrowthAndSkillsPayments? CalculateGrowthAndSkillsPaymentsCommand { get; set; }
