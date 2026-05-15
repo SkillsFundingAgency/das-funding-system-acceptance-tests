@@ -15,6 +15,7 @@ public class FundingConfig
     public string LearningAzureFunctionBaseUrl { get; set; } = NotSet;
     public string LearningAzureFunctionKey { get; set; } = NotSet;
     public string OuterApiBaseUrl { get; set; } = NotSet;
+    public string LearnerDataOuterSecureUrl { get; set; } = NotSet;
     public string EarningsOuterSubscriptionKey { get; set; } = NotSet;
     public string EarningsFunctionKey { get; set; } = NotSet;
     public string FundingSystemAcceptanceTestQueue { get; set; } = NotSet;
@@ -31,4 +32,6 @@ public class FundingConfig
     public string EarningsInnerApiScope { get; set; } = NotSet;
     public string EnvironmentName { get; set; } = NotSet;
     public string LearnerDataOuterApiSubscriptionKey { get; set; } = NotSet;
+    public string CertificateSecretClientUrl { get; set; } = NotSet;
+    public string CertificateSecretName { get; set; } = NotSet;
 }
