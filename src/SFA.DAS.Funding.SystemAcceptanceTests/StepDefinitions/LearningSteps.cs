@@ -71,7 +71,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var episode = learningSqlClient
                     .GetApprenticeship(testData.LearningKey)
-                    .Episodes.First();
+                    .Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent.ProviderId);
 
             Assert.AreEqual(testData.CommitmentsApprenticeshipCreatedEvent?.ApprenticeshipId, episode.ApprovalsApprenticeshipId, "Approvals Apprenticeship Id do not match.");
         }

@@ -161,16 +161,19 @@ public class Fm36StepDefinitions
             throw new Exception($"No FM36 data found for ULN {apprenticeshipCreatedEvent.Uln}");
         }
 
+        var earningEpisode = earnings.Episodes.FirstOrDefault();
+        var learningEpisode = apprenticeship.Episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId);
+
         var expectedPriceEpisodeIdentifier = "25-" + apprenticeshipCreatedEvent.TrainingCode + "-" +
                                              apprenticeshipCreatedEvent.ActualStartDate?.ToString("dd/MM/yyyy");
         var priceEpisodeInstalmentsThisPeriod = (DateTime.Today >= apprenticeshipCreatedEvent.ActualStartDate &&
                                                  DateTime.Today <= apprenticeshipCreatedEvent.EndDate)
             ? 1
             : 0;
-        var totalPrice = earnings?.Episodes.FirstOrDefault()?.Prices.FirstOrDefault()?.AgreedPrice;
-        var onProgPayment = earnings?.Episodes.FirstOrDefault()?.EarningsProfile.OnProgramTotal;
-        var completionPayment = earnings?.Episodes.FirstOrDefault()?.EarningsProfile.CompletionPayment;
-        var fundingBandMax = apprenticeship.Episodes.First().Prices.FirstOrDefault()?.FundingBandMaximum;
+        var totalPrice = earningEpisode.Prices.FirstOrDefault()?.AgreedPrice;
+        var onProgPayment = earningEpisode.EarningsProfile.OnProgramTotal;
+        var completionPayment = earningEpisode.EarningsProfile.CompletionPayment;
+        var fundingBandMax = learningEpisode.Prices.FirstOrDefault()?.FundingBandMaximum;
         var instalmentAmount =
             earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.FirstOrDefault()?.Amount;
         var currentPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];

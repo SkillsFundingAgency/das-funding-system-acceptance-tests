@@ -370,3 +370,30 @@ public class ShortCourseMilestone
     public Guid EpisodeKey { get; set; }
     public string Milestone { get; set; } = null!;
 }
+
+public static class ShortCourseModelExtensions
+{
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static Episode Single(this IEnumerable<Episode> episodes) { throw new InvalidOperationException(); }
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static Episode First(this IEnumerable<Episode> episodes) { throw new InvalidOperationException();}
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static Episode SingleOrDefault(this IEnumerable<Episode> episodes) { throw new InvalidOperationException(); }
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static Episode FirstOrDefault(this IEnumerable<Episode> episodes) { throw new InvalidOperationException(); }
+
+    public static Episode GetEpisode(this IEnumerable<Episode> episodes, long ukprn)//, string courseCode)
+    {
+        foreach (var episode in episodes)
+        {
+            if (episode.Ukprn == ukprn)// && episode.TrainingCode == courseCode)
+            {
+                return episode;
+            }
+        }
+        throw new Exception("Matching episode not found");
+    }
+}
