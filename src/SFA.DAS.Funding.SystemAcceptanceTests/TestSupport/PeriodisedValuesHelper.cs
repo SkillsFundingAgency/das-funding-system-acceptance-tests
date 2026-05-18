@@ -42,4 +42,34 @@ public static class PeriodisedValuesHelper
             yield return (periodNumber, propertyInfo.GetValue(values).As<string>());
         }
     }
+
+    public static void AssertValuesForPeriods(this List<LearningDeliveryPeriodisedValues> valueList, string attributeName, byte fromPeriod, byte toPeriod, decimal expectedInsideRange, decimal expectedOutsideRange)
+    {
+        var periodValues = valueList.GetValuesForAttribute(attributeName);
+
+        foreach (var (period, value) in periodValues)
+        {
+            var expectedValue = (period >= fromPeriod && period <= toPeriod) ? expectedInsideRange : expectedOutsideRange;
+
+            Assert.AreEqual(
+                   expectedValue,
+                   value,
+                   $"Attribute {attributeName} period {period} expected {expectedInsideRange} but was {value}");
+        }
+    }
+
+    public static void AssertValuesForPeriods(this List<LearningDeliveryPeriodisedTextValues> valueList, string attributeName, byte fromPeriod, byte toPeriod, string expectedInsideRange, string expectedOutsideRange)
+    {
+        var periodValues = valueList.GetValuesForAttribute(attributeName);
+
+        foreach (var (period, value) in periodValues)
+        {
+            var expectedValue = (period >= fromPeriod && period <= toPeriod) ? expectedInsideRange : expectedOutsideRange;
+
+            Assert.AreEqual(
+                   expectedValue,
+                   value,
+                   $"Attribute {attributeName} period {period} expected {expectedInsideRange} but was {value}");
+        }
+    }
 }
