@@ -42,4 +42,50 @@ public static class PeriodisedValuesHelper
             yield return (periodNumber, propertyInfo.GetValue(values).As<string>());
         }
     }
+
+    public static void AssertValuesForPeriods(this List<LearningDeliveryPeriodisedValues> valueList, string attributeName, byte fromPeriod, byte toPeriod, decimal expectedInsideRange, decimal expectedOutsideRange)
+    {
+        var periodValues = valueList.GetValuesForAttribute(attributeName);
+
+        foreach (var (period, value) in periodValues)
+        {
+            if (period >= fromPeriod && period <= toPeriod)
+            {
+                Assert.AreEqual(
+                    expectedInsideRange,
+                    value,
+                    $"Attribute {attributeName} period {period} expected {expectedInsideRange} but was {value}");
+            }
+            else
+            {
+                Assert.AreEqual(
+                    expectedOutsideRange,
+                    value,
+                    $"Attribute {attributeName} period {period} expected {expectedOutsideRange} but was {value}");
+            }
+        }
+    }
+
+    public static void AssertValuesForPeriods(this List<LearningDeliveryPeriodisedTextValues> valueList, string attributeName, byte fromPeriod, byte toPeriod, string expectedInsideRange, string expectedOutsideRange)
+    {
+        var periodValues = valueList.GetValuesForAttribute(attributeName);
+
+        foreach (var (period, value) in periodValues)
+        {
+            if (period >= fromPeriod && period <= toPeriod)
+            {
+                Assert.AreEqual(
+                    expectedInsideRange,
+                    value,
+                    $"Attribute {attributeName} period {period} expected {expectedInsideRange} but was {value}");
+            }
+            else
+            {
+                Assert.AreEqual(
+                    expectedOutsideRange,
+                    value,
+                    $"Attribute {attributeName} period {period} expected {expectedOutsideRange} but was {value}");
+            }
+        }
+    }
 }
