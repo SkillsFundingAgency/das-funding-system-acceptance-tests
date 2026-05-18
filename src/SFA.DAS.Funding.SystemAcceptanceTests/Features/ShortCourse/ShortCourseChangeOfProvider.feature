@@ -20,7 +20,7 @@ Scenario: Same learner/course is created by different training providers - Provi
 	Given that a “short course” learner has been created by Provider A
 	And the learner has not completed the course with Provider A
 	When that a “short course” learner has been created by Provider B
-	And the employer has approved the Provider record
+	And the employer has approved the Provider B record
 	And Provider B has not recorded either the 30% milestone or completion
 	Then store the learner details provided by Provider B
 	And calculate "approved provisional earnings" (as if Provider A does not exist) - see FLP-1415.
