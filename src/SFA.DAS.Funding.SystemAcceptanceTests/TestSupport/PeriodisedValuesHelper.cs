@@ -49,20 +49,12 @@ public static class PeriodisedValuesHelper
 
         foreach (var (period, value) in periodValues)
         {
-            if (period >= fromPeriod && period <= toPeriod)
-            {
-                Assert.AreEqual(
-                    expectedInsideRange,
-                    value,
-                    $"Attribute {attributeName} period {period} expected {expectedInsideRange} but was {value}");
-            }
-            else
-            {
-                Assert.AreEqual(
-                    expectedOutsideRange,
-                    value,
-                    $"Attribute {attributeName} period {period} expected {expectedOutsideRange} but was {value}");
-            }
+            var expectedValue = (period >= fromPeriod && period <= toPeriod) ? expectedInsideRange : expectedOutsideRange;
+
+            Assert.AreEqual(
+                   expectedValue,
+                   value,
+                   $"Attribute {attributeName} period {period} expected {expectedInsideRange} but was {value}");
         }
     }
 
@@ -72,20 +64,12 @@ public static class PeriodisedValuesHelper
 
         foreach (var (period, value) in periodValues)
         {
-            if (period >= fromPeriod && period <= toPeriod)
-            {
-                Assert.AreEqual(
-                    expectedInsideRange,
-                    value,
-                    $"Attribute {attributeName} period {period} expected {expectedInsideRange} but was {value}");
-            }
-            else
-            {
-                Assert.AreEqual(
-                    expectedOutsideRange,
-                    value,
-                    $"Attribute {attributeName} period {period} expected {expectedOutsideRange} but was {value}");
-            }
+            var expectedValue = (period >= fromPeriod && period <= toPeriod) ? expectedInsideRange : expectedOutsideRange;
+
+            Assert.AreEqual(
+                   expectedValue,
+                   value,
+                   $"Attribute {attributeName} period {period} expected {expectedInsideRange} but was {value}");
         }
     }
 }
