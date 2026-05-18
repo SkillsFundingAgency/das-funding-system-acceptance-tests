@@ -199,7 +199,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             int? otherFundingPercentage = ToNullableInt(otherFunding);
 
 
-            learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, learnAimRef, null, null,
+            learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, learnAimRef, 2, null, null,
                 priorLearningPercentage, otherFundingPercentage);
 
             testData.IsMathsAndEnglishAdded = true;

@@ -38,8 +38,30 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
 
-            await context.ReceiveLearningRemovedEvent(testData.LearningCreatedEvent.LearningKey);
+            var learningKey = testData.LearningCreatedEvent?.LearningKey;
+
+            var learningKeyToUse = learningKey.HasValue && learningKey.Value != Guid.Empty
+                ? learningKey.Value
+                : testData.ShortCourseLearningKey;
+
+            await context.ReceiveLearningRemovedEvent(learningKeyToUse);
+
         }
+
+        [Then("a learning reinstated event is published to approvals")]
+        public async Task LearningReinstatedEventIsPublishedToApprovals()
+        {
+            var testData = context.Get<TestData>();
+
+            var learningKey = testData.LearningCreatedEvent?.LearningKey;
+
+            var learningKeyToUse = learningKey.HasValue && learningKey.Value != Guid.Empty
+                ? learningKey.Value
+                : testData.ShortCourseLearningKey;
+
+            await context.ReceiveLearningReinstatedEvent(learningKeyToUse);
+        }
+
 
 
         [When("a withdrawal reverted event is published to approvals")]
