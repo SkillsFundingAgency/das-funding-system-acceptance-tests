@@ -50,7 +50,7 @@ Examples:
 	| currentAY-09-01   | currentAY-09-30 | currentAY-07-31 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
 	| currentAY-09-01   | currentAY-10-11 | currentAY-07-31 |      863.63686 | currentAY-R02    | currentAY-R02  |       8636.36314 | currentAY-R03    |              3000 | currentAY-R03     |
 	| currentAY-09-01   | currentAY-10-12 | currentAY-07-31 |      863.63686 | currentAY-R02    | currentAY-R02  |       8636.36314 | currentAY-R03    |              3000 | currentAY-R03     |
-	| currentAY-09-30   | currentAY-07-31 | currentAY-07-31 |      863.63686 | currentAY-R02    | currentAY-R12  |                0 | currentAY-R12    |              3000 | currentAY-R12     |
+	| currentAY-09-30   | currentAY-07-31 | currentAY-07-31 |      863.63686 | currentAY-R02    | currentAY-R11  |        863.63640 | currentAY-R12    |              3000 | currentAY-R12     |
 	#Between 14 and 168 Days Duration
 	| currentAY-09-01   | currentAY-09-13 | currentAY-09-14 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
 	| currentAY-09-01   | currentAY-09-14 | currentAY-09-14 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
