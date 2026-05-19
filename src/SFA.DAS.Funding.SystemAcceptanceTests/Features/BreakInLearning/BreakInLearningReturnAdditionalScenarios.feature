@@ -48,15 +48,15 @@ Examples:
 	| currentAY-09-01   | currentAY-12-01 | currentAY-07-31 |      863.63686 | currentAY-R02    | currentAY-R04  |          6909.09 | currentAY-R05    |              3000 | currentAY-R05     |
 	| currentAY-09-01   | currentAY-09-01 | currentAY-07-31 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
 	| currentAY-09-01   | currentAY-09-30 | currentAY-07-31 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
-	| currentAY-09-01   | currentAY-10-11 | currentAY-07-31 |      863.63686 | currentAY-R02    | currentAY-R02  |       8636.36314 | currentAY-R03    |              3000 | currentAY-R03     |
+	| currentAY-09-01   | currentAY-10-11 | currentAY-07-31 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R03    |              3000 | currentAY-R03     |
 	| currentAY-09-01   | currentAY-10-12 | currentAY-07-31 |      863.63686 | currentAY-R02    | currentAY-R02  |       8636.36314 | currentAY-R03    |              3000 | currentAY-R03     |
 	| currentAY-09-30   | currentAY-07-31 | currentAY-07-31 |      863.63686 | currentAY-R02    | currentAY-R11  |        863.63640 | currentAY-R12    |              3000 | currentAY-R12     |
 	#14 to 167 Days Duration
 	| currentAY-09-01   | currentAY-09-13 | currentAY-09-14 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
 	| currentAY-09-01   | currentAY-09-14 | currentAY-09-14 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
 	| currentAY-09-30   | currentAY-10-13 | currentAY-10-13 |           9500 | currentAY-R02    | currentAY-R02  |                0 | currentAY-R03    |              3000 | currentAY-R03     |
-	| currentAY-09-30   | currentAY-10-13 | currentAY-03-16 |     1583.33333 | currentAY-R02    | currentAY-R02  |       7916.66667 | currentAY-R03    |              3000 | currentAY-R03     |
-	| currentAY-09-30   | currentAY-11-25 | currentAY-03-16 |     1583.33333 | currentAY-R02    | currentAY-R03  |       6333.33334 | currentAY-R04    |              3000 | currentAY-R04     |
+	| currentAY-09-30   | currentAY-10-13 | currentAY-03-15 |     1583.33333 | currentAY-R02    | currentAY-R02  |       7916.66667 | currentAY-R03    |              3000 | currentAY-R03     |
+	| currentAY-09-30   | currentAY-11-25 | currentAY-03-15 |     1583.33333 | currentAY-R02    | currentAY-R03  |       6333.33334 | currentAY-R04    |              3000 | currentAY-R04     |
 	#Less than 14 Days Duration 
 	| currentAY-09-01   | currentAY-09-01 | currentAY-09-13 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
 	| currentAY-09-30   | currentAY-10-12 | currentAY-10-12 |           9500 | currentAY-R02    | currentAY-R02  |                0 | currentAY-R03    |              3000 | currentAY-R03     |

@@ -21,22 +21,24 @@ public static class InstalmentModelListExtensions
         var endingAy = secondPeriod.AcademicYear;
         var endingDp = secondPeriod.PeriodValue;
 
-        while (true)
+        while (currentAy < endingAy || (currentAy == endingAy && currentDp <= endingDp))
         {
-            instalmentsList
+            var instalmentsForPeriod = instalmentsList
                 .Where(x => x.AcademicYear == currentAy && x.DeliveryPeriod == currentDp)
-                .ToList()
-                .ForEach(i =>
-                {
-                    Assert.IsTrue(assertion.Invoke(i), failureText.Invoke(i));
-                });
+                .ToList();
 
-            if (currentAy == endingAy && currentDp == endingDp)
+            Assert.IsTrue(
+                instalmentsForPeriod.Any(),
+                $"Expected instalment not found for AY {currentAy} Period {currentDp}"
+            );
+
+            instalmentsForPeriod.ForEach(i =>
             {
-                break;
-            }
+                Assert.IsTrue(assertion.Invoke(i), failureText.Invoke(i));
+            });
 
             currentDp++;
+
             if (currentDp > 12)
             {
                 currentDp = 1;
