@@ -163,7 +163,7 @@ public class Fm36StepDefinitions
         }
 
         var earningEpisode = earnings.Episodes.FirstOrDefault();
-        var learningEpisode = apprenticeship.Episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId);
+        var learningEpisode = apprenticeship.Episodes.GetEpisode(apprenticeshipCreatedEvent);
 
         var expectedPriceEpisodeIdentifier = "25-" + apprenticeshipCreatedEvent.TrainingCode + "-" +
                                              apprenticeshipCreatedEvent.ActualStartDate?.ToString("dd/MM/yyyy");

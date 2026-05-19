@@ -1,7 +1,6 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
-using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
@@ -48,7 +47,7 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
             .WithEndDate(endDate.Value)
             .Build();
 
-        context.Set(shortCourseRequest);
+        testData.ShortCourseLearnerData = shortCourseRequest;
 
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
 
@@ -58,8 +57,8 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
     [Given(@"SLD informs us of a the same new short course learner again")]
     public async Task GivenTheSameNewShortCourseLearner()
     {
-        var shortCourseRequest = context.Get<LearnerDataOuterApiClient.ShortCourseRequest>();
-        await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
+        var testData = context.Get<TestData>();
+        await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, testData.ShortCourseLearnerData!);
     }
 
     [When(@"SLD informs us of a change to the short course dates pre approval")]

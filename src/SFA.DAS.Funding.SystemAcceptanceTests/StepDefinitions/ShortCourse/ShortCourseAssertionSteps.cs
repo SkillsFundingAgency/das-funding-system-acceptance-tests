@@ -244,6 +244,24 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     [Then(@"the short course data is sent to approvals")]
     public async Task ThenTheShortCourseDataIsSentToApprovals()
     {
+        await ValidateTheShortCourseDataIsSentToApprovals();
+    }
+
+    [Then("notify approvals of learner for provider (.*)")]
+    public async Task ThenNotifyApprovalsOfThisLearner(string provider)
+    {
+        long ukPrn = provider switch
+        {
+            "A" => Constants.UkPrn,
+            "B" => Constants.AlternativeUkPrn,
+            _ => throw new ArgumentException($"Invalid training provider - {provider}", nameof(provider))
+        };
+
+        await ValidateTheShortCourseDataIsSentToApprovals(ukPrn);
+    }
+
+    public async Task ValidateTheShortCourseDataIsSentToApprovals(long ukPrn = Constants.UkPrn)
+    {
         var testData = context.Get<TestData>();
         var shortCourseOnProgramme = testData.ShortCourseLearnerData!.Delivery.OnProgramme.Single();
 
@@ -263,7 +281,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
                 Assert.AreEqual(LearnerData.Events.LearningType.ApprenticeshipUnit, publishedEvent.LearningType, "LearningType does not match");
                 //Assert.AreEqual(shortCourseOnProgramme.CourseCode, publishedEvent.StandardCode.ToString(), "StandardCode does not match"); TODO assert this correctly when we build 1607, might be called LARSCode on the event
                 Assert.AreEqual((int)earningsModel!.Episodes.Single().CoursePrice, publishedEvent.TrainingPrice, "TrainingPrice does not match CoursePrice");
-                
+
                 return true;
             }
             return false;
@@ -356,4 +374,25 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         Assert.IsFalse(shortCourseEarnings.Episodes.FirstOrDefault()?.IsRemoved, "Short course earnings episode NOT reinstated.");
     }
 
+    [Then("learning contains an epidose for Provider A and an episode for Provider B")]
+    public void ThenLearningContainsAnEpidoseForProviderAAndAnEpisodeForProviderB()
+    {
+        var testData = context.Get<TestData>();
+        var learningRecord = learningSqlClient.GetShortCourseLearning(testData.Uln);
+
+        learningRecord.Episodes.Count.Should().Be(2, "There should be 2 episodes in the learning record, one for each provider.");
+        learningRecord.Episodes.Should().Contain(e => e.Ukprn == Constants.UkPrn, "One episode should be for Provider A.");
+        learningRecord.Episodes.Should().Contain(e => e.Ukprn == Constants.AlternativeUkPrn, "One episode should be for Provider B.");
+    }
+
+    [Then("earnings contains an episode for Provider A and an episode for Provider B")]
+    public void ThenEarningsContainsAnEpisodeForProviderAAndAnEpisodeForProviderB()
+    {
+        var testData = context.Get<TestData>();
+        var earningRecord = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
+
+        earningRecord.Episodes.Count.Should().Be(2, "There should be 2 episodes in the learning record, one for each provider.");
+        earningRecord.Episodes.Should().Contain(e => e.Ukprn == Constants.UkPrn, "One episode should be for Provider A.");
+        earningRecord.Episodes.Should().Contain(e => e.Ukprn == Constants.AlternativeUkPrn, "One episode should be for Provider B.");
+    }
 }

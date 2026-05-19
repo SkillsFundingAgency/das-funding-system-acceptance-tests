@@ -1,4 +1,5 @@
 using FluentAssertions.Equivalency;
+using SFA.DAS.CommitmentsV2.Messages.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -385,15 +386,20 @@ public static class ShortCourseModelExtensions
     [Obsolete("Use GetEpisode(...) instead", true)]
     public static Episode FirstOrDefault(this IEnumerable<Episode> episodes) { throw new InvalidOperationException(); }
 
-    public static Episode GetEpisode(this IEnumerable<Episode> episodes, long ukprn)//, string courseCode)
+    public static Episode GetEpisode(this IEnumerable<Episode> episodes, long ukprn, string trainingCode)
     {
         foreach (var episode in episodes)
         {
-            if (episode.Ukprn == ukprn)// && episode.TrainingCode == courseCode)
+            if (episode.Ukprn == ukprn && episode.TrainingCode.Trim() == trainingCode)
             {
                 return episode;
             }
         }
         throw new Exception("Matching episode not found");
+    }
+
+    public static Episode GetEpisode(this IEnumerable<Episode> episodes, ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
+    {
+        return episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
     }
 }

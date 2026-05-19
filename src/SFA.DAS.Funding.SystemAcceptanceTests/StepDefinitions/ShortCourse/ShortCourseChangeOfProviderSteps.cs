@@ -1,117 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 
 [Binding]
-public class ShortCourseChangeOfProviderSteps
+public class ShortCourseChangeOfProviderSteps(ScenarioContext context, LearnerDataOuterApiClient learnerDataOuterApiHelper)
 {
     [Given("that a “short course” learner has been created by Provider (.*)")]
     [When("that a “short course” learner has been created by Provider (.*)")]
-    public void GivenThatAShortCourseLearnerHasBeenCreatedByProviderA(string trainingProvider)
+    public async Task GivenThatAShortCourseLearnerHasBeenCreatedByProvider(string trainingProvider)
     {
-        
+        var testData = context.Get<TestData>();
+        var createShortCourseRequest = testData.ShortCourseLearnerData;
+
+        if (createShortCourseRequest == null)
+        {
+            createShortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
+                .WithStartDate(DateTime.Now.AddMonths(-2))
+                .WithEndDate(DateTime.Now.AddMonths(2))
+                .Build();
+        }
+        else
+        {
+            createShortCourseRequest.Delivery.OnProgramme.Single().StartDate = DateTime.Now;
+        }
+
+        long ukPrn = trainingProvider switch
+        {
+            "A" => Constants.UkPrn,
+            "B" => Constants.AlternativeUkPrn,
+            _ => throw new ArgumentException($"Invalid training provider - {trainingProvider}", nameof(trainingProvider))
+        };
+
+        await learnerDataOuterApiHelper.AddShortCourseLearnerData(ukPrn, createShortCourseRequest);
+
+        testData.ShortCourseLearnerData = createShortCourseRequest;
     }
 
     [Given("the learner has not completed the course with Provider (.*)")]
-    public void GivenTheLearnerHasNotCompletedTheCourseWithProviderA(string trainingProvider)
+    public void GivenTheLearnerHasNotCompletedTheCourseWithProvider(string trainingProvider)
     {
-
-    }
-
-    [When("SLD informs us of the creation of the same learner/course by Provider (.*)")]
-    public void WhenSLDInformsUsOfTheCreationOfTheSameLearnerCourseByProvider(string trainingProvider)
-    {
-
-    }
-
-    [Then("notify approvals of this learner")]
-    public void ThenNotifyApprovalsOfThisLearner()
-    {
-
+        // Do nothing
     }
 
 }
-
-/*
-
-
-
-Standard Output: 
-Begin Scenario Inform approvals when the same learner/course is created by different training providers
-Given that a “short course” learner has been created by Provider A
--> No matching step definition found for the step. Use the following code to create one:
-    [Given("that a “short course” learner has been created by Provider A")]
-public void GivenThatAShortCourseLearnerHasBeenCreatedByProviderA()
-{
-_scenarioContext.Pending();
-}
-
-And the learner has not completed the course with Provider A
--> No matching step definition found for the step. Use the following code to create one:
-    [Given("the learner has not completed the course with Provider A")]
-public void GivenTheLearnerHasNotCompletedTheCourseWithProviderA()
-{
-_scenarioContext.Pending();
-}
-
-When SLD informs us of the creation of the same learner/course by Provider B (POST)
--> No matching step definition found for the step. Use the following code to create one:
-    [When("SLD informs us of the creation of the same learner/course by Provider B \(POST\)")]
-public void WhenSLDInformsUsOfTheCreationOfTheSameLearnerCourseByProviderBPOST()
-{
-_scenarioContext.Pending();
-}
-
-Then notify approvals of this learner
--> No matching step definition found for the step. Use the following code to create one:
-    [Then("notify approvals of this learner")]
-public void ThenNotifyApprovalsOfThisLearner()
-{
-_scenarioContext.Pending();
-}
-
-No matching step definition found for one or more steps.
-using System;
-using Reqnroll;
-
-namespace MyNamespace
-{
-[Binding]
-public class StepDefinitions
-{
-    private readonly ScenarioContext _scenarioContext;
-
-    public StepDefinitions(ScenarioContext scenarioContext)
-    {
-        _scenarioContext = scenarioContext;
-    }
-    [Given("that a “short course” learner has been created by Provider A")]
-public void GivenThatAShortCourseLearnerHasBeenCreatedByProviderA()
-{
-_scenarioContext.Pending();
-}
-
-    [Given("the learner has not completed the course with Provider A")]
-public void GivenTheLearnerHasNotCompletedTheCourseWithProviderA()
-{
-_scenarioContext.Pending();
-}
-
-    [When("SLD informs us of the creation of the same learner/course by Provider B \(POST\)")]
-public void WhenSLDInformsUsOfTheCreationOfTheSameLearnerCourseByProviderBPOST()
-{
-_scenarioContext.Pending();
-}
-
-    [Then("notify approvals of this learner")]
-public void ThenNotifyApprovalsOfThisLearner()
-{
-_scenarioContext.Pending();
-}
-}
-}
-
-
-*/
