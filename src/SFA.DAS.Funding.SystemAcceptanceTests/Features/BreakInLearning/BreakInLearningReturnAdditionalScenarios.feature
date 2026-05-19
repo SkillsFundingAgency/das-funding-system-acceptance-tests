@@ -44,20 +44,20 @@ Scenario: Training provider records break in learning, return, then completion
 
 Examples:
 	| return_start_date | completion_date | new_end_date    | new_instalment | new_instal_start | new_instal_end | balancing_amount | balancing_period | completion_amount | completion_period |
-	#Above 168 Days Duration
+	#168 and above Duration
 	| currentAY-09-01   | currentAY-12-01 | currentAY-07-31 |      863.63686 | currentAY-R02    | currentAY-R04  |          6909.09 | currentAY-R05    |              3000 | currentAY-R05     |
 	| currentAY-09-01   | currentAY-09-01 | currentAY-07-31 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
 	| currentAY-09-01   | currentAY-09-30 | currentAY-07-31 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
 	| currentAY-09-01   | currentAY-10-11 | currentAY-07-31 |      863.63686 | currentAY-R02    | currentAY-R02  |       8636.36314 | currentAY-R03    |              3000 | currentAY-R03     |
 	| currentAY-09-01   | currentAY-10-12 | currentAY-07-31 |      863.63686 | currentAY-R02    | currentAY-R02  |       8636.36314 | currentAY-R03    |              3000 | currentAY-R03     |
 	| currentAY-09-30   | currentAY-07-31 | currentAY-07-31 |      863.63686 | currentAY-R02    | currentAY-R11  |        863.63640 | currentAY-R12    |              3000 | currentAY-R12     |
-	#Between 14 and 168 Days Duration
+	#14 to 167 Days Duration
 	| currentAY-09-01   | currentAY-09-13 | currentAY-09-14 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
 	| currentAY-09-01   | currentAY-09-14 | currentAY-09-14 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
 	| currentAY-09-30   | currentAY-10-13 | currentAY-10-13 |           9500 | currentAY-R02    | currentAY-R02  |                0 | currentAY-R03    |              3000 | currentAY-R03     |
 	| currentAY-09-30   | currentAY-10-13 | currentAY-03-16 |     1583.33333 | currentAY-R02    | currentAY-R02  |       7916.66667 | currentAY-R03    |              3000 | currentAY-R03     |
 	| currentAY-09-30   | currentAY-11-25 | currentAY-03-16 |     1583.33333 | currentAY-R02    | currentAY-R03  |       6333.33334 | currentAY-R04    |              3000 | currentAY-R04     |
-	#Less than 13 Days Duration 
+	#Less than 14 Days Duration 
 	| currentAY-09-01   | currentAY-09-01 | currentAY-09-13 |              0 | currentAY-R02    | currentAY-R02  |             9500 | currentAY-R02    |              3000 | currentAY-R02     |
 	| currentAY-09-30   | currentAY-10-12 | currentAY-10-12 |           9500 | currentAY-R02    | currentAY-R02  |                0 | currentAY-R03    |              3000 | currentAY-R03     |
 	| currentAY-09-30   | currentAY-10-31 | currentAY-10-12 |           9500 | currentAY-R02    | currentAY-R02  |                0 | currentAY-R03    |              3000 | currentAY-R03     |
@@ -119,7 +119,7 @@ Scenario: Training provider withdraws apprenticeship after return from break in 
 
 Examples:
 	| return_start_date | withdrawal_date  | new_end_date     | new_instal_amount | new_instal_start | new_instal_end |
-	# 168+ Days Duration
+	# 168 and above Duration
 	| previousAY-05-01  | previousAY-05-01 | currentAY-11-30  |                 0 | previousAY-R10   | previousAY-R10 |
 	| previousAY-05-01  | previousAY-06-10 | currentAY-11-30  |                 0 | previousAY-R10   | previousAY-R10 |
 	| previousAY-05-01  | previousAY-06-11 | currentAY-11-30  |        1142.85714 | previousAY-R10   | previousAY-R10 |
@@ -133,7 +133,7 @@ Examples:
 	| previousAY-05-31  | previousAY-06-13 | previousAY-06-13 |              8000 | previousAY-R10   | previousAY-R10 |
 	| previousAY-05-31  | previousAY-06-13 | currentAY-11-13  |        1333.33333 | previousAY-R10   | previousAY-R10 |
 
-#Withdrawal replaces BIL return - FLP-`429 AC2
+#Withdrawal replaces BIL return - FLP-1429 AC2
 @regression
 Scenario: Training provider replaces return from break in learning with withdrawal
 	Given a learning has a start date of previousAY-10-01, a planned end date of currentAY-09-30 and an agreed price of 15000
