@@ -42,7 +42,7 @@ public static class InstalmentModelListExtensions
             if (currentDp > 12)
             {
                 currentDp = 1;
-                currentAy++;
+                currentAy = AcademicYearExtensions.GetNextAcademicYear(currentAy);
             }
         }
     }

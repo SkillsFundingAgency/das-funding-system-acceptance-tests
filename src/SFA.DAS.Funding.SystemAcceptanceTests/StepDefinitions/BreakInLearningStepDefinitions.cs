@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.Funding.ApprenticeshipEarnings.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
@@ -65,10 +66,13 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
         {
             var testData = context.Get<TestData>();
 
-            var instalments = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments
+            testData.EarningsApprenticeshipModel = new EarningsSqlClient().GetApprenticeshipEarningsEntityModel(context);
+
+             var instalments = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments
                 ?.OrderBy(x => x.AcademicYear).ThenBy(x => x.DeliveryPeriod).ToList();
 
-            instalments?
+            
+                instalments?
                 .AssertBetweenRange(
                     firstPeriod.Value,
                     secondPeriod.Value,
