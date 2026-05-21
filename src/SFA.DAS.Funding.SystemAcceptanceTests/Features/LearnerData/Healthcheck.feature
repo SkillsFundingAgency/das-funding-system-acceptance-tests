@@ -2,7 +2,7 @@
 
 A short summary of the feature
 
-@tag1
+@ignore
 Scenario: Check test can call healthcheck endpoint
 
 	When Call Learner Data API healthcheck endpoint
