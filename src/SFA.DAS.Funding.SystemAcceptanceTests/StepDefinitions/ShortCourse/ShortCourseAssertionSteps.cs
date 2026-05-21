@@ -167,6 +167,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     }
 
     [When(@"SLD requests short course approved ulns for academic year (.*)")]
+    [Then(@"SLD requests short course approved ulns for academic year (.*)")]
     public async Task WhenSldRequestsShortCourseLearnerApprovedUlnsForAcademicYear(TokenisableAcademicYear academicYear)
     {
         var testData = context.Get<TestData>();
@@ -328,4 +329,31 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
                    testData.CalculateGrowthAndSkillsPaymentsCommand.Training.TrainingStatus.ToString() == "Withdrawn";
         }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command.");
     }
+
+    [Then("short course is marked as removed from learning and earning dbs")]
+    public async Task ShortCourseIsMarkedAsRemovedFromLearningAndEarningDbs()
+    {
+        var testData = context.Get<TestData>();
+
+        var shortCourseLearning = learningSqlClient.GetShortCourseLearning(testData.Uln);
+
+        var shortCourseEarnings = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+
+        Assert.IsTrue(shortCourseLearning.Episodes.FirstOrDefault()?.IsRemoved, "Short course learning episode NOT marked as removed.");
+        Assert.IsTrue(shortCourseEarnings.Episodes.FirstOrDefault()?.IsRemoved, "Short course earnings episode NOT marked as removed.");
+    }
+
+    [Then("short course learning is reinstated in learning and earning dbs")]
+    public void ShortCourseLearningIsReinstatedInLearningAndEarningDbs()
+    {
+        var testData = context.Get<TestData>();
+
+        var shortCourseLearning = learningSqlClient.GetShortCourseLearning(testData.Uln);
+
+        var shortCourseEarnings = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
+
+        Assert.IsFalse(shortCourseLearning.Episodes.FirstOrDefault()?.IsRemoved, "Short course learning episode NOT reinstated.");
+        Assert.IsFalse(shortCourseEarnings.Episodes.FirstOrDefault()?.IsRemoved, "Short course earnings episode NOT reinstated.");
+    }
+
 }

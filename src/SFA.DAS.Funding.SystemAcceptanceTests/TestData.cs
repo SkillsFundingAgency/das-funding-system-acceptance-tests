@@ -50,6 +50,7 @@ public class TestData
     internal List<FinalisedOnProgammeLearningPaymentEvent> FinalisedPaymentsList { get; set; }
     internal List<CalculateOnProgrammePayment> CalculatedOnProgrammePaymentList { get; set; }
     internal LearnerDataOuterApiClient.LearnerDataRequest? LearnerData { get; set; }
+    internal LearnerDataOuterApiClient.UpdateLearnerRequest? UpdateLearnerData { get; set; }
     internal LearnerDataOuterApiClient.ShortCourseRequest? ShortCourseLearnerData { get; set; }
     internal LearnerDataOuterApiClient.GetLearnerResponse? LearnersOnService { get; set; }
     internal LearnerDataOuterApiClient.GetLearnerResponse? ShortCourseLearnersResponse { get; set; }
@@ -59,6 +60,7 @@ public class TestData
     internal LearningWithdrawnEvent LearningWithdrawnEvent { get; set; }
     internal LearningWithdrawalRevertedEvent WithdrawalRevertedEvent { get; set; }
     internal LearningRemovedEvent LearningRemovedEvent { get; set; }
+    internal LearningReinstatedEvent LearningReinstatedEvent { get; set; }
     internal PersonalDetailsChangedEvent PersonalDetailsChangedEvent { get; set; }
     internal HttpResponseMessage? Fm36HttpResponseMessage { get; set; }
     internal CalculateGrowthAndSkillsPayments? CalculateGrowthAndSkillsPaymentsCommand { get; set; }

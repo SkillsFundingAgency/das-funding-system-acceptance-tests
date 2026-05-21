@@ -74,7 +74,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var learnerData = testData.LearnerDataBuilder.Build();
 
-            await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerData);
+            testData.UpdateLearnerData = await learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerData);
         }
 
         [Given("SLD record on-programme cost as total price (.*) from date (.*) to date (.*)")]
@@ -157,6 +157,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithEmptyCostDetails();
         }
 
+        [Given("SLD record expected end date (.*)")]
         [When("SLD record expected end date (.*)")]
         public void SLDRecordExpectedEndDate(TokenisableDateTime plannedEndDate)
         {

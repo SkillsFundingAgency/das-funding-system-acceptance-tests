@@ -97,9 +97,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         }
 
 
-        public async Task UpdateLearning(Guid learningKey, UpdateLearnerRequest request)
+        public async Task<UpdateLearnerRequest> UpdateLearning(Guid learningKey, UpdateLearnerRequest request)
         {
             await _apiClient.UpdateLearning(Constants.UkPrn, learningKey, request);
+
+            return request;
         }
 
         public async Task RemoveLearner(Guid learningKey)
