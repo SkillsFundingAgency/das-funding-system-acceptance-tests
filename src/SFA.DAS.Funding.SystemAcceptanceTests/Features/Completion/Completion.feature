@@ -107,4 +107,5 @@ Examples:
 	| currentAY-08-01 | currentAY-01-14  |        15000 | currentAY-11-08 |                     3 |             4800 | currentAY-R04    |
 	| currentAY-08-01 | currentAY-10-31  |        15000 | currentAY-08-14 |                     0 |            12000 | currentAY-R01    |
 	| currentAY-08-01 | currentAY-07-31  |        15000 | currentAY-01-15 |                     5 |             7000 | currentAY-R06    |
+	| currentAY-08-01 | currentAY-07-31  |        15000 | currentAY-07-30 |                    11 |             1000 | currentAY-R12    |
 
