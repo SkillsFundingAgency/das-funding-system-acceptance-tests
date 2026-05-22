@@ -29,6 +29,7 @@ Scenario: Retrieve Fm36 data with Actual End Date
 	And the apprenticeship commitment is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning Completion is recorded on <completion_date>
+	And Learning Achievement date is recorded on <completion_date>
 	And SLD submit updated learners details
 	And the fm36 data is retrieved for currentDate
 	Then PriceEpisodeCompletionPayment for period <expected_completion_period> is amount <expected_completion_amount>

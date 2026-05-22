@@ -86,6 +86,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
+        public LearnerDataBuilder WithAchievementDate(DateTime? achievementDate)
+        {
+            _request.Delivery.OnProgramme.Latest().AchievementDate = achievementDate;
+
+            return this;
+        }
+
         public LearnerDataBuilder WithPauseDate(DateTime? pauseDate)
         {
             _request.Delivery.OnProgramme.Latest().PauseDate = pauseDate;

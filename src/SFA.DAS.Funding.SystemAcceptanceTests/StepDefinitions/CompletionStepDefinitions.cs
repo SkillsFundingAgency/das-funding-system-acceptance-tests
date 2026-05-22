@@ -16,6 +16,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithCompletionDate(completionDate.Value);
         }
 
+        [Given("Learning Achievement date is recorded on (.*)")]
+        [When("Learning Achievement date is recorded on (.*)")]
+        public async Task WhenSLDInformUsThatTheLearningAchievementDateIsOn(TokenisableDateTime achievementDate)
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder.WithAchievementDate(achievementDate.Value);
+        }
+
         [Given("SLD resubmits ILR")]
         [When("SLD resubmits ILR")]
         public void SLDResubmitsILR()
@@ -31,6 +40,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var testData = context.Get<TestData>();
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
             learnerDataBuilder.WithCompletionDate(null);
+        }
+
+        [When("achievement date is removed")]
+        public void AchievementDateIsRemoved()
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder.WithAchievementDate(null);
         }
 
 
@@ -96,6 +113,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Then("Completion earning is removed")]
+        [Then("Completion earning is not generated")]
         public void CompletionEarningIsRemoved()
         {
             var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
