@@ -109,6 +109,8 @@ jobs:
             LearnerDataOuterApiSubscriptionKey: $(LearnerDataOuterApiSubscriptionKey)
             LearnerDataDbConnectionString: $(LearnerDataDbConnectionString)
             CoursesDbConnectionString: $(CoursesDbConnectionString)
+            CertificateSecretClientUrl: $(ApimKeyVaultSecretUrl)
+            CertificateSecretName: $(ApimKeyVaultSecretName)
           inputs:
             testSelector: 'testAssemblies'
             testAssemblyVer2: |
@@ -176,6 +178,8 @@ jobs:
             LearnerDataOuterApiSubscriptionKey: $(LearnerDataOuterApiSubscriptionKey)
             LearnerDataDbConnectionString: $(LearnerDataDbConnectionString)
             CoursesDbConnectionString: $(CoursesDbConnectionString)
+            CertificateSecretClientUrl: $(ApimKeyVaultSecretUrl)
+            CertificateSecretName: $(ApimKeyVaultSecretName)
           condition: failed()
           displayName: "Re-run failed tests (individually)"
 
