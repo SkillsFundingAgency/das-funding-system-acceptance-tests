@@ -66,6 +66,7 @@ internal class WithdrawApprenticeshipStepDefinitions
     [Given("the expected number of earnings instalments after withdrawal are (.*)")]
     [When("the expected number of earnings instalments after withdrawal are (.*)")]
     [Then("the expected number of earnings instalments after withdrawal are (.*)")]
+    [Then("there are (.*) on-programme earnings instalments")]
     public void ExpectedNumberOfEarningsInstalmentsAfterWithdrawalIs(int expectedInstalmentsNumber)
     {
         var testData = _context.Get<TestData>();

@@ -2,6 +2,7 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
@@ -16,9 +17,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task WhenSldInformUThatTheLearnerIsToRemoved()
         {
             var testData = context.Get<TestData>();
-            await learnerDataOuterApiHelper.RemoveLearner(testData.EarningsGeneratedEvent.ApprenticeshipKey);
-
-            testData.LastDayOfLearning = testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate;
+            var apprenticeshipKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
+            ApprenticeshipEarningsRecalculatedEventHandler.Clear(x => x.ApprenticeshipKey == apprenticeshipKey);
+            await learnerDataOuterApiHelper.RemoveLearner(apprenticeshipKey);
         }
 
         [Given("a learning withdrawn event is published to approvals with last day of learning as (.*)")]
@@ -63,6 +64,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
 
+
+        [Then("the apprentice is not returned in the GetLearners response")]
+        public void ApprenticeIsNotReturnedInGetLearnersResponse()
+        {
+            var testData = context.Get<TestData>();
+            var learners = testData.LearnersOnService;
+
+            Assert.IsNotNull(learners, "LearnersOnService was not populated — call the Get Learners step first.");
+            Assert.IsFalse(
+                learners.Learners.Any(l => l.Uln == testData.Uln),
+                $"Removed apprentice with ULN {testData.Uln} was unexpectedly returned in the GetLearners response.");
+        }
 
         [When("a withdrawal reverted event is published to approvals")]
         public async Task WithdrawalRevertedEventIsPublishedToApprovals()
