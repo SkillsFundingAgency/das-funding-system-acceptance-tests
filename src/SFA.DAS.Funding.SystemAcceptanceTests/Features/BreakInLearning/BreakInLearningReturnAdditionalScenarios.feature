@@ -35,6 +35,7 @@ Scenario: Training provider records break in learning, return, then completion
 	And SLD inform us of a break in learning with pause date previousAY-01-15
 	And SLD inform us of a return from break in learning with both a new learning start date <return_start_date> and new expected end date <new_end_date>
 	And Learning Completion is recorded on <completion_date>
+	And Learning Achievement date is recorded on <completion_date>
 	And SLD submit updated learners details
 	And earnings are recalculated
 	Then the earnings of 500 between previousAY-R01 and previousAY-R05 are maintained
