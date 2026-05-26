@@ -15,7 +15,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var testData = context.Get<TestData>();
 
                 var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
-                var dbValid = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.All(x => !x.IsPayable) ?? true;
+                var dbValid = earningsModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments?.All(x => !x.IsPayable) ?? true;
 
                 var commandValid = AssertAgainstPaymentsCommand(c => !c.Earnings.Any());
 
@@ -30,7 +30,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             await WaitHelper.WaitForIt(() =>
             {
                 var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
-                var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
+                var instalments = earningsModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments;
                 var dbValid = instalments != null && instalments.All(x => x.Type != "LearningComplete" || !x.IsPayable);
 
                 var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Completion))));
@@ -46,7 +46,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             await WaitHelper.WaitForIt(() =>
             {
                 var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
-                var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
+                var instalments = earningsModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments;
                 var dbValid = instalments != null && instalments.All(x => x.Type != "ThirtyPercentLearningComplete" || !x.IsPayable);
 
                 var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Milestone1))));
@@ -63,7 +63,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             await WaitHelper.WaitForIt(() =>
             {
                 earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
-                var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
+                var instalments = earningsModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments;
                 var dbValid = instalments != null && instalments.Any(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable);
 
                 var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Milestone1))));
@@ -71,8 +71,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings with 30% milestone earning in the earnings db.");
 
-            var instalment = earningsModel!.Episodes.Single().EarningsProfile.Instalments.Single(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable);
-            var totalPrice = earningsModel.Episodes.Single().CoursePrice;
+            var episode = earningsModel!.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
+
+            var instalment = episode.EarningsProfile.Instalments.Single(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable);
+            var totalPrice = episode.CoursePrice;
             var expectedAmount = Math.Round(totalPrice * 0.3m, 5);
 
             Assert.AreEqual((double)expectedAmount, (double)instalment.Amount, 0.01, "The retained instalment is not the 30% milestone earning.");
@@ -85,7 +87,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             await WaitHelper.WaitForIt(() =>
             {
                 var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
-                var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
+                var instalments = earningsModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments;
                 var dbValid = instalments != null && instalments.Any(x => x.Type == "LearningComplete" && x.IsPayable);
 
                 var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Completion))));
@@ -105,7 +107,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             await WaitHelper.WaitForIt(() =>
             {
                 earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
-                var instalments = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments;
+                var instalments = earningsModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments;
                 
                 bool dbMilestoneValid = false;
                 bool dbCompletionValid = false;
@@ -122,7 +124,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 }
                 else if (!milestoneExpected && !completionExpected)
                 {
-                    var dbValidNoMilestones = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.All(x => !x.IsPayable) ?? true;
+                    var dbValidNoMilestones = earningsModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments?.All(x => !x.IsPayable) ?? true;
                     dbMilestoneValid = dbValidNoMilestones;
                     dbCompletionValid = dbValidNoMilestones;
                 }
@@ -160,19 +162,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 
             if (milestoneExpected)
             {
-                var instalment = earningsModel!.Episodes.Single().EarningsProfile.Instalments.Single(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable);
-                var totalPrice = earningsModel.Episodes.Single().CoursePrice;
+                var episode = earningsModel!.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
+                var instalment = episode.EarningsProfile.Instalments.Single(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable);
+                var totalPrice = episode.CoursePrice;
                 var expectedAmount = Math.Round(totalPrice * 0.3m, 5);
 
                 Assert.AreEqual((double)expectedAmount, (double)instalment.Amount, 0.01, "The retained instalment is not the 30% milestone earning.");
             }
         }
 
-        public async Task AssertBasicShortCourseEarningsGenerated()
+        public async Task AssertBasicShortCourseEarningsGenerated(long ukprn = Constants.UkPrn)
         {
             var testData = context.Get<TestData>();
 
-            var expectedCourse = testData.ShortCourseLearnerData!.Delivery.OnProgramme.Single();
+            var expectedCourse = testData.ShortCourseCreateUpdateRequests[ukprn]!.Delivery.OnProgramme.Single();
             var expectedStartDate = expectedCourse.StartDate;
             var expectedEndDate = expectedCourse.ExpectedEndDate;
 
@@ -180,7 +183,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             await WaitHelper.WaitForIt(() =>
             {
                 earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
-                var dbValid = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.Count == 2;
+                var dbValid = earningsModel?.Episodes?.GetEpisode(ukprn, expectedCourse.CourseCode)?.EarningsProfile?.Instalments?.Count == 2;
 
                 var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Milestone1)))
                     && c.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Completion))));
@@ -188,7 +191,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
 
-            var instalments = earningsModel!.Episodes.Single().EarningsProfile.Instalments;
+            var instalments = earningsModel!.Episodes.GetEpisode(ukprn, expectedCourse.CourseCode).EarningsProfile.Instalments;
 
             var duration = (expectedEndDate - expectedStartDate).Days + 1;
             var daysToFirstPayment = (int)Math.Floor(duration * 0.3);
@@ -207,7 +210,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             var secondInstalment = instalments.SingleOrDefault(x => x.DeliveryPeriod == expectedSecondPeriod && x.AcademicYear == expectedSecondAcademicYear);
             Assert.IsNotNull(secondInstalment, $"Could not find second instalment in period {expectedSecondPeriod} of AY {expectedSecondAcademicYear}");
 
-            var totalPrice = earningsModel.Episodes.Single().CoursePrice;
+            var totalPrice = earningsModel.Episodes.GetEpisode(ukprn, expectedCourse.CourseCode).CoursePrice;
 
             var expectedFirstAmount = Math.Round(totalPrice * 0.3m, 5);
             var expectedSecondAmount = Math.Round(totalPrice * 0.7m, 5);
@@ -224,24 +227,26 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             await WaitHelper.WaitForIt(() =>
             {
                 earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
-                var dbValid = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile != null;
+                var dbValid = earningsModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile != null;
 
                 var commandValid = AssertAgainstPaymentsCommand(c => true);
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
 
-            Assert.IsTrue(earningsModel!.Episodes.Single().EarningsProfile.IsApproved, "Short course earnings should be approved.");
+            Assert.IsTrue(earningsModel!.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfile.IsApproved, "Short course earnings should be approved.");
         }
 
-        public async Task AssertShortCourseEarningsAreGeneratedWithoutDuplication()
+        public async Task AssertShortCourseEarningsAreGeneratedWithoutDuplication(long ukprn = Constants.UkPrn)
         {
             var testData = context.Get<TestData>();
+            var courseCode = testData.ShortCourseCreateUpdateRequests[ukprn]!.Delivery.OnProgramme.Single().CourseCode;
+
             ShortCourseEarningsModel? earningsModel = null;
             await WaitHelper.WaitForIt(() =>
             {
                 earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
-                var dbValid = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.Count == 2;
+                var dbValid = earningsModel?.Episodes?.GetEpisode(ukprn, courseCode)?.EarningsProfile?.Instalments?.Count == 2;
 
                 var commandValid = AssertAgainstPaymentsCommand(c => 
                 {
@@ -251,19 +256,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
-            var instalments = earningsModel!.Episodes.Single().EarningsProfile.Instalments;
+            var instalments = earningsModel!.Episodes.GetEpisode(ukprn, courseCode).EarningsProfile.Instalments;
             Assert.AreEqual(2, instalments.Count, "Expected exactly 2 instalments for the short course, but found a different count.");
         }
 
-        public async Task AssertSecondInstalmentIsEarntInPeriod(TokenisablePeriod period)
+        public async Task AssertSecondInstalmentIsEarntInPeriod(TokenisablePeriod period, long ukprn = Constants.UkPrn)
         {
             var testData = context.Get<TestData>();
+            var courseCode = testData.ShortCourseCreateUpdateRequests[ukprn]!.Delivery.OnProgramme.Single().CourseCode;
 
             ShortCourseEarningsModel? earningsModel = null;
             await WaitHelper.WaitForIt(() =>
             {
                 earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
-                var dbValid = earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?.Count == 2;
+                var dbValid = earningsModel?.Episodes?.GetEpisode(ukprn, courseCode)?.EarningsProfile?.Instalments?.Count == 2;
 
                 var completionPeriod = period.Value.PeriodValue;
                 var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.SelectMany(e => e.PricePeriods).SelectMany(p => p.Periods).Any(ep => ep.EarningType == EarningType.Completion && ep.DeliveryPeriod == completionPeriod));
@@ -271,7 +277,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
 
-            var instalments = earningsModel!.Episodes.Single().EarningsProfile.Instalments;
+            var episode = earningsModel!.Episodes.GetEpisode(ukprn, courseCode);
+
+            var instalments = episode.EarningsProfile.Instalments;
 
             var expectedSecondPeriod = period.Value.PeriodValue;
             var expectedSecondAcademicYear = period.Value.AcademicYear;
@@ -279,7 +287,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             var secondInstalment = instalments.SingleOrDefault(x => x.DeliveryPeriod == expectedSecondPeriod && x.AcademicYear == expectedSecondAcademicYear);
             Assert.IsNotNull(secondInstalment, $"Could not find second instalment in period {expectedSecondPeriod} of AY {expectedSecondAcademicYear}");
 
-            var totalPrice = earningsModel.Episodes.Single().CoursePrice;
+            var totalPrice = episode.CoursePrice;
             var expectedSecondAmount = Math.Round(totalPrice * 0.7m, 5);
 
             Assert.AreEqual((double)expectedSecondAmount, (double)secondInstalment.Amount, 0.01, "Second instalment amount (70% of total price) not found in expected delivery period.");
@@ -306,19 +314,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
         public async Task AssertEarningsAreStillRecordedAgainstTheFirstProvider()
         {
             var testData = context.Get<TestData>();
-            
+            var ukprn = Constants.UkPrn;
+            var courseCode = testData.ShortCourseCreateUpdateRequests[ukprn]!.Delivery.OnProgramme.Single().CourseCode;
+
             ShortCourseEarningsModel? earningsModel = null;
             await WaitHelper.WaitForIt(() =>
             {
                 earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
                 var dbValid = earningsModel?.Episodes?.Count > 0;
 
-                var commandValid = AssertAgainstPaymentsCommand(c => c.UKPRN == Constants.UkPrn);
+                var commandValid = AssertAgainstPaymentsCommand(c => c.UKPRN == ukprn);
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
 
-            Assert.AreEqual(Constants.UkPrn, earningsModel!.Episodes.Single().Ukprn, "The earnings were not recorded against the first provider's UKPRN.");
+            Assert.DoesNotThrow(() => earningsModel!.Episodes.GetEpisode(ukprn, courseCode), "The earnings were not recorded against the first provider's UKPRN.");
         }
 
         private bool AssertAgainstPaymentsCommand(Func<CalculateGrowthAndSkillsPayments, bool> predicate)

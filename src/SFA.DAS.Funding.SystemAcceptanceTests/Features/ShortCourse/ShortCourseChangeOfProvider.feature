@@ -15,26 +15,35 @@ Scenario: Same learner/course is created by different training providers - Provi
 	And the employer has not approved the Provider B short course
 	Then learning contains an epidose for Provider A and an episode for Provider B
 	And earnings contains an episode for Provider A and an episode for Provider B
-	And calculate "unapproved earnings" (as if Provider A does not exist) - see FLP-1524.
+	And earnings instalments are calculated as follows
+		| Provider | ThirtyPercent       | Completion          |
+		| A        | ExistsButNotPayable | ExistsButNotPayable |
+		| B        | ExistsButNotPayable | ExistsButNotPayable |
 
 Scenario: Same learner/course is created by different training providers - Provider B’s record is approved  - milestone(s) are not recorded
 	Given that a “short course” learner has been created by Provider A
 	And the learner has not completed the course with Provider A
 	When that a “short course” learner has been created by Provider B
 	And the employer has approved the Provider B short course
-	And Provider B has not recorded either the 30% milestone or completion
+	And Provider B has recorded 30% isNotPayable and completion isNotPayable
 	Then learning contains an epidose for Provider A and an episode for Provider B
 	And earnings contains an episode for Provider A and an episode for Provider B
-	And calculate "approved provisional earnings" (as if Provider A does not exist) - see FLP-1415.
+	And earnings instalments are calculated as follows
+		| Provider | ThirtyPercent       | Completion          |
+		| A        | ExistsButNotPayable | ExistsButNotPayable |
+		| B        | ExistsButNotPayable | ExistsButNotPayable |
 
 Scenario: Same learner/course is created by different training providers - Provider B’s record is approved - milestone(s) are recorded
 	Given that a “short course” learner has been created by Provider A
 	And the learner has not completed the course with Provider A
 	When that a “short course” learner has been created by Provider B
 	And the employer has approved the Provider B short course
-	And Provider B has recorded the 30% and/or completion milestone
+	And Provider B has recorded 30% isPayable and completion isNotPayable
 	Then learning contains an epidose for Provider A and an episode for Provider B
-	And calculate "approved actual earnings" (as if Provider A does not exist) - see FLP-1624.
+	And earnings instalments are calculated as follows
+		| Provider | ThirtyPercent       | Completion          |
+		| A        | ExistsButNotPayable | ExistsButNotPayable |
+		| B        | Payable             | ExistsButNotPayable |
 
 Scenario: Provider A's record is unaffected 
 	Given that a “short course” learner has been created by Provider A

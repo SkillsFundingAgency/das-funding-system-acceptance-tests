@@ -402,4 +402,33 @@ public static class ShortCourseModelExtensions
     {
         return episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
     }
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static ShortCourseEpisode Single(this IEnumerable<ShortCourseEpisode> episodes) { throw new InvalidOperationException(); }
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static ShortCourseEpisode First(this IEnumerable<ShortCourseEpisode> episodes) { throw new InvalidOperationException(); }
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static ShortCourseEpisode SingleOrDefault(this IEnumerable<ShortCourseEpisode> episodes) { throw new InvalidOperationException(); }
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static ShortCourseEpisode FirstOrDefault(this IEnumerable<ShortCourseEpisode> episodes) { throw new InvalidOperationException(); }
+
+    public static ShortCourseEpisode GetEpisode(this IEnumerable<ShortCourseEpisode> episodes, long ukprn, string trainingCode)
+    {
+        foreach (var episode in episodes)
+        {
+            if (episode.Ukprn == ukprn && episode.TrainingCode.Trim() == trainingCode)
+            {
+                return episode;
+            }
+        }
+        throw new Exception("Matching episode not found");
+    }
+
+    public static ShortCourseEpisode GetEpisode(this IEnumerable<ShortCourseEpisode> episodes, ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
+    {
+        return episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
+    }
 }

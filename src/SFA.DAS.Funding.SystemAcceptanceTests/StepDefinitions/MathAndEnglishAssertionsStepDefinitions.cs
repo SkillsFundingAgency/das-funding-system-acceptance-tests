@@ -250,18 +250,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await WaitHelper.WaitForIt(() =>
             {
                 earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
-                return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault()
+                return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
                     .EarningsProfileHistory.Any();
             }, "Failed to find updated earnings entity.");
 
             var mathsAndEnglish = earningsApprenticeshipModel
                 .Episodes
-                .SingleOrDefault()
+                .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
                 ?.MathsAndEnglish;
 
             var mathAndEnglishInstalments = earningsApprenticeshipModel
                 .Episodes
-                .SingleOrDefault()
+                .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
                 ?.MathsAndEnglishInstalments;
 
             mathsAndEnglish.Should().BeEmpty("Expected no Maths and English earnings to be generated, but found some on the earnings apprenticeship model");
@@ -277,13 +277,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             await WaitHelper.WaitForIt(() =>
             {
                 earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
-                return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault()
+                return !testData.IsMathsAndEnglishAdded || earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
                     .EarningsProfileHistory.Any();
             }, "Failed to find updated earnings entity.");
 
             var mathsAndEnglish = earningsApprenticeshipModel
                 .Episodes
-                .SingleOrDefault()
+                .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
                 ?.MathsAndEnglish;
 
             var mathsAndEnglishKey = mathsAndEnglish.FirstOrDefault(x => x.Course.Contains(course)).Key;
@@ -291,12 +291,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var mathsAndEnglishInstalments = earningsApprenticeshipModel
                 .Episodes
-                .SingleOrDefault()
+                .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
                 ?.MathsAndEnglishInstalments.Where(x => x.MathsAndEnglishKey == mathsAndEnglishKey)
                 .Where(x => x.Type == "Regular")
                 .ToList();
 
-            testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile
+            testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfile
                 .EarningsProfileId;
 
             mathsAndEnglishInstalments.Should()
@@ -373,13 +373,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             {
                 earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
                 return !testData.IsMathsAndEnglishAdded
-                       || earningsApprenticeshipModel.Episodes.SingleOrDefault()
+                       || earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
                            .EarningsProfileHistory.Any();
             }, "Failed to find updated earnings entity.");
 
             var episode = earningsApprenticeshipModel
                 .Episodes
-                .SingleOrDefault();
+                .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
 
             if (episode == null || episode.MathsAndEnglish == null)
                 return new List<MathsAndEnglishInstalment>();
@@ -391,7 +391,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             if (mathsAndEnglishKey == null)
                 return new List<MathsAndEnglishInstalment>();
 
-            testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId;
+            testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfile.EarningsProfileId;
 
             return episode.MathsAndEnglishInstalments
                 .Where(x => x.MathsAndEnglishKey == mathsAndEnglishKey && x.Type == type)

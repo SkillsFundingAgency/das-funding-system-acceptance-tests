@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
+﻿using NUnit.Framework.Interfaces;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -39,9 +40,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"earnings of (.*) are generated from periods (.*) to (.*)")]
         public async Task ThenEarningsOfAreGeneratedBetweenPeriods(decimal amount, TokenisablePeriod periodFrom, TokenisablePeriod periodTo)
         {
+            var testData = context.Get<TestData>();
             var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
 
-            var episode = earnings.Episodes.SingleOrDefault();
+            var episode = earnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
 
             var regularInstalments = episode.EarningsProfile.Instalments.Where(x => x.Type.Trim() == "Regular").ToList();
 
@@ -68,8 +70,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then(@"an earning of (.*) of type (.*) is generated for period (.*)")]
         public async Task ThenABalancingEarningOfIsGeneratedForPeriod(decimal amount, string earningType, TokenisablePeriod period)
         {
+            var testData = context.Get<TestData>();
             var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
-            var episode = earnings.Episodes.SingleOrDefault();
+            var episode = earnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
 
             var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(x => x.Type.Trim() == earningType);
             instalment.Should().NotBeNull();
@@ -84,8 +87,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then("Balancing earning is removed")]
         public async Task BalancingEarningIsRemoved()
         {
+            var testData = context.Get<TestData>();
             var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
-            var episode = earnings.Episodes.SingleOrDefault();
+            var episode = earnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
 
             var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(x => x.Type.Trim() == "Balancing");
 
@@ -95,8 +99,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Then("Completion earning is removed")]
         public void CompletionEarningIsRemoved()
         {
+            var testData = context.Get<TestData>();
             var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
-            var episode = earnings.Episodes.SingleOrDefault();
+            var episode = earnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
 
             var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(x => x.Type.Trim() == "Completion");
 

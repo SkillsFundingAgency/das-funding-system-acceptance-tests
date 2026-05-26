@@ -11,7 +11,9 @@ public class ShortCourseChangeOfProviderSteps(ScenarioContext context, LearnerDa
     public async Task GivenThatAShortCourseLearnerHasBeenCreatedByProvider(string trainingProvider)
     {
         var testData = context.Get<TestData>();
-        var createShortCourseRequest = testData.ShortCourseLearnerData;
+        long ukPrn = UkprnProvider.GetUkprnForProvider(trainingProvider);
+
+        var createShortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukPrn];
 
         if (createShortCourseRequest == null)
         {
@@ -25,16 +27,9 @@ public class ShortCourseChangeOfProviderSteps(ScenarioContext context, LearnerDa
             createShortCourseRequest.Delivery.OnProgramme.Single().StartDate = DateTime.Now;
         }
 
-        long ukPrn = trainingProvider switch
-        {
-            "A" => Constants.UkPrn,
-            "B" => Constants.AlternativeUkPrn,
-            _ => throw new ArgumentException($"Invalid training provider - {trainingProvider}", nameof(trainingProvider))
-        };
-
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(ukPrn, createShortCourseRequest);
 
-        testData.ShortCourseLearnerData = createShortCourseRequest;
+        testData.ShortCourseCreateUpdateRequests[ukPrn] = createShortCourseRequest;
     }
 
     [Given("the learner has not completed the course with Provider (.*)")]

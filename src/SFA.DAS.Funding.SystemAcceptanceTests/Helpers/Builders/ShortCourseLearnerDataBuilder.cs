@@ -2,23 +2,35 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 
-public class ShortCourseLearnerDataBuilder(TestData testData)
+public class ShortCourseLearnerDataBuilder
 {
-    private readonly LearnerDataOuterApiClient.ShortCourseRequest _request = testData.ShortCourseLearnerData ?? new LearnerDataOuterApiClient.ShortCourseRequest
+    private readonly LearnerDataOuterApiClient.ShortCourseRequest _request;
+
+    public ShortCourseLearnerDataBuilder(TestData testData)
     {
-        Learner = new LearnerDataOuterApiClient.ShortCourseLearnerRequestDetails
+        if(testData.ShortCourseCreateUpdateRequests.Count == 1)
         {
-            Uln = long.Parse(testData.Uln),
-            LearnerRef = "test",
-            FirstName = "Short",
-            LastName = "CourseLearner",
-            Dob = new DateTime(2000, 1, 1),
-            Email = "learner@test.com",
-            HasEhcp = false
-        },
-        Delivery = new LearnerDataOuterApiClient.ShortCourseDelivery    
+            _request = testData.ShortCourseCreateUpdateRequests.Single().Value;
+        }
+
+        if(testData.ShortCourseCreateUpdateRequests.Count > 1)
+            throw new Exception("If multiple ShortCourseCreateUpdateRequests exist in TestData, the builder cannot determine which one to use. Use constructor (TestData testData, long ukprn) instead");
+
+        _request = new LearnerDataOuterApiClient.ShortCourseRequest
         {
-            OnProgramme =
+            Learner = new LearnerDataOuterApiClient.ShortCourseLearnerRequestDetails
+            {
+                Uln = long.Parse(testData.Uln),
+                LearnerRef = "test",
+                FirstName = "Short",
+                LastName = "CourseLearner",
+                Dob = new DateTime(2000, 1, 1),
+                Email = "learner@test.com",
+                HasEhcp = false
+            },
+            Delivery = new LearnerDataOuterApiClient.ShortCourseDelivery
+            {
+                OnProgramme =
             [
                 new LearnerDataOuterApiClient.ShortCourseOnProgramme
                 {
@@ -30,8 +42,14 @@ public class ShortCourseLearnerDataBuilder(TestData testData)
                     Milestones = []
                 }
             ]
-        }
-    };
+            }
+        };
+    }
+
+    public ShortCourseLearnerDataBuilder(TestData testData, long ukprn)
+    {
+        _request = testData.ShortCourseCreateUpdateRequests[ukprn];
+    }
 
     public ShortCourseLearnerDataBuilder WithStartDate(DateTime startDate)
     {

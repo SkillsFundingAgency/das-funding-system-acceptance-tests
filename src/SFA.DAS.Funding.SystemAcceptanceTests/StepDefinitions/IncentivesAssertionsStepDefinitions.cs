@@ -71,15 +71,14 @@ public class IncentivesAssertionsStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
-            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
+            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
         var additionalPayments = earningsApprenticeshipModel
-            .Episodes
-            .SingleOrDefault()
+            .Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
             ?.AdditionalPayments;
 
-        testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId;
+        testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfile.EarningsProfileId;
 
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
@@ -122,12 +121,12 @@ public class IncentivesAssertionsStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
-            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId == testData.EarningsProfileId;
+            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfile.EarningsProfileId == testData.EarningsProfileId;
         }, "Failed to find earnings entity.");
 
         var additionalPayments = earningsApprenticeshipModel
             .Episodes
-            .SingleOrDefault()
+            .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
             ?.AdditionalPayments;
 
         additionalPayments.Should().NotContain(x => x.AdditionalPaymentType == AdditionalPaymentType.ProviderIncentive);
@@ -145,14 +144,14 @@ public class IncentivesAssertionsStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
-            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
+            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
         var learning = _learningSqlClient.GetApprenticeship(testData.LearningKey);
 
         var additionalPayments = earningsApprenticeshipModel
             .Episodes
-            .SingleOrDefault()
+            .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
             ?.AdditionalPayments;
 
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
@@ -195,15 +194,15 @@ public class IncentivesAssertionsStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
-            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
+            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
         var additionalPayments = earningsApprenticeshipModel
             .Episodes
-            .SingleOrDefault()
+            .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
             ?.AdditionalPayments;
 
-        testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId;
+        testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfile.EarningsProfileId;
 
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 

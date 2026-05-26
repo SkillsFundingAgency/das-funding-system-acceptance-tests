@@ -1,3 +1,5 @@
+using SFA.DAS.CommitmentsV2.Messages.Events;
+
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -42,4 +44,38 @@ public class ShortCourseEarningsProfileModel
 public class ShortCourseInstalmentModel : InstalmentModelBase
 {
 }
+
+public static class ShortCourseEarningsModelExtensions
+{
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static ShortCourseEpisodeModel Single(this IEnumerable<ShortCourseEpisodeModel> episodes) { throw new InvalidOperationException(); }
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static ShortCourseEpisodeModel First(this IEnumerable<ShortCourseEpisodeModel> episodes) { throw new InvalidOperationException(); }
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static ShortCourseEpisodeModel SingleOrDefault(this IEnumerable<ShortCourseEpisodeModel> episodes) { throw new InvalidOperationException(); }
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static ShortCourseEpisodeModel FirstOrDefault(this IEnumerable<ShortCourseEpisodeModel> episodes) { throw new InvalidOperationException(); }
+
+    public static ShortCourseEpisodeModel GetEpisode(this IEnumerable<ShortCourseEpisodeModel> episodes, long ukprn, string trainingCode)
+    {
+        foreach (var episode in episodes)
+        {
+            if (episode.Ukprn == ukprn && episode.TrainingCode.Trim() == trainingCode)
+            {
+                return episode;
+            }
+        }
+        throw new Exception("Matching episode not found");
+    }
+
+    public static ShortCourseEpisodeModel GetEpisode(this IEnumerable<ShortCourseEpisodeModel> episodes, ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
+    {
+        return episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
+    }
+}
+
+
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

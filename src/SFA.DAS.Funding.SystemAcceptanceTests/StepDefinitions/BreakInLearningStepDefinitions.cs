@@ -62,7 +62,7 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
     {
         var testData = context.Get<TestData>();
 
-        var instalments = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments
+        var instalments = testData.EarningsApprenticeshipModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments
             ?.OrderBy(x => x.AcademicYear).ThenBy(x => x.DeliveryPeriod).ToList();
 
         instalments?
@@ -92,7 +92,7 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
 
         var testData = context.Get<TestData>();
 
-        var periodsInLearning = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault().EpisodePeriodInLearning
+        var periodsInLearning = testData.EarningsApprenticeshipModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EpisodePeriodInLearning
             ?.OrderBy(x => x.StartDate).ToList();
 
         var index = normalisedPeriod == "first" ? 0 : 1;
@@ -110,7 +110,7 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
     {
         var testData = context.Get<TestData>();
 
-        var breakInLearnings = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EpisodePeriodInLearning;
+        var breakInLearnings = testData.EarningsApprenticeshipModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EpisodePeriodInLearning;
 
         Assert.IsTrue(breakInLearnings?.Count == 0, "Unexpected Break in Learnings records found for the apprenticeship");
     }
