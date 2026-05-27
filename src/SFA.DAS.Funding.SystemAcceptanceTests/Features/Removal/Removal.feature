@@ -26,12 +26,14 @@ Scenario: Apprentice removed from the ILR
 	And Break in Learning record is removed from earnings db
 	And a learning removed event is published to approvals
 
-Scenario: Apprentice removed from the ILR and Get Learners endpoint called
-	When sld inform us that the learner is to removed
-	And SLD want to know the learners already on Apprenticeship service for a provider
-	Then the apprentice is not returned in the GetLearners response
-
-Scenario: Apprentice removed from the ILR and Get Earnings endpoint called
-	When sld inform us that the learner is to removed
-	And the fm36 data is retrieved for currentDate
-	Then fm36 data does not exist for that apprenticeship
+#Commented - to be added in FLP-1781
+#
+#Scenario: Apprentice removed from the ILR and Get Learners endpoint called
+#	When sld inform us that the learner is to removed
+#	And SLD want to know the learners already on Apprenticeship service for a provider
+#	Then the apprentice is not returned in the GetLearners response
+#
+#Scenario: Apprentice removed from the ILR and Get Earnings endpoint called
+#	When sld inform us that the learner is to removed
+#	And the fm36 data is retrieved for currentDate
+#	Then fm36 data does not exist for that apprenticeship
