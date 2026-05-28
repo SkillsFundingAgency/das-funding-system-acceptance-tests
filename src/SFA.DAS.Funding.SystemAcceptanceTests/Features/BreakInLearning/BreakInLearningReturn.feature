@@ -22,7 +22,7 @@ Scenario: Training provider records a return from a break in learning in previou
 	And the earnings of 500 between previousAY-R01 and previousAY-R05 are maintained
 	And the earnings of 558.82353 between previousAY-R08 and currentAY-R12 are maintained
 	And earnings are updated with first period in learning from previousAY-08-01 to previousAY-01-15
-	And earnings are updated with second period in learning from previousAY-03-01 to currentAY-07-31
+	And earnings are updated with second period in learning from previousAY-03-01 to null
 
 #FLP-1360 AC1 current AY return
 @regression
