@@ -17,7 +17,6 @@ public class LearningSqlClient
     public void DeleteApprenticeship(Guid learningKey)
     {
         var sql = $@"
-            DELETE FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learningKey}';
             DELETE FROM [dbo].[EnglishAndMaths] WHERE LearningKey = '{learningKey}';
             DELETE FROM [dbo].[ApprenticeshipLearningSupport] WHERE LearningKey = '{learningKey}';
         ";
@@ -53,8 +52,6 @@ public class LearningSqlClient
             episode.EpisodeBreakInLearning = _sqlServerClient.GetList<EpisodeBreakInLearning>($" SELECT * FROM [dbo].[EpisodeBreakInLearning] WHERE EpisodeKey ='{episode.Key}'");
 
         }
-
-        learning.FreezeRequests = _sqlServerClient.GetList<FreezeRequest>($"SELECT * FROM [dbo].[FreezeRequest] WHERE LearningKey = '{learning.Key}'");
 
         learning.LearningHistory = _sqlServerClient.GetList<LearningHistoryModel>($"SELECT * FROM [History].[LearningHistory] WHERE LearningId = '{learning.Key}'");
 
@@ -94,9 +91,7 @@ public class LearningSqlClient
             $"INNER JOIN [dbo].[EpisodePrice] eppr ON eppr.EpisodeKey = ep.[Key] " +
             $"WHERE (eppr.StartDate <= '{dates.End.ToString("yyyy-MM-dd")}' AND eppr.EndDate >= '{dates.Start.ToString("yyyy-MM-dd")}') " +
             $"AND ep.Ukprn = {ukprn} " +
-            $"AND (ep.WithdrawalDate IS NULL " +
-            $"OR (ep.WithdrawalDate >= '{dates.Start.ToString("yyyy-MM-dd")}' " +
-            $"AND ep.WithdrawalDate <> eppr.StartDate))"
+            $"AND ep.IsRemoved = 0 "
         );
 
         return learners;
@@ -115,16 +110,7 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            2. Delete Freeze Requests
-            ===========================================================*/
-            DELETE fr
-            FROM dbo.FreezeRequest fr
-            JOIN dbo.ApprenticeshipLearning l ON fr.LearningKey = l.[Key]
-            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
-            WHERE e.Ukprn = @Ukprn;
-
-            /*===========================================================
-            3. Delete Learning History 
+            2. Delete Learning History 
             ===========================================================*/
             DELETE lh
             FROM History.LearningHistory lh
@@ -133,7 +119,7 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            4. Delete Learning Supports
+            3. Delete Learning Supports
             ===========================================================*/
             DELETE ls
             FROM dbo.ApprenticeshipLearningSupport ls
@@ -142,7 +128,7 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            5. Delete Episode Breaks In Learning
+            4. Delete Episode Breaks In Learning
             ===========================================================*/
             DELETE ebil
             FROM dbo.EpisodeBreakInLearning ebil
@@ -150,7 +136,7 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            6. Delete English and Maths Breaks In Learning
+            5. Delete English and Maths Breaks In Learning
             ===========================================================*/
             DELETE mebil
             FROM dbo.EnglishAndMathsBreakInLearning mebil
@@ -160,7 +146,7 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
  
             /*===========================================================
-            7. Delete English and Maths
+            6. Delete English and Maths
             ===========================================================*/
             DELETE me
             FROM dbo.EnglishAndMaths me
@@ -169,16 +155,7 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            8. Delete Approvals
-            ===========================================================*/
-            DELETE a
-            FROM dbo.Approval a
-            JOIN dbo.ApprenticeshipLearning l ON a.ApprenticeshipKey = l.[Key]
-            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
-            WHERE e.Ukprn = @Ukprn;
-
-            /*===========================================================
-            9. Delete Episodes, Learning and Learners
+            7. Delete Episodes, Learning and Learners
             ===========================================================*/
             CREATE TABLE #LearningKeys (
                 LearningKey UNIQUEIDENTIFIER NOT NULL,
@@ -198,7 +175,7 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            10. Delete Short Course Milestones
+            8. Delete Short Course Milestones
             ===========================================================*/
             DELETE scm
             FROM dbo.ShortCourseMilestone scm
@@ -206,7 +183,7 @@ public class LearningSqlClient
             WHERE e.Ukprn = @Ukprn;
 
             /*===========================================================
-            11. Delete Short Course Learning Support
+            9. Delete Short Course Learning Support
             ===========================================================*/
             DELETE scls
             FROM dbo.ShortCourseLearningSupport scls
@@ -243,10 +220,7 @@ public class LearningSqlClient
 public class Learning
 {
     public Guid Key { get; set; }
-    //public long ApprovalsApprenticeshipId { get; set; } //todo: delete
-    //public string ApprenticeshipHashedId { get; set; } = null!; //todo: delete
     public DateTime? CompletionDate { get; set; } = null;
-    public List<FreezeRequest> FreezeRequests { get; set; } //todo: delete
     public List<Episode> Episodes { get; set; }
     public List<LearningHistoryModel> LearningHistory { get; set; }
     public Guid LearnerKey { get; set; }
@@ -295,18 +269,6 @@ public class EpisodePrice
     public decimal? EndPointAssessmentPrice { get; set; }
     public decimal TotalPrice { get; set; }
     public int FundingBandMaximum { get; set; }
-}
-
-public class FreezeRequest
-{
-    public Guid Key { get; set; }
-    public Guid LearningKey { get; set; }
-    public string FrozenBy { get; set; } = null!;
-    public DateTime FrozenDateTime { get; set; }
-    public bool Unfrozen { get; set; }
-    public DateTime? UnfrozenDateTime { get; set; }
-    public string? UnfrozenBy { get; set; }
-    public string? Reason { get; set; }
 }
 
 public class LearningHistoryModel
