@@ -270,6 +270,21 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         }, "Failed to find published LearnerDataEvent.");
     }
 
+    [Then("the learner ref is not stored and the short course data is not sent to approvals")]
+    public async Task ThenTheLearnerRefIsNotStoredAndShortCourseDataIsNotSentToApprovals()
+    {
+        var testData = context.Get<TestData>();
+
+        await Task.WhenAll(
+            WaitHelper.WaitForUnexpected(() =>
+                learningSqlClient.GetShortCourseLearning(testData.Uln.ToString()) != null,
+                "Found unexpected learner data for learner ref"),
+            WaitHelper.WaitForUnexpected(() =>
+                LearnerDataEventHandler.GetMessage(x => x.ULN == long.Parse(testData.Uln)) != null,
+                "Found unexpected LearnerDataEvent.")
+        );
+    }
+
     [Then(@"(.*) earnings profile history records are created for the short course")]
     public async Task ThenEarningsProfileHistoryRecordsAreCreatedForTheShortCourse(int expectedRecordCount)
     {
