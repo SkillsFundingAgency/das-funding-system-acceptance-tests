@@ -32,3 +32,11 @@ Scenario: Prevent duplication of unapproved short course earnings
 	And SLD informs us of a the same new short course learner again
 	Then the basic short course earnings are generated
 	And the short course earnings do not contain duplicates
+
+
+@regression
+Scenario: Learner is created with an invalid short course
+	Given SLD informs us of a new learner with an invalid short course start date currentAY-08-01
+	Then the short course POST returns an error response
+	And the learner ref is not stored in the learning db
+	And the short course data is not sent to approvals

@@ -16,6 +16,30 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
         await AddShortCourse(startDate.Value); 
     }
 
+    [Given("SLD informs us of a new learner with an invalid short course start date (.*)")]
+    public async Task GivenSLDInformsUsOfANewLearnerWithAnInvalidShortCourse(TokenisableDateTime startDate)
+    {
+        var testData = new TestData(TestIdentifierProvider.GetNextUln());
+        context.Set(testData);
+
+        var shortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
+            .WithStartDate(startDate.Value)
+            .WithEndDate(startDate.Value.AddMonths(3))
+            .WithCourseCode("INVALID_COURSE")
+            .Build();
+
+        var response = await learnerDataOuterApiHelper.AddShortCourseLearnerDataWithResponse(Constants.UkPrn, shortCourseRequest);
+        context.Set(response, "InvalidShortCourseResponse");
+    }
+
+    [Then(@"the short course POST returns an error response")]
+    public void ThenTheShortCoursePOSTReturnsAnErrorResponse()
+    {
+        var response = context.Get<HttpResponseMessage>("InvalidShortCourseResponse");
+        Assert.IsFalse(response.IsSuccessStatusCode, $"Expected an error status code but got {response.StatusCode}");
+    }
+
+
     [When("SLD inform us that the same learner has been reinstated by the training provider")]
     public async Task SLDInformUsThatTheSameLearnerHasBeenReinstatedByTheTrainingProvider()
     {
@@ -54,6 +78,7 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
 
         testData.ShortCourseLearnerData = shortCourseRequest;
     }
+
 
     [Given(@"SLD informs us of a the same new short course learner again")]
     public async Task GivenTheSameNewShortCourseLearner()
