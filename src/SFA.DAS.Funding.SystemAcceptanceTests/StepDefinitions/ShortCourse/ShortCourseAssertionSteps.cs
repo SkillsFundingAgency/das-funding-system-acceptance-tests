@@ -144,20 +144,6 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         Assert.AreEqual(expectedLearnerRef, actualLearnerRef, "LearnerRef does not match.");
     }
 
-    [Then("the learner ref is not stored in the learning db")]
-    public async Task ThenTheLearnerRefIsNotStoredInTheLearningDb()
-    {
-        var testData = context.Get<TestData>();
-
-        ShortCourseLearning? learningModel = null;
-        await WaitHelper.WaitForUnexpected(() =>
-        {
-            learningModel = learningSqlClient.GetShortCourseLearning(testData.Uln.ToString());
-            return learningModel != null;
-        }, "Found unexpected learner data for learner ref");
-    }
-
-
     [Then(@"the episode keys match between the learning and earnings databases")]
     public async Task ThenTheEpisodeKeysMatchBetweenTheLearningAndEarningsDatabases()
     {
@@ -284,18 +270,20 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         }, "Failed to find published LearnerDataEvent.");
     }
 
-    [Then("the short course data is not sent to approvals")]
-    public async Task ThenTheShortCourseDataIsNotSentToApprovals()
+    [Then("the learner ref is not stored and the short course data is not sent to approvals")]
+    public async Task ThenTheLearnerRefIsNotStoredAndShortCourseDataIsNotSentToApprovals()
     {
         var testData = context.Get<TestData>();
 
-        await WaitHelper.WaitForUnexpected(() =>
-        {
-            var publishedEvent = LearnerDataEventHandler.GetMessage(x => x.ULN == long.Parse(testData.Uln));
-            return publishedEvent != null;
-        }, "Found unexpected LearnerDataEvent.");
+        await Task.WhenAll(
+            WaitHelper.WaitForUnexpected(() =>
+                learningSqlClient.GetShortCourseLearning(testData.Uln.ToString()) != null,
+                "Found unexpected learner data for learner ref"),
+            WaitHelper.WaitForUnexpected(() =>
+                LearnerDataEventHandler.GetMessage(x => x.ULN == long.Parse(testData.Uln)) != null,
+                "Found unexpected LearnerDataEvent.")
+        );
     }
-
 
     [Then(@"(.*) earnings profile history records are created for the short course")]
     public async Task ThenEarningsProfileHistoryRecordsAreCreatedForTheShortCourse(int expectedRecordCount)
