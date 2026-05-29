@@ -77,7 +77,6 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
         testData.ShortCourseLearnerData = shortCourseRequest;
     }
 
-
     [Given(@"SLD informs us of a the same new short course learner again")]
     public async Task GivenTheSameNewShortCourseLearner()
     {
