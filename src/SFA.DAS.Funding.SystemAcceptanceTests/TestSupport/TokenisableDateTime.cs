@@ -16,6 +16,11 @@ public class TokenisableDateTime
 
 	public static TokenisableDateTime FromString(string value)
 	{
+        if (value == "null")
+        {
+            return new TokenisableDateTime(DateTime.MinValue);
+        }
+
 		if (DateTime.TryParse(value, out var parseResult))
 		{
 			return new TokenisableDateTime(parseResult);

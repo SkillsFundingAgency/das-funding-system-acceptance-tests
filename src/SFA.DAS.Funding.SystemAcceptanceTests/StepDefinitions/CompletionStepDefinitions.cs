@@ -17,6 +17,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithCompletionDate(completionDate.Value);
         }
 
+        [Given("Learning Achievement date is recorded on (.*)")]
+        [When("Learning Achievement date is recorded on (.*)")]
+        public async Task WhenSLDInformUsThatTheLearningAchievementDateIsOn(TokenisableDateTime achievementDate)
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder.WithAchievementDate(achievementDate.Value);
+        }
+
         [Given("SLD resubmits ILR")]
         [When("SLD resubmits ILR")]
         public void SLDResubmitsILR()
@@ -32,6 +41,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var testData = context.Get<TestData>();
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
             learnerDataBuilder.WithCompletionDate(null);
+        }
+
+        [When("achievement date is removed")]
+        public void AchievementDateIsRemoved()
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+            learnerDataBuilder.WithAchievementDate(null);
         }
 
 
@@ -68,20 +85,24 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [Given(@"an earning of (.*) of type (.*) is generated for period (.*)")]
         [When(@"an earning of (.*) of type (.*) is generated for period (.*)")]
         [Then(@"an earning of (.*) of type (.*) is generated for period (.*)")]
-        public async Task ThenABalancingEarningOfIsGeneratedForPeriod(decimal amount, string earningType, TokenisablePeriod period)
+        public async Task BalancingEarningIsGeneratedForPeriod(decimal amount, string earningType, TokenisablePeriod period)
         {
-            var testData = context.Get<TestData>();
-            var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
-            var episode = earnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
+            if (amount != 0)
+            {
+                var testData = context.Get<TestData>();
+                var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
+                var episode = earnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
 
-            var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(x => x.Type.Trim() == earningType);
-            instalment.Should().NotBeNull();
 
-            var deliveryPeriod = new Period(instalment.AcademicYear, instalment.DeliveryPeriod);
-            deliveryPeriod.AcademicYear.Should().Be(period.Value.AcademicYear);
-            deliveryPeriod.PeriodValue.Should().Be(period.Value.PeriodValue);
+                var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(x => x.Type.Trim() == earningType);
+                instalment.Should().NotBeNull();
 
-            Math.Round(instalment.Amount, 2).Should().Be(Math.Round(amount, 2));
+                var deliveryPeriod = new Period(instalment.AcademicYear, instalment.DeliveryPeriod);
+                deliveryPeriod.AcademicYear.Should().Be(period.Value.AcademicYear);
+                deliveryPeriod.PeriodValue.Should().Be(period.Value.PeriodValue);
+
+                Math.Round(instalment.Amount, 2).Should().Be(Math.Round(amount, 2));
+            }
         }
 
         [Then("Balancing earning is removed")]
@@ -97,6 +118,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Then("Completion earning is removed")]
+        [Then("Completion earning is not generated")]
         public void CompletionEarningIsRemoved()
         {
             var testData = context.Get<TestData>();
@@ -108,6 +130,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             instalment.Should().BeNull();
         }
 
+        [Then("the expected number of earnings instalments after completion are (.*)")]
+        public void ExpectedNumberOfEarningsInstalmentsAfterWithdrawalIs(int expectedInstalmentsNumber)
+        {
+            var testData = context.Get<TestData>();
 
+            var actualInstalmentsNumber = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context)?
+                .Episodes
+                .FirstOrDefault()?
+                .EarningsProfile?.Instalments?
+                .Where(x => x.Type.Contains("Regular"))
+                .Count() ?? 0;
+
+            Assert.AreEqual(expectedInstalmentsNumber, actualInstalmentsNumber, "Unexpected number of instalments after completion has been recorded in earnings db!");
+        }
     }
 }

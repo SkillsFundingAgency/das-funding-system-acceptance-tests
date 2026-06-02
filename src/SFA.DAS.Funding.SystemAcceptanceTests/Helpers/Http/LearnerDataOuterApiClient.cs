@@ -15,9 +15,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         public LearnerDataOuterApiClient()
         {
             _fundingConfig = Configurator.GetConfiguration();
+
             var baseUrl = _fundingConfig.OuterApiBaseUrl;
             _subscriptionKey = _fundingConfig.LearnerDataOuterApiSubscriptionKey;
-            _apiClient = HttpClientProvider.GetClient(baseUrl);        }
+            _apiClient = HttpClientProvider.GetClient(baseUrl, _fundingConfig.GetSecureGatewayConfig(x => x.LearnerDataOuterSecureUrl));        
+        }
 
         public async Task AddLearnerData(long ukprn, LearnerDataRequest learnerData)
         {
@@ -240,6 +242,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             Assert.AreEqual(HttpStatusCode.Accepted, response.StatusCode, $"Expected HTTP 202 Accepted response from DeleteShortCourse request, but got {response.StatusCode}");
         }
 
+        public async Task<int> CallHealthCheck()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/health");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+            var response = await _apiClient.SendAsync(request);
+            return (int)response.StatusCode;
+        }
+
         public class LearnerDataRequest
         {
             public string ConsumerReference { get; set; } 
@@ -324,6 +336,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime ExpectedEndDate { get; set; }
             public List<CostDetails> Costs { get; set; } = new List<CostDetails>();
             public DateTime? CompletionDate { get; set; }
+            public DateTime? AchievementDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
             public DateTime? PauseDate { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
