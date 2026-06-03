@@ -206,8 +206,8 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
         var builder = new ShortCourseLearnerDataBuilder(testData)
             .WithStartDate(shortCourseRequest.Delivery.OnProgramme.Single().StartDate)
             .WithEndDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate)
-            .WithCompletionDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate)
-            .WithMilestone(LearnerDataOuterApiClient.Milestone.LearningComplete);
+            .WithMilestone(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete)
+            .WithCompletionDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate);
 
         var updatedRequest = builder.Build();
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, updatedRequest);
