@@ -98,8 +98,11 @@ public class LearningSqlClient
         return learners;
     }
 
-    public void DeleteAllDataForUkprn(long ukprn)
+    public void DeleteAllDataForUkprn()
     {
+        var ukprn1 = Constants.UkPrn;
+        var ukprn2 = Constants.AlternativeUkPrn;
+
         var sql = @"
 
             /*===========================================================
@@ -108,7 +111,7 @@ public class LearningSqlClient
             DELETE ep
             FROM dbo.EpisodePrice ep
             JOIN dbo.ApprenticeshipEpisode e ON ep.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             /*===========================================================
             2. Delete Learning History 
@@ -117,7 +120,7 @@ public class LearningSqlClient
             FROM History.LearningHistory lh
             JOIN dbo.ApprenticeshipLearning l ON lh.LearningId = l.[Key]
             JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             /*===========================================================
             3. Delete Learning Supports
@@ -126,7 +129,7 @@ public class LearningSqlClient
             FROM dbo.ApprenticeshipLearningSupport ls
             JOIN dbo.ApprenticeshipLearning l ON ls.LearningKey = l.[Key]
             JOIN dbo.ApprenticeshipEpisode e ON ls.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             /*===========================================================
             4. Delete Episode Breaks In Learning
@@ -134,7 +137,7 @@ public class LearningSqlClient
             DELETE ebil
             FROM dbo.EpisodeBreakInLearning ebil
             JOIN dbo.ApprenticeshipEpisode e ON ebil.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             /*===========================================================
             5. Delete English and Maths Breaks In Learning
@@ -144,7 +147,7 @@ public class LearningSqlClient
             JOIN dbo.EnglishAndMaths me on mebil.EnglishAndMathsKey = me.[Key]
             JOIN dbo.ApprenticeshipLearning l ON me.LearningKey = l.[Key]
             JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
  
             /*===========================================================
             6. Delete English and Maths
@@ -153,7 +156,7 @@ public class LearningSqlClient
             FROM dbo.EnglishAndMaths me
             JOIN dbo.ApprenticeshipLearning l ON me.LearningKey = l.[Key]
             JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             /*===========================================================
             7. Delete Episodes, Learning and Learners
@@ -167,13 +170,13 @@ public class LearningSqlClient
             SELECT DISTINCT l.[Key], l.LearnerKey
             FROM dbo.ApprenticeshipLearning l
             JOIN dbo.ApprenticeshipEpisode e ON e.LearningKey = l.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             INSERT INTO #LearningKeys (LearningKey, LearnerKey)
             SELECT DISTINCT l.[Key], l.LearnerKey
             FROM dbo.ShortCourseLearning l
             JOIN dbo.ShortCourseEpisode e ON e.LearningKey = l.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             /*===========================================================
             8. Delete Short Course Milestones
@@ -181,7 +184,7 @@ public class LearningSqlClient
             DELETE scm
             FROM dbo.ShortCourseMilestone scm
             JOIN dbo.ShortCourseEpisode e ON scm.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             /*===========================================================
             9. Delete Short Course Learning Support
@@ -189,15 +192,15 @@ public class LearningSqlClient
             DELETE scls
             FROM dbo.ShortCourseLearningSupport scls
             JOIN dbo.ShortCourseEpisode e ON scls.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             DELETE e
             FROM dbo.ApprenticeshipEpisode e
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             DELETE sce
             FROM dbo.ShortCourseEpisode sce
-            WHERE sce.Ukprn = @Ukprn;
+            WHERE sce.Ukprn in (@Ukprn1, @Ukprn2);
 
             DELETE l
             FROM dbo.ApprenticeshipLearning l
@@ -214,7 +217,7 @@ public class LearningSqlClient
             DROP TABLE #LearningKeys;
         ";
 
-        _sqlServerClient.Execute(sql, new { Ukprn = ukprn });
+        _sqlServerClient.Execute(sql, new { Ukprn1 = ukprn1, Ukprn2 = ukprn2 });
     }
 }
 

@@ -153,8 +153,11 @@ public class EarningsSqlClient
         _sqlServerClient.Execute($"DELETE FROM [Domain].[EnglishAndMaths] WHERE EarningsProfileId IN ({profileIdList})");
     }
 
-    public void DeleteAllDataForUkprn(long ukprn)
+    public void DeleteAllDataForUkprn()
     {
+        var ukprn1 = Constants.UkPrn;
+        var ukprn2 = Constants.AlternativeUkPrn;
+
         var sql = @"
 
             /*===========================================================
@@ -168,7 +171,7 @@ public class EarningsSqlClient
                 ON me.EarningsProfileId = ep.EarningsProfileId
             JOIN Domain.ApprenticeshipEpisode e 
                 ON ep.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -180,7 +183,7 @@ public class EarningsSqlClient
                 ON me.EarningsProfileId = ep.EarningsProfileId
             JOIN Domain.ApprenticeshipEpisode e 
                 ON ep.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -192,7 +195,7 @@ public class EarningsSqlClient
                 ON ap.EarningsProfileId = ep.EarningsProfileId
             JOIN Domain.ApprenticeshipEpisode e 
                 ON ep.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -204,7 +207,7 @@ public class EarningsSqlClient
                 ON i.EarningsProfileId = ep.EarningsProfileId
             JOIN Domain.ApprenticeshipEpisode e 
                 ON ep.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -214,7 +217,7 @@ public class EarningsSqlClient
             FROM Domain.ApprenticeshipEpisodePrice AS epc
             JOIN Domain.ApprenticeshipEpisode e 
                 ON epc.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -226,7 +229,7 @@ public class EarningsSqlClient
                 ON eph.EarningsProfileId = ep.EarningsProfileId
             JOIN Domain.ApprenticeshipEpisode e 
                 ON ep.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -236,7 +239,7 @@ public class EarningsSqlClient
             FROM Domain.ApprenticeshipEarningsProfile ep
             JOIN Domain.ApprenticeshipEpisode e 
                 ON ep.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -246,7 +249,7 @@ public class EarningsSqlClient
             FROM Domain.ApprenticeshipPeriodInLearning epil
             JOIN Domain.ApprenticeshipEpisode e 
                 ON epil.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -254,7 +257,7 @@ public class EarningsSqlClient
             ===========================================================*/
             DELETE e
             FROM Domain.ApprenticeshipEpisode e
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -279,7 +282,7 @@ public class EarningsSqlClient
                 ON sci.EarningsProfileId = sep.EarningsProfileId
             JOIN Domain.ShortCourseEpisode e 
                 ON sep.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -291,7 +294,7 @@ public class EarningsSqlClient
                 ON seph.EarningsProfileId = sep.EarningsProfileId
             JOIN Domain.ShortCourseEpisode e 
                 ON sep.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -301,7 +304,7 @@ public class EarningsSqlClient
             FROM Domain.ShortCourseEarningsProfile sep
             JOIN Domain.ShortCourseEpisode e 
                 ON sep.EpisodeKey = e.[Key]
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -309,7 +312,7 @@ public class EarningsSqlClient
             ===========================================================*/
             DELETE e
             FROM Domain.ShortCourseEpisode e
-            WHERE e.Ukprn = @Ukprn;
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
 
             /*===========================================================
@@ -325,7 +328,7 @@ public class EarningsSqlClient
             );
         ";
 
-        _sqlServerClient.Execute(sql, new { Ukprn = ukprn });
+        _sqlServerClient.Execute(sql, new { Ukprn1 = ukprn1, Ukprn2 = ukprn2 });
     }
 
 }
