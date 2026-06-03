@@ -189,11 +189,31 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         testData.ShortCourseLearnersResponse = await learnerDataOuterApiHelper.GetShortCourseLearnerApprovedUlns(Constants.UkPrn, academicYear.Value);
     }
 
+    [When("SLD requests short course approved ulns for Provider (.*) in academic year (.*)")]
+    [Then("SLD requests short course approved ulns for Provider (.*) in academic year (.*)")]
+    public async Task WhenSLDRequestsShortCourseApprovedUlnsForProviderAInAcademicYearCurrentAY(string provider, TokenisableAcademicYear academicYear)
+    {
+        var testData = context.Get<TestData>();
+
+        long ukprn = UkprnProvider.GetUkprnForProvider(provider);
+        testData.ShortCourseLearnersResponse = await learnerDataOuterApiHelper.GetShortCourseLearnerApprovedUlns(ukprn, academicYear.Value);
+    }
+
+
     [When(@"SLD requests short course earnings data for collection period (.*)")]
     public async Task WhenSldRequestsShortCourseEarningsDataForCollectionPeriod(TokenisablePeriod period)
     {
         var testData = context.Get<TestData>();
         testData.ShortCourseEarningsResponse = await learnerDataOuterApiHelper.GetShortCourseEarningsData(Constants.UkPrn, period.Value.AcademicYear, period.Value.PeriodValue);
+    }
+
+    [When(@"SLD requests short course earnings data for provider (.*) and collection period (.*)")]
+    public async Task SldRequestsShortCourseEarningsDataForProviderAndCollectionPeriod(string provider, TokenisablePeriod period)
+    {
+        var testData = context.Get<TestData>();
+
+        long ukprn = UkprnProvider.GetUkprnForProvider(provider);
+        testData.ShortCourseEarningsResponse = await learnerDataOuterApiHelper.GetShortCourseEarningsData(ukprn, period.Value.AcademicYear, period.Value.PeriodValue);
     }
 
     [Then(@"the short course learner is returned in the approved ulns response without duplicates")]
@@ -221,6 +241,21 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
 
         var learnerCount = testData.ShortCourseEarningsResponse.Learners.Count(x => x.LearningKey == testData.ShortCourseLearningKey.ToString());
         Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the earnings response for this collection period, but found a different count.");
+    }
+
+    [Then(@"the short course learner is returned as (.*) in the earnings response")]
+    public void ShortCourseLearnerIsReturnedInTheEarningsResponse(string action)
+    {
+        if (action != "approved" && action != "unapproved" )
+            throw new Exception ($"Invalid action - {action}");
+
+        var testData = context.Get<TestData>();
+        var learner = testData.ShortCourseEarningsResponse?.Learners.Where(x => x.LearningKey == testData.ShortCourseLearningKey.ToString()).Single();
+
+        if (action == "approved")
+            Assert.IsTrue(learner?.Courses.FirstOrDefault()?.Approved, "Short Course earnings are not set as approved!");
+        else 
+            Assert.IsFalse(learner?.Courses.FirstOrDefault()?.Approved, "Short Course earnings are not set as unapproved!");    
     }
 
     [Then(@"the short course learner is not returned in the earnings response")]

@@ -47,21 +47,20 @@ Scenario: Same learner/course is created by different training providers - Provi
 
 Scenario: Provider A's record is unaffected 
 	Given that a “short course” learner has been created by Provider A
+	And the employer has approved the Provider A short course
 	And the learner has not completed the course with Provider A
-	When SLD informs us of the creation of the same learner/course by Provider B following a change of provider (POST)
-	Then Provider A's short course record continues to behave as a regular short course, independently of Provider B's record 
-	#- Provider A's approved learners are returned to SLD
-	#- Provider A's approved earnings are returned to SLD
-	#- Payments are informed of Provider A's approved actual earnings
-	#- Provider A can withdraw, remove, reinstate the learner
-
-
-Scenario: Provider B's record behaves as a regular short course
-	Given that a “short course” learner has been created by Provider A
-	And the learner has not completed the course with Provider A
-	When SLD informs us of the creation of the same learner/course by Provider B following a change of provider (POST)
-	Then Provider B's short course record behaves identically to a regular short course, independently of Provider A's record
-	#- Provider B's approved learners are returned to SLD
-	#- Provider B's approved earnings are returned to SLD
-	#- Payments are informed of Provider B's approved actual earnings
-	#- Provider B can withdraw, remove, reinstate the learner
+	When that a “short course” learner has been created by Provider B
+	And the employer has not approved the Provider B short course
+	# Validations for Provider A's record
+	Then learning contains an epidose for Provider A and an episode for Provider B
+	And SLD requests short course approved ulns for Provider A in academic year currentAY
+	Then the short course learner is returned in the approved ulns response without duplicates
+	When SLD requests short course earnings data for provider A and collection period currentAY-01
+	Then the short course learner is returned in the earnings response without duplicates
+	And the short course learner is returned as approved in the earnings response
+	# Validations for Provider B's record
+	When SLD requests short course approved ulns for Provider B in academic year currentAY
+	Then the short course learner is not returned in the approved ulns response
+	When SLD requests short course earnings data for provider B and collection period currentAY-01
+	Then the short course learner is returned in the earnings response without duplicates
+	And the short course learner is returned as unapproved in the earnings response

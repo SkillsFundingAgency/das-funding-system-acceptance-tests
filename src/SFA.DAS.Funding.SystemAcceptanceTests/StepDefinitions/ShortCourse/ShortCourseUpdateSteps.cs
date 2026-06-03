@@ -63,6 +63,21 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
+    [When(@"SLD inform us that the learner has withdrawn with both milestones removed")]
+    public async Task SLDInformUsThatTheLearnerHasWithdrawnWithBothMilestonesRemoved()
+    {
+        var testData = context.Get<TestData>();
+        var ukprn = Constants.UkPrn;
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukprn];
+
+        shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalDate = DateTime.Now;
+        shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = null;
+        shortCourseRequest.Delivery.OnProgramme.Single().Milestones.Remove(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete);
+
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearningKey, shortCourseRequest);
+        testData.ExpectGrowthAndSkillsPaymentsEvent = true;
+    }
+
     [When(@"SLD also inform us that the 30% milestone was removed")]
     public async Task WhenSLDAlsoInformUsThatThe30PercentMilestoneWasRemoved()
     {

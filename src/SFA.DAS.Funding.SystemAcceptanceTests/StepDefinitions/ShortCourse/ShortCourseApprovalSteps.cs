@@ -31,6 +31,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         return ApproveShortCourse(employerType, true);
     }
 
+    [Given("the employer (.*) approved the Provider (.*) short course")]
     [When("the employer (.*) approved the Provider (.*) short course")]
     public async Task WhenTheEmployerHasNotApprovedTheProviderBRecord(string action, string provider)
     {
