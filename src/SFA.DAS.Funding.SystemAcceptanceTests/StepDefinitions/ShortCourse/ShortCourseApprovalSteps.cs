@@ -50,9 +50,9 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
     {
         var testData = context.Get<TestData>();
         testData.IsShortCourseApproved = true;
-        var shortCourseOnProgramme = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn].Delivery.OnProgramme.Single();
+        var shortCourseOnProgramme = testData.ShortCourseCreateUpdateRequests[ukprn].Delivery.OnProgramme.Single();
 
-        var apprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, shortCourseOnProgramme, "ABC123", employerType, withTransfer);
+        var apprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, shortCourseOnProgramme, "ABC123", employerType, withTransfer, ukprn);
 
         testData.CommitmentsApprenticeshipCreatedEvent = apprenticeshipCreatedEvent;
 

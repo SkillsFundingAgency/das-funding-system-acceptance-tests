@@ -287,7 +287,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
             var publishedEvent = LearnerDataEventHandler.GetMessage(x => x.ULN == long.Parse(testData.Uln));
             if (publishedEvent != null)
             {
-                Assert.AreEqual(Constants.UkPrn, publishedEvent.UKPRN, "UKPRN does not match");
+                Assert.AreEqual(ukprn, publishedEvent.UKPRN, "UKPRN does not match");
                 Assert.AreEqual(LearnerData.Events.LearningType.ApprenticeshipUnit, publishedEvent.LearningType, "LearningType does not match");
                 //Assert.AreEqual(shortCourseOnProgramme.CourseCode, publishedEvent.StandardCode.ToString(), "StandardCode does not match"); TODO assert this correctly when we build 1607, might be called LARSCode on the event
                 Assert.AreEqual((int)earningsModel!.Episodes.GetEpisode(ukprn, shortCourseOnProgramme.CourseCode).CoursePrice, publishedEvent.TrainingPrice, "TrainingPrice does not match CoursePrice");

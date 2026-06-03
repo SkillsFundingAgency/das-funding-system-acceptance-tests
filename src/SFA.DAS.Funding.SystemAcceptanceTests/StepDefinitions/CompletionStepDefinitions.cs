@@ -137,7 +137,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var actualInstalmentsNumber = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context)?
                 .Episodes
-                .FirstOrDefault()?
+                .SingleOrDefault(x => x.Ukprn == Constants.UkPrn)?
                 .EarningsProfile?.Instalments?
                 .Where(x => x.Type.Contains("Regular"))
                 .Count() ?? 0;

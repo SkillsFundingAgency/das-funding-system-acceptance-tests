@@ -13,7 +13,9 @@ public class ShortCourseChangeOfProviderSteps(ScenarioContext context, LearnerDa
         var testData = context.Get<TestData>();
         long ukPrn = UkprnProvider.GetUkprnForProvider(trainingProvider);
 
-        var createShortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukPrn];
+        testData.ShortCourseCreateUpdateRequests.TryGetValue(
+        ukPrn,
+        out var createShortCourseRequest);
 
         if (createShortCourseRequest == null)
         {
