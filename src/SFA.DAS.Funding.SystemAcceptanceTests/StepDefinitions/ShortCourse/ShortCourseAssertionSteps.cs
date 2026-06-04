@@ -488,16 +488,17 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     {
         if (instalmentState == InstalmentState.DoesNotExist)
             episode.EarningsProfile.Instalments.Should().NotContain(i => i.Type == instalmentType, $"{instalmentType} instalment should not exist for provider {provider}");
+        else
+        {
+            var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(i => i.Type == instalmentType);
 
-        var instalment = episode.EarningsProfile.Instalments.SingleOrDefault(i => i.Type == instalmentType);
+            instalment.Should().NotBeNull($"{instalmentType} should exist {provider}");
 
-        instalment.Should().NotBeNull($"{instalmentType} should exist {provider}");
+            if (instalmentState == InstalmentState.Payable)
+                instalment!.IsPayable.Should().BeTrue($"{instalmentType} should be payable {provider}");
 
-        if(instalmentState == InstalmentState.Payable) 
-            instalment!.IsPayable.Should().BeTrue($"{instalmentType} should be payable {provider}");
-
-        if(instalmentState == InstalmentState.ExistsButNotPayable) 
-            instalment!.IsPayable.Should().BeFalse($"{instalmentType} should not be payable {provider}");
-
+            if (instalmentState == InstalmentState.ExistsButNotPayable)
+                instalment!.IsPayable.Should().BeFalse($"{instalmentType} should not be payable {provider}");
+        }
     }
 }

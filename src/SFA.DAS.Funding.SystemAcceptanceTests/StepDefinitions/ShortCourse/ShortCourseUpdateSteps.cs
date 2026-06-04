@@ -48,6 +48,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
+    [Given(@"SLD inform us that the learner has withdrawn")]
     [When(@"SLD inform us that the learner has withdrawn")]
     public async Task WhenSLDInformUsThatTheLearnerHasWithdrawn()
     {
