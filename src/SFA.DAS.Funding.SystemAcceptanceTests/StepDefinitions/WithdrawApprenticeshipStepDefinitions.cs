@@ -33,7 +33,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         {
             apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
 
-            return apprenticeship.Episodes.First().WithdrawalDate == testData.LastDayOfLearning;
+            return apprenticeship.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).WithdrawalDate == testData.LastDayOfLearning;
         }, $"Incorrect LastDayOfLearning found in the Learning db, Episode table.");
     }
 
@@ -49,7 +49,9 @@ internal class WithdrawApprenticeshipStepDefinitions
             apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
             var earnings  = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
-            return apprenticeship.Episodes.First().WithdrawalDate == withdrawalDate.Value && earnings.Episodes.First().WithdrawalDate == withdrawalDate.Value;
+            return 
+                apprenticeship.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).WithdrawalDate == withdrawalDate.Value && 
+                earnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).WithdrawalDate == withdrawalDate.Value;
         }, $"LastDayOfLearning did not change to {withdrawalDate} in learning db episode table");
     }
 
@@ -74,7 +76,7 @@ internal class WithdrawApprenticeshipStepDefinitions
         Assert.AreEqual(expectedInstalmentsNumber, testData.ApprenticeshipEarningsRecalculatedEvent.DeliveryPeriods.Count, "Unexpected number of instalments in earnings recalculated event");
 
         var actualInstalmentsNumber = testData.EarningsApprenticeshipModel.Episodes
-            .FirstOrDefault()?
+            .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?
             .EarningsProfile?.Instalments?
             .Where(x => x.Type.Contains("Regular"))
             .Count() ?? 0;
@@ -90,7 +92,7 @@ internal class WithdrawApprenticeshipStepDefinitions
 
         if (deliveryPeriod != "null")
         {
-            bool isValidEarningInDb = testData.EarningsApprenticeshipModel?.Episodes?.FirstOrDefault()?.EarningsProfile?.Instalments?
+            bool isValidEarningInDb = testData.EarningsApprenticeshipModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments?
                .All(i => i.AcademicYear < academicYear.Value
                || (i.AcademicYear == academicYear.Value && i.DeliveryPeriod <= Convert.ToInt16(deliveryPeriod))) ?? true;
 

@@ -163,12 +163,12 @@ public class TestRunHooks
     private static void PurgeAllDataForTestUkprn()
     {
         var learningSqlClient = new LearningSqlClient();
-        learningSqlClient.DeleteAllDataForUkprn(Constants.UkPrn);
+        learningSqlClient.DeleteAllDataForUkprn();
 
         var earningsSqlClient = new EarningsSqlClient();
-        earningsSqlClient.DeleteAllDataForUkprn(Constants.UkPrn);
+        earningsSqlClient.DeleteAllDataForUkprn();
 
         var learnerDataSqlClient = new LearnerDataSqlClient();
-        learnerDataSqlClient.DeleteAllDataForUkprn(Constants.UkPrn);
+        learnerDataSqlClient.DeleteAllDataForUkprn();
     }
 }

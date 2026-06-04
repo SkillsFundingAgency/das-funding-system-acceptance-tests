@@ -10,9 +10,9 @@
             _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
         }
 
-        public void DeleteAllDataForUkprn(long ukprn)
+        public void DeleteAllDataForUkprn()
         {
-            _sqlServerClient.Execute($"DELETE FROM [dbo].[LearnerData] where [Ukprn] = {ukprn}");
+            _sqlServerClient.Execute($"DELETE FROM [dbo].[LearnerData] where [Ukprn] in ({Constants.UkPrn}, {Constants.AlternativeUkPrn})");
         }
 
         public LearnerData? GetLearnerData(long uln)

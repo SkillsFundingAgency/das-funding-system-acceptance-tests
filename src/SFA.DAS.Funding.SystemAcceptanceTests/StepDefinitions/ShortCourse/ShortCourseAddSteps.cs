@@ -1,7 +1,6 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
-using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
@@ -43,7 +42,7 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
     public async Task SLDInformUsThatTheSameLearnerHasBeenReinstatedByTheTrainingProvider()
     {
         var testData = context.Get<TestData>();
-        await AddShortCourse(testData.ShortCourseLearnerData.Delivery.OnProgramme.FirstOrDefault().StartDate);
+        await AddShortCourse(testData.ShortCourseCreateUpdateRequests[Constants.UkPrn].Delivery.OnProgramme.First().StartDate);
     }
 
     [Given(@"SLD informs us of a new learner with a short course starting on (.*) and ending on (.*)")]
@@ -70,18 +69,18 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
             .WithEndDate(endDate.Value)
             .Build();
 
-        context.Set(shortCourseRequest);
+        testData.ShortCourseCreateUpdateRequests[Constants.UkPrn] = shortCourseRequest;
 
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
 
-        testData.ShortCourseLearnerData = shortCourseRequest;
+        testData.ShortCourseCreateUpdateRequests[Constants.UkPrn] = shortCourseRequest;
     }
 
     [Given(@"SLD informs us of a the same new short course learner again")]
     public async Task GivenTheSameNewShortCourseLearner()
     {
-        var shortCourseRequest = context.Get<LearnerDataOuterApiClient.ShortCourseRequest>();
-        await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
+        var testData = context.Get<TestData>();
+        await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, testData.ShortCourseCreateUpdateRequests[Constants.UkPrn]!);
     }
 
     [When(@"SLD informs us of a change to the short course dates pre approval")]
@@ -89,7 +88,7 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
     {
         var testData = context.Get<TestData>();
 
-        var newStartDate = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single().StartDate.AddMonths(2);
+        var newStartDate = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn].Delivery.OnProgramme.Single().StartDate.AddMonths(2);
         var newEndDate = newStartDate.AddMonths(4);
 
         var shortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
@@ -99,7 +98,7 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
 
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
 
-        testData.ShortCourseLearnerData = shortCourseRequest;
+        testData.ShortCourseCreateUpdateRequests[Constants.UkPrn] = shortCourseRequest;
     }
 
     [When(@"SLD informs us of a short course for the learner starting on (.*) with updated learner details")]
@@ -124,7 +123,7 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
 
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
 
-        testData.ShortCourseLearnerData = shortCourseRequest;
+        testData.ShortCourseCreateUpdateRequests[Constants.UkPrn] = shortCourseRequest;
     }
 
     [Given(@"SLD informs us the short course learning was completed on (.*)")]
@@ -133,7 +132,7 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
     {
         var testData = context.Get<TestData>();
 
-        var shortCourseRequest = testData.ShortCourseLearnerData;
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
         shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = completionDate.Value;
 
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
@@ -152,7 +151,7 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
     public async Task WhenSLDInformsUsTheShortCourseChangesProvider()
     {
         var testData = context.Get<TestData>();
-        var shortCourseRequest = testData.ShortCourseLearnerData;
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
 
         var response = await learnerDataOuterApiHelper.AddShortCourseLearnerDataWithResponse(Constants.AlternativeUkPrn, shortCourseRequest);
         context.Set(response, "ShortCourseChangeProviderResponse");
@@ -185,7 +184,7 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
     public async Task GivenTheTrainingProviderRecordedThatThe30PercentMilestoneHasBeenReachedPreApproval()
     {
         var testData = context.Get<TestData>();
-        var shortCourseRequest = testData.ShortCourseLearnerData;
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
         
         var builder = new ShortCourseLearnerDataBuilder(testData)
             .WithStartDate(shortCourseRequest.Delivery.OnProgramme.Single().StartDate)
@@ -194,7 +193,7 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
 
         var updatedRequest = builder.Build();
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, updatedRequest);
-        testData.ShortCourseLearnerData = updatedRequest;
+        testData.ShortCourseCreateUpdateRequests[Constants.UkPrn] = updatedRequest;
     }
 
     [Given(@"the training provider also recorded that the learner completed pre-approval")]
@@ -202,16 +201,16 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
     public async Task GivenTheTrainingProviderAlsoRecordedThatTheLearnerCompletedPreApproval()
     {
         var testData = context.Get<TestData>();
-        var shortCourseRequest = testData.ShortCourseLearnerData;
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
 
         var builder = new ShortCourseLearnerDataBuilder(testData)
             .WithStartDate(shortCourseRequest.Delivery.OnProgramme.Single().StartDate)
             .WithEndDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate)
-            .WithCompletionDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate)
-            .WithMilestone(LearnerDataOuterApiClient.Milestone.LearningComplete);
+            .WithMilestone(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete)
+            .WithCompletionDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate);
 
         var updatedRequest = builder.Build();
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, updatedRequest);
-        testData.ShortCourseLearnerData = updatedRequest;
+        testData.ShortCourseCreateUpdateRequests[Constants.UkPrn] = updatedRequest;
     }
 }

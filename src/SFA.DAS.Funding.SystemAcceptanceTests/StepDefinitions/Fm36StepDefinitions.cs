@@ -162,18 +162,20 @@ public class Fm36StepDefinitions
             throw new Exception($"No FM36 data found for ULN {apprenticeshipCreatedEvent.Uln}");
         }
 
+        var earningEpisode = earnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
+        var learningEpisode = apprenticeship.Episodes.GetEpisode(apprenticeshipCreatedEvent);
+
         var expectedPriceEpisodeIdentifier = "25-" + apprenticeshipCreatedEvent.TrainingCode + "-" +
                                              apprenticeshipCreatedEvent.ActualStartDate?.ToString("dd/MM/yyyy");
         var priceEpisodeInstalmentsThisPeriod = (DateTime.Today >= apprenticeshipCreatedEvent.ActualStartDate &&
                                                  DateTime.Today <= apprenticeshipCreatedEvent.EndDate)
             ? 1
             : 0;
-        var totalPrice = earnings?.Episodes.FirstOrDefault()?.Prices.FirstOrDefault()?.AgreedPrice;
-        var onProgPayment = earnings?.Episodes.FirstOrDefault()?.EarningsProfile.OnProgramTotal;
-        var completionPayment = earnings?.Episodes.FirstOrDefault()?.EarningsProfile.CompletionPayment;
-        var fundingBandMax = apprenticeship.Episodes.First().Prices.FirstOrDefault()?.FundingBandMaximum;
-        var instalmentAmount =
-            earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.FirstOrDefault()?.Amount;
+        var totalPrice = earningEpisode.Prices.FirstOrDefault()?.AgreedPrice;
+        var onProgPayment = earningEpisode.EarningsProfile.OnProgramTotal;
+        var completionPayment = earningEpisode.EarningsProfile.CompletionPayment;
+        var fundingBandMax = learningEpisode.Prices.FirstOrDefault()?.FundingBandMaximum;
+        var instalmentAmount = earningEpisode?.EarningsProfile.Instalments.FirstOrDefault()?.Amount;
         var currentPeriod = TableExtensions.Period[DateTime.Now.ToString("MMMM")];
 
         var daysInLearningThisAY = 1 + (TokenisableDateTime.FromString("currentAY-07-31").Value - apprenticeshipCreatedEvent.StartDate.Date).Days;
@@ -183,10 +185,10 @@ public class Fm36StepDefinitions
         var ageAtStartOfApprenticeship = CalculateAgeAtStart(apprenticeshipCreatedEvent.StartDate, apprenticeshipCreatedEvent.DateOfBirth);
         var fundLineType = ageAtStartOfApprenticeship > 18 ? "19+ Apprenticeship (Employer on App Service)" : "16-18 Apprenticeship (Employer on App Service)";
 
-        var firstIncentivePeriod = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DeliveryPeriod;
-        var secondIncentivePeriod = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DeliveryPeriod;
-        var firstIncentiveThresholdDate = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DueDate;
-        var secondIncentiveThresholdDate = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DueDate;
+        var firstIncentivePeriod = earningEpisode?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DeliveryPeriod;
+        var secondIncentivePeriod = earningEpisode?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DeliveryPeriod;
+        var firstIncentiveThresholdDate = earningEpisode?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DueDate;
+        var secondIncentiveThresholdDate = earningEpisode?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DueDate;
 
 
         Assert.Multiple(() =>
@@ -214,7 +216,7 @@ public class Fm36StepDefinitions
             Assert.AreEqual(null, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeActualEndDate, "Unexpected PriceEpisodeActualEndDate found!");
             Assert.AreEqual(totalPrice, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeTotalTNPPrice, "Unexpected PriceEpisodeTotalTNPPrice value found!");
             Assert.AreEqual(EarningsFM36Constants.PriceEpisodeUpperLimitAdjustment, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeUpperLimitAdjustment, "Unexpected PriceEpisodeUpperLimitAdjustment value found!");
-            Assert.AreEqual(earnings?.Episodes.FirstOrDefault()?.EarningsProfile.Instalments.Count, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodePlannedInstalments, "Unexpected PriceEpisodePlannedInstalments value found!");
+            Assert.AreEqual(earnings?.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile.Instalments.Count, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodePlannedInstalments, "Unexpected PriceEpisodePlannedInstalments value found!");
             Assert.AreEqual(0, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeActualInstalments, "Unexpected PriceEpisodeActualInstalments value found!");
             Assert.AreEqual(priceEpisodeInstalmentsThisPeriod, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeInstalmentsThisPeriod, "Unexpected PriceEpisodeInstalmentsThisPeriod value found!");
             Assert.AreEqual(completionPayment, fm36Learner.PriceEpisodes.First().PriceEpisodeValues.PriceEpisodeCompletionElement, "Unexpected PriceEpisodeCompletionElement value found!");
@@ -742,11 +744,12 @@ public class Fm36StepDefinitions
         // get your learner data 
 
         var fm36Learner = testData.FM36Learners.Find(x => x.ULN.ToString() == testData.CommitmentsApprenticeshipCreatedEvent.Uln);
+        var earningsEpisode = earnings?.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
 
-        var firstIncentivePeriod = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DeliveryPeriod;
-        var firstIncentiveThresholdDate = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DueDate;
-        var secondIncentivePeriod = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DeliveryPeriod;
-        var secondIncentiveThresholdDate = earnings?.Episodes.FirstOrDefault()?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DueDate;
+        var firstIncentivePeriod = earningsEpisode?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DeliveryPeriod;
+        var firstIncentiveThresholdDate = earningsEpisode?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MinBy(x => x.DueDate)?.DueDate;
+        var secondIncentivePeriod = earningsEpisode?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DeliveryPeriod;
+        var secondIncentiveThresholdDate = earningsEpisode?.AdditionalPayments.Where(x => x.AdditionalPaymentType == AdditionalPaymentType.EmployerIncentive)?.MaxBy(x => x.DueDate)?.DueDate;
 
         var expectedSecondIncentive = secondIncentivePeriod != firstIncentivePeriod;
 

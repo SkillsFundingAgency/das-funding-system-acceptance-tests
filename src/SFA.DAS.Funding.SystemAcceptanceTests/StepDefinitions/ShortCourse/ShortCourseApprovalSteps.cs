@@ -31,13 +31,29 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         return ApproveShortCourse(employerType, true);
     }
 
-    private async Task ApproveShortCourse(ApprenticeshipEmployerType employerType, bool withTransfer = false)
+    [Given("the employer (.*) approved the Provider (.*) short course")]
+    [When("the employer (.*) approved the Provider (.*) short course")]
+    public async Task WhenTheEmployerHasNotApprovedTheProviderBRecord(string action, string provider)
+    {
+
+        if (action == "has not")
+            return;
+
+        if (action != "has")
+            throw new Exception($"Invalid action - {action}");
+
+        long ukPrn = UkprnProvider.GetUkprnForProvider(provider);
+
+        await ApproveShortCourse(ApprenticeshipEmployerType.Levy, ukprn: ukPrn);
+    }
+
+    private async Task ApproveShortCourse(ApprenticeshipEmployerType employerType, bool withTransfer = false, long ukprn = Constants.UkPrn)
     {
         var testData = context.Get<TestData>();
         testData.IsShortCourseApproved = true;
-        var shortCourseOnProgramme = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single();
+        var shortCourseOnProgramme = testData.ShortCourseCreateUpdateRequests[ukprn].Delivery.OnProgramme.Single();
 
-        var apprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, shortCourseOnProgramme, "ABC123", employerType, withTransfer);
+        var apprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, shortCourseOnProgramme, "ABC123", employerType, withTransfer, ukprn);
 
         testData.CommitmentsApprenticeshipCreatedEvent = apprenticeshipCreatedEvent;
 
@@ -47,7 +63,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         {
             var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
 
-            if ((earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile.IsApproved).GetValueOrDefault())
+            if ((earningsModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile.IsApproved).GetValueOrDefault())
             {
                 testData.ShortCourseLearningKey = earningsModel.LearningKey;
                 return true;
@@ -83,8 +99,11 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
     {
         var testData = context.Get<TestData>();
         testData.IsShortCourseApproved = true;
-        
-        var firstCourseOnProgramme = testData.ShortCourseLearnerData.Delivery.OnProgramme.Single();
+        var ukprn = Constants.UkPrn;
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukprn];
+        var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
+
+        var firstCourseOnProgramme = shortCourseRequest.Delivery.OnProgramme.Single();
         var firstApprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, firstCourseOnProgramme, "ABC123");
         await TestServiceBus.Das.SendApprenticeshipApprovedMessage(firstApprenticeshipCreatedEvent);
 
@@ -97,7 +116,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         {
             var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
 
-            if ((earningsModel?.Episodes?.FirstOrDefault()?.EarningsProfile.IsApproved).GetValueOrDefault())
+            if ((earningsModel?.Episodes?.GetEpisode(ukprn, courseCode)?.EarningsProfile.IsApproved).GetValueOrDefault())
             {
                 testData.ShortCourseLearningKey = earningsModel.LearningKey;
                 return true;
@@ -107,9 +126,13 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         }, "Failed to find approved short course earnings entity.");
     }
 
-    private CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent CreateApprenticeshipCreatedEvent(TestData testData, 
-        Helpers.Http.LearnerDataOuterApiClient.ShortCourseOnProgramme shortCourseOnProgramme, string apprenticshipHashedId, 
-        ApprenticeshipEmployerType employerType = ApprenticeshipEmployerType.Levy, bool isTransfer = false)
+    private CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent CreateApprenticeshipCreatedEvent(
+        TestData testData, 
+        Helpers.Http.LearnerDataOuterApiClient.ShortCourseOnProgramme shortCourseOnProgramme, 
+        string apprenticshipHashedId, 
+        ApprenticeshipEmployerType employerType = ApprenticeshipEmployerType.Levy, 
+        bool isTransfer = false,
+        long ukprn = Constants.UkPrn)
     {
         return new CommitmentsV2.Messages.Events.ApprenticeshipCreatedEvent
         {
@@ -133,7 +156,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
             FirstName = "Short",
             LastName = "CourseLearner",
             DateOfBirth = new DateTime(2000, 1, 1),
-            ProviderId = Constants.UkPrn,
+            ProviderId = ukprn,
             LegalEntityName = "Test Legal Entity",
             IsOnFlexiPaymentPilot = true,
             LearningType = CommitmentsV2.Messages.Events.LearningType.ApprenticeshipUnit,

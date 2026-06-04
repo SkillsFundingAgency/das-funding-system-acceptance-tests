@@ -12,7 +12,7 @@ Scenario: Milestone Earnings - completion reached
     Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the short course is approved
     When the training provider recorded that the learner completed
-    Then the 30% milestone earning is not generated and the completion earning is generated
+    Then the 30% milestone earning is generated and the completion earning is generated
 
 @regression
 Scenario: Milestone Earnings - 30% milestone and completion reached

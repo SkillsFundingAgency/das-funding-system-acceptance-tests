@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -39,15 +40,15 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
         await WaitHelper.WaitForIt(() =>
         {
             earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
-            return !testData.IsLearningSupportAdded || earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
+            return !testData.IsLearningSupportAdded || earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
         var additionalPayments = earningsApprenticeshipModel
             .Episodes
-            .SingleOrDefault()
+            .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
             ?.AdditionalPayments;
 
-        testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfile.EarningsProfileId;
+        testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfile.EarningsProfileId;
 
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
@@ -74,17 +75,18 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
     [Then(@"no learning support earnings are generated")]
     public async Task ThenNoLearningSupportEarningsAreGenerated()
     {
+        var testData = context.Get<TestData>();
         EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
 
         await WaitHelper.WaitForIt(() =>
         {
             earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
-            return earningsApprenticeshipModel.Episodes.SingleOrDefault().EarningsProfileHistory.Any();
+            return earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
         var additionalPayments = earningsApprenticeshipModel
             .Episodes
-            .SingleOrDefault()
+            .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
             ?.AdditionalPayments;
 
         additionalPayments.Should().NotContain(x => x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport);

@@ -51,7 +51,6 @@ public class TestData
     internal List<CalculateOnProgrammePayment> CalculatedOnProgrammePaymentList { get; set; }
     internal LearnerDataOuterApiClient.LearnerDataRequest? LearnerData { get; set; }
     internal LearnerDataOuterApiClient.UpdateLearnerRequest? UpdateLearnerData { get; set; }
-    internal LearnerDataOuterApiClient.ShortCourseRequest? ShortCourseLearnerData { get; set; }
     internal LearnerDataOuterApiClient.GetLearnerResponse? LearnersOnService { get; set; }
     internal LearnerDataOuterApiClient.GetLearnerResponse? ShortCourseLearnersResponse { get; set; }
     internal LearnerDataOuterApiClient.GetShortCourseEarningsResponse? ShortCourseEarningsResponse { get; set; }
@@ -65,9 +64,11 @@ public class TestData
     internal HttpResponseMessage? Fm36HttpResponseMessage { get; set; }
     internal CalculateGrowthAndSkillsPayments? CalculateGrowthAndSkillsPaymentsCommand { get; set; }
 
+    internal Dictionary<long, LearnerDataOuterApiClient.ShortCourseRequest> ShortCourseCreateUpdateRequests { get; set; }
     public TestData(string uln)
     {
         Uln = uln;
+        ShortCourseCreateUpdateRequests = new Dictionary<long, LearnerDataOuterApiClient.ShortCourseRequest>();
     }
 }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

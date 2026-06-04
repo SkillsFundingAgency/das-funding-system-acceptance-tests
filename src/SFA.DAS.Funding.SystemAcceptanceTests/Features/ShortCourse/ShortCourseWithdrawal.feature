@@ -49,7 +49,7 @@ Scenario: Learner recorded as “Completed” and subsequently withdrawn without
     Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the short course is approved
     And the training provider also recorded that the learner completed
-    When SLD inform us that the learner has withdrawn
+    When SLD inform us that the learner has withdrawn with both milestones removed
     Then remove the completion earning
     And remove the 30% milestone earning
     And inform approvals that the learner has been withdrawn from the short course

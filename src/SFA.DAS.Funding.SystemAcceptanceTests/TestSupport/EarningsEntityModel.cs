@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Serialization;
+using SFA.DAS.CommitmentsV2.Messages.Events;
 using SFA.DAS.Learning.Types;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -127,5 +127,37 @@ public enum AdditionalPaymentType
     EmployerIncentive,
     LearningSupport,
     MathsAndEnglish
+}
+
+public static class EarningsEpisodeModelExtensions
+{
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static EpisodeModel Single(this IEnumerable<EpisodeModel> episodes) { throw new InvalidOperationException(); }
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static EpisodeModel First(this IEnumerable<EpisodeModel> episodes) { throw new InvalidOperationException(); }
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static EpisodeModel SingleOrDefault(this IEnumerable<EpisodeModel> episodes) { throw new InvalidOperationException(); }
+
+    [Obsolete("Use GetEpisode(...) instead", true)]
+    public static EpisodeModel FirstOrDefault(this IEnumerable<EpisodeModel> episodes) { throw new InvalidOperationException(); }
+
+    public static EpisodeModel GetEpisode(this IEnumerable<EpisodeModel> episodes, long ukprn, string trainingCode)
+    {
+        foreach (var episode in episodes)
+        {
+            if (episode.Ukprn == ukprn && episode.TrainingCode.Trim() == trainingCode)
+            {
+                return episode;
+            }
+        }
+        throw new Exception("Matching episode not found");
+    }
+
+    public static EpisodeModel GetEpisode(this IEnumerable<EpisodeModel> episodes, ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
+    {
+        return episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
+    }
 }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
