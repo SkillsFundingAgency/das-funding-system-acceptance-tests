@@ -1,6 +1,8 @@
 ﻿Feature: ShortCourseChangeOfProvider
 
-A short summary of the feature
+As the DfE
+I want to recalculate earnings when a learner changes training provider and stays on the same course
+So that earnings are calculated accurately and meet the funding rules 
 
 Scenario: Inform approvals when the same learner/course is created by different training providers
 	Given that a “short course” learner has been created by Provider A
