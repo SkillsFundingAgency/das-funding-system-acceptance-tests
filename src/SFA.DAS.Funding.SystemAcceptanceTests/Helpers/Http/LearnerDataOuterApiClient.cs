@@ -106,7 +106,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public async Task<GetProviderRefDataResponse> GetProviderRefData(long ukprn)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/providers/{ukprn}/refdata");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/reference-data/providers/{ukprn}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
