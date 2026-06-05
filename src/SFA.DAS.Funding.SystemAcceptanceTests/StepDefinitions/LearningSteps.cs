@@ -45,7 +45,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             var actualRefData = testData.ProviderRefData;
 
-            Assert.IsNotNull(actualRefData);
+            if (actualRefData is null)
+            {
+                Assert.Fail("Provider reference data was null");
+                return;
+            }
+
             Assert.AreEqual(Constants.UkPrn, actualRefData.Ukprn, "Ukprn does not match");
             Assert.AreEqual("Main", actualRefData.Type, "Type does not match");
             Assert.AreEqual("Active", actualRefData.Status, "Status does not match");
