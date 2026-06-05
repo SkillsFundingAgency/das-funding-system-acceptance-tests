@@ -87,6 +87,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             return await _apiClient.GetLearners(ukprn, academicYear);
         }
 
+        public async Task<GetProviderRefDataResponse> GetProviderRefData(long ukprn)
+        {
+            return await _apiClient.GetProviderRefData(ukprn);
+        }
+
         public async Task UpdateLearning(Guid learningKey, Action<LearnerDataBuilder> configure)
         {
             var builder = new LearnerDataBuilder(_context.Get<TestData>());

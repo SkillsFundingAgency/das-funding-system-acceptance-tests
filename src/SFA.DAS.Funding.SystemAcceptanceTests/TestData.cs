@@ -39,7 +39,7 @@ public class TestData
     internal DateTime NewEndDate { get; set; }
     internal DateTime? PlannedEndDate { get; set; }
     internal DateTime? OriginalStartDate { get; set; }
-    internal List<TestSupport.Payments> PaymentDbRecords { get; set; } 
+    internal List<TestSupport.Payments> PaymentDbRecords { get; set; }
     internal List<FM36Learner> FM36Learners { get; set; }
     internal EarningsApprenticeshipModel? EarningsApprenticeshipModel { get; set; }
     internal PaymentsApprenticeshipModel? PaymentsApprenticeshipModel { get; set; }
@@ -54,6 +54,7 @@ public class TestData
     internal LearnerDataOuterApiClient.GetLearnerResponse? LearnersOnService { get; set; }
     internal LearnerDataOuterApiClient.GetLearnerResponse? ShortCourseLearnersResponse { get; set; }
     internal LearnerDataOuterApiClient.GetShortCourseEarningsResponse? ShortCourseEarningsResponse { get; set; }
+    internal LearnerDataOuterApiClient.GetProviderRefDataResponse? ProviderRefData { get; set; }
     internal LearnerDataBuilder? LearnerDataBuilder { get; set; }
     internal EndDateChangedEvent EndDateChangedEvent { get; set; }
     internal LearningWithdrawnEvent LearningWithdrawnEvent { get; set; }

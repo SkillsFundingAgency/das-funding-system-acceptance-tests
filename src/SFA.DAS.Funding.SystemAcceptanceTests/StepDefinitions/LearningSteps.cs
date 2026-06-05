@@ -38,6 +38,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             Assert.AreEqual(expectedLearners.Count, actualLearners.Total, "Total count does not match");
         }
 
+        [Then("all provider reference data are returned in the response")]
+        public async Task AllProviderReferenceDataAreReturned()
+        {
+            var testData = context.Get<TestData>();
+
+            var actualRefData = testData.ProviderRefData;
+
+            Assert.IsNotNull(actualRefData);
+            Assert.AreEqual(Constants.UkPrn, actualRefData.Ukprn, "Ukprn does not match");
+            Assert.AreEqual("Main", actualRefData.Type, "Type does not match");
+            Assert.AreEqual("Active", actualRefData.Status, "Status does not match");
+        }
+
         [Then("the history of old learning is maintained")]
         public async Task HistoryOfOldLearningIsMaintained()
         {
