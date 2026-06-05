@@ -42,6 +42,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task AllProviderReferenceDataAreReturned()
         {
             var testData = context.Get<TestData>();
+            var Ukprn = 10000028;
 
             var actualRefData = testData.ProviderRefData;
 
@@ -51,7 +52,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 return;
             }
 
-            Assert.AreEqual(Constants.UkPrn, actualRefData.Ukprn, "Ukprn does not match");
+            Assert.AreEqual(Ukprn, actualRefData.Ukprn, "Ukprn does not match");
             Assert.AreEqual("Main", actualRefData.Type, "Type does not match");
             Assert.AreEqual("Active", actualRefData.Status, "Status does not match");
         }

@@ -64,7 +64,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task SLDWantToKnowTheProviderReferenceDataForAProvider()
         {
             var testData = context.Get<TestData>();
-            var providerRefData = await learnerDataOuterApiHelper.GetProviderRefData(Constants.UkPrn);
+            var Ukprn = 10000028;
+            var providerRefData = await learnerDataOuterApiHelper.GetProviderRefData(Ukprn);
 
             testData.ProviderRefData = providerRefData;
             context.Set(testData);
