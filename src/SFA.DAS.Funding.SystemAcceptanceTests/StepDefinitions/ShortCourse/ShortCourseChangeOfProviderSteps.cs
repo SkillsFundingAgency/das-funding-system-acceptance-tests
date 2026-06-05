@@ -34,6 +34,35 @@ public class ShortCourseChangeOfProviderSteps(ScenarioContext context, LearnerDa
         testData.ShortCourseCreateUpdateRequests[ukPrn] = createShortCourseRequest;
     }
 
+    [Given("that a “short course” learner has been created with 30% milestone by Provider (.*)")]
+    [When("that a “short course” learner has been created with 30% milestone by Provider (.*)")]
+    public async Task ShortCourseLearnerHasBeenCreatedByProviderWithThirtyPercentMilestone(string trainingProvider)
+    {
+        var testData = context.Get<TestData>();
+        long ukPrn = UkprnProvider.GetUkprnForProvider(trainingProvider);
+
+        testData.ShortCourseCreateUpdateRequests.TryGetValue(
+        ukPrn,
+        out var createShortCourseRequest);
+
+        if (createShortCourseRequest == null)
+        {
+            createShortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
+                .WithStartDate(DateTime.Now.AddMonths(-2))
+                .WithEndDate(DateTime.Now.AddMonths(2))
+                .WithMilestone(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete)
+                .Build();
+        }
+        else
+        {
+            createShortCourseRequest.Delivery.OnProgramme.Single().StartDate = DateTime.Now;
+        }
+
+        await learnerDataOuterApiHelper.AddShortCourseLearnerData(ukPrn, createShortCourseRequest);
+
+        testData.ShortCourseCreateUpdateRequests[ukPrn] = createShortCourseRequest;
+    }
+
     [Given("the learner has not completed the course with Provider (.*)")]
     public void GivenTheLearnerHasNotCompletedTheCourseWithProvider(string trainingProvider)
     {
