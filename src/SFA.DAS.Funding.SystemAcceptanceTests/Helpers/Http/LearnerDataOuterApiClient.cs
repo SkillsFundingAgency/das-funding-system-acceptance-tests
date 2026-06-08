@@ -418,7 +418,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class SupportedCourses
         {
-            public string CourseType { get; set; } = "Apprenticeship";
+            public string CourseType { get; set; } = "";
             public List<Courses>? Courses { get; set; } = [];
         }
 
@@ -434,9 +434,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public int Ukprn { get; set; }
             public string Type { get; set; } = "";
             public string Status { get; set; } = "";
-            public int TotalPages { get; set; }
             public List<Employers>? Employers { get; set; } = [];
-            public SupportedCourses? SupportedCourses { get; set; }
+            public List<SupportedCourses>? SupportedCourses { get; set; } = [];
         }
 
         public class StubLearner
