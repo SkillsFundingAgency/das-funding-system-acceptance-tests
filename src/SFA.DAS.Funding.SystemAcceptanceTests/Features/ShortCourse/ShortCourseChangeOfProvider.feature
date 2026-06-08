@@ -97,3 +97,19 @@ Scenario: Learner changes provider, Provider A: 30% earning only, Provider B att
 	When SLD requests short course earnings data for provider B and collection period currentAY-01
 	Then the short course learner is returned in the earnings response without duplicates
 	And the short course learner is returned as unapproved in the earnings response
+
+# FLP-1809 - AC2
+Scenario: Learner changes provider, Provider A: 30% earning only, Provider B is approved but no milestones claimed - calculate approved provisional earnings
+	Given that a “short course” learner has been created by Provider A
+	And the employer has approved the Provider A short course
+	And Provider A has recorded 30% isPayable and completion isNotPayable
+	And SLD inform us that the learner has withdrawn
+	When that a “short course” learner has been created by Provider B
+	And the employer has approved the Provider B short course
+	Then earnings instalments are calculated as follows
+		| Provider | ThirtyPercent | Completion          |
+		| A        | Payable       | DoesNotExist        |
+		| B        | DoesNotExist  | ExistsButNotPayable |
+	When SLD requests short course earnings data for provider B and collection period currentAY-01
+	Then the short course learner is returned in the earnings response without duplicates
+	And the short course learner is returned as approved in the earnings response
