@@ -23,6 +23,7 @@ Scenario: Withdrawal is recorded; recalc earnings
 	And the expected number of earnings instalments after withdrawal are <new_num_of_instalments>
 	And the earnings after the delivery period <delivery_period_string> and academic year <academic_year_string> are soft deleted
 	And a learning withdrawn event is published to approvals with last day of learning as <last_day_of_delivery>
+	And a withdrawal reason 0 is sent to approvals in the learning withdrawn event
 
 
 Examples:

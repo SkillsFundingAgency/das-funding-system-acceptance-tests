@@ -21,6 +21,7 @@ Scenario: Learner withdrawn - 30% milestone reached (and retained despite the wi
     Then remove the remaining completion earning
     And retain the 30% milestone earning
     And inform approvals that the learner has been withdrawn from the short course
+    And a withdrawal reason 0 is sent to approvals in the learning withdrawn event
     And inform payments that the learner has been withdrawn from the short course
 
 @regression
