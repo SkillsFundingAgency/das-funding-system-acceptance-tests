@@ -7,7 +7,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 
 [Binding]
-public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient earningsSqlClient)
+public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient earningsSqlClient, LearningSqlClient learningSqlClient)
 {
     private Fixture _fixture = new Fixture();
 
@@ -65,7 +65,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
 
             if ((earningsModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile.IsApproved).GetValueOrDefault())
             {
-                testData.ShortCourseLearningKey = earningsModel.LearningKey;
+                testData.ShortCourseLearnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln).LearnerKey;
                 return true;
             }
 
@@ -86,7 +86,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
             if (earningsModel != null)
             {
                 // Cache the learning key without approving so it's available in the assertions
-                testData.ShortCourseLearningKey = earningsModel.LearningKey;
+                testData.ShortCourseLearnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln).LearnerKey;
                 return true;
             }
 
@@ -118,7 +118,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
 
             if ((earningsModel?.Episodes?.GetEpisode(ukprn, courseCode)?.EarningsProfile.IsApproved).GetValueOrDefault())
             {
-                testData.ShortCourseLearningKey = earningsModel.LearningKey;
+                testData.ShortCourseLearnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln).LearnerKey;
                 return true;
             }
 
