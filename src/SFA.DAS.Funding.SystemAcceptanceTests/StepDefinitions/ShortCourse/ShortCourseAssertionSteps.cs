@@ -239,7 +239,12 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     {
         var testData = context.Get<TestData>();
 
-        var learnerCount = testData.ShortCourseEarningsResponse.Learners.Count(x => x.LearningKey == testData.ShortCourseLearningKey.ToString());
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
+        var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
+
+        var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).Episodes.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+
+        var learnerCount = testData.ShortCourseEarningsResponse.Learners.Count(x => x.LearningKey == shortCourseLearningKey.ToString());
         Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the earnings response for this collection period, but found a different count.");
     }
 
@@ -250,7 +255,13 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
             throw new Exception ($"Invalid action - {action}");
 
         var testData = context.Get<TestData>();
-        var learner = testData.ShortCourseEarningsResponse?.Learners.Where(x => x.LearningKey == testData.ShortCourseLearningKey.ToString()).Single();
+
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
+        var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
+
+        var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.Episodes.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+
+        var learner = testData.ShortCourseEarningsResponse?.Learners.Where(x => x.LearningKey == shortCourseLearningKey.ToString()).FirstOrDefault();
 
         if (action == "approved")
             Assert.IsTrue(learner?.Courses.FirstOrDefault()?.Approved, "Short Course earnings are not set as approved!");
@@ -263,7 +274,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     {
         var testData = context.Get<TestData>();
 
-        var learner = testData.ShortCourseEarningsResponse.Learners.SingleOrDefault(x => x.LearningKey == testData.ShortCourseLearningKey.ToString());
+        var learner = testData.ShortCourseEarningsResponse.Learners.SingleOrDefault(x => x.LearningKey == testData.ShortCourseLearnerKey.ToString());
         Assert.IsNull(learner, "Short course learner was unexpectedly found in the earnings response for this collection period.");
     }
 
@@ -271,11 +282,16 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     public void ThenTheFundingLineTypeForTheShortCourseIs(string expectedFundingLineType)
     {
         var testData = context.Get<TestData>();
-        
-        var learnerCount = testData.ShortCourseEarningsResponse?.Learners?.Count(x => x.LearningKey == testData.ShortCourseLearningKey.ToString()) ?? 0;
+
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
+        var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
+
+        var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).Episodes.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+
+        var learnerCount = testData.ShortCourseEarningsResponse?.Learners?.Count(x => x.LearningKey == shortCourseLearningKey.ToString()) ?? 0;
         Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the earnings response but found a different count.");
 
-        var learner = testData.ShortCourseEarningsResponse.Learners.Single(x => x.LearningKey == testData.ShortCourseLearningKey.ToString());
+        var learner = testData.ShortCourseEarningsResponse.Learners.Single(x => x.LearningKey == shortCourseLearningKey.ToString());
         Assert.AreEqual(expectedFundingLineType, learner.Courses.First().FundingLineType, "Funding Line Type does not match expected value.");
     }
 
@@ -383,7 +399,11 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var testData = context.Get<TestData>();
 
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
-        await context.ReceiveLearningWithdrawnEvent(testData.ShortCourseLearningKey);
+        var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
+
+        var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).Episodes.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+
+        await context.ReceiveLearningWithdrawnEvent(shortCourseLearningKey);
 
         var expectedLastDayOfLearning = shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalDate;
 

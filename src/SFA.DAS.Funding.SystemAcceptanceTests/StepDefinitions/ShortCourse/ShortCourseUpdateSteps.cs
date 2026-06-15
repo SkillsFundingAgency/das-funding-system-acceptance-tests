@@ -21,7 +21,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
             .WithMilestone(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete);
 
         var updatedRequest = builder.Build();
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearningKey, updatedRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearnerKey, updatedRequest);
         testData.ShortCourseCreateUpdateRequests[ukprn] = updatedRequest;
         testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
@@ -43,7 +43,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
             .WithCompletionDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate);
 
         var updatedRequest = builder.Build();
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearningKey, updatedRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearnerKey, updatedRequest);
         testData.ShortCourseCreateUpdateRequests[ukprn] = updatedRequest;
         testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
@@ -60,7 +60,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = null; 
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones.Remove(LearnerDataOuterApiClient.Milestone.LearningComplete);
 
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearningKey, shortCourseRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearnerKey, shortCourseRequest);
         testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
@@ -75,7 +75,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = null;
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones.Remove(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete);
 
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearningKey, shortCourseRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearnerKey, shortCourseRequest);
         testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
@@ -88,7 +88,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
 
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones = [];
 
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearningKey, shortCourseRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearnerKey, shortCourseRequest);
         testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
@@ -102,7 +102,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
     public async Task WhenSLDInformUsThatTheLearnerHasBeenRemoved()
     {
         var testData = context.Get<TestData>();
-        await learnerDataOuterApiHelper.DeleteShortCourse(Constants.UkPrn, testData.ShortCourseLearningKey);
+        await learnerDataOuterApiHelper.DeleteShortCourse(Constants.UkPrn, testData.ShortCourseLearnerKey);
     }
 
     [Given(@"Provider (.*) has recorded 30% (.*) and completion (.*)")]
@@ -123,7 +123,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
 
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones = milestones;
 
-        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearningKey, shortCourseRequest);
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearnerKey, shortCourseRequest);
 
     }
 }

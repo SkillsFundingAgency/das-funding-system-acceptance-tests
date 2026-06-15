@@ -8,7 +8,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
     [Binding]
-    public class RemovalStepDefinitions(ScenarioContext context, LearnerDataOuterApiHelper learnerDataOuterApiHelper, EarningsSqlClient earningsSqlClient)
+    public class RemovalStepDefinitions(ScenarioContext context, LearnerDataOuterApiHelper learnerDataOuterApiHelper, EarningsSqlClient earningsSqlClient, LearningSqlClient learningSqlClient)
     {
         private static string UniversalWithdrawalReason = "WithdrawDuringLearning";
 
@@ -48,13 +48,18 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
 
-            var learningKey = testData.LearningCreatedEvent?.LearningKey;
+            var apprenticeshipLearningKey = testData.LearningCreatedEvent?.LearningKey;
 
-            var learningKeyToUse = learningKey.HasValue && learningKey.Value != Guid.Empty
-                ? learningKey.Value
-                : testData.ShortCourseLearningKey;
+            var shortCourseRequest = testData.ShortCourseCreateUpdateRequests?.GetValueOrDefault(Constants.UkPrn);
+            var courseCode = shortCourseRequest?.Delivery?.OnProgramme?.SingleOrDefault()?.CourseCode;
 
-            await context.ReceiveLearningRemovedEvent(learningKeyToUse);
+            var shortCourseLearningKey = courseCode == null ? null :learningSqlClient.GetShortCourseLearning(testData.Uln)?.Episodes.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+
+            var learningKeyToUse = apprenticeshipLearningKey.HasValue && apprenticeshipLearningKey.Value != Guid.Empty
+                ? apprenticeshipLearningKey.Value
+                : shortCourseLearningKey;
+
+            await context.ReceiveLearningRemovedEvent((Guid)learningKeyToUse);
 
         }
 
@@ -63,11 +68,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
 
-            var learningKey = testData.LearningCreatedEvent?.LearningKey;
+            var apprenticeshipLearningKey = testData.LearningCreatedEvent?.LearningKey;
 
-            var learningKeyToUse = learningKey.HasValue && learningKey.Value != Guid.Empty
-                ? learningKey.Value
-                : testData.ShortCourseLearningKey;
+            var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
+            var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
+
+            var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).Episodes.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+
+            var learningKeyToUse = apprenticeshipLearningKey.HasValue && apprenticeshipLearningKey.Value != Guid.Empty
+                ? apprenticeshipLearningKey.Value
+                : shortCourseLearningKey;
 
             await context.ReceiveLearningReinstatedEvent(learningKeyToUse);
         }
