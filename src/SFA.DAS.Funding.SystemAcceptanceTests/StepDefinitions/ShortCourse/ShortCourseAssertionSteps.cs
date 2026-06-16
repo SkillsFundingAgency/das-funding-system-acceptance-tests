@@ -3,6 +3,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Payments.EarningEvents.Messages.External;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 
@@ -429,6 +430,32 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
                    testData.CalculateGrowthAndSkillsPaymentsCommand.Training.TrainingStatus.ToString() == "Withdrawn";
         }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command.");
     }
+
+
+    [Then("send the payable 30% milestone earnings to payments")]
+    public async Task SendThePayableMilestoneEarningsToPayments()
+    {
+        var testData = context.Get<TestData>();
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var course = learningSqlClient.GetShortCourseLearning(testData.Uln);
+            var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.LearnerKey;
+            var command = GrowthAndSkillsPaymentsRecalculatedEventHandler
+                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
+                ?.Command;
+
+            testData.CalculateGrowthAndSkillsPaymentsCommand = command ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
+
+            return testData.CalculateGrowthAndSkillsPaymentsCommand != null &&
+                   testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Count() == 1 &&
+                   testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.First()
+                   .PricePeriods.First()
+                   .Periods.First()
+                   .EarningType == EarningType.Milestone1;
+        }, "Failed to find the milestone1 earnings in the growth and skills payments event command.");
+    }
+
 
     [Then("short course is marked as removed from learning and earning dbs")]
     public async Task ShortCourseIsMarkedAsRemovedFromLearningAndEarningDbs()
