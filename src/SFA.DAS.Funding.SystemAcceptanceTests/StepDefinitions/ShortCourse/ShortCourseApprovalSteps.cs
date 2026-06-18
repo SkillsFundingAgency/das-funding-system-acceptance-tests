@@ -63,9 +63,9 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         {
             var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
 
-            if ((earningsModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile.IsApproved).GetValueOrDefault())
+            if ((earningsModel?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile.IsApproved).GetValueOrDefault())
             {
-                testData.ShortCourseLearnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln).LearnerKey;
+                testData.ShortCourseLearnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln).FirstOrDefault().LearnerKey;
                 return true;
             }
 
@@ -86,7 +86,7 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
             if (earningsModel != null)
             {
                 // Cache the learning key without approving so it's available in the assertions
-                testData.ShortCourseLearnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln).LearnerKey;
+                testData.ShortCourseLearnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln).FirstOrDefault().LearnerKey;
                 return true;
             }
 
@@ -116,9 +116,9 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
         {
             var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
 
-            if ((earningsModel?.Episodes?.GetEpisode(ukprn, courseCode)?.EarningsProfile.IsApproved).GetValueOrDefault())
+            if ((earningsModel?.GetEpisode(ukprn, courseCode)?.EarningsProfile.IsApproved).GetValueOrDefault())
             {
-                testData.ShortCourseLearnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln).LearnerKey;
+                testData.ShortCourseLearnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln).FirstOrDefault().LearnerKey;
                 return true;
             }
 

@@ -53,7 +53,11 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var shortCourseRequest = testData.ShortCourseCreateUpdateRequests?.GetValueOrDefault(Constants.UkPrn);
             var courseCode = shortCourseRequest?.Delivery?.OnProgramme?.SingleOrDefault()?.CourseCode;
 
-            var shortCourseLearningKey = courseCode == null ? null :learningSqlClient.GetShortCourseLearning(testData.Uln)?.Episodes.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+            var shortCourseLearningKey = courseCode == null 
+                ? null 
+                :learningSqlClient.GetShortCourseLearning(testData.Uln)?
+                .GetEpisode(Constants.UkPrn, courseCode)?
+                .LearningKey;
 
             var learningKeyToUse = apprenticeshipLearningKey.HasValue && apprenticeshipLearningKey.Value != Guid.Empty
                 ? apprenticeshipLearningKey.Value
@@ -73,7 +77,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
             var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
 
-            var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).Episodes.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+            var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).GetEpisode(Constants.UkPrn, courseCode).LearningKey;
 
             var learningKeyToUse = apprenticeshipLearningKey.HasValue && apprenticeshipLearningKey.Value != Guid.Empty
                 ? apprenticeshipLearningKey.Value
