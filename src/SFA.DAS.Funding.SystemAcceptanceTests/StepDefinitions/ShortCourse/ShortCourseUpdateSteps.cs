@@ -57,6 +57,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukprn];
 
         shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalDate = DateTime.Now;
+        shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalReasonCode = Constants.WithdrawalReasonCodeForRedundancy;
         shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = null; 
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones.Remove(LearnerDataOuterApiClient.Milestone.LearningComplete);
 
@@ -72,6 +73,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukprn];
 
         shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalDate = DateTime.Now;
+        shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalReasonCode = Constants.WithdrawalReasonCode;
         shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = null;
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones.Remove(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete);
 

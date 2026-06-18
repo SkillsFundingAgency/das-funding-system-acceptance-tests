@@ -284,6 +284,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime ExpectedEndDate { get; set; }
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
+            public short? WithdrawalReasonCode { get; set; }
             public List<LearningSupportRequestDetails> LearningSupport { get; set; } = [];
             public DateTime? PauseDate { get; set; }
             public int? AimSequenceNumber { get; set; }
