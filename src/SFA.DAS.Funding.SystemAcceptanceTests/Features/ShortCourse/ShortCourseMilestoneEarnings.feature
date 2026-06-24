@@ -45,3 +45,11 @@ Scenario: 30% milestone declared and then removed
     And the training provider recorded that the 30% milestone has been reached
 	When SLD also inform us that the 30% milestone was removed
     Then send empty earnings command to payments
+
+# FLP-1900
+@regression
+Scenario: No milestone declared in the post apporval submission 
+    Given SLD informs us of a new learner with a short course start date currentAY-08-01
+	And the short course is approved
+    When SLD inform us of another ILR submission without any milestones declared
+    Then send empty earnings command to payments

@@ -81,6 +81,7 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
+    [When(@"SLD inform us of another ILR submission without any milestones declared")]
     [When(@"SLD also inform us that the 30% milestone was removed")]
     public async Task WhenSLDAlsoInformUsThatThe30PercentMilestoneWasRemoved()
     {
