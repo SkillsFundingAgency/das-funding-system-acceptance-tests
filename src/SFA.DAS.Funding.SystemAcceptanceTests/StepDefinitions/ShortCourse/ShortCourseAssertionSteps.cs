@@ -433,6 +433,26 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command.");
     }
 
+    [Then(@"send empty earnings command to payments")]
+    public async Task ValidateEmptyEarningsCommandIsSentToPayments()
+    {
+        var testData = context.Get<TestData>();
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var course = learningSqlClient.GetShortCourseLearning(testData.Uln);
+            var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.Learner.Key;
+            var command = GrowthAndSkillsPaymentsRecalculatedEventHandler
+                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
+                ?.Command;
+
+            testData.CalculateGrowthAndSkillsPaymentsCommand = command ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
+
+            return testData.CalculateGrowthAndSkillsPaymentsCommand != null &&
+                   !testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Any();
+        }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command or Earnings are not empty!.");
+    }
+
     [Then("short course is marked as removed from learning and earning dbs")]
     public async Task ShortCourseIsMarkedAsRemovedFromLearningAndEarningDbs()
     {
