@@ -80,22 +80,23 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
 
         var courseCode = expectedCourse.CourseCode;
 
-        ShortCourseLearning? learningModel = null;
+        List<ShortCourseLearning>? learningModel = null;
         await WaitHelper.WaitForIt(() =>
         {
             learningModel = learningSqlClient.GetShortCourseLearning(testData.Uln.ToString());
-            return learningModel != null && learningModel.Episodes != null && learningModel.Episodes.Any();
+            // ensure the returned model and its Episodes/learner are available
+            return learningModel != null && learningModel.FirstOrDefault()?.Learner != null && (learningModel.FirstOrDefault()?.Episodes != null && learningModel.Count > 0);
         }, "Failed to find short course learning entity.");
 
         context.Set(learningModel);
 
-        var learner = learningModel!.Learner;
+        var learner = learningModel!.FirstOrDefault()?.Learner;
         Assert.AreEqual(expectedLearner.FirstName, learner.FirstName, "Learner FirstName does not match.");
         Assert.AreEqual(expectedLearner.LastName, learner.LastName, "Learner LastName does not match.");
         Assert.AreEqual(expectedLearner.Email, learner.EmailAddress, "Learner EmailAddress does not match.");
         Assert.AreEqual(expectedLearner.Dob, learner.DateOfBirth, "Learner DateOfBirth does not match.");
 
-        var episode = learningModel.Episodes.GetEpisode(ukprn, courseCode);
+        var episode = learningModel.GetEpisode(ukprn, courseCode);
         Assert.AreEqual(expectedCourse.CourseCode, episode.TrainingCode, "TrainingCode does not match.");
         Assert.AreEqual(Constants.UkPrn, episode.Ukprn, "Ukprn does not match.");
         Assert.AreEqual(expectedCourse.StartDate, episode.StartDate, "StartDate does not match.");
@@ -129,8 +130,8 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var ukprn = Constants.UkPrn;
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukprn];
         var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
-        var learningModel = context.Get<ShortCourseLearning>();
-        Assert.IsFalse(learningModel.Episodes.GetEpisode(ukprn, courseCode).IsApproved, "Short course should not be approved.");
+        var learningModel = context.Get<List<ShortCourseLearning>>();
+        Assert.IsFalse(learningModel.GetEpisode(ukprn, courseCode).IsApproved, "Short course should not be approved.");
     }
 
     [Then(@"the short course is set to approved")]
@@ -140,8 +141,8 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var ukprn = Constants.UkPrn;
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukprn];
         var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
-        var learningModel = context.Get<ShortCourseLearning>();
-        var learningEpisode = learningModel.Episodes.GetEpisode(ukprn, courseCode);
+        var learningModel = context.Get<List<ShortCourseLearning>>();
+        var learningEpisode = learningModel.GetEpisode(ukprn, courseCode);
         Assert.IsTrue(learningEpisode.IsApproved, "Short course should be approved.");
         Assert.AreEqual(context.Get<TestData>().CommitmentsApprenticeshipCreatedEvent.AccountId, learningEpisode.EmployerAccountId, "EmployerId should have been updated from the approvals event.");
     }
@@ -153,9 +154,9 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var ukprn = Constants.UkPrn;
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukprn];
         var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
-        var learningModel = context.Get<ShortCourseLearning>();
+        var learningModel = context.Get<List<ShortCourseLearning>>();
         var expectedLearnerRef = shortCourseRequest.Learner.LearnerRef;
-        var actualLearnerRef = learningModel.Episodes.GetEpisode(ukprn, courseCode).LearnerRef;
+        var actualLearnerRef = learningModel.GetEpisode(ukprn, courseCode).LearnerRef;
 
         Assert.AreEqual(expectedLearnerRef, actualLearnerRef, "LearnerRef does not match.");
     }
@@ -167,11 +168,11 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
 
         var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
         Assert.IsNotNull(earningsModel, "Earnings model not found.");
-        var earningsEpisodeKey = earningsModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).Key;
+        var earningsEpisodeKey = earningsModel.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).Key;
 
         var learningModel = learningSqlClient.GetShortCourseLearning(testData.Uln.ToString());
         Assert.IsNotNull(learningModel, "Learning model not found.");
-        var learningEpisodeKey = learningModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).Key;
+        var learningEpisodeKey = learningModel.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).Key;
 
         Assert.AreEqual(learningEpisodeKey, earningsEpisodeKey, "Episode keys do not match between learning and earnings databases.");
     }
@@ -243,7 +244,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
         var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
 
-        var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).Episodes.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+        var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).GetEpisode(Constants.UkPrn, courseCode).LearningKey;
 
         var learnerCount = testData.ShortCourseEarningsResponse.Learners.Count(x => x.LearningKey == shortCourseLearningKey.ToString());
         Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the earnings response for this collection period, but found a different count.");
@@ -260,7 +261,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
         var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
 
-        var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.Episodes.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+        var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
 
         var learner = testData.ShortCourseEarningsResponse?.Learners.Where(x => x.LearningKey == shortCourseLearningKey.ToString()).FirstOrDefault();
 
@@ -287,7 +288,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
         var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
 
-        var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).Episodes.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+        var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).GetEpisode(Constants.UkPrn, courseCode).LearningKey;
 
         var learnerCount = testData.ShortCourseEarningsResponse?.Learners?.Count(x => x.LearningKey == shortCourseLearningKey.ToString()) ?? 0;
         Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the earnings response but found a different count.");
@@ -327,11 +328,11 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukprn];
         var shortCourseOnProgramme = shortCourseRequest.Delivery.OnProgramme.Single();
 
-        ShortCourseEarningsModel? earningsModel = null;
+        List<ShortCourseEarningsModel>? earningsModel = null;
         await WaitHelper.WaitForIt(() =>
         {
             earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
-            return earningsModel?.Episodes?.Count > 0;
+            return earningsModel?.Count > 0;
         }, "Failed to find short course earnings entity.");
 
         await WaitHelper.WaitForIt(() =>
@@ -342,7 +343,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
                 Assert.AreEqual(ukprn, publishedEvent.UKPRN, "UKPRN does not match");
                 Assert.AreEqual(LearnerData.Events.LearningType.ApprenticeshipUnit, publishedEvent.LearningType, "LearningType does not match");
                 //Assert.AreEqual(shortCourseOnProgramme.CourseCode, publishedEvent.StandardCode.ToString(), "StandardCode does not match"); TODO assert this correctly when we build 1607, might be called LARSCode on the event
-                Assert.AreEqual((int)earningsModel!.Episodes.GetEpisode(ukprn, shortCourseOnProgramme.CourseCode).CoursePrice, publishedEvent.TrainingPrice, "TrainingPrice does not match CoursePrice");
+                Assert.AreEqual((int)earningsModel!.GetEpisode(ukprn, shortCourseOnProgramme.CourseCode).CoursePrice, publishedEvent.TrainingPrice, "TrainingPrice does not match CoursePrice");
 
                 return true;
             }
@@ -369,13 +370,13 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     public async Task ThenEarningsProfileHistoryRecordsAreCreatedForTheShortCourse(int expectedRecordCount)
     {
         var testData = context.Get<TestData>();
-        ShortCourseEarningsModel? earningsModel = null;
+        List<ShortCourseEarningsModel>? earningsModel = null;
         await WaitHelper.WaitForIt(() =>
             {
                 earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
                 if (earningsModel == null) return false;
 
-                var episodes = earningsModel.Episodes;
+                var episodes = earningsModel;
                 if (episodes == null || !episodes.Any()) return false;
 
                 var latestEpisode = episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
@@ -384,7 +385,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
                 return latestEpisode.EarningsProfileHistory != null && latestEpisode.EarningsProfileHistory.Count == expectedRecordCount;
             }, $"Failed to find exactly {expectedRecordCount} history records.");
 
-        var latestEpisode = earningsModel!.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
+        var latestEpisode = earningsModel!.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
         var historyRecords = latestEpisode.EarningsProfileHistory;
 
         foreach (var history in historyRecords)
@@ -402,13 +403,15 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
         var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
 
-        var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).Episodes.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+        var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).GetEpisode(Constants.UkPrn, courseCode).LearningKey;
 
         await context.ReceiveLearningWithdrawnEvent(shortCourseLearningKey);
 
         var expectedLastDayOfLearning = shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalDate;
+        var expectedWithdrawalReason = shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalReasonCode;
 
         Assert.AreEqual(expectedLastDayOfLearning?.Date, testData.LearningWithdrawnEvent.WithdrawalDate.Date, "Unexpected last day of learning found in the event!");
+        Assert.AreEqual(expectedWithdrawalReason, testData.LearningWithdrawnEvent.WithdrawalReasonCode, "Unexpected Withdrawal Reason Code found in the event!");
     }
 
     [Then(@"inform payments that the learner has been withdrawn from the short course")]
@@ -419,7 +422,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         await WaitHelper.WaitForIt(() =>
         {
             var course = learningSqlClient.GetShortCourseLearning(testData.Uln);
-            var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.Learner.Key;
+            var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.Learner.Key;
             var command = GrowthAndSkillsPaymentsRecalculatedEventHandler
                 .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
                 ?.Command;
@@ -431,30 +434,49 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command.");
     }
 
+[Then(@"send empty earnings command to payments")]
+public async Task ValidateEmptyEarningsCommandIsSentToPayments()
+{
+    var testData = context.Get<TestData>();
 
-    [Then("send the payable 30% milestone earnings to payments")]
-    public async Task SendThePayableMilestoneEarningsToPayments()
+    await WaitHelper.WaitForIt(() =>
     {
-        var testData = context.Get<TestData>();
+        var course = learningSqlClient.GetShortCourseLearning(testData.Uln);
+        var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.Learner.Key;
+        var command = GrowthAndSkillsPaymentsRecalculatedEventHandler
+            .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
+            ?.Command;
 
-        await WaitHelper.WaitForIt(() =>
-        {
-            var course = learningSqlClient.GetShortCourseLearning(testData.Uln);
-            var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.LearnerKey;
-            var command = GrowthAndSkillsPaymentsRecalculatedEventHandler
-                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
-                ?.Command;
+        testData.CalculateGrowthAndSkillsPaymentsCommand = command ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
 
-            testData.CalculateGrowthAndSkillsPaymentsCommand = command ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
+        return testData.CalculateGrowthAndSkillsPaymentsCommand != null &&
+               !testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Any();
+    }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command or Earnings are not empty!.");
+}
 
-            return testData.CalculateGrowthAndSkillsPaymentsCommand != null &&
-                   testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Count() == 1 &&
-                   testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.First()
-                   .PricePeriods.First()
-                   .Periods.First()
-                   .EarningType == EarningType.Milestone1;
-        }, "Failed to find the milestone1 earnings in the growth and skills payments event command.");
-    }
+ [Then("send the payable 30% milestone earnings to payments")]
+ public async Task SendThePayableMilestoneEarningsToPayments()
+ {
+     var testData = context.Get<TestData>();
+
+     await WaitHelper.WaitForIt(() =>
+     {
+         var course = learningSqlClient.GetShortCourseLearning(testData.Uln);
+         var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.LearnerKey;
+         var command = GrowthAndSkillsPaymentsRecalculatedEventHandler
+             .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
+             ?.Command;
+
+         testData.CalculateGrowthAndSkillsPaymentsCommand = command ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
+
+         return testData.CalculateGrowthAndSkillsPaymentsCommand != null &&
+                testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Count() == 1 &&
+                testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.First()
+                .PricePeriods.First()
+                .Periods.First()
+                .EarningType == EarningType.Milestone1;
+     }, "Failed to find the milestone1 earnings in the growth and skills payments event command.");
+ }
 
 
     [Then("short course is marked as removed from learning and earning dbs")]
@@ -466,8 +488,8 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
 
         var shortCourseEarnings = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
 
-        Assert.IsTrue(shortCourseLearning.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.IsRemoved, "Short course learning episode NOT marked as removed.");
-        Assert.IsTrue(shortCourseEarnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.IsRemoved, "Short course earnings episode NOT marked as removed.");
+        Assert.IsTrue(shortCourseLearning.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.IsRemoved, "Short course learning episode NOT marked as removed.");
+        Assert.IsTrue(shortCourseEarnings.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.IsRemoved, "Short course earnings episode NOT marked as removed.");
     }
 
     [Then("short course learning is reinstated in learning and earning dbs")]
@@ -479,8 +501,8 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
 
         var shortCourseEarnings = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln.ToString());
 
-        Assert.IsFalse(shortCourseLearning.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.IsRemoved, "Short course learning episode NOT reinstated.");
-        Assert.IsFalse(shortCourseEarnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.IsRemoved, "Short course earnings episode NOT reinstated.");
+        Assert.IsFalse(shortCourseLearning.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.IsRemoved, "Short course learning episode NOT reinstated.");
+        Assert.IsFalse(shortCourseEarnings.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.IsRemoved, "Short course earnings episode NOT reinstated.");
     }
 
     [Then("learning contains an epidose for Provider A and an episode for Provider B")]
@@ -489,9 +511,17 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var testData = context.Get<TestData>();
         var learningRecord = learningSqlClient.GetShortCourseLearning(testData.Uln);
 
-        learningRecord.Episodes.Count.Should().Be(2, "There should be 2 episodes in the learning record, one for each provider.");
-        learningRecord.Episodes.Should().Contain(e => e.Ukprn == Constants.UkPrn, "One episode should be for Provider A.");
-        learningRecord.Episodes.Should().Contain(e => e.Ukprn == Constants.AlternativeUkPrn, "One episode should be for Provider B.");
+        learningRecord.SelectMany(l => l.Episodes)
+            .Should()
+            .HaveCount(2, "There should be 2 episodes in the learning record, one for each provider.");
+
+        learningRecord.Should().Contain(
+            l => l.Episodes.Any(e => e.Ukprn == Constants.UkPrn), 
+            "One episode should be for Provider A.");
+
+        learningRecord.Should().Contain(
+            l => l.Episodes.Any(e => e.Ukprn == Constants.AlternativeUkPrn),
+            "One episode should be for Provider B.");
     }
 
     [Then("earnings contains an episode for Provider A and an episode for Provider B")]
@@ -500,9 +530,17 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var testData = context.Get<TestData>();
         var earningRecord = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
 
-        earningRecord.Episodes.Count.Should().Be(2, "There should be 2 episodes in the learning record, one for each provider.");
-        earningRecord.Episodes.Should().Contain(e => e.Ukprn == Constants.UkPrn, "One episode should be for Provider A.");
-        earningRecord.Episodes.Should().Contain(e => e.Ukprn == Constants.AlternativeUkPrn, "One episode should be for Provider B.");
+        earningRecord.SelectMany(l => l.Episodes)
+            .Should()
+            .HaveCount(2, "There should be 2 episodes in the learning record, one for each provider.");
+
+        earningRecord.Should().Contain(
+            e => e.Episodes.Any(e => e.Ukprn == Constants.UkPrn), 
+            "One episode should be for Provider A.");
+
+        earningRecord.Should().Contain(
+            e => e.Episodes.Any(e => e.Ukprn == Constants.AlternativeUkPrn), 
+            "One episode should be for Provider B.");
     }
 
     enum InstalmentState { DoesNotExist, ExistsButNotPayable, Payable };
@@ -524,7 +562,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
             var thirtyPercent = Enum.Parse<InstalmentState>(row["ThirtyPercent"]);
             var completion = Enum.Parse<InstalmentState>(row["Completion"]);
 
-            var episode = earningRecord.Episodes.GetEpisode(ukprn, courseCode);
+            var episode = earningRecord.GetEpisode(ukprn, courseCode);
 
             ValidateShortCourseInstalmentState(episode, "ThirtyPercentLearningComplete", thirtyPercent, provider);
             ValidateShortCourseInstalmentState(episode, "LearningComplete", completion, provider);

@@ -59,25 +59,25 @@ public class LearningSqlClient
         return learning;
     }
 
-    public ShortCourseLearning? GetShortCourseLearning(string uln)
+    public List<ShortCourseLearning>? GetShortCourseLearning(string uln)
     {
         var learner = _sqlServerClient.GetList<Learner>("SELECT * from [dbo].[Learner] WHERE Uln = @uln", new { uln }).FirstOrDefault();
         if (learner == null) return null;
 
-        var learning = _sqlServerClient.GetList<ShortCourseLearning>("SELECT * FROM [dbo].[ShortCourseLearning] WHERE LearnerKey = @learnerKey", new { learnerKey = learner.Key }).FirstOrDefault();
-        if (learning == null) return null;
+        var learnings = _sqlServerClient.GetList<ShortCourseLearning>("SELECT * FROM [dbo].[ShortCourseLearning] WHERE LearnerKey = @learnerKey", new { learnerKey = learner.Key });
+        if (learnings == null) return null;
 
-        learning.Learner = learner;
-
-        learning.Episodes = _sqlServerClient.GetList<ShortCourseEpisode>($"SELECT * FROM [dbo].[ShortCourseEpisode] WHERE LearningKey = '{learning.Key}'");
-
-        foreach (var episode in learning.Episodes)
+        foreach (var learning in learnings)
         {
-            episode.LearningSupport = _sqlServerClient.GetList<ShortCourseLearningSupport>($"SELECT * FROM [dbo].[ShortCourseLearningSupport] WHERE EpisodeKey = '{episode.Key}'");
-            episode.Milestones = _sqlServerClient.GetList<ShortCourseMilestone>($"SELECT * FROM [dbo].[ShortCourseMilestone] WHERE EpisodeKey = '{episode.Key}'");
+            learning.Learner = learner;
+            learning.Episodes = _sqlServerClient.GetList<ShortCourseEpisode>($"SELECT * FROM [dbo].[ShortCourseEpisode] WHERE LearningKey = '{learning.Key}'");
+            foreach (var episode in learning.Episodes)
+            {
+                episode.LearningSupport = _sqlServerClient.GetList<ShortCourseLearningSupport>($"SELECT * FROM [dbo].[ShortCourseLearningSupport] WHERE EpisodeKey = '{episode.Key}'");
+                episode.Milestones = _sqlServerClient.GetList<ShortCourseMilestone>($"SELECT * FROM [dbo].[ShortCourseMilestone] WHERE EpisodeKey = '{episode.Key}'");
+            }
         }
-
-        return learning;
+        return learnings;
     }
 
     public List<Http.LearnerDataOuterApiClient.Learning> GetApprovedLearners(long ukprn, int academicYear)
@@ -298,6 +298,7 @@ public class ShortCourseLearning
     public DateTime? CompletionDate { get; set; }
     public Learner Learner { get; set; }
     public List<ShortCourseEpisode> Episodes { get; set; }
+    public string TrainingCode { get; set; } = null!;
 }
 
 public class ShortCourseEpisode
@@ -380,20 +381,26 @@ public static class ShortCourseModelExtensions
     [Obsolete("Use GetEpisode(...) instead", true)]
     public static ShortCourseEpisode FirstOrDefault(this IEnumerable<ShortCourseEpisode> episodes) { throw new InvalidOperationException(); }
 
-    public static ShortCourseEpisode GetEpisode(this IEnumerable<ShortCourseEpisode> episodes, long ukprn, string trainingCode)
+    public static ShortCourseEpisode GetEpisode(this IEnumerable<ShortCourseLearning> learnings, long ukprn, string trainingCode)
     {
-        foreach (var episode in episodes)
+        foreach (var learning in learnings)
         {
-            if (episode.Ukprn == ukprn && episode.TrainingCode.Trim() == trainingCode)
+            if (learning.TrainingCode.Trim() == trainingCode)
             {
-                return episode;
+                foreach (var episode in learning.Episodes)
+                {
+                    if (episode.Ukprn == ukprn)
+                    {
+                        return episode;
+                    }
+                }
             }
         }
         throw new Exception("Matching episode not found");
     }
 
-    public static ShortCourseEpisode GetEpisode(this IEnumerable<ShortCourseEpisode> episodes, ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
+    public static ShortCourseEpisode GetEpisode(this IEnumerable<ShortCourseLearning> learnings, ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
     {
-        return episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
+        return learnings.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
     }
 }

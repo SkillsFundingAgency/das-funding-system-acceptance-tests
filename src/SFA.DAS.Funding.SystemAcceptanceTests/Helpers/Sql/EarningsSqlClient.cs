@@ -70,22 +70,22 @@ public class EarningsSqlClient
         return apprenticeship;
     }
 
-    public ShortCourseEarningsModel? GetShortCourseEarningsEntityModel(string uln)
+    public List<ShortCourseEarningsModel>? GetShortCourseEarningsEntityModel(string uln)
     {
-        var shortCourse = _sqlServerClient.GetList<ShortCourseEarningsModel>($"SELECT * FROM [Domain].[ShortCourseLearning] Where [Uln] ='{uln}'").SingleOrDefault();
+        var shortCourse = _sqlServerClient.GetList<ShortCourseEarningsModel>($"SELECT * FROM [Domain].[ShortCourseLearning] Where [Uln] ='{uln}'");
         if (shortCourse == null)
             return null;
 
-        var episodes = _sqlServerClient.GetList<ShortCourseEpisodeModel>($"SELECT * FROM [Domain].[ShortCourseEpisode] Where LearningKey ='{shortCourse.LearningKey}'");
-
-        foreach (var episode in episodes)
+        foreach (var course in shortCourse)
         {
-            episode.EarningsProfile = _sqlServerClient.GetList<ShortCourseEarningsProfileModel>($"SELECT * FROM [Domain].[ShortCourseEarningsProfile] Where EpisodeKey ='{episode.Key}'").Single();
-            episode.EarningsProfile.Instalments = _sqlServerClient.GetList<ShortCourseInstalmentModel>($"SELECT * FROM [Domain].[ShortCourseInstalment] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
-            episode.EarningsProfileHistory = _sqlServerClient.GetList<EarningsProfileHistoryModel>($"SELECT * FROM [History].[ShortCourseEarningsProfileHistory] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
+            course.Episodes = _sqlServerClient.GetList<ShortCourseEpisodeModel>($"SELECT * FROM [Domain].[ShortCourseEpisode] Where LearningKey ='{course.LearningKey}'");
+            foreach (var episode in course.Episodes)
+            {
+                episode.EarningsProfile = _sqlServerClient.GetList<ShortCourseEarningsProfileModel>($"SELECT * FROM [Domain].[ShortCourseEarningsProfile] Where EpisodeKey ='{episode.Key}'").Single();
+                episode.EarningsProfile.Instalments = _sqlServerClient.GetList<ShortCourseInstalmentModel>($"SELECT * FROM [Domain].[ShortCourseInstalment] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
+                episode.EarningsProfileHistory = _sqlServerClient.GetList<EarningsProfileHistoryModel>($"SELECT * FROM [History].[ShortCourseEarningsProfileHistory] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
+            }
         }
-
-        shortCourse.Episodes = episodes;
 
         return shortCourse;
     }

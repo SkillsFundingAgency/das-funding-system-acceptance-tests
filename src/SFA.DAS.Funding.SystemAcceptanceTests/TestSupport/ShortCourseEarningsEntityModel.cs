@@ -9,6 +9,7 @@ public class ShortCourseEarningsModel
     public long ApprovalsApprenticeshipId { get; set; }
     public string Uln { get; set; }
     public List<ShortCourseEpisodeModel> Episodes { get; set; }
+    public string TrainingCode { get; set; } = null!;
 }
 
 public class ShortCourseEpisodeModel
@@ -59,21 +60,27 @@ public static class ShortCourseEarningsModelExtensions
     [Obsolete("Use GetEpisode(...) instead", true)]
     public static ShortCourseEpisodeModel FirstOrDefault(this IEnumerable<ShortCourseEpisodeModel> episodes) { throw new InvalidOperationException(); }
 
-    public static ShortCourseEpisodeModel GetEpisode(this IEnumerable<ShortCourseEpisodeModel> episodes, long ukprn, string trainingCode)
+    public static ShortCourseEpisodeModel GetEpisode(this IEnumerable<ShortCourseEarningsModel> learnings, long ukprn, string trainingCode)
     {
-        foreach (var episode in episodes)
+        foreach (var learning in learnings)
         {
-            if (episode.Ukprn == ukprn && episode.TrainingCode.Trim() == trainingCode)
+            if (learning.TrainingCode.Trim() == trainingCode)
             {
-                return episode;
+                foreach (var episode in learning.Episodes)
+                {
+                    if (episode.Ukprn == ukprn)
+                    {
+                        return episode;
+                    }
+                }
             }
         }
         throw new Exception("Matching episode not found");
     }
 
-    public static ShortCourseEpisodeModel GetEpisode(this IEnumerable<ShortCourseEpisodeModel> episodes, ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
+    public static ShortCourseEpisodeModel GetEpisode(this IEnumerable<ShortCourseEarningsModel> learnings, ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
     {
-        return episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
+        return learnings.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
     }
 }
 
