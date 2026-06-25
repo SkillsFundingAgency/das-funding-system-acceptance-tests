@@ -462,7 +462,7 @@ public async Task ValidateEmptyEarningsCommandIsSentToPayments()
      await WaitHelper.WaitForIt(() =>
      {
          var course = learningSqlClient.GetShortCourseLearning(testData.Uln);
-         var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.LearnerKey;
+         var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.LearnerKey;
          var command = GrowthAndSkillsPaymentsRecalculatedEventHandler
              .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
              ?.Command;
