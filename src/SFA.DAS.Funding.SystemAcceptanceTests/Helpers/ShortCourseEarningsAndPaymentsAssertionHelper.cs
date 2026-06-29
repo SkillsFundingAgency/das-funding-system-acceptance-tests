@@ -17,7 +17,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
                 var dbValid = earningsModel?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments?.All(x => !x.IsPayable) ?? true;
 
-                var commandValid = AssertAgainstPaymentsCommand(c => !c.Earnings.Any());
+                var commandValid = AssertAgainstPaymentsCommand(c => !c.Command.Earnings.Any());
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to verify that all earnings were removed in the earnings db.");
@@ -33,7 +33,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var instalments = earningsModel?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments;
                 var dbValid = instalments != null && instalments.All(x => x.Type != "LearningComplete" || !x.IsPayable);
 
-                var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Completion))));
+                var commandValid = AssertAgainstPaymentsCommand(c => c.Command.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Completion))));
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to verify that the completion earning was removed in the earnings db.");
@@ -49,7 +49,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var instalments = earningsModel?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments;
                 var dbValid = instalments != null && instalments.All(x => x.Type != "ThirtyPercentLearningComplete" || !x.IsPayable);
 
-                var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Milestone1))));
+                var commandValid = AssertAgainstPaymentsCommand(c => c.Command.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Milestone1))));
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to verify that the 30% milestone earning was removed in the earnings db.");
@@ -66,7 +66,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var instalments = earningsModel?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments;
                 var dbValid = instalments != null && instalments.Any(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable);
 
-                var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Milestone1))));
+                var commandValid = AssertAgainstPaymentsCommand(c => c.Command.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Milestone1))));
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings with 30% milestone earning in the earnings db.");
@@ -90,7 +90,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var instalments = earningsModel?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments;
                 var dbValid = instalments != null && instalments.Any(x => x.Type == "LearningComplete" && x.IsPayable);
 
-                var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Completion))));
+                var commandValid = AssertAgainstPaymentsCommand(c => c.Command.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Completion))));
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to verify that the completion earning was generated in the earnings db.");
@@ -137,21 +137,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 {
                     var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.Learner.Key;
 
-                    testData.CalculateGrowthAndSkillsPaymentsCommand =
-                        GrowthAndSkillsPaymentsRecalculatedEventHandler
-                            .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
-                            ?.Command
-                        ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
+                    GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
 
-                    if (testData.CalculateGrowthAndSkillsPaymentsCommand != null)
+                    testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+
+                    if (testData.CalculateGrowthAndSkillsPaymentsEvent != null)
                     {
                         var commandMilestoneValid = milestoneExpected
-                            ? testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Milestone1)))
-                            : testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Milestone1)));
+                            ? testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Milestone1)))
+                            : testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Milestone1)));
 
                         var commandCompletionValid = completionExpected
-                            ? testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Completion)))
-                            : testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Completion)));
+                            ? testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Completion)))
+                            : testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Completion)));
 
                         commandValid = commandMilestoneValid && commandCompletionValid;
                     }
@@ -185,8 +183,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
                 var dbValid = earningsModel?.GetEpisode(ukprn, expectedCourse.CourseCode)?.EarningsProfile?.Instalments?.Count == 2;
 
-                var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Milestone1)))
-                    && c.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Completion))));
+                var commandValid = AssertAgainstPaymentsCommand(c => c.Command.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Milestone1)))
+                    && c.Command.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Completion))));
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
@@ -250,7 +248,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 
                 var commandValid = AssertAgainstPaymentsCommand(c => 
                 {
-                    var periods = c.Earnings.SelectMany(e => e.PricePeriods).SelectMany(p => p.Periods).ToList();
+                    var periods = c.Command.Earnings.SelectMany(e => e.PricePeriods).SelectMany(p => p.Periods).ToList();
                     return periods.Count == periods.DistinctBy(p => new { p.DeliveryPeriod, p.EarningType }).Count();
                 });
 
@@ -272,7 +270,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 var dbValid = earningsModel?.GetEpisode(ukprn, courseCode)?.EarningsProfile?.Instalments?.Count == 2;
 
                 var completionPeriod = period.Value.PeriodValue;
-                var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.SelectMany(e => e.PricePeriods).SelectMany(p => p.Periods).Any(ep => ep.EarningType == EarningType.Completion && ep.DeliveryPeriod == completionPeriod));
+                var commandValid = AssertAgainstPaymentsCommand(c => c.Command.Earnings.SelectMany(e => e.PricePeriods).SelectMany(p => p.Periods).Any(ep => ep.EarningType == EarningType.Completion && ep.DeliveryPeriod == completionPeriod));
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
@@ -303,7 +301,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
                 var dbValid = earningsModel?.Count > 0;
 
-                var commandValid = AssertAgainstPaymentsCommand(c => c.Earnings.Count() == 1);
+                var commandValid = AssertAgainstPaymentsCommand(c => c.Command.Earnings.Count() == 1);
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
@@ -323,7 +321,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
                 earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
                 var dbValid = earningsModel?.Count > 0;
 
-                var commandValid = AssertAgainstPaymentsCommand(c => c.UKPRN == ukprn);
+                var commandValid = AssertAgainstPaymentsCommand(c => c.Command.UKPRN == ukprn);
 
                 return dbValid && (!testData.ExpectGrowthAndSkillsPaymentsEvent || commandValid);
             }, "Failed to find short course earnings entity in the earnings db.");
@@ -331,21 +329,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             Assert.DoesNotThrow(() => earningsModel!.GetEpisode(ukprn, courseCode), "The earnings were not recorded against the first provider's UKPRN.");
         }
 
-        private bool AssertAgainstPaymentsCommand(Func<CalculateGrowthAndSkillsPayments, bool> predicate)
+        private bool AssertAgainstPaymentsCommand(Func<GrowthAndSkillsPaymentsRecalculatedEvent, bool> predicate)
         {
             var testData = context.Get<TestData>();
 
-            var commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null && predicate.Invoke(testData.CalculateGrowthAndSkillsPaymentsCommand);
+            var commandValid = testData.CalculateGrowthAndSkillsPaymentsEvent != null && predicate.Invoke(testData.CalculateGrowthAndSkillsPaymentsEvent);
 
             if (!commandValid)
             {
                 var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.First().Learner.Key;
-                testData.CalculateGrowthAndSkillsPaymentsCommand =
-                    GrowthAndSkillsPaymentsRecalculatedEventHandler
-                        .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
-                        ?.Command
-                    ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
-                commandValid = testData.CalculateGrowthAndSkillsPaymentsCommand != null && predicate.Invoke(testData.CalculateGrowthAndSkillsPaymentsCommand);
+
+                GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
+                testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+
+                commandValid = testData.CalculateGrowthAndSkillsPaymentsEvent != null && predicate.Invoke(testData.CalculateGrowthAndSkillsPaymentsEvent);
             }
 
             return commandValid;

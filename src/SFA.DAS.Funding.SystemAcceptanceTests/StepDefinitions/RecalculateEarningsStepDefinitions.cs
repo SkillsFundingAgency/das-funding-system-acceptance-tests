@@ -172,7 +172,7 @@ public class RecalculateEarningsStepDefinitions
 
             if (!string.IsNullOrWhiteSpace(historicalInstalmentsString))
             {
-                var historicalInstalments = JsonConvert.DeserializeObject<EarningsProfileUpdatedEvent>(historicalInstalmentsString)?.Instalments;
+                var historicalInstalments = JsonConvert.DeserializeObject<TestSupport.EarningsProfileUpdatedEvent>(historicalInstalmentsString)?.Instalments;
 
                 if (historicalInstalments != null)
                 {

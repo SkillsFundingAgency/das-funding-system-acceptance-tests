@@ -4,7 +4,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 
 public class EnglishAndMathsBuilder
 {
-    private readonly EnglishAndMaths _course = new();
+    private readonly Http.LearnerDataOuterApiClient.EnglishAndMaths _course = new();
 
     public EnglishAndMathsBuilder WithCourseDetails(
         DateTime startDate,
@@ -63,5 +63,5 @@ public class EnglishAndMathsBuilder
         return this;
     }
 
-    public EnglishAndMaths Build() => _course;
+    public Http.LearnerDataOuterApiClient.EnglishAndMaths Build() => _course;
 }
