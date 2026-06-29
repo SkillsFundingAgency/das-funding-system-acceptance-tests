@@ -18,7 +18,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
             var baseUrl = _fundingConfig.OuterApiBaseUrl;
             _subscriptionKey = _fundingConfig.LearnerDataOuterApiSubscriptionKey;
-            _apiClient = HttpClientProvider.GetClient(baseUrl, _fundingConfig.GetSecureGatewayConfig(x => x.LearnerDataOuterSecureUrl));        
+            _apiClient = HttpClientProvider.GetClient(baseUrl, _fundingConfig.GetSecureGatewayConfig(x => x.LearnerDataOuterSecureUrl));
         }
 
         public async Task AddLearnerData(long ukprn, LearnerDataRequest learnerData)
@@ -102,6 +102,26 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             response.EnsureSuccessStatusCode();
 
             return JsonConvert.DeserializeObject<GetLearnerResponse>(await response.Content.ReadAsStringAsync())!;
+        }
+
+        public async Task<GetProviderRefDataResponse> GetProviderRefData(long ukprn)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/learnerdata/reference-data/providers/{ukprn}");
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+            request.Headers.Add("Cache-Control", "no-cache");
+            request.Headers.Add("X-Version", "1");
+
+            var response = await _apiClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return JsonConvert.DeserializeObject<GetProviderRefDataResponse>(await response.Content.ReadAsStringAsync())!;
         }
 
         public async Task<GetLearnerResponse> GetShortCourseLearnerApprovedUlns(long ukprn, int academicYear)
@@ -254,7 +274,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class LearnerDataRequest
         {
-            public string ConsumerReference { get; set; } 
+            public string ConsumerReference { get; set; }
             public StubLearner Learner { get; set; }
             public StubDelivery Delivery { get; set; }
         }
@@ -314,10 +334,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         {
             public long Uln { get; set; }
             public string LearnerRef { get; set; }
-            public string FirstName { get; set; } 
-            public string LastName { get; set; } 
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
             public string? Email { get; set; }
-            public DateTime Dob {  get; set; }
+            public DateTime Dob { get; set; }
             public bool HasEhcp { get; set; }
         }
 
@@ -331,7 +351,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class OnProgramme
         {
-            public int StandardCode {  get; set; }
+            public int StandardCode { get; set; }
             public string AgreementId { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime ExpectedEndDate { get; set; }
@@ -390,6 +410,35 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public int TotalPages { get; set; }
         }
 
+        public class Employers
+        {
+            public string agreementId { get; set; } = "";
+            public bool isLevy { get; set; }
+            public bool isFlexiEmployer { get; set; }
+        }
+
+        public class SupportedCourses
+        {
+            public string CourseType { get; set; } = "";
+            public List<Courses>? Courses { get; set; } = [];
+        }
+
+        public class Courses
+        {
+            public string larsCode { get; set; } = "";
+            public DateTime? EffectiveFrom { get; set; }
+        }
+
+
+        public class GetProviderRefDataResponse
+        {
+            public int Ukprn { get; set; }
+            public string Type { get; set; } = "";
+            public string Status { get; set; } = "";
+            public List<Employers>? Employers { get; set; } = [];
+            public List<SupportedCourses>? SupportedCourses { get; set; } = [];
+        }
+
         public class StubLearner
         {
             public string Uln { get; set; }
@@ -435,7 +484,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? StartDate { get; set; }
             public DateTime? EndDate { get; set; }
             public int? CourseCode { get; set; }
-            public string LearnAimRef {  get; set; }
+            public string LearnAimRef { get; set; }
             public int? PriorLearningPercentage { get; set; }
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }

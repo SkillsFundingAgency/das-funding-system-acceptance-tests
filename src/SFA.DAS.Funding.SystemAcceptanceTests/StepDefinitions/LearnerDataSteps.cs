@@ -60,6 +60,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             context.Set(testData);
         }
 
+        [When("SLD want to know the provider reference data for a provider")]
+        public async Task SLDWantToKnowTheProviderReferenceDataForAProvider()
+        {
+            var testData = context.Get<TestData>();
+            var Ukprn = 10000028;
+            var providerRefData = await learnerDataOuterApiHelper.GetProviderRefData(Ukprn);
+
+            testData.ProviderRefData = providerRefData;
+            context.Set(testData);
+        }
+
         [Given(@"SLD submit updated learners details")]
         [When(@"SLD submit updated learners details")]
         public async Task WhenSLDSubmitUpdatedLearnersDetails()
