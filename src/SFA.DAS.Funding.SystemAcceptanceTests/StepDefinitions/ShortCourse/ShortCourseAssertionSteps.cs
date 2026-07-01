@@ -1,8 +1,11 @@
+using SFA.DAS.CommitmentsV2.Messages.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Payments.EarningEvents.Messages.External;
+using SFA.DAS.Payments.EarningEvents.Messages.External.Commands;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 
@@ -102,7 +105,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         Assert.AreEqual(expectedCourse.ExpectedEndDate, episode.ExpectedEndDate, "ExpectedEndDate does not match.");
         Assert.AreEqual((byte)LearnerData.Events.LearningType.ApprenticeshipUnit, episode.LearningType, "LearningType does not match.");
 
-        if(testData.IsShortCourseApproved && testData.CommitmentsApprenticeshipCreatedEvent?.ApprenticeshipEmployerTypeOnApproval != null)
+        if (testData.IsShortCourseApproved && testData.CommitmentsApprenticeshipCreatedEvent?.ApprenticeshipEmployerTypeOnApproval != null)
             Assert.AreEqual((byte)testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipEmployerTypeOnApproval, episode.EmployerType, "EmployerType does not match.");
 
         if (episode.IsApproved)
@@ -114,7 +117,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         var expectedLearningSupports = expectedCourse.LearningSupport ?? new();
         var actualLearningSupports = episode.LearningSupport ?? new();
         Assert.AreEqual(expectedLearningSupports.Count, actualLearningSupports.Count, "LearningSupport count does not match.");
-        
+
         foreach (var expectedSupport in expectedLearningSupports)
         {
             var actualSupport = actualLearningSupports.FirstOrDefault(x => x.StartDate == expectedSupport.StartDate && x.EndDate == expectedSupport.EndDate);
@@ -221,7 +224,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     public void ThenTheShortCourseLearnerIsReturnedInTheApprovedUlnsResponse()
     {
         var testData = context.Get<TestData>();
-        
+
         var learnerCount = testData.ShortCourseLearnersResponse.Learners.Count(x => x.Uln == testData.Uln.ToString());
         Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the approved ulns response for this academic year, but found a different count.");
     }
@@ -230,7 +233,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     public void ThenTheShortCourseLearnerIsNotReturnedInTheApprovedUlnsResponse()
     {
         var testData = context.Get<TestData>();
-        
+
         var learner = testData.ShortCourseLearnersResponse.Learners.SingleOrDefault(x => x.Uln == testData.Uln.ToString());
         Assert.IsNull(learner, "Short course learner was unexpectedly found in the approved ulns response for this academic year.");
     }
@@ -252,8 +255,8 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     [Then(@"the short course learner is returned as (.*) in the earnings response")]
     public void ShortCourseLearnerIsReturnedInTheEarningsResponse(string action)
     {
-        if (action != "approved" && action != "unapproved" )
-            throw new Exception ($"Invalid action - {action}");
+        if (action != "approved" && action != "unapproved")
+            throw new Exception($"Invalid action - {action}");
 
         var testData = context.Get<TestData>();
 
@@ -266,8 +269,8 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
 
         if (action == "approved")
             Assert.IsTrue(learner?.Courses.FirstOrDefault()?.Approved, "Short Course earnings are not set as approved!");
-        else 
-            Assert.IsFalse(learner?.Courses.FirstOrDefault()?.Approved, "Short Course earnings are not set as unapproved!");    
+        else
+            Assert.IsFalse(learner?.Courses.FirstOrDefault()?.Approved, "Short Course earnings are not set as unapproved!");
     }
 
     [Then(@"the short course learner is not returned in the earnings response")]
@@ -417,19 +420,16 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     public async Task ThenInformPaymentsThatTheLearnerHasBeenWithdrawnFromTheShortCourse()
     {
         var testData = context.Get<TestData>();
-        
+
         await WaitHelper.WaitForIt(() =>
         {
-            var course = learningSqlClient.GetShortCourseLearning(testData.Uln);
             var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.Learner.Key;
-            var command = GrowthAndSkillsPaymentsRecalculatedEventHandler
-                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
-                ?.Command;
 
-            testData.CalculateGrowthAndSkillsPaymentsCommand = command ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
-            
-            return testData.CalculateGrowthAndSkillsPaymentsCommand != null && 
-                   testData.CalculateGrowthAndSkillsPaymentsCommand.Training.TrainingStatus.ToString() == "Withdrawn";
+            GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
+            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+
+            return testData.CalculateGrowthAndSkillsPaymentsEvent != null &&
+                   testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Training.TrainingStatus.ToString() == "Withdrawn";
         }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command.");
     }
 
@@ -440,17 +440,73 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
 
         await WaitHelper.WaitForIt(() =>
         {
-            var course = learningSqlClient.GetShortCourseLearning(testData.Uln);
             var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.Learner.Key;
-            var command = GrowthAndSkillsPaymentsRecalculatedEventHandler
-                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey)
-                ?.Command;
 
-            testData.CalculateGrowthAndSkillsPaymentsCommand = command ?? testData.CalculateGrowthAndSkillsPaymentsCommand;
+            GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
+            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
 
-            return testData.CalculateGrowthAndSkillsPaymentsCommand != null &&
-                   !testData.CalculateGrowthAndSkillsPaymentsCommand.Earnings.Any();
+            return testData.CalculateGrowthAndSkillsPaymentsEvent != null &&
+                   !testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Any();
         }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command or Earnings are not empty!.");
+    }
+
+    [Then("send the payable 30% milestone earnings to payments")]
+    public async Task SendThePayableMilestoneEarningsToPayments()
+    {
+        var testData = context.Get<TestData>();
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.LearnerKey;
+
+            GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
+            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+
+            return testData.CalculateGrowthAndSkillsPaymentsEvent != null &&
+                   testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Single()
+                   .PricePeriods.Single()
+                   .Periods.Single()
+                   .EarningType == EarningType.Milestone1;
+        }, "Failed to find the milestone1 earnings in the growth and skills payments event command.");
+    }
+
+    [Then("send both 30% milestone and completion earnings to payments")]
+    public async Task SendBothMilestoneEarningsToPayments()
+    {
+        var testData = context.Get<TestData>();
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.LearnerKey;
+
+            GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
+            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+
+            return testData.CalculateGrowthAndSkillsPaymentsEvent != null &&
+                   testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Single().PricePeriods.Single().Periods.Count() == 2 &&
+                   testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Single().PricePeriods.Single().Periods.Any(x => x.EarningType == EarningType.Milestone1) &&
+                   testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Single().PricePeriods.Single().Periods.Any(x=> x.EarningType == EarningType.Completion);
+        }, "Failed to find the milestone1 and/or completion earnings in the growth and skills payments event.");
+    }
+
+    [Then("the payment command sent to approvals has correct values assigned")]
+    public void PaymentCommandSentToApprovalsHasCorrectValuesAssigned()
+    {
+        var testData = context.Get<TestData>();
+
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
+        var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
+
+        var learningKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+
+        Assert.Multiple(() =>
+        {
+            Assert.AreEqual(learningKey, testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Training.LearningKey, "Learning Key does not match");
+            Assert.AreEqual(testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId, 
+                testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.FirstOrDefault()?
+                .PricePeriods.FirstOrDefault()?
+                .Periods.FirstOrDefault()?.LearningId, "ApprenticeshipId does not match");
+        });
     }
 
     [Then("short course is marked as removed from learning and earning dbs")]
@@ -490,7 +546,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
             .HaveCount(2, "There should be 2 episodes in the learning record, one for each provider.");
 
         learningRecord.Should().Contain(
-            l => l.Episodes.Any(e => e.Ukprn == Constants.UkPrn), 
+            l => l.Episodes.Any(e => e.Ukprn == Constants.UkPrn),
             "One episode should be for Provider A.");
 
         learningRecord.Should().Contain(
@@ -509,11 +565,11 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
             .HaveCount(2, "There should be 2 episodes in the learning record, one for each provider.");
 
         earningRecord.Should().Contain(
-            e => e.Episodes.Any(e => e.Ukprn == Constants.UkPrn), 
+            e => e.Episodes.Any(e => e.Ukprn == Constants.UkPrn),
             "One episode should be for Provider A.");
 
         earningRecord.Should().Contain(
-            e => e.Episodes.Any(e => e.Ukprn == Constants.AlternativeUkPrn), 
+            e => e.Episodes.Any(e => e.Ukprn == Constants.AlternativeUkPrn),
             "One episode should be for Provider B.");
     }
 

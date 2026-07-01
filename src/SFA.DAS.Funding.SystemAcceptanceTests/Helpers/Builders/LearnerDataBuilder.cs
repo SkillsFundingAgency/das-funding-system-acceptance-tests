@@ -1,5 +1,7 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
+using EnglishAndMaths = SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient.EnglishAndMaths;
+using OnProgramme = SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient.OnProgramme;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 {
@@ -11,7 +13,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         {
             Delivery = new Delivery
             {
-                OnProgramme = new List<OnProgramme> { new OnProgramme { AgreementId = "1", AimSequenceNumber = 1, LearnAimRef = "ZPROG001", Care = new Care()}}
+                OnProgramme = new List<Http.LearnerDataOuterApiClient.OnProgramme> { new Http.LearnerDataOuterApiClient.OnProgramme { AgreementId = "1", AimSequenceNumber = 1, LearnAimRef = "ZPROG001", Care = new Care()}}
             },
             Learner = new LearnerRequestDetails
             {
@@ -158,7 +160,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             int? priorLearningPercentage = null, int? otherFundingAdjustment = null)
         {
 
-            var mathsAndEnglish = new EnglishAndMaths
+            var mathsAndEnglish = new Http.LearnerDataOuterApiClient.EnglishAndMaths
             {
                 StartDate = startDate,
                 EndDate = endDate,

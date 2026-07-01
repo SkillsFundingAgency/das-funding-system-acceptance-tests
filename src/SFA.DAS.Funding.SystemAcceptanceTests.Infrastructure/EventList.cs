@@ -17,7 +17,7 @@ public static class EventList
             typeof(Learning.Types.LearningReinstatedEvent).FullName!,
             typeof(Learning.Types.PersonalDetailsChangedEvent).FullName!,
             typeof(SFA.DAS.LearnerData.Events.LearnerDataEvent).FullName!,
-            typeof(SFA.DAS.LearnerData.Events.GrowthAndSkillsPaymentsRecalculatedEvent).FullName!
+            typeof(ApprenticeshipEarnings.Types.GrowthAndSkillsPaymentsRecalculatedEvent).FullName!
         };
 
         return events;
