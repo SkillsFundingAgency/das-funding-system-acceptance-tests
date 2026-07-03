@@ -19,7 +19,7 @@ public class ShortCourseChangeOfProviderSteps(ScenarioContext context, LearnerDa
 
         if (createShortCourseRequest == null)
         {
-            createShortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
+            createShortCourseRequest = ShortCourseLearnerDataBuilder.CreateNew(testData)
                 .WithStartDate(DateTime.Now.AddMonths(-2))
                 .WithEndDate(DateTime.Now.AddMonths(2))
                 .Build();
@@ -47,7 +47,7 @@ public class ShortCourseChangeOfProviderSteps(ScenarioContext context, LearnerDa
 
         if (createShortCourseRequest == null)
         {
-            createShortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
+            createShortCourseRequest = ShortCourseLearnerDataBuilder.CreateNew(testData)
                 .WithStartDate(DateTime.Now.AddMonths(-2))
                 .WithEndDate(DateTime.Now.AddMonths(2))
                 .WithMilestone(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete)
