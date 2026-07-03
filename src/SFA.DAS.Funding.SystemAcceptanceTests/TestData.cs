@@ -66,6 +66,7 @@ public class TestData
     internal GrowthAndSkillsPaymentsRecalculatedEvent? CalculateGrowthAndSkillsPaymentsEvent { get; set; }
 
     internal Dictionary<long, LearnerDataOuterApiClient.ShortCourseRequest> ShortCourseCreateUpdateRequests { get; set; }
+    internal string? ProgressionCourseCode { get; set; }
     public TestData(string uln)
     {
         Uln = uln;
