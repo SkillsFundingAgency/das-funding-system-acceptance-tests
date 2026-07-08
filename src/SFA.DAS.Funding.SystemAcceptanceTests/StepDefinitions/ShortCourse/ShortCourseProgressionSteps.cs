@@ -2,14 +2,15 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 
 [Binding]
 public class ShortCourseProgressionSteps(ScenarioContext context, LearnerDataOuterApiClient learnerDataOuterApiHelper, ShortCourseEarningsAndPaymentsAssertionHelper assertionHelper)
 {
-    [When(@"SLD submits a progression PUT for a new course alongside the existing course")]
-    public async Task WhenSLDSubmitsAProgressionPUTForANewCourseAlongsideTheExistingCourse()
+    [When("SLD submits a progression PUT for a new course with start date (.*) alongside the existing course")]
+    public async Task SLDSubmitsAProgressionPUTForANewCourseWithStartDateAlongsideTheExistingCourse(TokenisableDateTime startDate)
     {
         var testData = context.Get<TestData>();
         var ukprn = Constants.UkPrn;
@@ -18,8 +19,8 @@ public class ShortCourseProgressionSteps(ScenarioContext context, LearnerDataOut
 
         var newCourseOnProgramme = ShortCourseLearnerDataBuilder.CreateNew(testData)
             .WithCourseCode("ZSC00005")
-            .WithStartDate(existingOnProgramme.ExpectedEndDate.AddDays(1))
-            .WithEndDate(existingOnProgramme.ExpectedEndDate.AddMonths(3))
+            .WithStartDate(startDate.Value)
+            .WithEndDate(startDate.Value.AddMonths(3))
             .Build()
             .Delivery.OnProgramme.Single();
 
@@ -31,6 +32,29 @@ public class ShortCourseProgressionSteps(ScenarioContext context, LearnerDataOut
 
         testData.ShortCourseCreateUpdateRequests[ukprn] = existingRequest;
     }
+
+    [When("SLD submits a progression POST for a new course in academic year (.*) with start date (.*)")]
+    public async Task SLDSubmitsAProgressionPOSTForANewCourseInAcademicYearWithStartDate(TokenisableAcademicYear academicYear, TokenisableDateTime startDate)
+    {
+        var testData = context.Get<TestData>();
+        var ukprn = Constants.UkPrn;
+
+        var shortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
+            .WithStartDate(startDate.Value)
+            .WithEndDate(startDate.Value.AddMonths(3))
+            .WithCourseCode("ZSC00005")
+            .Build();
+
+        shortCourseRequest.Delivery.OnProgramme.Single().Milestones = [];
+        shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = null;
+
+        testData.ShortCourseCreateUpdateRequests[ukprn] = shortCourseRequest;
+        testData.ProgressionCourseCode = shortCourseRequest.Delivery.OnProgramme.First().CourseCode;
+
+        await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest, academicYear.Value);
+    }
+
+
 
     [Then(@"unapproved earnings are generated for the new course")]
     public Task ThenUnapprovedEarningsAreGeneratedForTheNewCourse()
