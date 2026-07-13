@@ -312,7 +312,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public short? WithdrawalReasonCode { get; set; }
             public List<LearningSupportRequestDetails> LearningSupport { get; set; } = [];
             public DateTime? PauseDate { get; set; }
-            public int? AimSequenceNumber { get; set; }
+            public int? AimSequenceNumber { get; set; } = 1;
             public DateTime? ActualEndDate { get; set; }
             public List<Milestone> Milestones { get; set; } = [];
         }
