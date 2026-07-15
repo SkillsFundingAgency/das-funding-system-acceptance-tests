@@ -507,6 +507,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class ShortCourseEarningsLearner
         {
+            public string Key { get; set; }
             public string LearningKey { get; set; }
             public string LearnerRef { get; set; } = "";
             public List<ShortCourseEarningsCourse> Courses { get; set; }
