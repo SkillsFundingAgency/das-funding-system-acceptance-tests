@@ -309,6 +309,36 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             Assert.AreEqual(1, earningsModel!.Count, "Expected exactly 1 episode for the earliest short course earnings, but found a different count.");
         }
 
+        public async Task AssertUnapprovedEarningsGeneratedForNewCourse()
+        {
+            var testData = context.Get<TestData>();
+            var ukprn = Constants.UkPrn;
+            var courseCode = testData.ProgressionCourseCode!;
+
+            List<ShortCourseEarningsModel>? earningsModel = null;
+            await WaitHelper.WaitForIt(() =>
+            {
+                earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
+                return earningsModel != null && earningsModel.Any(l => l.TrainingCode.Trim() == courseCode);
+            }, $"Failed to find short course earnings for the new course {courseCode}.");
+
+            var episode = earningsModel!.GetEpisode(ukprn, courseCode);
+            Assert.IsFalse(episode.EarningsProfile.IsApproved, $"Expected earnings for the new course {courseCode} to be unapproved.");
+            Assert.IsTrue(episode.EarningsProfile.Instalments.Any(), $"Expected instalments to be generated for the new course {courseCode}.");
+        }
+
+        public void AssertOriginalCourseEarningsUnaffected()
+        {
+            var testData = context.Get<TestData>();
+
+            var earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
+            var episode = earningsModel!.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
+
+            Assert.IsTrue(episode.EarningsProfile.IsApproved, "Expected the original course to remain approved.");
+            Assert.IsTrue(episode.EarningsProfile.Instalments.Any(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable), "Expected the original course's 30% milestone earning to remain unaffected.");
+            Assert.IsTrue(episode.EarningsProfile.Instalments.Any(x => x.Type == "LearningComplete" && x.IsPayable), "Expected the original course's completion earning to remain unaffected.");
+        }
+
         public async Task AssertEarningsAreStillRecordedAgainstTheFirstProvider()
         {
             var testData = context.Get<TestData>();

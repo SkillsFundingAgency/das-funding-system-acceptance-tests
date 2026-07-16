@@ -170,9 +170,10 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
         var testData = context.Get<TestData>();
         var endDate = startDate.Value.AddMonths(3);
 
-        var shortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
+        var shortCourseRequest = ShortCourseLearnerDataBuilder.CreateNew(testData)
             .WithStartDate(startDate.Value)
             .WithEndDate(endDate)
+            .WithCourseCode("ZSC00005")
             .Build();
 
         context.Set(shortCourseRequest, "SecondaryShortCourseRequest");

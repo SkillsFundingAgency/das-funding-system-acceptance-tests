@@ -1,6 +1,8 @@
 using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
+using Microsoft.AspNetCore.Http.Features;
 using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using System.Net;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
@@ -45,9 +47,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task AddShortCourseLearnerData(long ukprn, ShortCourseRequest requestBody)
+        public async Task AddShortCourseLearnerData(long ukprn, ShortCourseRequest requestBody, 
+            short? academicYear = null)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, $"/learnerdata/providers/{ukprn}/shortCourses");
+
+            academicYear ??= TokenisableAcademicYear.GetAcademicYear(0);
+            var request = new HttpRequestMessage(HttpMethod.Post, $"/learnerdata/providers/{ukprn}/shortCourses?academicYear={academicYear}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -307,7 +312,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public short? WithdrawalReasonCode { get; set; }
             public List<LearningSupportRequestDetails> LearningSupport { get; set; } = [];
             public DateTime? PauseDate { get; set; }
-            public int? AimSequenceNumber { get; set; }
+            public int? AimSequenceNumber { get; set; } = 1;
             public DateTime? ActualEndDate { get; set; }
             public List<Milestone> Milestones { get; set; } = [];
         }
@@ -502,6 +507,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class ShortCourseEarningsLearner
         {
+            public string Key { get; set; }
             public string LearningKey { get; set; }
             public string LearnerRef { get; set; } = "";
             public List<ShortCourseEarningsCourse> Courses { get; set; }
