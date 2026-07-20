@@ -199,8 +199,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
 
+            var payload = System.Text.Json.JsonSerializer.Serialize(learningData);
             var jsonContent = new StringContent(
-                System.Text.Json.JsonSerializer.Serialize(learningData),
+                payload,
                 System.Text.Encoding.UTF8,
                 "application/json");
 
@@ -211,6 +212,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             if (!response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"UpdateLearning failed with status {(int)response.StatusCode} ({response.StatusCode}). Payload: {payload}. Response: {content}");
             }
 
             response.EnsureSuccessStatusCode();
@@ -331,6 +333,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class UpdateLearnerRequest
         {
+            public string ConsumerReference { get; set; } = "AcceptanceTests";
             public Delivery Delivery { get; set; } = new();
             public LearnerRequestDetails Learner { get; set; }
         }

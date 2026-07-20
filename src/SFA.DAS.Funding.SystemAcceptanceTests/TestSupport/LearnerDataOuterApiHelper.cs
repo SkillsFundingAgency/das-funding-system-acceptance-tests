@@ -1,6 +1,5 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
@@ -8,7 +7,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
     public class LearnerDataOuterApiHelper
     {
         private readonly LearnerDataOuterApiClient _apiClient = new();
-        private readonly LearningSqlClient _learningSqlClient = new();
         private ScenarioContext _context;
 
         public void SetContext(ScenarioContext context)
@@ -99,24 +97,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             var builder = new LearnerDataBuilder(_context.Get<TestData>());
             configure(builder);
             var request = builder.Build();
-            var learnerKey = _learningSqlClient.GetApprenticeship(apprenticeshipKey).LearnerKey;
 
-            await _apiClient.UpdateLearning(Constants.UkPrn, learnerKey, request);
+            await _apiClient.UpdateLearning(Constants.UkPrn, apprenticeshipKey, request);
         }
 
 
         public async Task<UpdateLearnerRequest> UpdateLearning(Guid apprenticeshipKey, UpdateLearnerRequest request)
         {
-            var learnerKey = _learningSqlClient.GetApprenticeship(apprenticeshipKey).LearnerKey;
-            await _apiClient.UpdateLearning(Constants.UkPrn, learnerKey, request);
+            await _apiClient.UpdateLearning(Constants.UkPrn, apprenticeshipKey, request);
 
             return request;
         }
 
         public async Task RemoveLearner(Guid apprenticeshipKey)
         {
-            var learnerKey = _learningSqlClient.GetApprenticeship(apprenticeshipKey).LearnerKey;
-            await _apiClient.DeleteLearner(Constants.UkPrn, learnerKey);
+            await _apiClient.DeleteLearner(Constants.UkPrn, apprenticeshipKey);
         }
     }
 }
