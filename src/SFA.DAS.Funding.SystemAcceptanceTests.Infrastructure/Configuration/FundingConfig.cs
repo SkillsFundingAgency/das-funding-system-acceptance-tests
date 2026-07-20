@@ -34,4 +34,5 @@ public class FundingConfig
     public string LearnerDataOuterApiSubscriptionKey { get; set; } = NotSet;
     public string CertificateSecretClientUrl { get; set; } = NotSet;
     public string CertificateSecretName { get; set; } = NotSet;
+    public bool UseLegacyLearnerDataOuterUrlFormats { get; set; } = false;
 }
