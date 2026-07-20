@@ -149,9 +149,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             return JsonConvert.DeserializeObject<GetLearnerResponse>(await response.Content.ReadAsStringAsync())!;
         }
 
-        public async Task UpdateShortCourseLearning(long ukprn, Guid learningKey, ShortCourseRequest requestData)
+        public async Task UpdateShortCourseLearning(long ukprn, Guid learnerKey, ShortCourseRequest requestData)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/providers/{ukprn}/shortCourses/{learningKey}");
+            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/providers/{ukprn}/shortCourses/{learnerKey}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -192,9 +192,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             return JsonConvert.DeserializeObject<GetShortCourseEarningsResponse>(await response.Content.ReadAsStringAsync())!;
         }
 
-        public async Task UpdateLearning(long ukprn, Guid learningKey, UpdateLearnerRequest learningData)
+        public async Task UpdateLearning(long ukprn, Guid learnerKey, UpdateLearnerRequest learningData)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/providers/{ukprn}/learning/{learningKey}");
+            var request = new HttpRequestMessage(HttpMethod.Put, $"/learnerdata/providers/{ukprn}/learning/{learnerKey}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -245,9 +245,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             return response;
         }
 
-        public async Task DeleteLearner(long ukprn, Guid learningKey)
+        public async Task DeleteLearner(long ukprn, Guid learnerKey)
         {
-            var request = new HttpRequestMessage(HttpMethod.Delete, $"/learnerdata/providers/{ukprn}/learning/{learningKey}");
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"/learnerdata/providers/{ukprn}/learning/{learnerKey}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -256,9 +256,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, $"Expected HTTP 200 OK response from DeleteLearner request, but got {response.StatusCode}");
         }
 
-        public async Task DeleteShortCourse(long ukprn, Guid learningKey)
+        public async Task DeleteShortCourse(long ukprn, Guid learnerKey)
         {
-            var request = new HttpRequestMessage(HttpMethod.Delete, $"/learnerdata/providers/{ukprn}/shortCourses/{learningKey}");
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"/learnerdata/providers/{ukprn}/shortCourses/{learnerKey}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
