@@ -39,9 +39,9 @@ public class LearnerDataOuterUrlProvider
             ? $"/learnerdata/providers/{ukprn}/academicyears/{academicYear}/shortCourses"
             : "TODO new url";
 
-    public string UpdateShortCourseLearning(long ukprn, Guid learningKey)
+    public string UpdateShortCourseLearning(long ukprn, Guid learnerKey)
         => _useLegacyLearnerDataOuterUrls
-            ? $"/learnerdata/providers/{ukprn}/shortCourses/{learningKey}"
+            ? $"/learnerdata/providers/{ukprn}/shortCourses/{learnerKey}"
             : "TODO new url";
 
     public string GetShortCourseEarningsData(long ukprn, int collectionYear, byte collectionPeriod)
@@ -49,9 +49,9 @@ public class LearnerDataOuterUrlProvider
             ? $"/learnerdata/providers/{ukprn}/collectionPeriods/{collectionYear}/{collectionPeriod}/shortCourses"
             : "TODO new url";
 
-    public string UpdateLearning(long ukprn, Guid learningKey)
+    public string UpdateLearning(long ukprn, Guid learnerKey)
         => _useLegacyLearnerDataOuterUrls
-            ? $"/learnerdata/providers/{ukprn}/learning/{learningKey}"
+            ? $"/learnerdata/providers/{ukprn}/learning/{learnerKey}"
             : "TODO new url";
 
     public string GetFm36Block(long ukprn, int collectionYear, byte collectionPeriod, int? pageSize = null, int? pageNumber = null)
@@ -71,14 +71,14 @@ public class LearnerDataOuterUrlProvider
         return "TODO new url";
     }
 
-    public string DeleteLearner(long ukprn, Guid learningKey)
+    public string DeleteLearner(long ukprn, Guid learnerKey)
         => _useLegacyLearnerDataOuterUrls
-            ? $"/learnerdata/providers/{ukprn}/learning/{learningKey}"
+            ? $"/learnerdata/providers/{ukprn}/learning/{learnerKey}"
             : "TODO new url";
 
-    public string DeleteShortCourse(long ukprn, Guid learningKey)
+    public string DeleteShortCourse(long ukprn, Guid learnerKey)
         => _useLegacyLearnerDataOuterUrls
-            ? $"/learnerdata/providers/{ukprn}/shortCourses/{learningKey}"
+            ? $"/learnerdata/providers/{ukprn}/shortCourses/{learnerKey}"
             : "TODO new url";
 
     public string CallHealthCheck()
