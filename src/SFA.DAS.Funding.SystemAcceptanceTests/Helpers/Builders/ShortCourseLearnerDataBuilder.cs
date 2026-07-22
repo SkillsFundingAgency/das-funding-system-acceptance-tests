@@ -8,15 +8,38 @@ public class ShortCourseLearnerDataBuilder
 
     public ShortCourseLearnerDataBuilder(TestData testData)
     {
-        if(testData.ShortCourseCreateUpdateRequests.Count == 1)
-        {
-            _request = testData.ShortCourseCreateUpdateRequests.Single().Value;
-        }
-
-        if(testData.ShortCourseCreateUpdateRequests.Count > 1)
+        if (testData.ShortCourseCreateUpdateRequests.Count > 1)
             throw new Exception("If multiple ShortCourseCreateUpdateRequests exist in TestData, the builder cannot determine which one to use. Use constructor (TestData testData, long ukprn) instead");
 
-        _request = new LearnerDataOuterApiClient.ShortCourseRequest
+        if (testData.ShortCourseCreateUpdateRequests.Count == 1)
+        {
+            _request = testData.ShortCourseCreateUpdateRequests.Single().Value;
+            return;
+        }
+
+        _request = BuildDefaultRequest(testData);
+    }
+
+    public ShortCourseLearnerDataBuilder(TestData testData, long ukprn)
+    {
+        _request = testData.ShortCourseCreateUpdateRequests[ukprn];
+    }
+
+    private ShortCourseLearnerDataBuilder(TestData testData, bool alwaysBuildFresh)
+    {
+        _request = BuildDefaultRequest(testData);
+    }
+
+    /// <summary>
+    /// Always builds a brand new default request, regardless of what is already stored in TestData.
+    /// Use this when representing a genuinely distinct course/provider request rather than an update
+    /// to an existing one (e.g. a second course for the same learner, or a different provider's request).
+    /// </summary>
+    public static ShortCourseLearnerDataBuilder CreateNew(TestData testData) => new(testData, true);
+
+    private static LearnerDataOuterApiClient.ShortCourseRequest BuildDefaultRequest(TestData testData)
+    {
+        return new LearnerDataOuterApiClient.ShortCourseRequest
         {
             Learner = new LearnerDataOuterApiClient.ShortCourseLearnerRequestDetails
             {
@@ -44,11 +67,6 @@ public class ShortCourseLearnerDataBuilder
             ]
             }
         };
-    }
-
-    public ShortCourseLearnerDataBuilder(TestData testData, long ukprn)
-    {
-        _request = testData.ShortCourseCreateUpdateRequests[ukprn];
     }
 
     public ShortCourseLearnerDataBuilder WithStartDate(DateTime startDate)

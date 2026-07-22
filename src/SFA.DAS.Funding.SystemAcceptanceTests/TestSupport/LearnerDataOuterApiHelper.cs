@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
@@ -7,6 +8,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
     public class LearnerDataOuterApiHelper
     {
         private readonly LearnerDataOuterApiClient _apiClient = new();
+        private readonly LearningSqlClient _learningSqlClient = new();
         private ScenarioContext _context;
 
         public void SetContext(ScenarioContext context)
@@ -92,26 +94,51 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             return await _apiClient.GetProviderRefData(ukprn);
         }
 
-        public async Task UpdateLearning(Guid learningKey, Action<LearnerDataBuilder> configure)
+        public async Task UpdateLearning(Guid apprenticeshipKey, Action<LearnerDataBuilder> configure)
         {
             var builder = new LearnerDataBuilder(_context.Get<TestData>());
             configure(builder);
             var request = builder.Build();
+            var learnerKey = await ResolveLearnerKey(apprenticeshipKey);
 
-            await _apiClient.UpdateLearning(Constants.UkPrn, learningKey, request);
+            await _apiClient.UpdateLearning(Constants.UkPrn, learnerKey, request);
         }
 
 
-        public async Task<UpdateLearnerRequest> UpdateLearning(Guid learningKey, UpdateLearnerRequest request)
+        public async Task<UpdateLearnerRequest> UpdateLearning(Guid apprenticeshipKey, UpdateLearnerRequest request)
         {
-            await _apiClient.UpdateLearning(Constants.UkPrn, learningKey, request);
+            var learnerKey = await ResolveLearnerKey(apprenticeshipKey);
+
+            await _apiClient.UpdateLearning(Constants.UkPrn, learnerKey, request);
 
             return request;
         }
 
-        public async Task RemoveLearner(Guid learningKey)
+        public async Task RemoveLearner(Guid apprenticeshipKey)
         {
-            await _apiClient.DeleteLearner(Constants.UkPrn, learningKey);
+            var learnerKey = await ResolveLearnerKey(apprenticeshipKey);
+
+            await _apiClient.DeleteLearner(Constants.UkPrn, learnerKey);
+        }
+
+        private async Task<Guid> ResolveLearnerKey(Guid apprenticeshipKey)
+        {
+            Guid? learnerKey = null;
+
+            await WaitHelper.WaitForIt(() =>
+            {
+                try
+                {
+                    learnerKey = _learningSqlClient.GetApprenticeship(apprenticeshipKey).LearnerKey;
+                    return true;
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
+            }, $"Unable to resolve learner key for apprenticeship learning key {apprenticeshipKey}");
+
+            return learnerKey!.Value;
         }
     }
 }

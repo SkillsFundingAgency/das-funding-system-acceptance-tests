@@ -1,6 +1,8 @@
 using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
+using Microsoft.AspNetCore.Http.Features;
 using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using System.Net;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
@@ -47,10 +49,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task AddShortCourseLearnerData(long ukprn, ShortCourseRequest requestBody)
+        public async Task AddShortCourseLearnerData(long ukprn, ShortCourseRequest requestBody, 
+            short? academicYear = null)
         {
             var ay = requestBody.Delivery.OnProgramme.First().StartDate.ToAcademicYearAndPeriod();
             var request = new HttpRequestMessage(HttpMethod.Post, _urlProvider.AddShortCourseLearnerData(ukprn, ay.AcademicYear, ay.Period));
+            var request = new HttpRequestMessage(HttpMethod.Post, $"/learnerdata/providers/{ukprn}/shortCourses?academicYear={academicYear}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -147,9 +151,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             return JsonConvert.DeserializeObject<GetLearnerResponse>(await response.Content.ReadAsStringAsync())!;
         }
 
-        public async Task UpdateShortCourseLearning(long ukprn, Guid learningKey, ShortCourseRequest requestData)
+        public async Task UpdateShortCourseLearning(long ukprn, Guid learnerKey, ShortCourseRequest requestData)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, _urlProvider.UpdateShortCourseLearning(ukprn, learningKey));
+            var request = new HttpRequestMessage(HttpMethod.Put, _urlProvider.UpdateShortCourseLearning(ukprn, learnerKey));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -190,15 +194,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             return JsonConvert.DeserializeObject<GetShortCourseEarningsResponse>(await response.Content.ReadAsStringAsync())!;
         }
 
-        public async Task UpdateLearning(long ukprn, Guid learningKey, UpdateLearnerRequest learningData)
+        public async Task UpdateLearning(long ukprn, Guid learnerKey, UpdateLearnerRequest learningData)
         {
             var request = new HttpRequestMessage(HttpMethod.Put, _urlProvider.UpdateLearning(ukprn, learningKey));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
 
+            var payload = System.Text.Json.JsonSerializer.Serialize(learningData);
             var jsonContent = new StringContent(
-                System.Text.Json.JsonSerializer.Serialize(learningData),
+                payload,
                 System.Text.Encoding.UTF8,
                 "application/json");
 
@@ -209,6 +214,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             if (!response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"UpdateLearning failed with status {(int)response.StatusCode} ({response.StatusCode}). Payload: {payload}. Response: {content}");
             }
 
             response.EnsureSuccessStatusCode();
@@ -237,7 +243,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             return response;
         }
 
-        public async Task DeleteLearner(long ukprn, Guid learningKey)
+        public async Task DeleteLearner(long ukprn, Guid learnerKey)
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, _urlProvider.DeleteLearner(ukprn, learningKey));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
@@ -248,7 +254,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, $"Expected HTTP 200 OK response from DeleteLearner request, but got {response.StatusCode}");
         }
 
-        public async Task DeleteShortCourse(long ukprn, Guid learningKey)
+        public async Task DeleteShortCourse(long ukprn, Guid learnerKey)
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, _urlProvider.DeleteShortCourse(ukprn, learningKey));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
@@ -304,7 +310,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public short? WithdrawalReasonCode { get; set; }
             public List<LearningSupportRequestDetails> LearningSupport { get; set; } = [];
             public DateTime? PauseDate { get; set; }
-            public int? AimSequenceNumber { get; set; }
+            public int? AimSequenceNumber { get; set; } = 1;
             public DateTime? ActualEndDate { get; set; }
             public List<Milestone> Milestones { get; set; } = [];
         }
@@ -323,6 +329,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class UpdateLearnerRequest
         {
+            public string ConsumerReference { get; set; } = "AcceptanceTests";
             public Delivery Delivery { get; set; } = new();
             public LearnerRequestDetails Learner { get; set; }
         }
@@ -499,6 +506,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class ShortCourseEarningsLearner
         {
+            public string Key { get; set; }
             public string LearningKey { get; set; }
             public string LearnerRef { get; set; } = "";
             public List<ShortCourseEarningsCourse> Courses { get; set; }
