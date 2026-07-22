@@ -55,8 +55,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             var ay = requestBody.Delivery.OnProgramme.First().StartDate.ToAcademicYearAndPeriod();
             var request = new HttpRequestMessage(HttpMethod.Post, _urlProvider.AddShortCourseLearnerData(ukprn, ay.AcademicYear, ay.Period));
 
-            ay ??= TokenisableAcademicYear.GetAcademicYear(0);
-            var request = new HttpRequestMessage(HttpMethod.Post, $"/learnerdata/providers/{ukprn}/shortCourses?academicYear={ay}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -198,7 +196,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public async Task UpdateLearning(long ukprn, Guid learningKey, UpdateLearnerRequest learningData)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, _urlProvider.UpdateLearning(ukprn, learningKey));
+            var request = new HttpRequestMessage(HttpMethod.Put, _urlProvider.UpdateLearning(ukprn, learnerKey));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -245,7 +243,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public async Task DeleteLearner(long ukprn, Guid learningKey)
         {
-            var request = new HttpRequestMessage(HttpMethod.Delete, _urlProvider.DeleteLearner(ukprn, learningKey));
+            var request = new HttpRequestMessage(HttpMethod.Delete, _urlProvider.DeleteLearner(ukprn, learnerKey));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -256,7 +254,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public async Task DeleteShortCourse(long ukprn, Guid learningKey)
         {
-            var request = new HttpRequestMessage(HttpMethod.Delete, _urlProvider.DeleteShortCourse(ukprn, learningKey));
+            var request = new HttpRequestMessage(HttpMethod.Delete, _urlProvider.DeleteShortCourse(ukprn, learnerKey));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
