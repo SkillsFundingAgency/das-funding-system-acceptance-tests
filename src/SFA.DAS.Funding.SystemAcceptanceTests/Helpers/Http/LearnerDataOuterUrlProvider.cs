@@ -9,56 +9,51 @@ public class LearnerDataOuterUrlProvider
         _useLegacyLearnerDataOuterUrls = useLegacyLearnerDataOuterUrls;
     }
 
-    public string AddLearnerData(long ukprn)
+    public string AddLearnerData(long ukprn, int academicYear, byte collectionPeriod)
         => _useLegacyLearnerDataOuterUrls
             ? $"/learnerdata/providers/{ukprn}/learners"
-            : "TODO new url";
+            : $"/learnerdata/providers/{ukprn}/apprenticeships?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
 
     public string AddShortCourseLearnerData(long ukprn, int academicYear, byte collectionPeriod)
-        => _useLegacyLearnerDataOuterUrls
-            ? $"/learnerdata/providers/{ukprn}/shortCourses?academicYear={academicYear}&collectionPeriod={collectionPeriod}"
-            : "TODO new url";
+        => $"/learnerdata/providers/{ukprn}/shortCourses?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
 
-    public string AddShortCourseLearnerDataWithResponse(long ukprn)
+    public string AddShortCourseLearnerDataWithResponse(long ukprn, int academicYear, byte collectionPeriod)
         => _useLegacyLearnerDataOuterUrls
             ? $"/learnerdata/providers/{ukprn}/shortCourses"
-            : "TODO new url";
+            : $"/learnerdata/providers/{ukprn}/shortCourses?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
 
     public string GetLearners(long ukprn, int academicYear)
         => _useLegacyLearnerDataOuterUrls
             ? $"/learnerdata/Learners/providers/{ukprn}/academicyears/{academicYear}/learners"
-            : "TODO new url";
+            : $"/learnerdata/providers/{ukprn}/apprenticeships/learners?academicYear={academicYear}";
 
-    public string GetProviderRefData(long ukprn)
-        => _useLegacyLearnerDataOuterUrls
-            ? $"/learnerdata/reference-data/providers/{ukprn}"
-            : "TODO new url";
+    public string GetProviderRefData(long ukprn) => $"/learnerdata/reference-data/providers/{ukprn}";
 
     public string GetShortCourseLearnerApprovedUlns(long ukprn, int academicYear)
         => _useLegacyLearnerDataOuterUrls
             ? $"/learnerdata/providers/{ukprn}/academicyears/{academicYear}/shortCourses"
-            : "TODO new url";
+            : $"/learnerdata/providers/{ukprn}/shortCourses/learners?academicYear={academicYear}";
 
-    public string UpdateShortCourseLearning(long ukprn, Guid learnerKey)
+    public string UpdateShortCourseLearning(long ukprn, Guid learnerKey, int academicYear, byte collectionPeriod)
         => _useLegacyLearnerDataOuterUrls
             ? $"/learnerdata/providers/{ukprn}/shortCourses/{learnerKey}"
-            : "TODO new url";
+            : $"/learnerdata/providers/{ukprn}/shortCourses/{learnerKey}?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
 
-    public string GetShortCourseEarningsData(long ukprn, int collectionYear, byte collectionPeriod)
+    public string GetShortCourseEarningsData(long ukprn, int academicYear, byte collectionPeriod)
         => _useLegacyLearnerDataOuterUrls
-            ? $"/learnerdata/providers/{ukprn}/collectionPeriods/{collectionYear}/{collectionPeriod}/shortCourses"
-            : "TODO new url";
+            ? $"/learnerdata/providers/{ukprn}/collectionPeriods/{academicYear}/{collectionPeriod}/shortCourses"
+            : $"/learnerdata/providers/{ukprn}/shortCourses/earnings?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
 
-    public string UpdateLearning(long ukprn, Guid learnerKey)
+    public string UpdateLearning(long ukprn, Guid learnerKey, int academicYear, byte collectionPeriod)
         => _useLegacyLearnerDataOuterUrls
             ? $"/learnerdata/providers/{ukprn}/learning/{learnerKey}"
-            : "TODO new url";
+            : $"/learnerdata/providers/{ukprn}/apprenticeships/{learnerKey}?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
 
-    public string GetFm36Block(long ukprn, int collectionYear, byte collectionPeriod, int? pageSize = null, int? pageNumber = null)
+    public string GetFm36Block(long ukprn, int academicYear, byte collectionPeriod, int? pageSize = null, int? pageNumber = null)
     {
         if (_useLegacyLearnerDataOuterUrls)
         {
-            var url = $"/learnerdata/Learners/providers/{ukprn}/collectionPeriod/{collectionYear}/{collectionPeriod}/fm36data";
+            var url = $"/learnerdata/Learners/providers/{ukprn}/collectionPeriod/{academicYear}/{collectionPeriod}/fm36data";
 
             if (pageSize.HasValue && pageNumber.HasValue)
             {
@@ -68,21 +63,25 @@ public class LearnerDataOuterUrlProvider
             return url;
         }
 
-        return "TODO new url";
+        var newUrl = $"/learnerdata/providers/{ukprn}/fm36data?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
+
+        if (pageSize.HasValue && pageNumber.HasValue)
+        {
+            newUrl += $"&page={pageNumber.Value}&pageSize={pageSize.Value}";
+        }
+
+        return newUrl;
     }
 
-    public string DeleteLearner(long ukprn, Guid learnerKey)
+    public string DeleteLearner(long ukprn, Guid learnerKey, int academicYear)
         => _useLegacyLearnerDataOuterUrls
             ? $"/learnerdata/providers/{ukprn}/learning/{learnerKey}"
-            : "TODO new url";
+            : $"/learnerdata/providers/{ukprn}/apprenticeships/{learnerKey}?academicYear={academicYear}";
 
-    public string DeleteShortCourse(long ukprn, Guid learnerKey)
+    public string DeleteShortCourse(long ukprn, Guid learnerKey, int academicYear)
         => _useLegacyLearnerDataOuterUrls
             ? $"/learnerdata/providers/{ukprn}/shortCourses/{learnerKey}"
-            : "TODO new url";
+            : $"/learnerdata/providers/{ukprn}/shortCourses/{learnerKey}?academicYear={academicYear}";
 
-    public string CallHealthCheck()
-        => _useLegacyLearnerDataOuterUrls
-            ? "/learnerdata/health"
-            : "TODO new url";
+    public string CallHealthCheck() => "/learnerdata/health";
 }
