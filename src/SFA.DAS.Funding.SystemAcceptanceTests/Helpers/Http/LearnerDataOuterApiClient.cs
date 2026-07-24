@@ -432,6 +432,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         {
             public string larsCode { get; set; } = "";
             public DateTime? EffectiveFrom { get; set; }
+            public DateTime? LastDateStarts { get; set; }
         }
 
 

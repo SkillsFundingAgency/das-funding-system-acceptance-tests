@@ -55,6 +55,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             Assert.AreEqual(Ukprn, actualRefData.Ukprn, "Ukprn does not match");
             Assert.AreEqual("Main", actualRefData.Type, "Type does not match");
             Assert.AreEqual("Active", actualRefData.Status, "Status does not match");
+
+            // filter
+            bool exists = actualRefData.SupportedCourses.FirstOrDefault()?.Courses.Any(c => c.LastDateStarts != null) ?? false;
+              
+            // Assert
+            Assert.IsTrue(exists, $"Expected lastDateSarts in the Reference data.");
         }
 
         [Then("the history of old learning is maintained")]
