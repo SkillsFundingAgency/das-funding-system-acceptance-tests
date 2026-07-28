@@ -1,9 +1,10 @@
-﻿@nonparallelizable
+@nonparallelizable
 Feature: Fm36ChangeOfCircumstance
 
 Fm36 Change Of Circumstance
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Price change approved; new price episode in FM36 block
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
@@ -19,6 +20,7 @@ Examples:
 	| previousAY-08-20 | currentAY-04-23 | 15000        | 2             | previousAY-09-29 | 18000           | previousAY-09-29 |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Start date change approved
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship

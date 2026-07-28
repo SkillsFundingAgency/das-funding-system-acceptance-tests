@@ -1,4 +1,4 @@
-﻿Feature: BreakInLearningReturn
+Feature: BreakInLearningReturn
 
 As the Dfe
 I want the apprenticeship earnings to be recalculated when a return from break in learning is recorded
@@ -15,6 +15,7 @@ Background:
 
 #FLP-1360 AC1 previousAY return
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider records a return from a break in learning in previous academic year
 	Given SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
 	When SLD submit updated learners details
@@ -26,6 +27,7 @@ Scenario: Training provider records a return from a break in learning in previou
 
 #FLP-1360 AC1 current AY return
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider records a return from a break in learning in current academic year
 	Given SLD inform us of a return from break in learning with a new learning start date currentAY-05-01
 	When SLD submit updated learners details
@@ -37,6 +39,7 @@ Scenario: Training provider records a return from a break in learning in current
 
 #FLP-1360 AC3 training provider corrects previously recorded return previousAY
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider corrects a previous recorded return from a break in learning in previous academic year
 	Given SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
 	And SLD submit updated learners details
@@ -49,6 +52,7 @@ Scenario: Training provider corrects a previous recorded return from a break in 
 
 #FLP-1360 AC3 training provider corrects previously recorded return currentAY
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider corrects a previous recorded return from a break in learning in current academic year
 	Given SLD inform us of a return from break in learning with a new learning start date currentAY-05-01
 	And SLD submit updated learners details
@@ -61,6 +65,7 @@ Scenario: Training provider corrects a previous recorded return from a break in 
 
 #FLP-1360 AC4 training provider removes previously recorded return previousAY
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider removes a previously recorded return from a break in learning in previous academic year
 	Given SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
 	And SLD submit updated learners details
@@ -72,6 +77,7 @@ Scenario: Training provider removes a previously recorded return from a break in
 
 #FLP-1360 AC4 training provider removes previously recorded return currentAY
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider removes a previously recorded return from a break in learning in current academic year
 	Given SLD inform us of a return from break in learning with a new learning start date currentAY-03-01
 	And SLD submit updated learners details
@@ -84,6 +90,7 @@ Scenario: Training provider removes a previously recorded return from a break in
 #@regression
 #FLP-1360 AC4 training provider removes previously recorded return & entire break previousAY
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider removes a previously recorded return from, and break in learning in previous academic year
 	Given SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
 	And SLD submit updated learners details
@@ -95,6 +102,7 @@ Scenario: Training provider removes a previously recorded return from, and break
 
 #FLP-1360 AC4 training provider removes previously recorded return & entire break currentAY
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider removes a previously recorded return from, and break in learning in current academic year
 	Given SLD inform us of a return from break in learning with a new learning start date currentAY-03-01
 	And SLD submit updated learners details

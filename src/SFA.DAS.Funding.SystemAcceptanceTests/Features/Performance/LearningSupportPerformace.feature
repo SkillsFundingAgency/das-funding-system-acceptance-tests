@@ -1,10 +1,11 @@
-﻿Feature: LearningSupportPerformace
+Feature: LearningSupportPerformace
 
 The below test calls the Maths and English earnings inner endpoint for a duration of 5 years. 
 Then it calls the On-programme Learning Support endpoint for the same duration a number of times.
 With this test we want to ensure that the call of Learning Support inner endpoint does not timeout.
 
 @regression @Performance
+@UsesUpdateLearningPut
 Scenario: Learning Support for Maths and English Earnings over 5 years
 	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19

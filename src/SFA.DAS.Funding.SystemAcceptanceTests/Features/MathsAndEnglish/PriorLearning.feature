@@ -1,4 +1,4 @@
-﻿Feature: Maths and English Prior Learning
+Feature: Maths and English Prior Learning
 
 As the DfE
 I want to generate earnings for English and Maths qualifications
@@ -8,6 +8,7 @@ SLD can indicate a percentage adjustment to make for prior learning.
 M&E Earnings must be multipled by this percentage amount.
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Earnings for Maths and English with prior learning %
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of <agreed_price>
 	When Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount> and prior learning adjustment of <prior_learning> percent and other funding adjustment of <other_funding_adjustment> percent

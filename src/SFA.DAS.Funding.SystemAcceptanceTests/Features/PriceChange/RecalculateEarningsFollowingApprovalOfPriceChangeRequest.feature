@@ -1,4 +1,4 @@
-﻿Feature: RecalculateEarningsFollowingApprovalOfPriceChangeRequest
+Feature: RecalculateEarningsFollowingApprovalOfPriceChangeRequest
 
 As a Provider
 I want my earnings to reflect approved changes to the total price
@@ -15,6 +15,7 @@ Example 4: Price Drop in year 2 - New Price below Funding Band Max
 Example 5: Price Rise in R13 of year 1 - New Price at Funding Band Max
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Price change - Total price change ONLY - recalc earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
@@ -37,6 +38,7 @@ Examples:
 	| currentAY-08-27 | nextAY-04-27 |        15000 |             2 | currentAY-08-29 |           18000 |             720 | currentAY            |             600 |               1 |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Price change; Costs array combinations
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
@@ -53,6 +55,7 @@ Examples:
 	| previousAY-08-01 | previousAY-07-31 |        15000 |             2 | null             |           18000 |          15000 | 3000 |            1200 | previousAY           |               1 |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Price change; new total price is the same but training and epao costs changed
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
@@ -68,6 +71,7 @@ Examples:
 
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Price change; Empty Costs array
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
@@ -83,6 +87,7 @@ Examples:
 	| previousAY-07-23 | nextAY-03-23 |        15000 |             2 |               0 |               0 | currentAY            |               2 |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Price change; Both total price and start date changed
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved

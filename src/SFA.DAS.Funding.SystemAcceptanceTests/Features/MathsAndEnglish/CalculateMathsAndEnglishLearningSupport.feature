@@ -1,10 +1,11 @@
-﻿Feature: CalculateMathsAndEnglishLearningSupport
+Feature: CalculateMathsAndEnglishLearningSupport
 
 As the DfE
 I want to know when the details for learning support has changed for an apprentice
 So that earnings and payments can be recalculated based on the latest data
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Learning support added for Maths and English course
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
 	When a Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount>, learning support from <ls_start_date> to <ls_end_date>
@@ -17,6 +18,7 @@ Examples:
 	| currentAY-09-25 | currentAY-04-15 | Entry level English |    931 | currentAY-10-12 | currentAY-02-15 | currentAY-R03            | currentAY-R06           |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Learning support added for Maths and English course - paid until completion
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
 	When an English and Maths learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount>, completion date as <completion_date>, learning support from <ls_start_date> to <ls_end_date>
@@ -29,6 +31,7 @@ Examples:
 	| currentAY-09-25 | currentAY-04-15 | Entry level English |    931 | currentAY-03-20 | currentAY-10-12 | currentAY-04-15 | currentAY-R03            | currentAY-R07           |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: No LSF earnings when learner Withdraws from E&M
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
 	When English and Maths learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount>, withdrawal date <withdrawal_date>, learning support from <ls_start_date> to <ls_end_date>

@@ -1,10 +1,11 @@
-﻿Feature: Removal
+Feature: Removal
 
 As a earnings calc
 I want to know if an English/maths course has been removed from the ILR
 So that earnings can be removed
 
 @regression
+@UsesUpdateLearningPut
 Scenario: English and Maths course is removed
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved

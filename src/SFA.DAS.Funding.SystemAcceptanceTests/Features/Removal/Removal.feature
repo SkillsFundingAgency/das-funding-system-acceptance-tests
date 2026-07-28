@@ -1,4 +1,4 @@
-﻿Feature: Removal
+Feature: Removal
 
 At the Dfe
 I want to know when an apprentice is removed from the ILR
@@ -11,6 +11,7 @@ Background:
 	And SLD submit updated learners details
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Apprentice removed from the ILR
 	Given a Maths and English learning is recorded from currentAY-08-01 to nextAY-08-23 with learnAimRef 60342843, course Entry level English, amount 1200, learning support from currentAY-10-12 to currentAY-02-15
 	And SLD inform us of a break in learning with pause date currentAY-01-15

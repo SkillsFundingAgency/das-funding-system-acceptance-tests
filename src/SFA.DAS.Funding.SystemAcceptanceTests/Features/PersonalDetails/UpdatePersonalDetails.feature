@@ -1,10 +1,11 @@
-﻿Feature: UpdatePersonalDetails
+Feature: UpdatePersonalDetails
 
 At the Dfe
 I want to know when the email address, family name and/or given name of an apprentice has changed
 So that the data we store is always up to date
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Apprentice personal details are updated
 	Given an apprenticeship has a start date of 2024-08-01, a planned end date of 2025-07-31, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
@@ -21,6 +22,7 @@ Examples:
 	| Sys Acceptance Tests - Jane | Doe       | null              |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: SLD inform us of a change to the aprentices date of birth
 	Given an apprenticeship has a start date of <start_date>, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is <age>
@@ -41,6 +43,7 @@ Examples:
 # In the below scenario, the learner is initially 18 yo and hence employer and provider's incentives are generated.
 # The dob is then revised, making the learner 19 yo on start of the apprenticeship (Not marked as care leaver)
 @regression
+@UsesUpdateLearningPut
 Scenario: Apprentices age is updated to 19 years old without care leavers - incentives removed
 	Given an apprenticeship has a start date of 2025-08-02, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 18
@@ -58,6 +61,7 @@ Scenario: Apprentices age is updated to 19 years old without care leavers - ince
 # In the below scenario, the learner is initially 24 yo and marked as care leaver. Employer and provider's incentives are generated.
 # The dob is then revised, making the learner 25 yo on start of the apprenticeship 
 @regression
+@UsesUpdateLearningPut
 Scenario: Apprentices age is updated to 25 years old - incentives removed
 	Given an apprenticeship has a start date of 2025-08-02, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 24
@@ -79,6 +83,7 @@ Scenario: Apprentices age is updated to 25 years old - incentives removed
 # In the below scenario, the learner is initially 19 yo and NOT marked as care leaver. Employer and provider's incentives are NOT generated.
 # The dob is then revised, making the learner 18 yo on start of the apprenticeship - Incentives generated
 @regression
+@UsesUpdateLearningPut
 Scenario: Apprentices age is updated to 18 years old - incentives added
 	Given an apprenticeship has a start date of 2025-08-02, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 19

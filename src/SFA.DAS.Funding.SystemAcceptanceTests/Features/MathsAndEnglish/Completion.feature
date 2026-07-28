@@ -1,4 +1,4 @@
-﻿Feature: Maths and English Completion
+Feature: Maths and English Completion
 
 As the DfE
 I want to generate earnings for English and Maths qualifications
@@ -7,6 +7,7 @@ So that we know how much to pay providers when they deliver English and/or maths
 When M&E is marked as "Complete", earnings for subsequent delivery periods are "rolled up" into a single Balancing earning
 	
 @regression
+@UsesUpdateLearningPut
 Scenario: Balancing earnings for Maths and English on Completion
 	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
 	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with learnAimRef 60342843, course Entry level English, amount 931 and completion on currentAY-01-01
@@ -16,6 +17,7 @@ Scenario: Balancing earnings for Maths and English on Completion
 	And a Maths and English balancing earning of 399 is generated for course Entry level English for period currentAY-R06
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Balancing earnings for Maths and English on Completion moved earlier
 	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
 	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with learnAimRef 60342843, course Entry level English, amount 931 and completion on currentAY-01-01
@@ -31,6 +33,7 @@ Scenario: Balancing earnings for Maths and English on Completion moved earlier
 	And a Maths and English balancing earning of 532 is generated for course Entry level English for period currentAY-R05
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Balancing earnings for Maths and English on Completion moved later
 	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
 	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with learnAimRef 60342843, course Entry level English, amount 931 and completion on currentAY-01-01
@@ -46,6 +49,7 @@ Scenario: Balancing earnings for Maths and English on Completion moved later
 	And a Maths and English balancing earning of 266 is generated for course Entry level English for period currentAY-R07
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Balancing earnings for Maths and English on Completion - Completion removed
 	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
 	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with learnAimRef 60342843, course Entry level English, amount 931 and completion on currentAY-01-01
@@ -61,6 +65,7 @@ Scenario: Balancing earnings for Maths and English on Completion - Completion re
 	And Maths and English balancing earning is removed for course Entry level English
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Balancing earnings for Maths and English - Completion in same period as planned end date
 	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
 	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-30 with learnAimRef 60342843, course Entry level English, amount 1000 and completion on currentAY-04-07
@@ -70,6 +75,7 @@ Scenario: Balancing earnings for Maths and English - Completion in same period a
 	And a Maths and English balancing earning of 125 is generated for course Entry level English for period currentAY-R09
 
 @regression
+@UsesUpdateLearningPut
 Scenario: No Balancing earnings for Maths and English - Completion after planned end date
 	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
 	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-30 with learnAimRef 60342843, course Entry level English, amount 1000 and completion on currentAY-06-27

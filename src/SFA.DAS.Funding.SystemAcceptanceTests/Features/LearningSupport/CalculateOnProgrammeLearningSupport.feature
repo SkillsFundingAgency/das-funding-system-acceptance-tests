@@ -1,10 +1,11 @@
-﻿Feature: CalculateOnProgrammeLearningSupport
+Feature: CalculateOnProgrammeLearningSupport
 
 As the DfE
 I want to know when the details for learning support has changed for an apprentice
 So that earnings and payments can be recalculated based on the latest data
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Learning support added for On programme learning
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
 	When learning support is recorded from <ls_start_date> to <ls_end_date>
@@ -20,6 +21,7 @@ Examples:
 	| previousAY-08-01 | currentAY-07-31 | previousAY-09-01 | previousAY-05-15 | previousAY-R02           | previousAY-R09          |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Learning support removed for On programme learning
 	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
 	When learning support is recorded from <ls_start_date> to <ls_end_date>
@@ -34,6 +36,7 @@ Examples:
 	| currentAY-09-25 | currentAY-04-15 | currentAY-11-15 | currentAY-03-10 |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: No LSF earnings after learner withdraws from the programme aim
 	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
 	When learning support is recorded from currentAY-11-15 to currentAY-03-10

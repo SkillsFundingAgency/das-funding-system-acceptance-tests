@@ -1,9 +1,10 @@
-﻿@nonparallelizable
+@nonparallelizable
 Feature: Fm36
 
 Retrieve Fm36 data
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Retrieve Valid Fm36 data
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
@@ -24,6 +25,7 @@ Examples:
 
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Retrieve Fm36 data with Actual End Date
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
@@ -41,6 +43,7 @@ Examples:
 	| previousAY-08-01 | currentAY-08-31  |        15000 |           614 | currentAY-08-20 | currentAY-R01              |                       3000 |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Retrieve Valid Fm36 data for learners aged 15
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
@@ -56,6 +59,7 @@ Examples:
 
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Do not retrieve Fm36 data for future starts
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
@@ -70,6 +74,7 @@ Examples:
 	| nextAy-08-01 | CurrentAyPlusTwo-11-15 |        15000 |             2 |  18 |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Do not retrieve Fm36 data for learners with Actual Start Date in previous AY
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
@@ -86,6 +91,7 @@ Examples:
 
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Retrieve Fm36 data for Active learners
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
@@ -100,6 +106,7 @@ Examples:
 	| lastDayOfCurrentMonth | CurrentAyPlusTwo-11-15 |        15000 |            91 |  19 |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Retrieve Valid Fm36 19-24 incentives data
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
@@ -116,6 +123,7 @@ Examples:
 	| currentAY-08-01 | nextAY-07-31 |        15000 |             2 |  24 |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Retrieve Valid Fm36 learning support data
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19

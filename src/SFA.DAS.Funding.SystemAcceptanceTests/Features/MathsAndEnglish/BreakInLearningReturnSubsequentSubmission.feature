@@ -1,4 +1,4 @@
-﻿Feature: BreakInLearningReturnSubsequentSubmission
+Feature: BreakInLearningReturnSubsequentSubmission
 
 As the Dfe
 I want the English and Maths earnings to be recalculated when a return from break in learning is recorded
@@ -15,6 +15,7 @@ Background:
 
 #FLP-1421 - AC1
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider records a return from E&M break in learning
 	Given SLD record a return from break in learning for English and Maths course with new start date currentAY-01-15
 	And SLD submit updated learners details
@@ -23,6 +24,7 @@ Scenario: Training provider records a return from E&M break in learning
 
 #FLP-1421 - AC3
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider corrects a return from E&M break in learning 
 	Given SLD record a return from break in learning for English and Maths course with new start date currentAY-01-15
 	And SLD submit updated learners details
@@ -35,6 +37,7 @@ Scenario: Training provider corrects a return from E&M break in learning
 
 #FLP-1421 - AC4
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider removes a previously recorded return from E&M break in learning 
 	Given SLD record a return from break in learning for English and Maths course with new start date currentAY-01-15
 	And SLD submit updated learners details

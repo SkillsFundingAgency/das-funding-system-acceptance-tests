@@ -1,4 +1,4 @@
-﻿Feature: WithdrawalReplacesABreakInLearning
+Feature: WithdrawalReplacesABreakInLearning
 
 Background:
 	Given a learning has a start date of previousAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
@@ -10,6 +10,7 @@ Background:
 
 #FLP-1429 AC1 training provider replaces a previously recorded Bil with Withdrawal
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider withdraws a learner after recording a break in learning - withdrawal replaces break in learning
 	When SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date currentAY-07-31

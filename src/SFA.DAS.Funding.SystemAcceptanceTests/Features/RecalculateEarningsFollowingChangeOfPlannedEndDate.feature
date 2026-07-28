@@ -1,4 +1,4 @@
-﻿Feature: RecalculateEarningsFollowingChangeOfPlannedEndDate
+Feature: RecalculateEarningsFollowingChangeOfPlannedEndDate
 
 As the dfe
 I want to know when the learning planned date has changed for an apprenticeship
@@ -9,6 +9,7 @@ Example 1: Planned End date moves earlier
 Example 2: Planned End date moves later
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Planned End Date change; recalc earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved

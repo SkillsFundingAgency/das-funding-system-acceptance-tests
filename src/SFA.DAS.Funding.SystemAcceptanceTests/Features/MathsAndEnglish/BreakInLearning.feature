@@ -1,4 +1,4 @@
-﻿Feature: BreakInLearning
+Feature: BreakInLearning
 
 As the Dfe
 I want the English and/or Maths earnings to be recalculated when a break in learning is recorded 
@@ -15,6 +15,7 @@ Background:
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R08
 	
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider records an E&M break in learning without specifying a return
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
@@ -24,6 +25,7 @@ Scenario: Training provider records an E&M break in learning without specifying 
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R06
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider corrects a previously recorded E&M break in learning without specifying a return
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
@@ -37,6 +39,7 @@ Scenario: Training provider corrects a previously recorded E&M break in learning
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R07
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider removes a previously recorded E&M break in learning
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23

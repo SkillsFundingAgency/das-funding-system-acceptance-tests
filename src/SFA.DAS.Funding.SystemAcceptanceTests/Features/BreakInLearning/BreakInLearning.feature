@@ -1,4 +1,4 @@
-﻿Feature: BreakInLearningIsRecordedNotIncludingReturn
+Feature: BreakInLearningIsRecordedNotIncludingReturn
 
 As the Dfe
 I want the apprenticeship earnings to be recalculated when a break in learning is recorded 
@@ -6,6 +6,7 @@ So that the provider does not accure earnings while the learner is on a break
 
 @regression
 #FLP-728 AC1
+@UsesUpdateLearningPut
 Scenario: Training provider records a break in learning without specifying a return
 	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
@@ -18,6 +19,7 @@ Scenario: Training provider records a break in learning without specifying a ret
 
 @regression
 #FLP-728 AC2
+@UsesUpdateLearningPut
 Scenario: Training provider corrects a previous break in learning without specifying a return
 	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
@@ -36,6 +38,7 @@ Scenario: Training provider corrects a previous break in learning without specif
 
 @regression
 #FLP-728 AC3
+@UsesUpdateLearningPut
 Scenario: Training provider removes a previous break in learning
 	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
@@ -53,6 +56,7 @@ Scenario: Training provider removes a previous break in learning
 
 @regression
 #FLP-728 AC1 - Added this scenario to cover BIL without learning support as there is an issue whereby the earnings recalculated event is nont published for pause, pause remove, and BIL return, to be fixed as part of FLP-1360.
+@UsesUpdateLearningPut
 Scenario: Training provider records a break in learning without specifying a return (no learning support)
 	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31

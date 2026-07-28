@@ -1,4 +1,4 @@
-﻿Feature: RecalculateEarningsFollowingApprovalOfStartDateChangeRequest
+Feature: RecalculateEarningsFollowingApprovalOfStartDateChangeRequest
 
 As a Provider
 I want my earnings to reflect approved changes to the start date
@@ -13,6 +13,7 @@ Example 2: Start date moves later, stays in-year (normal recalc)
 Example 3: Start date move forwards, into next year 
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Start Date change approved; recalc earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved

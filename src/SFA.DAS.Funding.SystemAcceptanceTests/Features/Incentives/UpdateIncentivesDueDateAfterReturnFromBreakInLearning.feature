@@ -1,4 +1,4 @@
-﻿Feature: UpdateIncentivesDueDateAfterReturnFromBreakInLearning
+Feature: UpdateIncentivesDueDateAfterReturnFromBreakInLearning
 
 As a DfE
 I want to ensure that incentive days are recalculated when a training provider records an apprentices return from a break in learning
@@ -13,6 +13,7 @@ Background:
 
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Learner goes on break 1 day before 90th day incentive and returns after 30 day break
 	Given SLD record on-programme cost as total price 15000 from date 2023-10-01 to date 2025-07-31
 	And SLD inform us of a break in learning with pause date 2023-12-28
@@ -26,6 +27,7 @@ Scenario: Learner goes on break 1 day before 90th day incentive and returns afte
 	And the second incentive due date for provider & employer is 2024-10-29
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Learner goes on break on 90th day incentive and returns after 30 day break
 	Given SLD record on-programme cost as total price 15000 from date 2023-10-01 to date 2025-07-31
 	And SLD inform us of a break in learning with pause date 2023-12-29
@@ -39,6 +41,7 @@ Scenario: Learner goes on break on 90th day incentive and returns after 30 day b
 	And the second incentive due date for provider & employer is 2024-10-29
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Learner goes on break on 365th day incentive
 	Given SLD record on-programme cost as total price 15000 from date 2023-10-01 to date 2025-07-31
 	And SLD inform us of a break in learning with pause date 2024-09-29

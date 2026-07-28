@@ -5,6 +5,24 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 [Binding]
 public class BeforeScenarioHooks
 {
+    private const string UsesUpdateLearningPutTag = "UsesUpdateLearningPut";
+
+    [BeforeScenario(Order = 0)]
+    public void SkipUpdateLearningPutScenariosWhenDisabled(ScenarioContext context)
+    {
+        var config = Configurator.GetConfiguration();
+
+        if (config.EnableUpdateLearningPutScenarios)
+        {
+            return;
+        }
+
+        if (context.ScenarioInfo.Tags.Any(tag => tag.Equals(UsesUpdateLearningPutTag, StringComparison.OrdinalIgnoreCase)))
+        {
+            Assert.Ignore($"Scenario is tagged @{UsesUpdateLearningPutTag} and EnableUpdateLearningPutScenarios is false.");
+        }
+    }
+
     [BeforeScenario(Order = 1)]
     public void BeforeScenarioHook(ScenarioContext context)
     {

@@ -1,10 +1,11 @@
-﻿Feature: Completion
+Feature: Completion
 
 When the SLD inform us of a Learning's Completion
 Then we should roll-up future earnings into a single balancing payment
 And record the completion payment as earned
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Balancing and Completion earnings on Completion
 	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	When Learning Completion is recorded on currentAY-06-15
@@ -16,6 +17,7 @@ Scenario: Balancing and Completion earnings on Completion
 	And an earning of 3000 of type Completion is generated for period currentAY-R12
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Balancing and Completion earnings on Completion - Completion removed
 	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	And Learning Completion is recorded on currentAY-06-15
@@ -35,6 +37,7 @@ Scenario: Balancing and Completion earnings on Completion - Completion removed
 	And Completion earning is removed
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Balancing and Completion earnings on Completion - Completion moved earlier
 	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	And Learning Completion is recorded on currentAY-06-15
@@ -54,6 +57,7 @@ Scenario: Balancing and Completion earnings on Completion - Completion moved ear
 	And an earning of 3000 of type Completion is generated for period currentAY-R10
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Balancing and Completion earnings on Completion - Completion moved later
 	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	And Learning Completion is recorded on currentAY-06-15
@@ -73,6 +77,7 @@ Scenario: Balancing and Completion earnings on Completion - Completion moved lat
 	And an earning of 3000 of type Completion is generated for period currentAY-R12
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Balancing and Completion earnings on Completion - Change of price post Completion
 	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	And Learning Completion is recorded on currentAY-06-15
@@ -92,6 +97,7 @@ Scenario: Balancing and Completion earnings on Completion - Change of price post
 	And an earning of 3600 of type Completion is generated for period currentAY-R11
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Recalculate earnings based on qualifying period when completion date is recorded - qualifying period met
 	Given a learning has a start date of <start_date>, a planned end date of <planned_end_date> and an agreed price of <agreed_price>
 	When Learning Completion is recorded on <completion_date>

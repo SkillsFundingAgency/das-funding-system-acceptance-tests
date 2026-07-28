@@ -1,10 +1,11 @@
-﻿Feature: CalculateMathsAndEnglishEarnings
+Feature: CalculateMathsAndEnglishEarnings
 
 As the DfE
 I want to generate earnings for English and Maths qualifications
 So that we know how much to pay providers when they deliver English and/or maths courses
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Calculate Single Math and English earnings
 	Given an apprenticeship has a start date of currentAY-09-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 19
@@ -23,6 +24,7 @@ Examples:
 	| currentAY-02-01  | currentAY-02-26 | Level 2 English     |    724 | currentAY-R07                 | currentAY-R07                 | currentAY-R07        |        724 |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Calculate Multiple Math and English earnings
 	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 22
@@ -40,6 +42,7 @@ Examples:
 	| currentAY-09-25    | currentAY-01-15  | Entry level English |            931 | currentAY-11-15    | currentAY-02-27  | GCSE Maths   |            864 | currentAY-R02                | currentAY-R05               |             232.75 | currentAY-R04                | currentAY-R06               |                288 |
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Learning Support for Maths and English Earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19
@@ -55,6 +58,7 @@ Examples:
 	| previousAY-08-01 | currentAY-01-31 | currentAY-07-30            | Entry level English and/or Maths | previousAY-R01                | currentAY-R11                | 
 
 @regression
+@UsesUpdateLearningPut
 Scenario: Maths and English instalments removed if maths and english courses removed
 	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 22

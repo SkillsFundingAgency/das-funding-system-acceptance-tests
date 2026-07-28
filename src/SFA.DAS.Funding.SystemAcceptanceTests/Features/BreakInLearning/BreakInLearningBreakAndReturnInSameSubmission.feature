@@ -1,4 +1,4 @@
-﻿Feature: BreakInLearningBreakAndReturnInSameSubmission
+Feature: BreakInLearningBreakAndReturnInSameSubmission
 
 As the Dfe
 I want the apprenticeship earnings to be recalculated when a break in learning and a return from that break in learning are recorded together
@@ -8,6 +8,7 @@ So that the provider acquires earnings only when the learner is not on a break
 
 #FLP-1360 AC2 SLD informs us of break and return at the same time previous AY
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider records a break and return at the same time in previous academic year
 	Given a learning has a start date of previousAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date currentAY-07-31
@@ -22,6 +23,7 @@ Scenario: Training provider records a break and return at the same time in previ
 #@regression
 #FLP-1360 AC2 SLD informs us of break and return at the same time current AY
 @regression
+@UsesUpdateLearningPut
 Scenario: Training provider records a break and return at the same time in current academic year
 	Given a learning has a start date of previousAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date currentAY-07-31
