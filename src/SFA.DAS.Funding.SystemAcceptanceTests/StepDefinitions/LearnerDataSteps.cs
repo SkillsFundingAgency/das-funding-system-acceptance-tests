@@ -20,6 +20,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             context.Set(testData);
         }
 
+        [When(@"SLD inform us of a new Learner with multiple onprogrammes")]
+        public async Task WhenSldInformUsOfANewLearnerWithMultipleOnProgrammes()
+        {
+            var testData = context.Get<TestData>();
+            var learnerData = await learnerDataOuterApiHelper.AddLearnerDataWithMultipleOnProgrammes(testData.Uln, 10005077);
+            testData.LearnerData = learnerData;
+            context.Set(testData);
+        }
+
         [When("SLD inform us of a learner with empty costs array")]
         public async Task LearnerWithEmptyCostsArray()
         {
@@ -230,6 +239,22 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             data.StartDate.Should().Be(testData.LearnerData.Delivery.OnProgramme.First().StartDate!.Value.Date);
             data.TrainingPrice.Should().Be(trainingPrice);
             data.EpaoPrice.Should().Be(epaoPrice);
+        }
+
+        [Then("there are (.*) events sent to Learner Data Event Handler")]
+        public async Task ThenThereAreEventsSentToLearnerDataEventHandler(int expectedEventCount)
+        {
+            var testData = context.Get<TestData>();
+
+            await WaitHelper.WaitForIt(() =>
+            {
+                var receivedEvents = LearnerDataEventHandler.ReceivedMessages.Count(x => x.Message.ULN == long.Parse(testData.Uln));
+                if (receivedEvents == expectedEventCount)
+                {
+                    return true;
+                }
+                return false;
+            }, $"Failed to find correct number of published LearnerDataEvent. expected {expectedEventCount}");
         }
     }
 }

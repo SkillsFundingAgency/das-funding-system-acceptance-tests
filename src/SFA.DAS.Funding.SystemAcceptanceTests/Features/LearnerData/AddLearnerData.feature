@@ -26,3 +26,8 @@ Examples:
 	| null               | null           | null          |              0 |          0 |
 	|              12000 | null           | null          |          12000 |          0 |
 	|              12000 |           3000 | null          |          12000 |       3000 |
+
+@regression
+Scenario: Add a Learner with multiple learning deliveries
+	When SLD inform us of a new Learner with multiple onprogrammes
+	Then there are 2 events sent to Learner Data Event Handler

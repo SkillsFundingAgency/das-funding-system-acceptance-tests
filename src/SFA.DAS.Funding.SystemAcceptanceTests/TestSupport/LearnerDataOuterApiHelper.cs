@@ -84,6 +84,49 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             return learnerData;
         }
 
+        public async Task<LearnerDataRequest> AddLearnerDataWithMultipleOnProgrammes(string uln, long ukprn)
+        {
+            var fixture = new Fixture();
+
+            var onProgramme1 = fixture.Build<StubOnProgramme>()
+                .With(x => x.StartDate, DateTime.UtcNow)
+                        .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
+                        .With(x => x.AgreementId, "AG1")
+                        .With(x => x.StandardCode, 57)
+                        .With(x => x.Costs, new List<CostDetails> { fixture.Create<CostDetails>() })
+                        .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
+                        .Create();
+
+            var onProgramme2 = fixture.Build<StubOnProgramme>()
+                .With(x => x.StartDate, onProgramme1.ExpectedEndDate.Value.AddMonths(1))
+                    .With(x => x.ExpectedEndDate, onProgramme1.ExpectedEndDate.Value.AddYears(1))
+                    .With(x => x.AgreementId, "AG2")
+                    .With(x => x.StandardCode, 58)
+                    .With(x => x.Costs, new List<CostDetails> { fixture.Create<CostDetails>() })
+                    .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
+                    .Create();
+
+            var learnerData = new LearnerDataRequest
+            {
+                ConsumerReference = fixture.Create<string>(),
+                Learner = fixture.Build<StubLearner>()
+                    .With(x => x.Uln, uln)
+                    .With(x => x.Email, $"{uln}@test.com")
+                    .Create(),
+                Delivery = new StubDelivery
+                {
+                    EnglishAndMaths = fixture.Create<List<StubEnglishAndMaths>>(),
+                    OnProgramme = new[] { onProgramme1, onProgramme2 }
+
+                }
+            };
+
+            await _apiClient.AddLearnerData(ukprn, learnerData);
+
+            return learnerData;
+        }
+
+
         public async Task<GetLearnerResponse> GetLearnersForProvider(long ukprn, int academicYear)
         {
             return await _apiClient.GetLearners(ukprn, academicYear);
