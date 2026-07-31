@@ -99,7 +99,8 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         Assert.AreEqual(expectedLearner.Dob, learner.DateOfBirth, "Learner DateOfBirth does not match.");
 
         var episode = learningModel.GetEpisode(ukprn, courseCode);
-        Assert.AreEqual(expectedCourse.CourseCode, episode.TrainingCode, "TrainingCode does not match.");
+        var learning = learningModel.Single(x => x.Key == episode.LearningKey);
+        Assert.AreEqual(expectedCourse.CourseCode, learning.TrainingCode, "TrainingCode does not match.");
         Assert.AreEqual(Constants.UkPrn, episode.Ukprn, "Ukprn does not match.");
         Assert.AreEqual(expectedCourse.StartDate, episode.StartDate, "StartDate does not match.");
         Assert.AreEqual(expectedCourse.ExpectedEndDate, episode.ExpectedEndDate, "ExpectedEndDate does not match.");

@@ -20,7 +20,6 @@ public class ShortCourseEpisodeModel
     public string FundingType { get; set; }
     public long? FundingEmployerAccountId { get; set; }
     public string LegalEntityName { get; set; }
-    public string TrainingCode { get; set; }
     public DateTime? CompletionDate { get; set; }
     public DateTime? WithdrawalDate { get; set; }
     public DateTime StartDate { get; set; }
