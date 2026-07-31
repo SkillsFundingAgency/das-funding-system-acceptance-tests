@@ -34,20 +34,20 @@ public class LearnerDataOuterUrlProvider
             ? $"/learnerdata/providers/{ukprn}/academicyears/{academicYear}/shortCourses"
             : $"/learnerdata/providers/{ukprn}/shortCourses/learners?academicYear={academicYear}";
 
-    public string UpdateShortCourseLearning(long ukprn, Guid learnerKey, int academicYear, byte collectionPeriod)
+    public string UpdateShortCourseLearning(long ukprn, Guid learningKey, int academicYear, byte collectionPeriod)
         => _useLegacyLearnerDataOuterUrls
-            ? $"/learnerdata/providers/{ukprn}/shortCourses/{learnerKey}"
-            : $"/learnerdata/providers/{ukprn}/shortCourses/{learnerKey}?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
+            ? $"/learnerdata/providers/{ukprn}/shortCourses/{learningKey}"
+            : $"/learnerdata/providers/{ukprn}/shortCourses/{learningKey}?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
 
     public string GetShortCourseEarningsData(long ukprn, int academicYear, byte collectionPeriod)
         => _useLegacyLearnerDataOuterUrls
             ? $"/learnerdata/providers/{ukprn}/collectionPeriods/{academicYear}/{collectionPeriod}/shortCourses"
             : $"/learnerdata/providers/{ukprn}/shortCourses/earnings?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
 
-    public string UpdateLearning(long ukprn, Guid learnerKey, int academicYear, byte collectionPeriod)
+    public string UpdateLearning(long ukprn, Guid learningKey, int academicYear, byte collectionPeriod)
         => _useLegacyLearnerDataOuterUrls
-            ? $"/learnerdata/providers/{ukprn}/learning/{learnerKey}"
-            : $"/learnerdata/providers/{ukprn}/apprenticeships/{learnerKey}?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
+            ? $"/learnerdata/providers/{ukprn}/learning/{learningKey}"
+            : $"/learnerdata/providers/{ukprn}/apprenticeships/{learningKey}?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
 
     public string GetFm36Block(long ukprn, int academicYear, byte collectionPeriod, int? pageSize = null, int? pageNumber = null)
     {
@@ -73,15 +73,15 @@ public class LearnerDataOuterUrlProvider
         return newUrl;
     }
 
-    public string DeleteLearner(long ukprn, Guid learnerKey, int academicYear)
+    public string DeleteLearner(long ukprn, Guid learningKey, int academicYear)
         => _useLegacyLearnerDataOuterUrls
-            ? $"/learnerdata/providers/{ukprn}/learning/{learnerKey}"
-            : $"/learnerdata/providers/{ukprn}/apprenticeships/{learnerKey}?academicYear={academicYear}";
+            ? $"/learnerdata/providers/{ukprn}/learning/{learningKey}"
+            : $"/learnerdata/providers/{ukprn}/apprenticeships/{learningKey}?academicYear={academicYear}";
 
-    public string DeleteShortCourse(long ukprn, Guid learnerKey, int academicYear)
+    public string DeleteShortCourse(long ukprn, Guid learningKey, int academicYear)
         => _useLegacyLearnerDataOuterUrls
-            ? $"/learnerdata/providers/{ukprn}/shortCourses/{learnerKey}"
-            : $"/learnerdata/providers/{ukprn}/shortCourses/{learnerKey}?academicYear={academicYear}";
+            ? $"/learnerdata/providers/{ukprn}/shortCourses/{learningKey}"
+            : $"/learnerdata/providers/{ukprn}/shortCourses/{learningKey}?academicYear={academicYear}";
 
     public string CallHealthCheck() => "/learnerdata/health";
 }

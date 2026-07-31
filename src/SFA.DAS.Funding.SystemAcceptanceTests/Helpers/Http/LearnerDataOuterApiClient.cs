@@ -157,7 +157,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         public async Task UpdateShortCourseLearning(long ukprn, Guid learningKey, ShortCourseRequest requestData)
         {
             var ay = requestData.Delivery.OnProgramme.First().StartDate.ToAcademicYearAndPeriod();
-            var request = new HttpRequestMessage(HttpMethod.Put, _urlProvider.UpdateShortCourseLearning(ukprn, learnerKey, ay.AcademicYear, ay.Period));
+            var request = new HttpRequestMessage(HttpMethod.Put, _urlProvider.UpdateShortCourseLearning(ukprn, learningKey, ay.AcademicYear, ay.Period));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -202,7 +202,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         {
             var startDate = learningData.Delivery.OnProgramme.FirstOrDefault()?.StartDate ?? DateTime.UtcNow;
             var ay = startDate.ToAcademicYearAndPeriod();
-            var request = new HttpRequestMessage(HttpMethod.Put, _urlProvider.UpdateLearning(ukprn, learnerKey, ay.AcademicYear, ay.Period));
+            var request = new HttpRequestMessage(HttpMethod.Put, _urlProvider.UpdateLearning(ukprn, learningKey, ay.AcademicYear, ay.Period));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -250,7 +250,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         public async Task DeleteLearner(long ukprn, Guid learningKey)
         {
             var academicYear = DateTime.UtcNow.ToAcademicYearAndPeriod().AcademicYear;
-            var request = new HttpRequestMessage(HttpMethod.Delete, _urlProvider.DeleteLearner(ukprn, learnerKey, academicYear));
+            var request = new HttpRequestMessage(HttpMethod.Delete, _urlProvider.DeleteLearner(ukprn, learningKey, academicYear));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
@@ -262,7 +262,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         public async Task DeleteShortCourse(long ukprn, Guid learningKey)
         {
             var academicYear = DateTime.UtcNow.ToAcademicYearAndPeriod().AcademicYear;
-            var request = new HttpRequestMessage(HttpMethod.Delete, _urlProvider.DeleteShortCourse(ukprn, learnerKey, academicYear));
+            var request = new HttpRequestMessage(HttpMethod.Delete, _urlProvider.DeleteShortCourse(ukprn, learningKey, academicYear));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
