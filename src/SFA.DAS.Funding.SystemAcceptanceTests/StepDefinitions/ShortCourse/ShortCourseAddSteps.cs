@@ -214,4 +214,22 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, updatedRequest);
         testData.ShortCourseCreateUpdateRequests[Constants.UkPrn] = updatedRequest;
     }
+
+    [Given(@"the training provider also recorded that the learner has withdrawn pre-approval")]
+    [Given(@"the training provider recorded that the learner has withdrawn pre-approval")]
+    public async Task TrainingProviderAlsoRecordedThatTheLearnerHasWithdrawnPreApproval()
+    {
+        var testData = context.Get<TestData>();
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
+
+        var builder = new ShortCourseLearnerDataBuilder(testData)
+            .WithStartDate(shortCourseRequest.Delivery.OnProgramme.Single().StartDate)
+            .WithEndDate(shortCourseRequest.Delivery.OnProgramme.Single().ExpectedEndDate)
+            .WithMilestone(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete)
+            .WithWithdrawalDate(shortCourseRequest.Delivery.OnProgramme.Single().StartDate);
+
+        var updatedRequest = builder.Build();
+        await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, updatedRequest);
+        testData.ShortCourseCreateUpdateRequests[Constants.UkPrn] = updatedRequest;
+    }
 }

@@ -21,6 +21,7 @@ public class ShortCourseProgressionSteps(ScenarioContext context, LearnerDataOut
             .WithCourseCode("ZSC00005")
             .WithStartDate(startDate.Value)
             .WithEndDate(startDate.Value.AddMonths(3))
+            .WithMilestone(LearnerDataOuterApiClient.Milestone.ThirtyPercentLearningComplete)
             .Build()
             .Delivery.OnProgramme.Single();
 
@@ -42,11 +43,12 @@ public class ShortCourseProgressionSteps(ScenarioContext context, LearnerDataOut
         var shortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
             .WithStartDate(startDate.Value)
             .WithEndDate(startDate.Value.AddMonths(3))
-            .WithCourseCode("ZSC00005")
+            .WithCourseCode("ZSC00009")
             .Build();
 
         shortCourseRequest.Delivery.OnProgramme.Single().Milestones = [];
         shortCourseRequest.Delivery.OnProgramme.Single().CompletionDate = null;
+        shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalDate = null;
 
         testData.ShortCourseCreateUpdateRequests[ukprn] = shortCourseRequest;
         testData.ProgressionCourseCode = shortCourseRequest.Delivery.OnProgramme.First().CourseCode;
@@ -54,17 +56,27 @@ public class ShortCourseProgressionSteps(ScenarioContext context, LearnerDataOut
         await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest, academicYear.Value);
     }
 
-
-
     [Then(@"unapproved earnings are generated for the new course")]
     public Task ThenUnapprovedEarningsAreGeneratedForTheNewCourse()
     {
         return assertionHelper.AssertUnapprovedEarningsGeneratedForNewCourse();
     }
 
-    [Then(@"the original course earnings are unaffected")]
-    public void ThenTheOriginalCourseEarningsAreUnaffected()
+    [Then(@"approved earnings are generated for the new course")]
+    public Task ThenApprovedEarningsAreGeneratedForTheNewCourse()
     {
-        assertionHelper.AssertOriginalCourseEarningsUnaffected();
+        return assertionHelper.AssertApprovedEarningsGeneratedForNewCourse();
+    }
+
+    [Then(@"both original course earnings are unaffected")]
+    public void BothOriginalCourseEarningsAreUnaffected()
+    {
+        assertionHelper.AssertOriginalCourseEarningsUnaffected(true);
+    }
+
+    [Then(@"30% milestone earning is unaffected")]
+    public void ThirtyPercentMilestoneEarningIsUnaffected()
+    {
+        assertionHelper.AssertOriginalCourseEarningsUnaffected(false);
     }
 }
