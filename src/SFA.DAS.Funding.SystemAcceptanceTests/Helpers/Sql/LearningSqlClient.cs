@@ -295,7 +295,6 @@ public class ShortCourseLearning
 {
     public Guid Key { get; set; }
     public Guid LearnerKey { get; set; }
-    public DateTime? CompletionDate { get; set; }
     public Learner Learner { get; set; }
     public List<ShortCourseEpisode> Episodes { get; set; }
     public string TrainingCode { get; set; } = null!;
@@ -309,8 +308,8 @@ public class ShortCourseEpisode
     public long EmployerAccountId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime ExpectedEndDate { get; set; }
+    public DateTime? CompletionDate { get; set; }
     public DateTime? WithdrawalDate { get; set; }
-    public string TrainingCode { get; set; } = null!;
     public long ApprovalsApprenticeshipId { get; set; }
     public string LearnerRef { get; set; } = null!;
     public bool IsApproved { get; set; }
