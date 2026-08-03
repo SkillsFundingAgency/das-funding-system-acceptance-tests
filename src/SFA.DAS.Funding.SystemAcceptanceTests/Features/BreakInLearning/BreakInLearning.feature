@@ -31,7 +31,7 @@ Scenario: Training provider corrects a previous break in learning without specif
 	And SLD inform us of a break in learning with pause date currentAY-06-20
 	And SLD submit updated learners details
 	Then earnings are recalculated
-	And the earnings after the delivery period 10 and academic year 2526 are soft deleted
+	And the earnings after the delivery period 10 and academic year currentAY are soft deleted
 	And learning support continues to be paid from periods currentAY-R01 to currentAY-R10
 
 @regression
