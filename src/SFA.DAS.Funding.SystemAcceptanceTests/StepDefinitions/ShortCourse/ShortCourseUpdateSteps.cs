@@ -1,4 +1,5 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
@@ -105,7 +106,10 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
     public async Task WhenSLDInformUsThatTheLearnerHasBeenRemoved()
     {
         var testData = context.Get<TestData>();
-        await learnerDataOuterApiHelper.DeleteShortCourse(Constants.UkPrn, testData.ShortCourseLearnerKey);
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
+        var academicYear = shortCourseRequest.Delivery.OnProgramme.Single().StartDate.ToAcademicYearAndPeriod().AcademicYear;
+
+        await learnerDataOuterApiHelper.DeleteShortCourse(Constants.UkPrn, testData.ShortCourseLearnerKey, academicYear);
     }
 
     [Given(@"Provider (.*) has recorded 30% (.*) and completion (.*)")]

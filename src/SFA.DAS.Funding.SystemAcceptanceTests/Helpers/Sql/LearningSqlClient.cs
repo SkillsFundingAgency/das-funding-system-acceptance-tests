@@ -298,6 +298,7 @@ public class ShortCourseLearning
     public Learner Learner { get; set; }
     public List<ShortCourseEpisode> Episodes { get; set; }
     public string TrainingCode { get; set; } = null!;
+    public byte LearningType { get; set; }
 }
 
 public class ShortCourseEpisode
@@ -313,7 +314,6 @@ public class ShortCourseEpisode
     public long ApprovalsApprenticeshipId { get; set; }
     public string LearnerRef { get; set; } = null!;
     public bool IsApproved { get; set; }
-    public byte LearningType { get; set; }
     public byte EmployerType { get; set; }
     public long? TransferSenderId { get; set; }
     public bool IsRemoved { get; set; }
