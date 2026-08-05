@@ -309,10 +309,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             Assert.AreEqual(1, earningsModel!.Count, "Expected exactly 1 episode for the earliest short course earnings, but found a different count.");
         }
 
-        public async Task AssertUnapprovedEarningsGeneratedForNewCourse()
+        public async Task AssertUnapprovedEarningsGeneratedForNewCourse(long ukprn = Constants.UkPrn)
         {
             var testData = context.Get<TestData>();
-            var ukprn = Constants.UkPrn;
             var courseCode = testData.ProgressionCourseCode!;
 
             List<ShortCourseEarningsModel>? earningsModel = null;

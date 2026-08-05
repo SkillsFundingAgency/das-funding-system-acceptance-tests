@@ -34,11 +34,26 @@ public class ShortCourseProgressionSteps(ScenarioContext context, LearnerDataOut
         testData.ShortCourseCreateUpdateRequests[ukprn] = existingRequest;
     }
 
-    [When("SLD submits a progression POST for a new course in academic year (.*) with start date (.*)")]
-    public async Task SLDSubmitsAProgressionPOSTForANewCourseInAcademicYearWithStartDate(TokenisableAcademicYear academicYear, TokenisableDateTime startDate)
+    [When("SLD submits a progression POST with the (same|different) provider for a new course in academic year (.*) with start date (.*)")]
+    public async Task SLDSubmitsAProgressionPOSTForANewCourseInAcademicYearWithStartDate(string provider, TokenisableAcademicYear academicYear, TokenisableDateTime startDate)
     {
+        if (string.IsNullOrWhiteSpace(provider))
+        {
+            throw new ArgumentException("UKPRN cannot be null or empty.", nameof(provider));
+        }
+
+        var normalisedProvider = provider.Trim().ToLowerInvariant();
+
+        if (normalisedProvider != "same" && normalisedProvider != "different")
+        {
+            throw new ArgumentException(
+                $"Invalid periodNumber '{provider}'. Expected 'same' or 'different' (case-insensitive).",
+                nameof(provider));
+        }
+
         var testData = context.Get<TestData>();
-        var ukprn = Constants.UkPrn;
+
+        var ukprn = normalisedProvider == "same" ? Constants.UkPrn : Constants.AlternativeUkPrn;
 
         var shortCourseRequest = new ShortCourseLearnerDataBuilder(testData)
             .WithStartDate(startDate.Value)
@@ -53,13 +68,29 @@ public class ShortCourseProgressionSteps(ScenarioContext context, LearnerDataOut
         testData.ShortCourseCreateUpdateRequests[ukprn] = shortCourseRequest;
         testData.ProgressionCourseCode = shortCourseRequest.Delivery.OnProgramme.First().CourseCode;
 
-        await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest, academicYear.Value);
+        await learnerDataOuterApiHelper.AddShortCourseLearnerData(ukprn, shortCourseRequest, academicYear.Value);
     }
 
-    [Then(@"unapproved earnings are generated for the new course")]
-    public Task ThenUnapprovedEarningsAreGeneratedForTheNewCourse()
+    [Then(@"unapproved earnings with (.*) provider are generated for the new course")]
+    public Task ThenUnapprovedEarningsAreGeneratedForTheNewCourse(string provider)
     {
-        return assertionHelper.AssertUnapprovedEarningsGeneratedForNewCourse();
+        if (string.IsNullOrWhiteSpace(provider))
+        {
+            throw new ArgumentException("UKPRN cannot be null or empty.", nameof(provider));
+        }
+
+        var normalisedProvider = provider.Trim().ToLowerInvariant();
+
+        if (normalisedProvider != "same" && normalisedProvider != "different")
+        {
+            throw new ArgumentException(
+                $"Invalid periodNumber '{provider}'. Expected 'same' or 'different' (case-insensitive).",
+                nameof(provider));
+        }
+
+        var ukprn = normalisedProvider == "same" ? Constants.UkPrn : Constants.AlternativeUkPrn;
+
+        return assertionHelper.AssertUnapprovedEarningsGeneratedForNewCourse(ukprn);
     }
 
     [Then(@"approved earnings are generated for the new course")]

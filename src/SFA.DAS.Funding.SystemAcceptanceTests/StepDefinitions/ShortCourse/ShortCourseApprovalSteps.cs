@@ -28,6 +28,8 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
 
         var secondApprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, secondCourseOnProgramme, "XYZ987");
         await TestServiceBus.Das.SendApprenticeshipApprovedMessage(secondApprenticeshipCreatedEvent);
+
+        await Task.Delay(TimeSpan.FromSeconds(5));
     }
 
     [Given(@"the short course is approved with employer type (.*)")]
