@@ -105,8 +105,8 @@ public class ShortCourseProgressionSteps(ScenarioContext context, LearnerDataOut
         assertionHelper.AssertOriginalCourseEarningsUnaffected(true);
     }
 
-    [Then(@"30% milestone earning is unaffected")]
-    public void ThirtyPercentMilestoneEarningIsUnaffected()
+    [Then(@"30% original milestone earning is unaffected")]
+    public void ThirtyPercentOriginalMilestoneEarningIsUnaffected()
     {
         assertionHelper.AssertOriginalCourseEarningsUnaffected(false);
     }
