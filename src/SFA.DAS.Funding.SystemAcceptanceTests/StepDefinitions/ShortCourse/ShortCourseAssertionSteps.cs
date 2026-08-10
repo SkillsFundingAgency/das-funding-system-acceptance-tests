@@ -327,7 +327,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     {
         var testData = context.Get<TestData>();
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukprn];
-        var shortCourseOnProgramme = shortCourseRequest.Delivery.OnProgramme.Single();
+        var shortCourseOnProgramme = shortCourseRequest.Delivery.OnProgramme.OrderByDescending(x => x.StartDate).First();
 
         List<ShortCourseEarningsModel>? earningsModel = null;
         await WaitHelper.WaitForIt(() =>

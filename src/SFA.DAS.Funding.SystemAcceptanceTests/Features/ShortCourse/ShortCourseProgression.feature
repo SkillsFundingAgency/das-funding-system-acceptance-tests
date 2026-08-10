@@ -7,7 +7,8 @@ Scenario: Learner completes a course and starts a new one with the same provider
 	And the training provider recorded that the 30% milestone has been reached
 	And the training provider also recorded that the learner completed
 	When SLD submits a progression PUT for a new course with start date currentAY-02-05 alongside the existing course
-	Then unapproved earnings with same provider are generated for the new course
+	Then notify approvals of learner for provider A
+	And unapproved earnings with same provider are generated for the new course
 	And both original course earnings are unaffected
 
 @regression
@@ -47,7 +48,8 @@ Scenario: Learner completes a course and starts a new one with different provide
 	And the training provider also recorded that the learner completed pre-approval
 	And the short course is approved
 	When SLD submits a progression POST with the different provider for a new course in academic year nextAY with start date nextAY-08-20 
-	Then unapproved earnings with different provider are generated for the new course
+	Then notify approvals of learner for provider B
+	And unapproved earnings with different provider are generated for the new course
 	And both original course earnings are unaffected
 
 @regression
@@ -57,7 +59,8 @@ Scenario: Learner withdraws from a course and starts a new one with different pr
 	And the training provider also recorded that the learner has withdrawn pre-approval
 	And the short course is approved
 	When SLD submits a progression POST with the different provider for a new course in academic year nextAY with start date nextAY-08-20 
-	Then unapproved earnings with different provider are generated for the new course
+	Then notify approvals of learner for provider B
+	And unapproved earnings with different provider are generated for the new course
 	And 30% original milestone earning is unaffected
 
 #FLP-1860
