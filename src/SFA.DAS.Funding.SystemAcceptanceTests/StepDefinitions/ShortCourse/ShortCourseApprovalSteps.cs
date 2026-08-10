@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using SFA.DAS.CommitmentsV2.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
@@ -16,6 +17,19 @@ public class ShortCourseApprovalSteps(ScenarioContext context, EarningsSqlClient
     public Task WhenTheShortCourseIsApproved()
     {
         return ApproveShortCourse(_fixture.Create<ApprenticeshipEmployerType>());
+    }
+
+    [When(@"the new short course is approved")]
+    public async Task ShortCourseIsApproved()
+    {
+        var testData = context.Get<TestData>();
+
+        var secondCourseOnProgramme = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn].Delivery.OnProgramme.MaxBy(x => x.StartDate);
+
+        var secondApprenticeshipCreatedEvent = CreateApprenticeshipCreatedEvent(testData, secondCourseOnProgramme, "XYZ987");
+        await TestServiceBus.Das.SendApprenticeshipApprovedMessage(secondApprenticeshipCreatedEvent);
+
+        await Task.Delay(TimeSpan.FromSeconds(5));
     }
 
     [Given(@"the short course is approved with employer type (.*)")]

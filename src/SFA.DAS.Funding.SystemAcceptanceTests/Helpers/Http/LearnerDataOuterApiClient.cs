@@ -259,16 +259,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, $"Expected HTTP 200 OK response from DeleteLearner request, but got {response.StatusCode}");
         }
 
-        public async Task DeleteShortCourse(long ukprn, Guid learningKey)
+        public async Task DeleteShortCourse(long ukprn, Guid learningKey, short? academicYearOverride = null)
         {
-            var academicYear = DateTime.UtcNow.ToAcademicYearAndPeriod().AcademicYear;
+            var academicYear = academicYearOverride ?? DateTime.UtcNow.ToAcademicYearAndPeriod().AcademicYear;
             var request = new HttpRequestMessage(HttpMethod.Delete, _urlProvider.DeleteShortCourse(ukprn, learningKey, academicYear));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
             var response = await _apiClient.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
 
-            Assert.AreEqual(HttpStatusCode.Accepted, response.StatusCode, $"Expected HTTP 202 Accepted response from DeleteShortCourse request, but got {response.StatusCode}");
+            Assert.AreEqual(
+                HttpStatusCode.Accepted,
+                response.StatusCode,
+                $"Expected HTTP 202 Accepted response from DeleteShortCourse request, but got {response.StatusCode}. AcademicYear={academicYear}, LearnerKey={learningKey}, Url={request.RequestUri}, ResponseBody={content}");
         }
 
         public async Task<int> CallHealthCheck()

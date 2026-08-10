@@ -1,7 +1,7 @@
 Feature: Short Course Removal
 
 Background:
-	Given SLD informs us of a new learner with a short course start date currentAY-08-01
+	Given SLD informs us of a new learner with a short course start date previousAY-08-01
 	And the short course is approved
     And the training provider recorded that the 30% milestone has been reached
 
@@ -15,12 +15,12 @@ Scenario: Short Course Learner removed from the ILR
 
 Scenario: Short Course Learner removed from the ILR and Get Learners endpoint called
     When SLD inform us that the learner has been removed
-    And SLD requests short course approved ulns for academic year currentAY
+    And SLD requests short course approved ulns for academic year previousAY
 	Then the short course learner is not returned in the approved ulns response
 
 Scenario: Short Course Learner removed from the ILR and Get Earnings endpoint called
     When SLD inform us that the learner has been removed
-    And  SLD requests short course earnings data for collection period currentAY-01
+    And  SLD requests short course earnings data for collection period previousAY-01
     Then the short course learner is not returned in the earnings response
 
 Scenario: Short Course Learner removed from the ILR and then reinstated 
@@ -34,11 +34,11 @@ Scenario: Short Course Learner removed from the ILR and then reinstated
 Scenario: Short Course Learner removed from the ILR then reinstated and Get Learners endpoint called
     When SLD inform us that the learner has been removed
     And SLD inform us that the same learner has been reinstated by the training provider
-    And SLD requests short course approved ulns for academic year currentAY
+    And SLD requests short course approved ulns for academic year previousAY
 	Then the short course learner is returned in the approved ulns response without duplicates
 
 Scenario: Short Course Learner removed from the ILR then reinstated and Get Earnings endpoint called
     When SLD inform us that the learner has been removed
     And SLD inform us that the same learner has been reinstated by the training provider
-    And SLD requests short course earnings data for collection period currentAY-01
+    And SLD requests short course earnings data for collection period previousAY-01
     Then the short course learner is returned in the earnings response without duplicates

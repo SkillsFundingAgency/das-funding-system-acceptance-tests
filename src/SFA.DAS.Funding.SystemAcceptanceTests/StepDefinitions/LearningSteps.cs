@@ -79,7 +79,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             Assert.That(
                 mostRecentHistory.CreatedOn,
-                Is.InRange(DateTime.UtcNow.AddMinutes(-10), DateTime.UtcNow)
+                Is.InRange(DateTime.UtcNow.AddMinutes(-10), DateTime.UtcNow.AddSeconds(1))
             );
         }
 

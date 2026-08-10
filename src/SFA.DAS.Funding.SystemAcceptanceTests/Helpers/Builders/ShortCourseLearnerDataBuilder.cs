@@ -87,6 +87,12 @@ public class ShortCourseLearnerDataBuilder
         return this;
     }
 
+    public ShortCourseLearnerDataBuilder WithWithdrawalDate(DateTime withdrawalDate)
+    {
+        _request.Delivery.OnProgramme.Single().WithdrawalDate = withdrawalDate;
+        return this;
+    }
+
     public ShortCourseLearnerDataBuilder WithLearnerDetails(string firstName, string lastName, string email)
     {
         _request.Learner.FirstName = firstName;

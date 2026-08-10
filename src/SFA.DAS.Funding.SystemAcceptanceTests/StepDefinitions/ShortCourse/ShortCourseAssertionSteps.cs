@@ -104,7 +104,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         Assert.AreEqual(Constants.UkPrn, episode.Ukprn, "Ukprn does not match.");
         Assert.AreEqual(expectedCourse.StartDate, episode.StartDate, "StartDate does not match.");
         Assert.AreEqual(expectedCourse.ExpectedEndDate, episode.ExpectedEndDate, "ExpectedEndDate does not match.");
-        Assert.AreEqual((byte)LearnerData.Events.LearningType.ApprenticeshipUnit, episode.LearningType, "LearningType does not match.");
+        Assert.AreEqual((byte)LearnerData.Events.LearningType.ApprenticeshipUnit, learning.LearningType, "LearningType does not match.");
 
         if (testData.IsShortCourseApproved && testData.CommitmentsApprenticeshipCreatedEvent?.ApprenticeshipEmployerTypeOnApproval != null)
             Assert.AreEqual((byte)testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipEmployerTypeOnApproval, episode.EmployerType, "EmployerType does not match.");
@@ -327,7 +327,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
     {
         var testData = context.Get<TestData>();
         var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukprn];
-        var shortCourseOnProgramme = shortCourseRequest.Delivery.OnProgramme.Single();
+        var shortCourseOnProgramme = shortCourseRequest.Delivery.OnProgramme.OrderByDescending(x => x.StartDate).First();
 
         List<ShortCourseEarningsModel>? earningsModel = null;
         await WaitHelper.WaitForIt(() =>

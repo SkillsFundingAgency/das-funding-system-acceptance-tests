@@ -1,19 +1,87 @@
 Feature: Short Course Progression
 
+@regression
 Scenario: Learner completes a course and starts a new one with the same provider in the same academic year
 	Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the short course is approved
 	And the training provider recorded that the 30% milestone has been reached
 	And the training provider also recorded that the learner completed
 	When SLD submits a progression PUT for a new course with start date currentAY-02-05 alongside the existing course
-	Then unapproved earnings are generated for the new course
-	And the original course earnings are unaffected
+	Then notify approvals of learner for provider A
+	And unapproved earnings with same provider are generated for the new course
+	And both original course earnings are unaffected
 
+@regression
+Scenario: Learner withdraws a course and starts a new one with the same provider in the same academic year
+	Given SLD informs us of a new learner with a short course start date currentAY-08-01
+	And the short course is approved
+	And the training provider recorded that the 30% milestone has been reached
+	And SLD inform us that the learner has withdrawn
+	When SLD submits a progression PUT for a new course with start date currentAY-02-05 alongside the existing course
+	Then unapproved earnings with same provider are generated for the new course
+	And 30% original milestone earning is unaffected
+
+@regression
 Scenario: Learner completes a course and starts a new one with the same provider in the subsequent academic year
 	Given SLD informs us of a new learner with a short course start date currentAY-08-01
 	And the training provider recorded that the 30% milestone has been reached pre-approval
 	And the training provider also recorded that the learner completed pre-approval
 	And the short course is approved
-	When SLD submits a progression POST for a new course in academic year nextAY with start date nextAY-08-20 
-	Then unapproved earnings are generated for the new course
-	And the original course earnings are unaffected
+	When SLD submits a progression POST with the same provider for a new course in academic year nextAY with start date nextAY-08-20 
+	Then unapproved earnings with same provider are generated for the new course
+	And both original course earnings are unaffected
+
+@regression
+Scenario: Learner withdraws from a course and starts a new one with the same provider in the subsequent academic year
+	Given SLD informs us of a new learner with a short course start date currentAY-08-01
+	And the training provider recorded that the 30% milestone has been reached pre-approval
+	And the training provider also recorded that the learner has withdrawn pre-approval
+	And the short course is approved
+	When SLD submits a progression POST with the same provider for a new course in academic year nextAY with start date nextAY-08-20 
+	Then unapproved earnings with same provider are generated for the new course
+	And 30% original milestone earning is unaffected
+
+@regression
+Scenario: Learner completes a course and starts a new one with different provider in the subsequent academic year
+	Given SLD informs us of a new learner with a short course start date currentAY-08-01
+	And the training provider recorded that the 30% milestone has been reached pre-approval
+	And the training provider also recorded that the learner completed pre-approval
+	And the short course is approved
+	When SLD submits a progression POST with the different provider for a new course in academic year nextAY with start date nextAY-08-20 
+	Then notify approvals of learner for provider B
+	And unapproved earnings with different provider are generated for the new course
+	And both original course earnings are unaffected
+
+@regression
+Scenario: Learner withdraws from a course and starts a new one with different provider in the subsequent academic year
+	Given SLD informs us of a new learner with a short course start date currentAY-08-01
+	And the training provider recorded that the 30% milestone has been reached pre-approval
+	And the training provider also recorded that the learner has withdrawn pre-approval
+	And the short course is approved
+	When SLD submits a progression POST with the different provider for a new course in academic year nextAY with start date nextAY-08-20 
+	Then notify approvals of learner for provider B
+	And unapproved earnings with different provider are generated for the new course
+	And 30% original milestone earning is unaffected
+
+#FLP-1860
+@regression
+Scenario: Learner completes a course and starts a new one with the same provider in the same academic year - Payable Earnings
+	Given SLD informs us of a new learner with a short course start date previousAY-08-01
+	And the short course is approved
+	And the training provider recorded that the 30% milestone has been reached
+	And the training provider also recorded that the learner completed
+	When SLD submits a progression PUT for a new course with start date previousAY-02-05 alongside the existing course
+	And the new short course is approved
+	Then approved earnings are generated for the new course
+	And both original course earnings are unaffected
+
+@regression
+Scenario: Learner withdraws a course and starts a new one with the same provider in the same academic year - Payable Earnings
+	Given SLD informs us of a new learner with a short course start date previousAY-08-01
+	And the short course is approved
+	And the training provider recorded that the 30% milestone has been reached
+	And SLD inform us that the learner has withdrawn
+	When SLD submits a progression PUT for a new course with start date previousAY-02-05 alongside the existing course
+	And the new short course is approved
+	Then approved earnings are generated for the new course
+	And 30% original milestone earning is unaffected

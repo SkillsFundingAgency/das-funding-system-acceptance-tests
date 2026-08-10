@@ -309,10 +309,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             Assert.AreEqual(1, earningsModel!.Count, "Expected exactly 1 episode for the earliest short course earnings, but found a different count.");
         }
 
-        public async Task AssertUnapprovedEarningsGeneratedForNewCourse()
+        public async Task AssertUnapprovedEarningsGeneratedForNewCourse(long ukprn = Constants.UkPrn)
         {
             var testData = context.Get<TestData>();
-            var ukprn = Constants.UkPrn;
             var courseCode = testData.ProgressionCourseCode!;
 
             List<ShortCourseEarningsModel>? earningsModel = null;
@@ -327,7 +326,25 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
             Assert.IsTrue(episode.EarningsProfile.Instalments.Any(), $"Expected instalments to be generated for the new course {courseCode}.");
         }
 
-        public void AssertOriginalCourseEarningsUnaffected()
+        public async Task AssertApprovedEarningsGeneratedForNewCourse()
+        {
+            var testData = context.Get<TestData>();
+            var ukprn = Constants.UkPrn;
+            var courseCode = testData.ProgressionCourseCode!;
+
+            List<ShortCourseEarningsModel>? earningsModel = null;
+            await WaitHelper.WaitForIt(() =>
+            {
+                earningsModel = earningsSqlClient.GetShortCourseEarningsEntityModel(testData.Uln);
+                return earningsModel != null && earningsModel.Any(l => l.TrainingCode.Trim() == courseCode);
+            }, $"Failed to find short course earnings for the new course {courseCode}.");
+
+            var episode = earningsModel!.GetEpisode(ukprn, courseCode);
+            Assert.IsTrue(episode.EarningsProfile.IsApproved, $"Expected earnings for the new course {courseCode} to be approved.");
+            Assert.IsTrue(episode.EarningsProfile.Instalments.Where(x=> x.Type == "ThirtyPercentLearningComplete" && x.IsPayable).Any(), $"Expected instalments to be generated for the new course {courseCode}.");
+        }
+
+        public void AssertOriginalCourseEarningsUnaffected(bool completionEarningExpected = true)
         {
             var testData = context.Get<TestData>();
 
@@ -336,7 +353,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 
             Assert.IsTrue(episode.EarningsProfile.IsApproved, "Expected the original course to remain approved.");
             Assert.IsTrue(episode.EarningsProfile.Instalments.Any(x => x.Type == "ThirtyPercentLearningComplete" && x.IsPayable), "Expected the original course's 30% milestone earning to remain unaffected.");
-            Assert.IsTrue(episode.EarningsProfile.Instalments.Any(x => x.Type == "LearningComplete" && x.IsPayable), "Expected the original course's completion earning to remain unaffected.");
+
+            if (completionEarningExpected)
+                {
+                Assert.IsTrue(episode.EarningsProfile.Instalments.Any(x => x.Type == "LearningComplete" && x.IsPayable), "Expected the original course's completion earning to remain unaffected.");
+            }
+            else
+            {
+                Assert.IsFalse(episode.EarningsProfile.Instalments.Any(x => x.Type == "LearningComplete" && x.IsPayable), "Expected the original course's completion earning to be removed.");
+            }
         }
 
         public async Task AssertEarningsAreStillRecordedAgainstTheFirstProvider()
