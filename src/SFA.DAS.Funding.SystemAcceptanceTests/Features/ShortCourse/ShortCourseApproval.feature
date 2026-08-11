@@ -10,9 +10,11 @@ Scenario: Short course is approved
 
 Scenario: Short course is approved with Transfer
 	Given SLD informs us of a new learner with a short course start date currentAY-08-01
+	And the training provider recorded that the 30% milestone has been reached pre-approval
 	When the short course is approved through a transfer with employer type <employer_type>
 	Then the learning domain is updated correctly
 	And the short course is set to approved
+	And inform payments that the learner is being funded by a levy transfer
 
 Examples:
 	| employer_type |
