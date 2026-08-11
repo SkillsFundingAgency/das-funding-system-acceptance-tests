@@ -432,6 +432,24 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command.");
     }
 
+    [Then("inform payments that the learner is being funded by a levy transfer")]
+    public async Task InformPaymentsThatTheLearnerIsBeingFundedByALevyTransfer()
+    {
+        var testData = context.Get<TestData>();
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.Learner.Key;
+
+            GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
+            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+
+            return testData.CalculateGrowthAndSkillsPaymentsEvent != null &&
+                   testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.First().PricePeriods.First().Periods.First().Employer.FundingAccountId == 824;
+        }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command.");
+    }
+
+
     [Then(@"send empty earnings command to payments")]
     public async Task ValidateEmptyEarningsCommandIsSentToPayments()
     {
