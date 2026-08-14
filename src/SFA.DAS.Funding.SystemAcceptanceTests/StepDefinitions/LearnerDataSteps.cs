@@ -29,6 +29,50 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             context.Set(testData);
         }
 
+        [Given("SLD inform us of a learner with apprenticeship, english and maths, incentives and learning support having start date (.*), expected end date (.*), standard code (.*?) and agreed price (.*)")]
+        public async Task LearnerWithStartDateExpectedEndDateStandardCodeAndAgreedPrice(TokenisableDateTime startDate, TokenisableDateTime expectedEndDate, int standardCode, int agreedPrice)
+        {
+            var testData = context.Get<TestData>();
+
+            var costDetails = new List<CostDetails>
+            {
+                new CostDetails
+                {
+                    TrainingPrice = (int)(agreedPrice*0.8),
+                    EpaoPrice = (int)(agreedPrice*0.2),
+                    FromDate = startDate.Value
+                }
+            };
+
+            var learningSupport = new List<LearningSupport>
+            {
+                new LearningSupport
+                {
+                    StartDate = startDate.Value,
+                    EndDate = expectedEndDate.Value
+                }
+            };
+
+            var englishAndMaths = new List<StubEnglishAndMaths>
+            {
+                new StubEnglishAndMaths
+                {
+                    StartDate = startDate.Value,
+                    EndDate = expectedEndDate.Value,
+                    CourseCode = 123,
+                    LearnAimRef = "123",
+                    PriorLearningPercentage = 0,
+                    CompletionDate = null,
+                    WithdrawalDate = null,
+                    LearningSupport = []
+                }
+            };
+
+            var learnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, Constants.UkPrn, costDetails, startDate.Value, expectedEndDate.Value, standardCode, learningSupport, englishAndMaths);
+            testData.LearnerData = learnerData;
+            context.Set(testData);
+        }
+
         [When("SLD inform us of a learner with training price (.*), epao as (.*) and fromDate (.*)")]
         public async Task LearnerWithTrainingPriceEpaoAsAndFromDateFrom_Date(string trainingPrice, string epao, string   fromDate)
         {

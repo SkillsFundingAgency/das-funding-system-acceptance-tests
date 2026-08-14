@@ -59,6 +59,32 @@ public class LearningSqlClient
         return learning;
     }
 
+    public Learning GetApprenticeshipByUln(string uln)
+    {
+        var learner = _sqlServerClient.GetList<Learner>("SELECT * from [dbo].[Learner] WHERE Uln = @uln", new { uln }).FirstOrDefault();
+       if (learner == null) return null;
+
+        var learning = _sqlServerClient.GetList<Learning>("SELECT * FROM [dbo].[ApprenticeshipLearning] WHERE LearnerKey = @learnerKey", new { learnerKey = learner.Key }).FirstOrDefault();
+        if (learning == null)
+        {
+            throw new InvalidOperationException("No learning found");
+        }
+
+        learning.Episodes = _sqlServerClient.GetList<Episode>($"SELECT * FROM [dbo].[ApprenticeshipEpisode] WHERE LearningKey = '{learning.Key}'");
+
+        foreach (var episode in learning.Episodes)
+        {
+            episode.Prices = _sqlServerClient.GetList<EpisodePrice>($"SELECT * FROM [dbo].[EpisodePrice] WHERE EpisodeKey = '{episode.Key}'");
+
+            episode.EpisodeBreakInLearning = _sqlServerClient.GetList<EpisodeBreakInLearning>($" SELECT * FROM [dbo].[EpisodeBreakInLearning] WHERE EpisodeKey ='{episode.Key}'");
+
+        }
+
+        learning.LearningHistory = _sqlServerClient.GetList<LearningHistoryModel>($"SELECT * FROM [History].[LearningHistory] WHERE LearningId = '{learning.Key}'");
+
+        return learning;
+    }
+
     public List<ShortCourseLearning>? GetShortCourseLearning(string uln)
     {
         var learner = _sqlServerClient.GetList<Learner>("SELECT * from [dbo].[Learner] WHERE Uln = @uln", new { uln }).FirstOrDefault();
@@ -260,6 +286,7 @@ public class Episode
     public List<EpisodePrice> Prices { get; set; }
     public DateTime? WithdrawalDate { get; set; }
     public DateTime? PauseDate { get; set; }
+    public bool isApproved { get; set; }
     public List<EpisodeBreakInLearning> EpisodeBreakInLearning { get; set; }
 }
 

@@ -94,5 +94,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             Assert.AreEqual(testData.CommitmentsApprenticeshipCreatedEvent?.ApprenticeshipId, episode.ApprovalsApprenticeshipId, "Approvals Apprenticeship Id do not match.");
         }
+
+        [Then("store the apprenticeship, english and maths, incentives and learning support details in learning db in a draft state")]
+        public void StoreTheApprenticeshipEnglishAndMathsIncentivesAndLearningSupportDetailsInLearningDbInADraftState()
+        {
+            var testData = context.Get<TestData>();
+
+            var episode = learningSqlClient
+                    .GetApprenticeshipByUln(testData.Uln)
+                    .Episodes.GetEpisode(Constants.UkPrn, testData.LearnerData.Delivery.OnProgramme.First().StandardCode.ToString());
+
+            Assert.IsFalse(episode.isApproved, "Expected episode to be in a draft state");
+
+
+        }
+
     }
 }
