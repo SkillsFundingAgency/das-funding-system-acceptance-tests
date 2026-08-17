@@ -37,7 +37,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     .Create(),
                     Delivery = new StubDelivery
                     {
-                        EnglishAndMaths = fixture.Create<List<StubEnglishAndMaths>>(),
+                        EnglishAndMaths = new List<StubEnglishAndMaths>
+                        {
+                            fixture.Build<StubEnglishAndMaths>()
+                            .With(x => x.LearnAimRef, "E&M")
+                            .Create(),
+                        },
                         OnProgramme = new[] { onProgramme }
 
                     }
@@ -72,7 +77,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     .Create(),
                     Delivery = new StubDelivery
                     {
-                        EnglishAndMaths = fixture.Create<List<StubEnglishAndMaths>>(),
+                        EnglishAndMaths = new List<StubEnglishAndMaths>
+                        {
+                            fixture.Build<StubEnglishAndMaths>()
+                            .With(x => x.LearnAimRef, "E&M")
+                            .Create(),
+                        },
                         OnProgramme = new[] { onProgramme }
                     }
                 };
