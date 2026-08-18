@@ -5,6 +5,8 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
+using LearningSupport = SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient.LearningSupport;
+using EnglishAndMaths = SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient.EnglishAndMaths;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -53,18 +55,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 }
             };
 
-            var englishAndMaths = new List<StubEnglishAndMaths>
+            testData.IsLearningSupportAdded = true;
+
+            var englishAndMaths = new List<StubEnglishAndMaths>     
             {
                 new StubEnglishAndMaths
                 {
+                    Course = "English Foundation",
+                    LearnAimRef = "12345678",
                     StartDate = startDate.Value,
                     EndDate = expectedEndDate.Value,
-                    CourseCode = 123,
-                    LearnAimRef = "123",
-                    PriorLearningPercentage = 0,
                     CompletionDate = null,
                     WithdrawalDate = null,
-                    LearningSupport = []
+                    Amount = 1000.00m,
+                    LearningSupport = learningSupport,
+                    AimSequenceNumber = 2
                 }
             };
 

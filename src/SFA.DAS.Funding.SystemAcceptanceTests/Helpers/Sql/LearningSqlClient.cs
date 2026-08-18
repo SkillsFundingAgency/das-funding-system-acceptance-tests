@@ -56,6 +56,10 @@ public class LearningSqlClient
 
         learning.LearningHistory = _sqlServerClient.GetList<LearningHistoryModel>($"SELECT * FROM [History].[LearningHistory] WHERE LearningId = '{learning.Key}'");
 
+        learning.EnglishAndMaths = _sqlServerClient.GetList<EnglishAndMaths>($"SELECT * FROM [dbo].[EnglishAndMaths] WHERE LearningKey = '{learning.Key}'");
+
+        learning.LearningSupport = _sqlServerClient.GetList<LearningSupport>($"SELECT * FROM [dbo].[ApprenticeshipLearningSupport] WHERE LearningKey = '{learning.Key}'");
+
         return learning;
     }
 
@@ -81,6 +85,10 @@ public class LearningSqlClient
         }
 
         learning.LearningHistory = _sqlServerClient.GetList<LearningHistoryModel>($"SELECT * FROM [History].[LearningHistory] WHERE LearningId = '{learning.Key}'");
+
+        learning.EnglishAndMaths = _sqlServerClient.GetList<EnglishAndMaths>($"SELECT * FROM [dbo].[EnglishAndMaths] WHERE LearningKey = '{learning.Key}'");
+
+        learning.LearningSupport = _sqlServerClient.GetList<LearningSupport>($"SELECT * FROM [dbo].[ApprenticeshipLearningSupport] WHERE LearningKey = '{learning.Key}'");
 
         return learning;
     }
@@ -255,6 +263,8 @@ public class Learning
     public List<LearningHistoryModel> LearningHistory { get; set; }
     public Guid LearnerKey { get; set; }
     public Learner Learner { get; set; }
+    public List<EnglishAndMaths> EnglishAndMaths { get; set; }
+    public List<LearningSupport> LearningSupport { get; set; }
 }
 
 public class Learner
@@ -307,6 +317,29 @@ public class LearningHistoryModel
     public Guid LearningId { get; set; }
     public DateTime CreatedOn { get; set; }
     public string State { get; set; }
+}
+
+public class EnglishAndMaths
+{
+    public Guid Key { get; set; }
+    public Guid LearningKey { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime PlannedEndDate { get; set; }
+    public string Course { get; set; }
+    public DateTime? CompletionDate { get; set; }
+    public DateTime? WithdrawalDate { get; set; }
+    public DateTime? PauseDate { get; set; }
+    public decimal Amount { get; set; }
+    public string LearnerRef { get; set; }
+}
+
+public class LearningSupport
+{
+    public Guid Key { get; set; }
+    public Guid LearningKey { get; set; }
+    public Guid EpisodeKey { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
 }
 
 public class EpisodeBreakInLearning

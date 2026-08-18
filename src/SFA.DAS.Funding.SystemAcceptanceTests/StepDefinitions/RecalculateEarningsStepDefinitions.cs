@@ -233,7 +233,28 @@ public class RecalculateEarningsStepDefinitions
         Assert.AreEqual(testData.EndDateChangedEvent.ApprovalsApprenticeshipId, testData.LearningCreatedEvent.ApprovalsApprenticeshipId, "Unexpected ApprenticeshipId found!" );
     }
 
+    [Then("calculate {int} unapproved earnings for programme aim with amount {decimal}")]
+    public void ThenCalculateUnapprovedEarningsForProgrammeAimWithAmount(int numberOfInstalments, decimal amount)
+    {
+        var testData = _context.Get<TestData>();
 
+        var learnerData = testData.LearnerData;
+
+        if (String.Equals(Configurator.EnvironmentName, "PP", StringComparison.OrdinalIgnoreCase) || String.Equals(Configurator.EnvironmentName, "PREPROD", StringComparison.OrdinalIgnoreCase)) 
+        { 
+            return; 
+        }
+
+        var earningsData = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
+
+        var instalments = earningsData.Episodes.GetEpisode(Constants.UkPrn, learnerData.Delivery.OnProgramme.First().StandardCode.ToString()).EarningsProfile.Instalments;
+
+        Assert.AreEqual(numberOfInstalments, instalments.Count, 
+            $"Expected {numberOfInstalments} unapproved earnings but found {instalments.Count}");
+
+        Assert.AreEqual(amount, instalments.First().Amount,
+            $"Expected first unapproved earning amount to be {amount} but found {instalments.First().Amount}");
+    }
 
     static int CalculateMonthsDifference(DateTime endDate, DateTime startDate)
     {

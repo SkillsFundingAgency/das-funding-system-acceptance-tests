@@ -3,6 +3,7 @@ using SFA.DAS.Funding.ApprenticeshipPayments.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using System.ComponentModel.DataAnnotations;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -95,18 +96,34 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             Assert.AreEqual(testData.CommitmentsApprenticeshipCreatedEvent?.ApprenticeshipId, episode.ApprovalsApprenticeshipId, "Approvals Apprenticeship Id do not match.");
         }
 
-        [Then("store the apprenticeship, english and maths, incentives and learning support details in learning db in a draft state")]
+        [Then("store the apprenticeship, english and maths and learning support details in learning db in a draft state")]
         public void StoreTheApprenticeshipEnglishAndMathsIncentivesAndLearningSupportDetailsInLearningDbInADraftState()
         {
             var testData = context.Get<TestData>();
+
+            testData.LearningKey = learningSqlClient.GetApprenticeshipByUln(testData.Uln).Key;
 
             var episode = learningSqlClient
                     .GetApprenticeshipByUln(testData.Uln)
                     .Episodes.GetEpisode(Constants.UkPrn, testData.LearnerData.Delivery.OnProgramme.First().StandardCode.ToString());
 
-            Assert.IsFalse(episode.isApproved, "Expected episode to be in a draft state");
+            var englishAndMaths = learningSqlClient.GetApprenticeshipByUln(testData.Uln)
+                .EnglishAndMaths.First();
 
+            var learningSupport = learningSqlClient.GetApprenticeshipByUln(testData.Uln)
+                .LearningSupport.First();
 
+            Assert.Multiple(() =>
+            {
+                Assert.IsNotNull(episode, "Expected episode to be present in the database");
+                Assert.IsFalse(episode.isApproved, "Expected episode to be in a draft state");
+
+                Assert.IsNotNull(englishAndMaths, "Expected English and Maths record to be present in the database");
+                Assert.AreEqual(testData.LearnerData.Delivery.EnglishAndMaths.First().StartDate, englishAndMaths.StartDate, "Expected English and Maths StartDate to match");
+
+                Assert.IsNotNull(learningSupport, "Expected Learning Support record to be present in the database");
+                Assert.AreEqual(testData.LearnerData.Delivery.OnProgramme.First().LearningSupport.First().StartDate, learningSupport.StartDate, "Expected Learning Support StartDate to match");
+            });
         }
 
     }

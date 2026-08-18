@@ -494,6 +494,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class StubEnglishAndMaths
         {
+            public string Course { get; set; }
             public DateTime? StartDate { get; set; }
             public DateTime? EndDate { get; set; }
             public int? CourseCode { get; set; }
@@ -501,7 +502,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public int? PriorLearningPercentage { get; set; }
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
+            public decimal Amount { get; set; }
             public List<LearningSupport> LearningSupport { get; set; }
+            public int? AimSequenceNumber { get; set; } = 2;
         }
 
         public class GetShortCourseEarningsResponse
