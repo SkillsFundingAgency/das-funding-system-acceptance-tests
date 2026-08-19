@@ -11,6 +11,7 @@ Scenario: Calculate unappred apprenticeship earnings
 	Given SLD inform us of a learner with apprenticeship, english and maths, incentives and learning support having start date currentAY-08-01, expected end date currentAy-07-31, standard code 615 and agreed price 15000
 	Then store the apprenticeship, english and maths and learning support details in learning db in a draft state
 	And calculate 12 unapproved earnings for programme aim with amount 1000 
-	# verify English and Maths
-	# verify incentives for both employer and provieder
-	# verify Learning support 
+	And Maths and English earnings are generated from periods currentAY-R01 to currentAy-R12 with regular instalment amount 83.33 for course English Foundation
+	And the first incentive earning is generated for provider & employer
+	And the second incentive earning is generated for provider & employer
+	And learning support earnings are generated from periods currentAY-R01 to currentAy-R12

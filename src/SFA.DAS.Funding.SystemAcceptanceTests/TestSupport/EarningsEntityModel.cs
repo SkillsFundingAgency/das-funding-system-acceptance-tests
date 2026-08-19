@@ -159,5 +159,27 @@ public static class EarningsEpisodeModelExtensions
     {
         return episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
     }
+
+    public static EpisodeModel GetEpisode(this IEnumerable<EpisodeModel> episodes, TestData testData)
+    {
+        (long ukprn, string courseCode) = GetUkprnAndCourseCodeFromTestData(testData);
+        return episodes.GetEpisode(ukprn, courseCode);
+    }
+
+    private static (long ukprn, string courseCode) GetUkprnAndCourseCodeFromTestData(TestData testData)
+    {
+        if (testData.CommitmentsApprenticeshipCreatedEvent != null)
+        {
+            return (testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode);
+        }
+
+        if (testData.LearnerData != null)
+        {
+            // this is a bit hacky, but works as long as only one English and Maths course is added to the learner data. If multiple courses are added, this will need to be updated to handle that case.
+            return (Constants.UkPrn, testData.LearnerData.Delivery.OnProgramme.First().StandardCode.ToString());
+        }
+
+        throw new Exception("Unable to determine Ukprn and CourseCode from TestData. Ensure that either CommitmentsApprenticeshipCreatedEvent or LearnerData is set.");
+    }
 }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

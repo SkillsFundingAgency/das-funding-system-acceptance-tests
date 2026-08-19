@@ -71,14 +71,14 @@ public class IncentivesAssertionsStepDefinitions
         await WaitHelper.WaitForIt(() =>
         {
             earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
-            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfileHistory.Any();
+            return !testData.IsMarkedAsCareLeaver || earningsApprenticeshipModel.Episodes.GetEpisode(testData).EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
         var additionalPayments = earningsApprenticeshipModel
-            .Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
+            .Episodes.GetEpisode(testData)
             ?.AdditionalPayments;
 
-        testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfile.EarningsProfileId;
+        testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.GetEpisode(testData).EarningsProfile.EarningsProfileId;
 
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
@@ -89,18 +89,18 @@ public class IncentivesAssertionsStepDefinitions
         {
             case "first":
                 additionalPayments!
-                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.ProviderIncentive)
+                    .IncentiveEarningExists(testData.ApprenticeshipStartDate(), 1, AdditionalPaymentType.ProviderIncentive)
                     .Should().Be(incentiveExpected, $"First Incentive Earning {expectation} For Provider");
                 additionalPayments!
-                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 1, AdditionalPaymentType.EmployerIncentive)
+                    .IncentiveEarningExists(testData.ApprenticeshipStartDate(), 1, AdditionalPaymentType.EmployerIncentive)
                     .Should().Be(incentiveExpected, $"First Incentive Earning {expectation} For Employer");
                 break;
             case "second":
                 additionalPayments!
-                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.ProviderIncentive)
+                    .IncentiveEarningExists(testData.ApprenticeshipStartDate(), 2, AdditionalPaymentType.ProviderIncentive)
                     .Should().Be(incentiveExpected, $"Second Incentive Earning {expectation} For Provider");
                 additionalPayments!
-                    .IncentiveEarningExists(testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.GetValueOrDefault(), 2, AdditionalPaymentType.EmployerIncentive)
+                    .IncentiveEarningExists(testData.ApprenticeshipStartDate(), 2, AdditionalPaymentType.EmployerIncentive)
                     .Should().Be(incentiveExpected, $"Second Incentive Earning {expectation} For Employer");
                 break;
             default:
