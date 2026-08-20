@@ -86,6 +86,21 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             context.Set(testData);
         }
 
+        [When("SLD inform us that the training provider has resubmitted the same learner with price change")]
+        public async Task WhenSldInformUsThatTheTrainingProviderHasResubmittedTheSameLearnerWithPriceChange()
+        {
+            var testData = context.Get<TestData>();
+
+            var onProgramme = testData.LearnerData!.Delivery.OnProgramme.First();
+            var latestCost = onProgramme.Costs.OrderByDescending(c => c.FromDate).First();
+
+            latestCost.TrainingPrice = 6000;
+            latestCost.EpaoPrice = 1500;
+
+            await learnerDataOuterApiHelper.AddLearnerData(Constants.UkPrn, testData.LearnerData);
+            context.Set(testData);
+        }
+
         [When("SLD inform us of a learner with training price (.*), epao as (.*) and fromDate (.*)")]
         public async Task LearnerWithTrainingPriceEpaoAsAndFromDateFrom_Date(string trainingPrice, string epao, string   fromDate)
         {

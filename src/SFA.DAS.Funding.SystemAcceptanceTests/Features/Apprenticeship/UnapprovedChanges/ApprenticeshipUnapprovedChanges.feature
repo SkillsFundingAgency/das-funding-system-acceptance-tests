@@ -24,3 +24,10 @@ Scenario: Prevent duplication of “unapproved apprenticeship earnings”
 	When SLD inform us that the training provider has resubmitted the same learner
 	Then the earning profile has not changed
 	And calculate 12 unapproved earnings for programme aim with amount 1000 
+
+Scenario: Prevent duplication of “unapproved apprenticeship earnings” when learning changes
+	Given SLD inform us of a learner with apprenticeship, english and maths, incentives and learning support having start date currentAY-08-01, expected end date currentAy-07-31, standard code 615 and agreed price 15000
+	And an earning profile is created
+	When SLD inform us that the training provider has resubmitted the same learner with price change
+	Then the earning profile has not changed
+	And calculate 12 unapproved earnings for programme aim with amount 500 
