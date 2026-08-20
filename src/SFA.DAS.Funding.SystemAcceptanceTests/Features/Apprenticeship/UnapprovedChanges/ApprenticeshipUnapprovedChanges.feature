@@ -15,6 +15,7 @@ Scenario: Calculate unapproved apprenticeship earnings
 	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 	And learning support earnings are generated from periods currentAY-R01 to currentAy-R12
+	And learner is not returned from get learners endpoint
 
 Scenario: Prevent duplication of “unapproved apprenticeship earnings”
 	Given SLD inform us of a learner with apprenticeship, english and maths, incentives and learning support having start date currentAY-08-01, expected end date currentAy-07-31, standard code 615 and agreed price 15000
