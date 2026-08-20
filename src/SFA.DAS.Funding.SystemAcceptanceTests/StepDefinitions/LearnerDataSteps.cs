@@ -78,6 +78,14 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             context.Set(testData);
         }
 
+        [When("SLD inform us that the training provider has resubmitted the same learner")]
+        public async Task WhenSldInformUsThatTheTrainingProviderHasResubmittedTheSameLearner()
+        {
+            var testData = context.Get<TestData>();
+            await learnerDataOuterApiHelper.AddLearnerData(Constants.UkPrn, testData.LearnerData);
+            context.Set(testData);
+        }
+
         [When("SLD inform us of a learner with training price (.*), epao as (.*) and fromDate (.*)")]
         public async Task LearnerWithTrainingPriceEpaoAsAndFromDateFrom_Date(string trainingPrice, string epao, string   fromDate)
         {

@@ -256,6 +256,26 @@ public class RecalculateEarningsStepDefinitions
             $"Expected first unapproved earning amount to be {amount} but found {instalments.First().Amount}");
     }
 
+    [Given("an earning profile is created")]
+    public void CaptureEarningProfileId()
+    {
+        var testData = _context.Get<TestData>();
+        var earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
+
+        testData.InitialEarningsProfileId = earningsApprenticeshipModel!.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)!.StartDate)!.EarningsProfile.EarningsProfileId;
+
+    }
+
+    [Then("the earning profile has not changed")]
+    public void EarningProfileIdHasNotChanged()
+    {
+        var testData = _context.Get<TestData>();
+        var earningsApprenticeshipModel = _earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(_context);
+        var currentEarningsProfileId = earningsApprenticeshipModel!.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)!.StartDate)!.EarningsProfile.EarningsProfileId;
+        testData.InitialEarningsProfileId.Should().Be(currentEarningsProfileId, "EarningsProfileId has unexpectedly changed");
+    }
+
+
     static int CalculateMonthsDifference(DateTime endDate, DateTime startDate)
     {
         int monthsDifference = (endDate.Year - startDate.Year) * 12 + endDate.Month - startDate.Month;

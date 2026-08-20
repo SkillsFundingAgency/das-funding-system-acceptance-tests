@@ -12,16 +12,29 @@ public class EarningsSqlClient
         _sqlServerClient = SqlServerClientProvider.GetSqlServerClient(connectionString);
     }
 
+
     public EarningsApprenticeshipModel? GetApprenticeshipEarningsEntityModel(ScenarioContext context)
     {
         var testData = context.Get<TestData>();
-        var apprenticeshipKey = testData.LearningKey;
 
-        var apprenticeship = _sqlServerClient.GetList<EarningsApprenticeshipModel>($"SELECT * FROM [Domain].[ApprenticeshipLearning] Where [LearningKey] ='{apprenticeshipKey}'").SingleOrDefault();
+        if(testData.LearningKey != Guid.Empty)
+        {
+            return GetApprenticeshipEarningsEntityModel(testData.LearningKey);
+        }
+
+        // We don't have LearningKey, we need to resolve it from uln (note, this only works if there is a single apprenticeship for the uln)
+        var earningLearning = _sqlServerClient.GetList<EarningsApprenticeshipModel>($"SELECT * FROM [Domain].[ApprenticeshipLearning] Where [Uln] ='{testData.Uln}'").Single();
+
+        return GetApprenticeshipEarningsEntityModel(earningLearning.LearningKey);
+    }
+
+    public EarningsApprenticeshipModel? GetApprenticeshipEarningsEntityModel(Guid learningKey)
+    {
+        var apprenticeship = _sqlServerClient.GetList<EarningsApprenticeshipModel>($"SELECT * FROM [Domain].[ApprenticeshipLearning] Where [LearningKey] ='{learningKey}'").SingleOrDefault();
         if (apprenticeship == null)
             return null;
 
-        var apprenticeshipEpisodes = _sqlServerClient.GetList<EpisodeModel>($"SELECT * FROM [Domain].[ApprenticeshipEpisode] Where LearningKey ='{apprenticeshipKey}'");
+        var apprenticeshipEpisodes = _sqlServerClient.GetList<EpisodeModel>($"SELECT * FROM [Domain].[ApprenticeshipEpisode] Where LearningKey ='{learningKey}'");
 
         foreach (var episode in apprenticeshipEpisodes)
         {

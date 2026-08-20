@@ -14,6 +14,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             _context = context;
         }
 
+        public async Task<LearnerDataRequest> AddLearnerData(long ukprn, LearnerDataRequest learnerData)
+        {
+            await _apiClient.AddLearnerData(ukprn, learnerData);
+            return learnerData;
+        }
+
 
         public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn)
         {
