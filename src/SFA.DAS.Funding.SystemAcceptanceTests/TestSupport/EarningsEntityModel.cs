@@ -6,7 +6,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 public class EarningsApprenticeshipModel // In the earnings repo this is called ApprenticeshipModel, but to avoid confusion with other tests Its prefixed with Earnings
 {
-    public Guid Key { get; set; }
+    public Guid LearningKey { get; set; }
     public long ApprovalsApprenticeshipId { get; set; }
     public string Uln { get; set; }
     public List<EpisodeModel> Episodes { get; set; }
@@ -158,6 +158,28 @@ public static class EarningsEpisodeModelExtensions
     public static EpisodeModel GetEpisode(this IEnumerable<EpisodeModel> episodes, ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
     {
         return episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
+    }
+
+    public static EpisodeModel GetEpisode(this IEnumerable<EpisodeModel> episodes, TestData testData)
+    {
+        (long ukprn, string courseCode) = GetUkprnAndCourseCodeFromTestData(testData);
+        return episodes.GetEpisode(ukprn, courseCode);
+    }
+
+    private static (long ukprn, string courseCode) GetUkprnAndCourseCodeFromTestData(TestData testData)
+    {
+        if (testData.CommitmentsApprenticeshipCreatedEvent != null)
+        {
+            return (testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode);
+        }
+
+        if (testData.LearnerData != null)
+        {
+            // this is a bit hacky, but works as long as only one English and Maths course is added to the learner data. If multiple courses are added, this will need to be updated to handle that case.
+            return (Constants.UkPrn, testData.LearnerData.Delivery.OnProgramme.First().StandardCode.ToString());
+        }
+
+        throw new Exception("Unable to determine Ukprn and CourseCode from TestData. Ensure that either CommitmentsApprenticeshipCreatedEvent or LearnerData is set.");
     }
 }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

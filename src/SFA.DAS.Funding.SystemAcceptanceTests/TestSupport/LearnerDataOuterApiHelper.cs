@@ -14,6 +14,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             _context = context;
         }
 
+        public async Task<LearnerDataRequest> AddLearnerData(long ukprn, LearnerDataRequest learnerData)
+        {
+            await _apiClient.AddLearnerData(ukprn, learnerData);
+            return learnerData;
+        }
+
 
         public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn)
         {
@@ -37,7 +43,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     .Create(),
                     Delivery = new StubDelivery
                     {
-                        EnglishAndMaths = fixture.Create<List<StubEnglishAndMaths>>(),
+                        EnglishAndMaths = new List<StubEnglishAndMaths>
+                        {
+                            fixture.Build<StubEnglishAndMaths>()
+                            .With(x => x.LearnAimRef, "E&M")
+                            .Create(),
+                        },
                         OnProgramme = new[] { onProgramme }
 
                     }
@@ -72,10 +83,53 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     .Create(),
                     Delivery = new StubDelivery
                     {
-                        EnglishAndMaths = fixture.Create<List<StubEnglishAndMaths>>(),
+                        EnglishAndMaths = new List<StubEnglishAndMaths>
+                        {
+                            fixture.Build<StubEnglishAndMaths>()
+                            .With(x => x.LearnAimRef, "E&M")
+                            .Create(),
+                        },
                         OnProgramme = new[] { onProgramme }
                     }
                 };
+
+            await _apiClient.AddLearnerData(ukprn, learnerData);
+
+            return learnerData;
+        }
+
+        public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn, List<CostDetails> costs, DateTime startDate, DateTime expectedEndDate, 
+            int standardCode, List<LearningSupport> learningSupports, List<StubEnglishAndMaths> englishAndMaths)
+        {
+            var fixture = new Fixture();
+
+            var onProgramme = fixture.Build<StubOnProgramme>()
+                .With(x => x.StartDate, startDate)
+                .With(x => x.ExpectedEndDate, expectedEndDate)
+                .With(x => x.AgreementId, "AG1")
+                .With(x => x.LearnAimRef, "ZPROG001")
+                .With(x => x.StandardCode, standardCode)
+                .With(x => x.CompletionDate, (DateTime?)null)
+                .With(x => x.WithdrawalDate, (DateTime?)null)
+                .With(x => x.Costs, costs)
+                .With(x => x.LearningSupport, learningSupports)
+                .Create();
+
+
+            var learnerData = new LearnerDataRequest
+            {
+                ConsumerReference = fixture.Create<string>(),
+                Learner = fixture.Build<StubLearner>()
+                    .With(x => x.Uln, uln)
+                    .With(x => x.Email, $"{uln}@test.com")
+                    .With(x => x.Dob, startDate.AddYears(-17))
+                    .Create(),
+                Delivery = new StubDelivery
+                {
+                    EnglishAndMaths = englishAndMaths,
+                    OnProgramme = new[] { onProgramme }
+                }
+            };
 
             await _apiClient.AddLearnerData(ukprn, learnerData);
 

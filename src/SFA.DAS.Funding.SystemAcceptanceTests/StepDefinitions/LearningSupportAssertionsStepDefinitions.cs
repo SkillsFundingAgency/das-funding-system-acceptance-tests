@@ -40,15 +40,14 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
         await WaitHelper.WaitForIt(() =>
         {
             earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
-            return !testData.IsLearningSupportAdded || earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfileHistory.Any();
+            return !testData.IsLearningSupportAdded || earningsApprenticeshipModel.Episodes.GetEpisode(testData).EarningsProfileHistory.Any();
         }, "Failed to find updated earnings entity.");
 
-        var additionalPayments = earningsApprenticeshipModel
-            .Episodes
-            .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
-            ?.AdditionalPayments;
+        var episode = earningsApprenticeshipModel.Episodes.GetEpisode(testData);
 
-        testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfile.EarningsProfileId;
+        var additionalPayments = episode?.AdditionalPayments;
+
+        testData.EarningsProfileId = episode.EarningsProfile.EarningsProfileId;
 
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 

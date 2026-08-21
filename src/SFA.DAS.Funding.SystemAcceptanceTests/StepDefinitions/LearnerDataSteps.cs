@@ -5,6 +5,8 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
+using LearningSupport = SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient.LearningSupport;
+using EnglishAndMaths = SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient.EnglishAndMaths;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
@@ -26,6 +28,76 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var testData = context.Get<TestData>();
             var learnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, Constants.UkPrn, new List<CostDetails> ());
             testData.LearnerData = learnerData;
+            context.Set(testData);
+        }
+
+        [Given("SLD inform us of a learner with apprenticeship, english and maths, incentives and learning support having start date (.*), expected end date (.*), standard code (.*?) and agreed price (.*)")]
+        public async Task LearnerWithStartDateExpectedEndDateStandardCodeAndAgreedPrice(TokenisableDateTime startDate, TokenisableDateTime expectedEndDate, int standardCode, int agreedPrice)
+        {
+            var testData = context.Get<TestData>();
+
+            var costDetails = new List<CostDetails>
+            {
+                new CostDetails
+                {
+                    TrainingPrice = (int)(agreedPrice*0.8),
+                    EpaoPrice = (int)(agreedPrice*0.2),
+                    FromDate = startDate.Value
+                }
+            };
+
+            var learningSupport = new List<LearningSupport>
+            {
+                new LearningSupport
+                {
+                    StartDate = startDate.Value,
+                    EndDate = expectedEndDate.Value
+                }
+            };
+
+            testData.IsLearningSupportAdded = true;
+
+            var englishAndMaths = new List<StubEnglishAndMaths>     
+            {
+                new StubEnglishAndMaths
+                {
+                    Course = "English Foundation",
+                    LearnAimRef = "12345678",
+                    StartDate = startDate.Value,
+                    EndDate = expectedEndDate.Value,
+                    CompletionDate = null,
+                    WithdrawalDate = null,
+                    Amount = 1000.00m,
+                    LearningSupport = learningSupport,
+                    AimSequenceNumber = 2
+                }
+            };
+
+            var learnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, Constants.UkPrn, costDetails, startDate.Value, expectedEndDate.Value, standardCode, learningSupport, englishAndMaths);
+            testData.LearnerData = learnerData;
+            context.Set(testData);
+        }
+
+        [When("SLD inform us that the training provider has resubmitted the same learner")]
+        public async Task WhenSldInformUsThatTheTrainingProviderHasResubmittedTheSameLearner()
+        {
+            var testData = context.Get<TestData>();
+            await learnerDataOuterApiHelper.AddLearnerData(Constants.UkPrn, testData.LearnerData);
+            context.Set(testData);
+        }
+
+        [When("SLD inform us that the training provider has resubmitted the same learner with price change")]
+        public async Task WhenSldInformUsThatTheTrainingProviderHasResubmittedTheSameLearnerWithPriceChange()
+        {
+            var testData = context.Get<TestData>();
+
+            var onProgramme = testData.LearnerData!.Delivery.OnProgramme.First();
+            var latestCost = onProgramme.Costs.OrderByDescending(c => c.FromDate).First();
+
+            latestCost.TrainingPrice = 6000;
+            latestCost.EpaoPrice = 1500;
+
+            await learnerDataOuterApiHelper.AddLearnerData(Constants.UkPrn, testData.LearnerData);
             context.Set(testData);
         }
 
