@@ -44,10 +44,10 @@ public class LearnerDataOuterUrlProvider
             ? $"/learnerdata/providers/{ukprn}/collectionPeriods/{academicYear}/{collectionPeriod}/shortCourses"
             : $"/learnerdata/providers/{ukprn}/shortCourses/earnings?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
 
-    public string UpdateLearning(long ukprn, Guid learningKey, int academicYear, byte collectionPeriod)
+    public string UpdateLearning(long ukprn, Guid learnerKey, int academicYear, byte collectionPeriod)
         => _useLegacyLearnerDataOuterUrls
-            ? $"/learnerdata/providers/{ukprn}/learning/{learningKey}"
-            : $"/learnerdata/providers/{ukprn}/apprenticeships/{learningKey}?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
+            ? $"/learnerdata/providers/{ukprn}/learning/{learnerKey}"
+            : $"/learnerdata/providers/{ukprn}/apprenticeships/{learnerKey}?academicYear={academicYear}&collectionPeriod={collectionPeriod}";
 
     public string GetFm36Block(long ukprn, int academicYear, byte collectionPeriod, int? pageSize = null, int? pageNumber = null)
     {

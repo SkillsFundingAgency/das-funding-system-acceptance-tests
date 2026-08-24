@@ -74,6 +74,8 @@ public class LearningSqlClient
             throw new InvalidOperationException("No learning found");
         }
 
+        learning.Learner = learner;
+
         learning.Episodes = _sqlServerClient.GetList<Episode>($"SELECT * FROM [dbo].[ApprenticeshipEpisode] WHERE LearningKey = '{learning.Key}'");
 
         foreach (var episode in learning.Episodes)

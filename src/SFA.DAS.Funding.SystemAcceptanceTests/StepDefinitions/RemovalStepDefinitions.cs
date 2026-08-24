@@ -19,7 +19,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var testData = context.Get<TestData>();
             var apprenticeshipKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
             ApprenticeshipEarningsRecalculatedEventHandler.Clear(x => x.ApprenticeshipKey == apprenticeshipKey);
-            await learnerDataOuterApiHelper.RemoveLearner(apprenticeshipKey);
+            await learnerDataOuterApiHelper.RemoveLearner(testData.LearnerKey);
         }
 
         [Given("a learning withdrawn event is published to approvals with last day of learning as (.*)")]
