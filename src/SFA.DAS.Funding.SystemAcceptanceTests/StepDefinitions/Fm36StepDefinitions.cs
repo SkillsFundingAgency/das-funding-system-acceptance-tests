@@ -79,6 +79,8 @@ public class Fm36StepDefinitions
 
             await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
 
+            testData.LearnerKey = _apprenticeshipSqlClient.GetApprenticeshipByUln(uln).LearnerKey;
+
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
             learnerDataBuilder
                 .WithCostDetails(10000, 2000, startDate.Value)
@@ -89,7 +91,7 @@ public class Fm36StepDefinitions
 
             var learnerData = learnerDataBuilder.Build();
 
-            await _learnerDataOuterApiHelper.UpdateLearning(testData.LearningKey, learnerData);
+            await _learnerDataOuterApiHelper.UpdateLearning(testData.LearnerKey, learnerData);
 
             testData.ResetLearnerDataBuilder();
         }

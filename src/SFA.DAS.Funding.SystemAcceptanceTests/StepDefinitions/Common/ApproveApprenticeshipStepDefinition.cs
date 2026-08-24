@@ -15,11 +15,13 @@ public class ApproveApprenticeshipStepDefinition
 
     private readonly ScenarioContext _context;
     private readonly EarningsSqlClient _earningsSqlClient;
+    private readonly LearningSqlClient _learningSqlClient;
 
-    public ApproveApprenticeshipStepDefinition(ScenarioContext context, EarningsSqlClient earningsSqlClient)
+    public ApproveApprenticeshipStepDefinition(ScenarioContext context, EarningsSqlClient earningsSqlClient, LearningSqlClient learningSqlClient)
     {
         _context = context;
         _earningsSqlClient = earningsSqlClient;
+        _learningSqlClient = learningSqlClient;
     }
 
     [Given(@"the apprenticeship commitment is approved")]
@@ -57,5 +59,7 @@ public class ApproveApprenticeshipStepDefinition
 
         testData.InitialEarningsProfileId = earningsApprenticeshipModel!.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)!.StartDate)!.EarningsProfile.EarningsProfileId;
         testData.LearningKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
+        var learning = _learningSqlClient.GetApprenticeshipByUln(testData.Uln);
+        testData.LearnerKey = learning.LearnerKey;
     }
 }

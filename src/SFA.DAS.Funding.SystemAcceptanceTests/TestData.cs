@@ -16,6 +16,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests;
 public class TestData
 {
     internal string Uln { get; }
+    internal Guid LearnerKey { get; set; } = Guid.Empty;
     internal Guid LearningKey { get; set; } = Guid.Empty;
     internal Guid ShortCourseLearnerKey { get; set; } = Guid.Empty;
     internal Guid InitialEarningsProfileId { get; set; } = Guid.Empty;
