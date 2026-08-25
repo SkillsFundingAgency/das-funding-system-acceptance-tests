@@ -1,0 +1,21 @@
+﻿Feature: LearningType
+
+A short summary of the feature
+
+@tag1
+
+Scenario: Store the “learning type” from the Courses API - create (apprenticeships)
+	Given SLD have a record where the Training code resolves to a learningType of "Apprenticeship" in the Courses API
+	When SLD submit this record
+	Then we have stored the learningType of "Apprenticeship" for that learning
+
+Scenario: Store the “learning type” from the Courses API - create (FoundationApprenticeship)
+	Given SLD have a record where the Training code resolves to a learningType of "FoundationApprenticeship" in the Courses API
+	When SLD submit this record
+	Then we have stored the learningType of "FoundationApprenticeship" for that learning
+
+Scenario: Store the “learning type” from the Courses API - pre-approval update (apprenticeship)
+	Given SLD have a record where the Training code resolves to a learningType of "Apprenticeship" in the Courses API
+	And SLD submit this record
+	When the record is resubmitted with a different Training code which resolves to "FoundationApprenticeship"
+	Then we have stored the learningType of "FoundationApprenticeship" for that learning
