@@ -1,17 +1,16 @@
-﻿using System.Text.Json;
-using NUnit.Framework.Interfaces;
+﻿using SFA.DAS.CommitmentsV2.Messages.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 using LearningSupport = SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient.LearningSupport;
-using EnglishAndMaths = SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient.EnglishAndMaths;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 {
     [Binding]
-    public class LearnerDataSteps(ScenarioContext context, LearnerDataOuterApiHelper learnerDataOuterApiHelper, LearnerDataSqlClient learnerDataSqlClient)
+    public class LearnerDataSteps(ScenarioContext context, LearnerDataOuterApiHelper learnerDataOuterApiHelper, LearnerDataSqlClient learnerDataSqlClient, LearningSqlClient learningSqlClient)
     {
         [When(@"SLD inform us of a new Learner")]
         public async Task WhenSldInformUsOfANewLearner()
@@ -26,7 +25,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         public async Task LearnerWithEmptyCostsArray()
         {
             var testData = context.Get<TestData>();
-            var learnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, Constants.UkPrn, new List<CostDetails> ());
+            var learnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, Constants.UkPrn, new List<CostDetails>());
             testData.LearnerData = learnerData;
             context.Set(testData);
         }
@@ -57,7 +56,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             testData.IsLearningSupportAdded = true;
 
-            var englishAndMaths = new List<StubEnglishAndMaths>     
+            var englishAndMaths = new List<StubEnglishAndMaths>
             {
                 new StubEnglishAndMaths
                 {
@@ -76,6 +75,50 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var learnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, Constants.UkPrn, costDetails, startDate.Value, expectedEndDate.Value, standardCode, learningSupport, englishAndMaths);
             testData.LearnerData = learnerData;
             context.Set(testData);
+        }
+
+        [When(@"SLD submit a record where the Training code resolves to a learningType of ""(.*)"" in the Courses API")]
+        public async Task WhenSldSubmitLearningType(string learningType)
+        {
+            var testData = context.Get<TestData>();
+
+            var standardCode = GetStandardCodeForLearningType(learningType);
+
+            testData.LearnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, Constants.UkPrn, ParseLearningType(learningType));
+
+        }
+
+        [When(@"the record is resubmitted with a different Training code which resolves to ""(.*)""")]
+        public async Task WhenTheRecordIsResubmittedWithADifferentTrainingCodeWhichResolvesTo(string learningType)
+        {
+            var testData = context.Get<TestData>();
+
+            if (testData.LearnerData == null)
+            {
+                throw new InvalidOperationException("No learner data has been prepared for resubmission");
+            }
+
+            var standardCode = GetStandardCodeForLearningType(learningType);
+            testData.LearnerData.Delivery.OnProgramme.First().StandardCode = standardCode;
+
+            await learnerDataOuterApiHelper.AddLearnerData(Constants.UkPrn, testData.LearnerData);
+            context.Set(testData);
+        }
+
+        [Then(@"we have stored the learningType of ""(.*)"" for that learning")]
+        public async Task ThenWeHaveStoredTheLearningTypeForThatLearning(string expectedLearningType)
+        {
+            var testData = context.Get<TestData>();
+            var expected = ParseLearningType(expectedLearningType);
+
+            await WaitHelper.WaitForIt(
+                () => learningSqlClient.GetApprenticeshipByUln(testData.Uln) != null,
+                $"Unable to find apprenticeship learning for ULN {testData.Uln}");
+
+            var actualLearningType = learningSqlClient.GetApprenticeshipLearningTypeByUln(testData.Uln);
+
+            Assert.AreEqual((byte)expected, actualLearningType,
+                $"Expected learningType {expected} but got {(LearningType)actualLearningType}");
         }
 
         [When("SLD inform us that the training provider has resubmitted the same learner")]
@@ -102,12 +145,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [When("SLD inform us of a learner with training price (.*), epao as (.*) and fromDate (.*)")]
-        public async Task LearnerWithTrainingPriceEpaoAsAndFromDateFrom_Date(string trainingPrice, string epao, string   fromDate)
+        public async Task LearnerWithTrainingPriceEpaoAsAndFromDateFrom_Date(string trainingPrice, string epao, string fromDate)
         {
             var testData = context.Get<TestData>();
             var learnerData = await learnerDataOuterApiHelper.AddLearnerData(
-                testData.Uln, 
-                Constants.UkPrn, 
+                testData.Uln,
+                Constants.UkPrn,
                 new List<CostDetails>
                 {
                     new CostDetails
@@ -170,7 +213,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var epaoPrice = totalPrice * 0.2;
 
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
-            learnerDataBuilder.WithCostDetails((int)trainingPrice , (int)epaoPrice, fromDate.Value);
+            learnerDataBuilder.WithCostDetails((int)trainingPrice, (int)epaoPrice, fromDate.Value);
 
             learnerDataBuilder.WithExpectedEndDate(toDate.Value);
 
@@ -224,7 +267,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
                 ? null
                 : TokenisableDateTime.FromString(fromDate);
 
-            learnerDataBuilder.WithCostDetails(tp, epao, fd == null? null : fd.Value);
+            learnerDataBuilder.WithCostDetails(tp, epao, fd == null ? null : fd.Value);
 
             learnerDataBuilder.WithExpectedEndDate(toDate.Value);
 
@@ -302,6 +345,26 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             data.StartDate.Should().Be(testData.LearnerData.Delivery.OnProgramme.First().StartDate!.Value.Date);
             data.TrainingPrice.Should().Be(trainingPrice);
             data.EpaoPrice.Should().Be(epaoPrice);
+        }
+
+        private static int GetStandardCodeForLearningType(string learningType)
+        {
+            return ParseLearningType(learningType) switch
+            {
+                LearningType.Apprenticeship => 614,
+                LearningType.FoundationApprenticeship => 811,
+                _ => throw new ArgumentOutOfRangeException(nameof(learningType), learningType, "Unsupported learningType")
+            };
+        }
+
+        private static LearningType ParseLearningType(string learningType)
+        {
+            if (Enum.TryParse<LearningType>(learningType, true, out var parsed))
+            {
+                return parsed;
+            }
+
+            throw new ArgumentException($"Unsupported learningType '{learningType}'", nameof(learningType));
         }
     }
 }
