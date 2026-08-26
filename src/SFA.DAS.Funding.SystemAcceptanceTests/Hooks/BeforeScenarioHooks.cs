@@ -5,6 +5,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 [Binding]
 public class BeforeScenarioHooks
 {
+    [BeforeScenario("ignoreInPREPRODandPP", Order = 0)]
+    public static void SkipScenarioInPpAndPreprod()
+    {
+        if (string.Equals(Configurator.EnvironmentName, "PP", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(Configurator.EnvironmentName, "PREPROD", StringComparison.OrdinalIgnoreCase))
+        {
+            Assert.Ignore($"Scenario skipped in environment '{Configurator.EnvironmentName}'.");
+        }
+    }
+
     [BeforeScenario(Order = 1)]
     public void BeforeScenarioHook(ScenarioContext context)
     {
