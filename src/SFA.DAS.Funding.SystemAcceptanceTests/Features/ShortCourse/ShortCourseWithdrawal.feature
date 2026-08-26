@@ -55,3 +55,13 @@ Scenario: Learner recorded as “Completed” and subsequently withdrawn without
     And remove the 30% milestone earning
     And inform approvals that the learner has been withdrawn from the short course
     And inform payments that the learner has been withdrawn from the short course
+
+#FLP-1896
+@regression
+Scenario: Pass updated withdrawal reason to Approvals 
+    Given SLD informs us of a new learner with a short course start date currentAY-08-01
+	And the short course is approved
+    When SLD inform us that the learner has withdrawn
+    Then inform approvals that the learner has been withdrawn from the short course
+    When SLD inform us that withdrawal reason has changed
+    Then inform approvals of the new withdrawal reason
