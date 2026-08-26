@@ -95,6 +95,24 @@ public class LearningSqlClient
         return learning;
     }
 
+    public byte GetApprenticeshipLearningTypeByUln(string uln)
+    {
+        const string sql = @"
+            SELECT TOP 1 l.LearningType
+            FROM [dbo].[ApprenticeshipLearning] l
+            INNER JOIN [dbo].[Learner] lr ON lr.[Key] = l.LearnerKey
+            WHERE lr.Uln = @uln";
+
+        var learningTypes = _sqlServerClient.GetList<byte>(sql, new { uln });
+
+        if (!learningTypes.Any())
+        {
+            throw new InvalidOperationException($"No apprenticeship learning found for ULN {uln}");
+        }
+
+        return learningTypes.First();
+    }
+
     public List<ShortCourseLearning>? GetShortCourseLearning(string uln)
     {
         var learner = _sqlServerClient.GetList<Learner>("SELECT * from [dbo].[Learner] WHERE Uln = @uln", new { uln }).FirstOrDefault();

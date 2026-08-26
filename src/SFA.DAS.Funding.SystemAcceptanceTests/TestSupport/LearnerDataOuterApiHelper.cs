@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
+﻿using SFA.DAS.CommitmentsV2.Messages.Events;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
@@ -19,7 +20,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             await _apiClient.AddLearnerData(ukprn, learnerData);
             return learnerData;
         }
-
 
         public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn)
         {
@@ -101,6 +101,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
         public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn, List<CostDetails> costs, DateTime startDate, DateTime expectedEndDate, 
             int standardCode, List<LearningSupport> learningSupports, List<StubEnglishAndMaths> englishAndMaths)
         {
+            var learnerData = CreateLearnerDataRequest(uln, costs, startDate, expectedEndDate, standardCode, learningSupports, englishAndMaths);
+
+            await _apiClient.AddLearnerData(ukprn, learnerData);
+
+            return learnerData;
+        }
+
+        public LearnerDataRequest CreateLearnerDataRequest(string uln, List<CostDetails> costs, DateTime startDate, DateTime expectedEndDate,
+            int standardCode, List<LearningSupport> learningSupports, List<StubEnglishAndMaths> englishAndMaths)
+        {
             var fixture = new Fixture();
 
             var onProgramme = fixture.Build<StubOnProgramme>()
@@ -128,6 +138,50 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 {
                     EnglishAndMaths = englishAndMaths,
                     OnProgramme = new[] { onProgramme }
+                }
+            };
+
+            return learnerData;
+        }
+
+        public async Task<LearnerDataRequest> AddLearnerData(string uln, long ukprn, LearningType learningType)
+        {
+            var fixture = new Fixture();
+
+            var standardCode = learningType switch
+            {
+                LearningType.Apprenticeship => 614,
+                LearningType.FoundationApprenticeship => 811,
+                _ => throw new ArgumentOutOfRangeException(nameof(learningType), learningType, "Unsupported learningType")
+            };
+
+            var onProgramme = fixture.Build<StubOnProgramme>()
+                .With(x => x.StartDate, DateTime.UtcNow)
+                        .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
+                        .With(x => x.AgreementId, "AG1")
+                        .With(x => x.StandardCode, 57)
+                        .With(x => x.Costs, new List<CostDetails> { fixture.Create<CostDetails>() })
+                        .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
+                        .With(x => x.StandardCode, standardCode)
+                        .Create();
+
+            var learnerData = new LearnerDataRequest
+            {
+                ConsumerReference = fixture.Create<string>(),
+                Learner = fixture.Build<StubLearner>()
+                    .With(x => x.Uln, uln)
+                    .With(x => x.Email, $"{uln}@test.com")
+                    .Create(),
+                Delivery = new StubDelivery
+                {
+                    EnglishAndMaths = new List<StubEnglishAndMaths>
+                        {
+                            fixture.Build<StubEnglishAndMaths>()
+                            .With(x => x.LearnAimRef, "E&M")
+                            .Create(),
+                        },
+                    OnProgramme = new[] { onProgramme }
+
                 }
             };
 
