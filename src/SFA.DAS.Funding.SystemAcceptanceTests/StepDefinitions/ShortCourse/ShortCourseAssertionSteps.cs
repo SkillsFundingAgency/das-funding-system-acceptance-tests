@@ -396,6 +396,7 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         }
     }
 
+    [Then("inform approvals of the new withdrawal reason")]
     [Then(@"inform approvals that the learner has been withdrawn from the short course")]
     public async Task ThenInformApprovalsThatTheLearnerHasBeenWithdrawnFromTheShortCourse()
     {

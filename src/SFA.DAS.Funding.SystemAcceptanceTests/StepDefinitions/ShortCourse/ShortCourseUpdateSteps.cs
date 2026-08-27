@@ -66,6 +66,20 @@ public class ShortCourseUpdateSteps(ScenarioContext context, LearnerDataOuterApi
         testData.ExpectGrowthAndSkillsPaymentsEvent = true;
     }
 
+    [When("SLD inform us that withdrawal reason has changed")]
+    public async Task SLDInformUsThatWithdrawalReasonHasChanged()
+    {
+        var testData = context.Get<TestData>();
+        var ukprn = Constants.UkPrn;
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[ukprn];
+
+        shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalReasonCode = Constants.WithdrawalReasonCode;
+
+        await learnerDataOuterApiHelper.UpdateShortCourseLearning(ukprn, testData.ShortCourseLearnerKey, shortCourseRequest);
+        testData.ExpectGrowthAndSkillsPaymentsEvent = true;
+    }
+
+
     [When(@"SLD inform us that the learner has withdrawn with both milestones removed")]
     public async Task SLDInformUsThatTheLearnerHasWithdrawnWithBothMilestonesRemoved()
     {
