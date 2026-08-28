@@ -10,7 +10,7 @@ Background:
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And SLD submit updated learners details
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Apprentice removed from the ILR
 	Given a Maths and English learning is recorded from currentAY-08-01 to nextAY-08-23 with learnAimRef 60342843, course Entry level English, amount 1200, learning support from currentAY-10-12 to currentAY-02-15
 	And SLD inform us of a break in learning with pause date currentAY-01-15
@@ -27,14 +27,14 @@ Scenario: Apprentice removed from the ILR
 	And a learning removed event is published to approvals
 
 # FLP-1781 AC1
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Apprentice removed from the ILR and Get Learners endpoint called
 	When sld inform us that the learner is to removed
 	And SLD want to know the learners already on Apprenticeship service for a provider
 	Then the apprentice is not returned in the GetLearners response
 
 # FLP-1781 AC2
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Apprentice removed from the ILR and Get Earnings endpoint called
 	When sld inform us that the learner is to removed
 	And the fm36 data is retrieved for currentDate

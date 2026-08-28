@@ -3,7 +3,7 @@
 Retrieve valid Fm36 learning deliveries 
 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Retrieve Valid Fm36 learning delivery for English and Maths
 	Given an apprenticeship has a start date of currentAY-09-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the learner is aged 19 at the start of the apprenticeship

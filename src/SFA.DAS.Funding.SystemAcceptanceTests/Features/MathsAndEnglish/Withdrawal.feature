@@ -10,7 +10,7 @@ The Qualifying Period varies depending upon the length of the course:
 	14-day qualifying period for 14-167 days
 	1-day qualifying period for <14 days
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Earnings for Maths and English after Withdrawal after Qualifying Period
 	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
 	When Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
@@ -27,7 +27,7 @@ Examples:
 	#| currentAY-09-25 |            13 | Entry level English |         5000 |                 1 | currentAY-R02                 | currentAY-R02        |       5000 | -- Uncomment this example as part of FLP-1424 
 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Withdrawal for Maths and English can be after Planned end date
 	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
 	When Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
@@ -40,7 +40,7 @@ Examples:
 	| currentAY-09-25 |           240 | Entry level English |         5000 |               270 | currentAY-R02                 | currentAY-R09        |        625 |
 	
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Earnings for Maths and English are recalculated when withdrawal details have changed
 	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
@@ -57,7 +57,7 @@ Examples:
 	| start_date      | duration_days | course              | agreed_price | first_withdrawal_on_day | first_withdrawal_earnings_start_period | first_withdrawal_earnings_end_period | instalment | second_withdrawal_on_day | second_withdrawal_earnings_start_period | second_withdrawal_earnings_end_period |
 	| currentAY-09-25 |           240 | Entry level English |         5000 |                      42 | currentAY-R02                          | currentAY-R03                        |        625 |                       70 | currentAY-R02                           | currentAY-R04                         |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Earnings for Maths and English after Withdrawal during Qualifying Period
 	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
 	When Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
@@ -71,7 +71,7 @@ Examples:
 	| currentAY-09-25 |            14 | Entry level English |         5000 |                13 |
 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: English and Maths course withdrawn from the start
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
@@ -84,7 +84,7 @@ Scenario: English and Maths course withdrawn from the start
 	And SLD submit updated learners details
 	Then Maths and English earnings for course Entry level English are removed
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: English and Maths course withdrawn when programme aim has completed
 	Given an apprenticeship has a start date of previousAY-08-01, a planned end date of currentAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
@@ -98,7 +98,7 @@ Scenario: English and Maths course withdrawn when programme aim has completed
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R02 with instalment amount 186.20 for course Entry level English
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: English and Maths course withdrawn from the start then removed
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
@@ -116,7 +116,7 @@ Scenario: English and Maths course withdrawn from the start then removed
 	And SLD submit updated learners details
 	Then Maths and English earnings for course Entry level English are removed
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: English and Maths course withdrawn from the start then reinstated
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
