@@ -50,7 +50,7 @@ Examples:
 	| currentAY-08-01 | currentAY-10-28  |       15,000 |           614 |  17 |
 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: No Incentives for 16-18 learner completing before threshold date
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
@@ -68,7 +68,7 @@ Examples:
 	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  17 | currentAY-07-29 | is                       | is_not                    |
 	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  18 | currentAY-07-31 | is                       | is                        |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: No Incentives for 16-18 learner withdrawn before 90 day threshold date
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 17

@@ -7,7 +7,7 @@ So we both get paid incentives correctly
 # User stories/ACs covered in this file:
 # FLP-1036 AC2
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Generate Incentive Earnings For current Academic Year 19-24
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>

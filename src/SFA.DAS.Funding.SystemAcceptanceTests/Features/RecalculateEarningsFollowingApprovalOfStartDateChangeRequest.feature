@@ -12,7 +12,7 @@ Example 1: Start date moves earlier, stays in-year (normal recalc)
 Example 2: Start date moves later, stays in-year (normal recalc)
 Example 3: Start date move forwards, into next year 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Start Date change approved; recalc earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
