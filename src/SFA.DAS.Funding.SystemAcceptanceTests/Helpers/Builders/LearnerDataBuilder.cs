@@ -20,7 +20,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
                 Uln = long.Parse(testData.Uln),
                 FirstName = testData.LearningCreatedEvent.FirstName,
                 LastName = testData.LearningCreatedEvent.LastName,
-                Dob = testData.LearningCreatedEvent.DateOfBirth
+                Dob = testData.LearningCreatedEvent.DateOfBirth,
+                LearnerRef = testData.Uln
             }
         };
 
