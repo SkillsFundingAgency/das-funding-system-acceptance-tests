@@ -247,9 +247,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             return response;
         }
 
-        public async Task DeleteLearner(long ukprn, Guid learningKey)
+        public async Task DeleteLearner(long ukprn, Guid learningKey, short? academicYearOverride = null)
         {
-            var academicYear = DateTime.UtcNow.ToAcademicYearAndPeriod().AcademicYear;
+            var academicYear = academicYearOverride ?? DateTime.UtcNow.ToAcademicYearAndPeriod().AcademicYear;
             var request = new HttpRequestMessage(HttpMethod.Delete, _urlProvider.DeleteLearner(ukprn, learningKey, academicYear));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");

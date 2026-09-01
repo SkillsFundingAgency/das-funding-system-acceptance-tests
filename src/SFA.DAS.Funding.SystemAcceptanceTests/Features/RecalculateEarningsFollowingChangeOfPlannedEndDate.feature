@@ -21,5 +21,5 @@ Scenario: Planned End Date change; recalc earnings
 
 Examples:
 	| start_date      | end_date               | agreed_price | training_code | new_end_date           | old_inst_amount | new_expected_earnings |
-	| currentAY-08-23 | currentAYPlusTwo-08-23 | 15000        | 2             | nextAY-05-23           | 500             | 571.42857             |
-	| currentAY-08-26 | nextAy-04-26           | 15000        | 2             | currentAYPlusTwo-08-26 | 600             | 500                   |
+	| nextAY-08-23 | currentAYPlusTwo-08-23 | 15000        | 2             | nextAY-05-23           | 500             | 571.42857             |
+	| nextAY-08-26 | nextAy-04-26           | 15000        | 2             | currentAYPlusTwo-08-26 | 600             | 500                   |

@@ -14,10 +14,10 @@ Scenario: Learning support added for On programme learning
 
 Examples:
 	| start_date       | end_date        | ls_start_date    | ls_end_date      | expected_first_ls_period | expected_last_ls_period |
-	| currentAY-09-25  | currentAY-04-15 | currentAY-11-15  | currentAY-03-10  | currentAY-R04            | currentAY-R07           |
-	| currentAY-08-01  | currentAY-07-31 | currentAY-08-01  | currentAY-12-15  | currentAY-R01            | currentAY-R04           |
-	| currentAY-08-01  | currentAY-07-31 | currentAY-09-01  | currentAY-12-15  | currentAY-R02            | currentAY-R04           |
-	| previousAY-08-01 | currentAY-07-31 | previousAY-09-01 | previousAY-05-15 | previousAY-R02           | previousAY-R09          |
+	| nextAY-09-25  | nextAY-04-15 | nextAY-11-15  | nextAY-03-10  | nextAY-R04            | nextAY-R07           |
+	| nextAY-08-01  | nextAY-07-31 | nextAY-08-01  | nextAY-12-15  | nextAY-R01            | nextAY-R04           |
+	| nextAY-08-01  | nextAY-07-31 | nextAY-09-01  | nextAY-12-15  | nextAY-R02            | nextAY-R04           |
+	| currentAY-08-01 | nextAY-07-31 | currentAY-09-01 | currentAY-05-15 | currentAY-R02           | currentAY-R09          |
 
 @regression
 Scenario: Learning support removed for On programme learning
@@ -31,15 +31,15 @@ Scenario: Learning support removed for On programme learning
 
 Examples:
 	| start_date      | end_date        | ls_start_date   | ls_end_date     |
-	| currentAY-09-25 | currentAY-04-15 | currentAY-11-15 | currentAY-03-10 |
+	| nextAY-09-25 | nextAY-04-15 | nextAY-11-15 | nextAY-03-10 |
 
 @regression
 Scenario: No LSF earnings after learner withdraws from the programme aim
-	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
-	When learning support is recorded from currentAY-11-15 to currentAY-03-10
-	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
-	And Learning withdrawal date is recorded on currentAY-01-15
+	Given a learning has a start date of nextAY-09-25, a planned end date of nextAY-04-15 and an agreed price of 12000
+	When learning support is recorded from nextAY-11-15 to nextAY-03-10
+	And SLD record on-programme cost as total price 12000 from date nextAY-09-25 to date nextAY-04-15
+	And Learning withdrawal date is recorded on nextAY-01-15
 	And SLD submit updated learners details
-	Then learning support earnings are generated from periods currentAY-R04 to currentAY-R05
+	Then learning support earnings are generated from periods nextAY-R04 to nextAY-R05
 
 

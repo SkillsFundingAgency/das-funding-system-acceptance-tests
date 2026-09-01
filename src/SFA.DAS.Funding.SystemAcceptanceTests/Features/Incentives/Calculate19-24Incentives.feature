@@ -21,9 +21,9 @@ Scenario: 19-24 Incentive Earnings - Learner is a Care Leaver with Employer cons
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  19 |
-	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  21 |
-	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  24 |
+	| nextAY-08-01 | nextAY-07-31  |        15000 |           614 |  19 |
+	| nextAY-08-01 | nextAY-07-31  |        15000 |           614 |  21 |
+	| nextAY-08-01 | nextAY-07-31  |        15000 |           614 |  24 |
 
 @regression
 Scenario: 19-24 Incentive Earnings - Learner is a Care Leaver without Employer Consent
@@ -38,7 +38,7 @@ Scenario: 19-24 Incentive Earnings - Learner is a Care Leaver without Employer C
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  19 |
+	| nextAY-08-01 | nextAY-07-31  |        15000 |           614 |  19 |
 
 @regression
 Scenario: 19-24 Incentive Earnings - Learner has EHCP
@@ -53,7 +53,7 @@ Scenario: 19-24 Incentive Earnings - Learner has EHCP
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-07-31  |        15000 |             1 |  19 |
+	| nextAY-08-01 | nextAY-07-31  |        15000 |             1 |  19 |
 
 
 @regression
@@ -69,8 +69,8 @@ Scenario: 19-24 Incentive Earnings (duration only long enough for first earning 
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-10-29  |        15000 |           614 |  20 |
-	| currentAY-08-01 | currentAY-07-30  |        15000 |           614 |  20 |
+	| nextAY-08-01 | nextAY-10-29  |        15000 |           614 |  20 |
+	| nextAY-08-01 | nextAY-07-30  |        15000 |           614 |  20 |
 
 
 @regression
@@ -85,7 +85,7 @@ Scenario: 19-24 Incentive Earnings (duration too short)
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-10-28  |        15000 |           614 |  20 |
+	| nextAY-08-01 | nextAY-10-28  |        15000 |           614 |  20 |
 
 
 @regression
@@ -93,7 +93,7 @@ Scenario: No Incentives for 19-24 learner completing before threshold date
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
-	And SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
+	And SLD record on-programme training price 12000 with epao as 3000 from date nextAY-08-01 to date nextAY-07-31
 	And the apprentice is marked as a care leaver
 	And Learning Completion is recorded on <completion_date>
 	And SLD submit updated learners details
@@ -102,17 +102,17 @@ Scenario: No Incentives for 19-24 learner completing before threshold date
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age | completion_date | first_earnings_generated | second_earnings_generated |
-	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  19 | currentAY-10-28 | is_not                   | is_not                    |
-	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  21 | currentAY-10-29 | is                       | is_not                    |
-	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  23 | currentAY-07-29 | is                       | is_not                    |
-	| currentAY-08-01 | currentAY-07-31  |        15000 |           614 |  24 | currentAY-07-31 | is                       | is                        |
+	| nextAY-08-01 | nextAY-07-31  |        15000 |           614 |  19 | nextAY-10-28 | is_not                   | is_not                    |
+	| nextAY-08-01 | nextAY-07-31  |        15000 |           614 |  21 | nextAY-10-29 | is                       | is_not                    |
+	| nextAY-08-01 | nextAY-07-31  |        15000 |           614 |  23 | nextAY-07-29 | is                       | is_not                    |
+	| nextAY-08-01 | nextAY-07-31  |        15000 |           614 |  24 | nextAY-07-31 | is                       | is                        |
 
 @regression
 Scenario: No Incentives for 19+ learner withdrawn before 90-365 day threshold date
-	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 614
+	Given an apprenticeship has a start date of nextAY-08-01, a planned end date of nextAY-07-31, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19
 	And the apprenticeship commitment is approved
-	When SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
+	When SLD record on-programme training price 12000 with epao as 3000 from date nextAY-08-01 to date nextAY-07-31
 	And the apprentice is marked as a care leaver
 	And Learning withdrawal date is recorded on <withdrawal_date>
 	And SLD submit updated learners details
@@ -121,8 +121,8 @@ Scenario: No Incentives for 19+ learner withdrawn before 90-365 day threshold da
 
 Examples:
 	| withdrawal_date | first_earnings_generated | second_earnings_generated |
-	| currentAY-10-28 | is_not                   | is_not                    |
-	| currentAY-07-30 | is                       | is_not                    |
+	| nextAY-10-28 | is_not                   | is_not                    |
+	| nextAY-07-30 | is                       | is_not                    |
 
 #FLP-1512
 @regression

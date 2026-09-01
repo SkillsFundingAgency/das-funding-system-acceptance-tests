@@ -17,10 +17,10 @@ Scenario: Earnings for Maths and English with prior learning %
 
 Examples:
 	| start_date      | end_date        | course              | agreed_price | amount | expected_first_earning_period | expected_last_period | prior_learning | other_funding_adjustment | instalment |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |   1000 | currentAY-R02                 | currentAY-R08        |             50 |                       50 |      35.71 |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |   1000 | currentAY-R02                 | currentAY-R08        |            120 |                        0 |     171.43 |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |   1000 | currentAY-R02                 | currentAY-R08        |              0 |                      120 |     171.43 |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |   1000 | currentAY-R02                 | currentAY-R08        | null           |                      120 |     171.43 |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English |         5000 |   1000 | currentAY-R02                 | currentAY-R08        | null           | null                     |     142.86 |
+	| nextAY-09-25 | nextAY-04-15 | Entry level English |         5000 |   1000 | nextAY-R02                 | nextAY-R08        |             50 |                       50 |      35.71 |
+	| nextAY-09-25 | nextAY-04-15 | Entry level English |         5000 |   1000 | nextAY-R02                 | nextAY-R08        |            120 |                        0 |     171.43 |
+	| nextAY-09-25 | nextAY-04-15 | Entry level English |         5000 |   1000 | nextAY-R02                 | nextAY-R08        |              0 |                      120 |     171.43 |
+	| nextAY-09-25 | nextAY-04-15 | Entry level English |         5000 |   1000 | nextAY-R02                 | nextAY-R08        | null           |                      120 |     171.43 |
+	| nextAY-09-25 | nextAY-04-15 | Entry level English |         5000 |   1000 | nextAY-R02                 | nextAY-R08        | null           | null                     |     142.86 |
 
 	

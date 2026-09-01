@@ -6,7 +6,7 @@ With this test we want to ensure that the call of Learning Support inner endpoin
 
 @regression @Performance
 Scenario: Learning Support for Maths and English Earnings over 5 years
-	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 614
+	Given an apprenticeship has a start date of nextAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date nextAY-08-23
@@ -27,6 +27,6 @@ Scenario: Learning Support for Maths and English Earnings over 5 years
 
 Examples:
 	| start_date          | end_date     | course              | expected_first_earning_period | expected_last_earning_period |
-	| TwoYearsAgoAY-08-01 | nextAY-07-31 | Entry level English | TwoYearsAgoAY-R01             | currentAY-R12                |
+	| TwoYearsAgoAY-08-01 | nextAY-07-31 | Entry level English | TwoYearsAgoAY-R01             | nextAY-R12                |
 	
 

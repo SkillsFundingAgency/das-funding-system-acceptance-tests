@@ -20,7 +20,7 @@ Scenario: Generate Incentive Earnings For current Academic Year 19-24
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-07-31  |       15000 |           614 |  20 |
+	| nextAY-08-01 | nextAY-07-31  |       15000 |           614 |  20 |
 
 @regression
 Scenario: Generate Incentive Earnings For Current Academic Year 16-18
@@ -32,4 +32,4 @@ Scenario: Generate Incentive Earnings For Current Academic Year 16-18
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  17 |
+	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  17 |

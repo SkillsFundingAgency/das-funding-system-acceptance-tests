@@ -11,12 +11,12 @@ Scenario: Price change approved; new price episode in FM36 block
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD record on-programme cost as total price <new_total_price> from date <pc_from_date> to date <end_date>
 	And SLD submit updated learners details
-	And the fm36 data is retrieved for previousAY-07-31
+	And the fm36 data is retrieved for currentAY-07-31
 	Then fm36 block contains a new price episode starting <pc_from_date> with episode 1 tnp of <agreed_price> and episode 2 tnp of <new_total_price>
 	
 Examples:
 	| start_date       | end_date        | agreed_price | training_code | pc_from_date     | new_total_price | pc_approved_date |
-	| previousAY-08-20 | currentAY-04-23 | 15000        | 2             | previousAY-09-29 | 18000           | previousAY-09-29 |
+	| currentAY-08-20 | nextAY-04-23 | 15000        | 2             | currentAY-09-29 | 18000           | currentAY-09-29 |
 
 @regression
 Scenario: Start date change approved
@@ -29,10 +29,10 @@ Scenario: Start date change approved
 	When SLD resubmits ILR
 	And SLD record on-programme cost as total price <agreed_price> from date <new_start_date> to date <end_date>
 	And SLD submit updated learners details
-	And the fm36 data is retrieved for previousAY-07-31
+	And the fm36 data is retrieved for currentAY-07-31
 	Then the fm36 PriceEpisodeInstalmentValue is <new_expected_earnings>
 	And Incentive periods and dates are updated in the fm36 response
 
 Examples:
 	| start_date       | end_date        | agreed_price | training_code | new_start_date   | previous_earnings | new_expected_earnings | age |
-	| previousAY-08-23 | currentAY-08-23 | 15000        | 2             | previousAY-12-23 | 1000              | 1500                  | 17  |
+	| currentAY-08-23 | nextAY-08-23 | 15000        | 2             | currentAY-12-23 | 1000              | 1500                  | 17  |

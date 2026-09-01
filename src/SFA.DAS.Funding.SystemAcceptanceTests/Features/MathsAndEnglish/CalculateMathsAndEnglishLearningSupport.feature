@@ -14,7 +14,7 @@ Scenario: Learning support added for Maths and English course
 
 Examples:
 	| start_date      | end_date        | course              | amount | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English |    931 | currentAY-10-12 | currentAY-02-15 | currentAY-R03            | currentAY-R06           |
+	| nextAY-09-25 | nextAY-04-15 | Entry level English |    931 | nextAY-10-12 | nextAY-02-15 | nextAY-R03            | nextAY-R06           |
 
 @regression
 Scenario: Learning support added for Maths and English course - paid until completion
@@ -26,7 +26,7 @@ Scenario: Learning support added for Maths and English course - paid until compl
 
 Examples:
 	| start_date      | end_date        | course              | amount | completion_date | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English |    931 | currentAY-03-20 | currentAY-10-12 | currentAY-04-15 | currentAY-R03            | currentAY-R07           |
+	| nextAY-09-25 | nextAY-04-15 | Entry level English |    931 | nextAY-03-20 | nextAY-10-12 | nextAY-04-15 | nextAY-R03            | nextAY-R07           |
 
 @regression
 Scenario: No LSF earnings when learner Withdraws from E&M
@@ -38,5 +38,5 @@ Scenario: No LSF earnings when learner Withdraws from E&M
 
 Examples:
 	| start_date      | end_date        | course              | amount | withdrawal_date | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
-	| currentAY-09-25 | currentAY-04-15 | Entry level English |    931 | currentAY-03-20 | currentAY-10-12 | currentAY-04-15 | currentAY-R03            | currentAY-R07           |
+	| nextAY-09-25 | nextAY-04-15 | Entry level English |    931 | nextAY-03-20 | nextAY-10-12 | nextAY-04-15 | nextAY-R03            | nextAY-R07           |
 

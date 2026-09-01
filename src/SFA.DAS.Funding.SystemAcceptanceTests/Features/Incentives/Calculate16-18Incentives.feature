@@ -18,9 +18,9 @@ Scenario: 16-18 Incentive Earnings
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  16 |
-	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  17 |
-	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  18 |
+	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  16 |
+	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  17 |
+	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  18 |
 
 
 @regression
@@ -33,8 +33,8 @@ Scenario: 16-18 Incentive Earnings (duration only long enough for first earning 
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-10-29  |       15,000 |           614 |  17 |
-	| currentAY-08-01 | currentAY-07-30  |       15,000 |           614 |  17 |
+	| nextAY-08-01 | nextAY-10-29  |       15,000 |           614 |  17 |
+	| nextAY-08-01 | nextAY-07-30  |       15,000 |           614 |  17 |
 
 
 @regression
@@ -47,7 +47,7 @@ Scenario: 16-18 Incentive Earnings (duration too short)
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-10-28  |       15,000 |           614 |  17 |
+	| nextAY-08-01 | nextAY-10-28  |       15,000 |           614 |  17 |
 
 
 @regression
@@ -55,7 +55,7 @@ Scenario: No Incentives for 16-18 learner completing before threshold date
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
 	When the apprenticeship commitment is approved
-	And SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
+	And SLD record on-programme training price 12000 with epao as 3000 from date nextAY-08-01 to date nextAY-07-31
 	And Learning Completion is recorded on <completion_date>
 	And SLD submit updated learners details
 	Then the first incentive earning <first_earnings_generated> generated for provider & employer
@@ -63,19 +63,19 @@ Scenario: No Incentives for 16-18 learner completing before threshold date
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age | completion_date | first_earnings_generated | second_earnings_generated |
-	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  17 | currentAY-10-28 | is_not                   | is_not                    |
-	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  18 | currentAY-10-29 | is                       | is_not                    |
-	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  17 | currentAY-07-29 | is                       | is_not                    |
-	| currentAY-08-01 | currentAY-07-31  |       15,000 |           614 |  18 | currentAY-07-31 | is                       | is                        |
+	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  17 | nextAY-10-28 | is_not                   | is_not                    |
+	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  18 | nextAY-10-29 | is                       | is_not                    |
+	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  17 | nextAY-07-29 | is                       | is_not                    |
+	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  18 | nextAY-07-31 | is                       | is                        |
 
 @regression
 Scenario: No Incentives for 16-18 learner withdrawn before 90 day threshold date
-	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 614
+	Given an apprenticeship has a start date of nextAY-08-01, a planned end date of nextAY-07-31, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 17
 	And the apprenticeship commitment is approved
 	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
-	When SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
+	When SLD record on-programme training price 12000 with epao as 3000 from date nextAY-08-01 to date nextAY-07-31
 	And Learning withdrawal date is recorded on <withdrawal_date>
 	And SLD submit updated learners details
 	Then the first incentive earning <first_earnings_generated> generated for provider & employer
@@ -83,5 +83,5 @@ Scenario: No Incentives for 16-18 learner withdrawn before 90 day threshold date
 
 Examples:
 	| withdrawal_date | first_earnings_generated | second_earnings_generated |
-	| currentAY-10-28 | is_not                   | is_not                    |
-	| currentAY-07-30 | is                       | is_not                    |
+	| nextAY-10-28 | is_not                   | is_not                    |
+	| nextAY-07-30 | is                       | is_not                    |
