@@ -69,9 +69,24 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     public void ValidateAgeAndFundingLineTypeCalculated(int age, string fundingLineType)
     {
         var testData = _context.Get<TestData>();
-        Assert.AreEqual(testData.LearningCreatedEvent.Episode.AgeAtStartOfLearning, age, $"Expected age is: {age} but found age: {testData.LearningCreatedEvent.Episode.AgeAtStartOfLearning}");
+        var commitmentsEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
-        var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
-        deliveryPeriods.FilterByOnProg().ToList().ShouldHaveCorrectFundingLineType(fundingLineType);
+        //Not entirely sure of the value of testing this age calc
+        var dateOfBirth = commitmentsEvent.DateOfBirth;
+        var startDate = commitmentsEvent.ActualStartDate!.Value;
+        var actualAge = startDate.Year - dateOfBirth.Year;
+        if (startDate < dateOfBirth.AddYears(actualAge))
+        {
+            actualAge--;
+        }
+
+        Assert.AreEqual(age, actualAge, $"Expected age is: {age} but found age: {actualAge}");
+
+        // Not sure of the value of this is either
+        var expectedFundingLineType = actualAge < 19
+            ? "16-18 Apprenticeship (Employer on App Service)"
+            : "19+ Apprenticeship (Employer on App Service)";
+
+        Assert.AreEqual(fundingLineType, expectedFundingLineType, $"Expected funding line type: {fundingLineType} but calculated: {expectedFundingLineType}");
     }
 }

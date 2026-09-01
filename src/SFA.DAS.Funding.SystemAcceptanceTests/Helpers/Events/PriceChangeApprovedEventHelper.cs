@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.Learning.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 
@@ -8,42 +9,46 @@ internal static class PriceChangeApprovedEventHelper
     internal static LearningPriceChangedEvent CreatePriceChangeApprovedMessageWithCustomValues(this ScenarioContext context, decimal trainingPrice, decimal assessmentPrice, DateTime effectiveFromDate, DateTime approvedDate)
     {
         var testData = context.Get<TestData>();
-        var apprenticeshipCreatedEvent = testData.LearningCreatedEvent;
+        var commitmentsEvent = testData.CommitmentsApprenticeshipCreatedEvent;
+
+        var learning = new LearningSqlClient().GetApprenticeship(testData.LearningKey);
+        var episode = learning.Episodes.GetEpisode(commitmentsEvent.ProviderId, commitmentsEvent.TrainingCode);
+        var latestPrice = episode.Prices.OrderByDescending(p => p.StartDate).First();
 
         var fixture = new Fixture();
         return fixture.Build<LearningPriceChangedEvent>()
-        .With(_ => _.LearningKey, apprenticeshipCreatedEvent.LearningKey)
-        .With(_ => _.ApprovalsApprenticeshipId, apprenticeshipCreatedEvent.ApprovalsApprenticeshipId)
+        .With(_ => _.LearningKey, learning.Key)
+        .With(_ => _.ApprovalsApprenticeshipId, episode.ApprovalsApprenticeshipId)
         .With(_ => _.Episode, new LearningEpisode
         {
             Prices = new List<LearningEpisodePrice>()
             {
                     new LearningEpisodePrice
                     {
-                        TrainingPrice = apprenticeshipCreatedEvent.Episode.Prices[0].TrainingPrice,
-                        EndPointAssessmentPrice = apprenticeshipCreatedEvent.Episode.Prices[0].EndPointAssessmentPrice,
+                        TrainingPrice = latestPrice.TrainingPrice,
+                        EndPointAssessmentPrice = latestPrice.EndPointAssessmentPrice,
                         EndDate = effectiveFromDate.AddDays(-1),
-                        Key = apprenticeshipCreatedEvent.Episode.Key,
-                        StartDate = apprenticeshipCreatedEvent.Episode.Prices[0].StartDate,
-                        TotalPrice = apprenticeshipCreatedEvent.Episode.Prices[0].TotalPrice,
+                        Key = episode.Key,
+                        StartDate = latestPrice.StartDate,
+                        TotalPrice = latestPrice.TotalPrice,
                     },
                     {
                         new LearningEpisodePrice
                         {
                             TrainingPrice = trainingPrice,
                             EndPointAssessmentPrice = assessmentPrice,
-                            EndDate = apprenticeshipCreatedEvent.Episode.Prices[0].EndDate,
+                            EndDate = latestPrice.EndDate,
                             Key = Guid.NewGuid(),
                             StartDate = effectiveFromDate,
                             TotalPrice = trainingPrice + assessmentPrice
                         }
                     }
             },
-            EmployerAccountId = apprenticeshipCreatedEvent.Episode.EmployerAccountId,
-            Ukprn = apprenticeshipCreatedEvent.Episode.Ukprn,
-            Key = apprenticeshipCreatedEvent.Episode.Key,
-            LegalEntityName = apprenticeshipCreatedEvent.Episode.LegalEntityName,
-            TrainingCode = apprenticeshipCreatedEvent.Episode.TrainingCode
+            EmployerAccountId = episode.EmployerAccountId,
+            Ukprn = episode.Ukprn,
+            Key = episode.Key,
+            LegalEntityName = episode.LegalEntityName,
+            TrainingCode = episode.TrainingCode
         })
         .With(_ => _.EffectiveFromDate, effectiveFromDate)
         .With(_ => _.ApprovedDate, approvedDate)

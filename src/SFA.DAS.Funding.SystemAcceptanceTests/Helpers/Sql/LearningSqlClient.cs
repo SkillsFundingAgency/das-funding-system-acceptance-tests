@@ -63,6 +63,20 @@ public class LearningSqlClient
         return learning;
     }
 
+    public Learning? TryGetApprenticeshipByUln(string uln)
+    {
+        var learner = _sqlServerClient.GetList<Learner>("SELECT * from [dbo].[Learner] WHERE Uln = @uln", new { uln }).FirstOrDefault();
+        if (learner == null) return null;
+
+        var learning = _sqlServerClient.GetList<Learning>("SELECT * FROM [dbo].[ApprenticeshipLearning] WHERE LearnerKey = @learnerKey", new { learnerKey = learner.Key }).FirstOrDefault();
+        if (learning == null) return null;
+
+        learning.Learner = learner;
+        learning.Episodes = _sqlServerClient.GetList<Episode>($"SELECT * FROM [dbo].[ApprenticeshipEpisode] WHERE LearningKey = '{learning.Key}'");
+
+        return learning;
+    }
+
     public Learning GetApprenticeshipByUln(string uln)
     {
         var learner = _sqlServerClient.GetList<Learner>("SELECT * from [dbo].[Learner] WHERE Uln = @uln", new { uln }).FirstOrDefault();

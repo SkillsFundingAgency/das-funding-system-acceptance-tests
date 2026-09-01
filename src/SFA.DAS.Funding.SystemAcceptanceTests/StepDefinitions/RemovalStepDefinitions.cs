@@ -28,7 +28,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
 
-            await context.ReceiveLearningWithdrawnEvent(testData.LearningCreatedEvent.LearningKey);
+            await context.ReceiveLearningWithdrawnEvent(testData.LearningKey);
 
             Assert.AreEqual(lastDayOfLearning.Value.Date, testData.LearningWithdrawnEvent.WithdrawalDate.Date, "Unexpected last day of learning found in the event!");
         }
@@ -48,7 +48,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
 
-            var apprenticeshipLearningKey = testData.LearningCreatedEvent?.LearningKey;
+            Guid? apprenticeshipLearningKey = testData.LearningKey;
 
             var shortCourseRequest = testData.ShortCourseCreateUpdateRequests?.GetValueOrDefault(Constants.UkPrn);
             var courseCode = shortCourseRequest?.Delivery?.OnProgramme?.SingleOrDefault()?.CourseCode;
@@ -72,7 +72,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
 
-            var apprenticeshipLearningKey = testData.LearningCreatedEvent?.LearningKey;
+            Guid? apprenticeshipLearningKey = testData.LearningKey;
 
             var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
             var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
@@ -105,9 +105,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         {
             var testData = context.Get<TestData>();
 
-            await context.ReceiveWithdrawalRevertedEvent(testData.LearningCreatedEvent.LearningKey);
+            await context.ReceiveWithdrawalRevertedEvent(testData.LearningKey);
 
-            Assert.AreEqual(testData.LearningCreatedEvent.ApprovalsApprenticeshipId, testData.WithdrawalRevertedEvent.ApprovalsApprenticeshipId, "Unexpected approvals apprenticeship Id found in the event!");
+            Assert.AreEqual(testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId, testData.WithdrawalRevertedEvent.ApprovalsApprenticeshipId, "Unexpected approvals apprenticeship Id found in the event!");
         }
 
     }

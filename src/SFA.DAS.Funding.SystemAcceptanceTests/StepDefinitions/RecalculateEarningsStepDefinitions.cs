@@ -86,7 +86,7 @@ public class RecalculateEarningsStepDefinitions
         var testData = _context.Get<TestData>();
         var academicYear = TableExtensions.GetAcademicYear(academicYearString);
 
-        await _context.ReceiveEarningsRecalculatedEvent(testData.LearningCreatedEvent.LearningKey);
+        await _context.ReceiveEarningsRecalculatedEvent(testData.LearningKey);
 
         testData.ApprenticeshipEarningsRecalculatedEvent!.DeliveryPeriods.Where(Dp => Dp.AcademicYear == Convert.ToInt16(academicYear) && Dp.Period >= deliveryPeriod).All(p => p.LearningAmount.Should().Equals(newInstalmentAmount));
         testData.ApprenticeshipEarningsRecalculatedEvent!.DeliveryPeriods.Where(Dp => Dp.AcademicYear > Convert.ToInt16(academicYear)).All(p => p.LearningAmount.Should().Equals(newInstalmentAmount));
@@ -227,10 +227,10 @@ public class RecalculateEarningsStepDefinitions
     {
         var testData = _context.Get<TestData>();
 
-        await _context.ReceiveEndDateChangedEvent(testData.LearningCreatedEvent.LearningKey);
+        await _context.ReceiveEndDateChangedEvent(testData.LearningKey);
 
         Assert.AreEqual(testData.EndDateChangedEvent.PlannedEndDate.Date, endDate.Value, "Unexpected planned end found!");
-        Assert.AreEqual(testData.EndDateChangedEvent.ApprovalsApprenticeshipId, testData.LearningCreatedEvent.ApprovalsApprenticeshipId, "Unexpected ApprenticeshipId found!" );
+        Assert.AreEqual(testData.EndDateChangedEvent.ApprovalsApprenticeshipId, testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId, "Unexpected ApprenticeshipId found!" );
     }
 
     [Then("calculate {int} unapproved earnings for programme aim with amount {decimal}")]

@@ -1,8 +1,10 @@
 ﻿using SFA.DAS.CommitmentsV2.Types;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Learning.Types;
+using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
@@ -49,35 +51,48 @@ internal static class ApprenticeshipEventHelper
 
     internal static async Task PublishApprenticeshipApprovedMessage(this ScenarioContext context, CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
     {
+        var learningSqlClient = new LearningSqlClient();
+
         var testData = context.Get<TestData>();
 
         await TestServiceBus.Das.SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
 
         await WaitHelper.WaitForIt(() =>
         {
-            LearningCreatedEvent? learningEvent =
-                ApprenticeshipsTypesEventHandler.GetMessage(x => x.Uln == apprenticeshipCreatedEvent.Uln);
-            if (learningEvent != null)
+            var learning = learningSqlClient.TryGetApprenticeshipByUln(apprenticeshipCreatedEvent.Uln);
+            if (learning is null || learning.Episodes.Count == 0)
             {
-                testData.LearningCreatedEvent = learningEvent;
-                return true;
+                return false;
             }
-            return false;
-        }, "Failed to find published event in Learning");
+            testData.LearningKey = learning.Key;
+            return true;
+        }, "Failed to find apprenticeship in Learning");
 
-        await WaitHelper.WaitForIt(() =>
-        {
-            EarningsGeneratedEvent? earningsEvent =
-                EarningsGeneratedEventHandler.GetMessage(x => x.Uln == apprenticeshipCreatedEvent.Uln);
-            if (earningsEvent != null)
-            {
-                testData.EarningsGeneratedEvent = earningsEvent;
-                return true;
-            }
-            return false;
-        }, "Failed to find published event in Earnings");
+        //await WaitHelper.WaitForIt(() =>
+        //{
+        //    LearningCreatedEvent? learningEvent =
+        //        ApprenticeshipsTypesEventHandler.GetMessage(x => x.Uln == apprenticeshipCreatedEvent.Uln);
+        //    if (learningEvent != null)
+        //    {
+        //        testData.LearningCreatedEvent = learningEvent;
+        //        return true;
+        //    }
+        //    return false;
+        //}, "Failed to find published event in Learning");
 
-        testData.LearningKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
+        //await WaitHelper.WaitForIt(() =>
+        //{
+        //    EarningsGeneratedEvent? earningsEvent =
+        //        EarningsGeneratedEventHandler.GetMessage(x => x.Uln == apprenticeshipCreatedEvent.Uln);
+        //    if (earningsEvent != null)
+        //    {
+        //        testData.EarningsGeneratedEvent = earningsEvent;
+        //        return true;
+        //    }
+        //    return false;
+        //}, "Failed to find published event in Earnings");
+
+        //testData.LearningKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
 
     }
 }

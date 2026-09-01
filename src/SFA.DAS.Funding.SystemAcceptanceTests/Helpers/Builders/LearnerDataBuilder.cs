@@ -18,9 +18,10 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             Learner = new LearnerRequestDetails
             {
                 Uln = long.Parse(testData.Uln),
-                FirstName = testData.LearningCreatedEvent.FirstName,
-                LastName = testData.LearningCreatedEvent.LastName,
-                Dob = testData.LearningCreatedEvent.DateOfBirth
+                LearnerRef = testData.Uln,
+                FirstName = testData.CommitmentsApprenticeshipCreatedEvent.FirstName,
+                LastName = testData.CommitmentsApprenticeshipCreatedEvent.LastName,
+                Dob = testData.CommitmentsApprenticeshipCreatedEvent.DateOfBirth
             }
         };
 

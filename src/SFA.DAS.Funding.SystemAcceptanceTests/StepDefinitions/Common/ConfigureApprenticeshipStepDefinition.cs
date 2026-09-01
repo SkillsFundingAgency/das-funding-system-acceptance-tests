@@ -46,9 +46,9 @@ public class ConfigureApprenticeshipStepDefinition
         testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, "1");
 
         var approveApprenticeshipStepDefinition =
-            new ApproveApprenticeshipStepDefinition(_context, new EarningsSqlClient(), new LearningSqlClient());
+            new ApproveApprenticeshipStepDefinition(_context, new EarningsSqlClient(), new LearningSqlClient(), new LearnerDataOuterApiHelper());
 
-        await approveApprenticeshipStepDefinition.ApproveApprenticeshipCommitment();
+        await approveApprenticeshipStepDefinition.CreateDraftApprenticeshipAndApproveIt();
     }
 
 

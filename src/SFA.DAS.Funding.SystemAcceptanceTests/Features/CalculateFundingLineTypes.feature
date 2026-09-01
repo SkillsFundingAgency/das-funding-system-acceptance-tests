@@ -14,7 +14,7 @@ Scenario: Calculate funding line types from Apprentice's age
 
 Examples:
 	| start_date | planned_end_date | agreed_price | training_code | date_of_birth | age_at_course_start | funding_line_type                              |
-	| 2022-08-01 | 2023-07-31       | 15000        | 614           | 2008-08-01    | 14                  | 16-18 Apprenticeship (Employer on App Service) |
-	| 2022-08-01 | 2023-07-31       | 15000        | 614           | 2005-08-01    | 17                  | 16-18 Apprenticeship (Employer on App Service) |
-	| 2022-08-01 | 2023-07-31       | 15000        | 177           | 2004-08-01    | 18                  | 16-18 Apprenticeship (Employer on App Service) |
-	| 2022-08-01 | 2023-07-31       | 15000        | 177           | 2003-08-01    | 19                  | 19+ Apprenticeship (Employer on App Service)   |
+	| 2026-08-01 | 2027-07-31       | 15000        | 614           | 2012-08-01    | 14                  | 16-18 Apprenticeship (Employer on App Service) |
+	| 2026-08-01 | 2027-07-31       | 15000        | 614           | 2009-08-01    | 17                  | 16-18 Apprenticeship (Employer on App Service) |
+	| 2026-08-01 | 2027-07-31       | 15000        | 177           | 2008-08-01    | 18                  | 16-18 Apprenticeship (Employer on App Service) |
+	| 2026-08-01 | 2027-07-31       | 15000        | 177           | 2007-08-01    | 19                  | 19+ Apprenticeship (Employer on App Service)   |
