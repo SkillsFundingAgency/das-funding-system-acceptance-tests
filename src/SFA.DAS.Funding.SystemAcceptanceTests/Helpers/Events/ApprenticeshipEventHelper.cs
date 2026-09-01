@@ -60,13 +60,13 @@ internal static class ApprenticeshipEventHelper
         await WaitHelper.WaitForIt(() =>
         {
             var learning = learningSqlClient.TryGetApprenticeshipByUln(apprenticeshipCreatedEvent.Uln);
-            if (learning is null || learning.Episodes.Count == 0)
+            if (learning is null || !learning.Episodes.Any(e => e.ApprovalsApprenticeshipId == apprenticeshipCreatedEvent.ApprenticeshipId))
             {
                 return false;
             }
             testData.LearningKey = learning.Key;
             return true;
-        }, "Failed to find apprenticeship in Learning");
+        }, "Failed to find approved apprenticeship in Learning");
 
         //await WaitHelper.WaitForIt(() =>
         //{
