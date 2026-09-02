@@ -17,13 +17,13 @@ Scenario: Withdrawal of learner - FundStart should be False if withdrawn before 
 	And fm36 ThresholdDays value is <threshold_days>
 
 Examples:
-	| start_date       | end_date         | agreed_price | training_code | last_day_of_delivery | expected_fundstart | expected_actual_days_in_learning | threshold_days |
-	| currentAY-08-01 | currentAY-07-31 | 15000        | 2             | currentAY-09-10     | false              | 41                               | 42             |
-	| currentAY-08-01 | currentAY-07-31 | 15000        | 2             | currentAY-09-11     | true               | 42                               | 42             |
-	| currentAY-08-31 | currentAY-09-13 | 15000        | 2             | currentAY-09-13     | true               | 14                               | 14             |
-	| currentAY-08-31 | currentAY-09-13 | 15000        | 2             | currentAY-09-12     | false              | 13                               | 14             |
-	| currentAY-08-01 | currentAY-01-14 | 15000        | 2             | currentAY-12-15     | true               | 137                              | 14             |
-	#| currentAY-08-31 | currentAY-09-12 | 15000        | 2             | currentAY-08-31     | true               | 1                                | 1              | 
+	| start_date      | end_date        | agreed_price | training_code | last_day_of_delivery | expected_fundstart | expected_actual_days_in_learning | threshold_days |
+	| currentAY-08-01 | currentAY-07-31 |        15000 |             2 | currentAY-09-10      | false              |                               41 |             42 |
+	| currentAY-08-01 | currentAY-07-31 |        15000 |             2 | currentAY-09-11      | true               |                               42 |             42 |
+	| currentAY-08-31 | currentAY-09-13 |        15000 |             2 | currentAY-09-13      | true               |                               14 |             14 |
+	| currentAY-08-31 | currentAY-09-13 |        15000 |             2 | currentAY-09-12      | false              |                               13 |             14 |
+	| currentAY-08-01 | currentAY-01-14 |        15000 |             2 | currentAY-12-15      | true               |                              137 |             14 |
+	#| currentAY-08-31 | currentAY-09-12 | 15000        | 2             | currentAY-08-31     | true               | 1                                | 1              |
 	
 	# commented out test until we know how to deal with short courses (<14 days) with QP of 1 day. Learner is withdrawn back to start vs DELETE. so whether they appear in the FM36 or not. 
 	# Additionally, at the moment, Learning doesnt know anout QP. Only earning does!
@@ -40,5 +40,5 @@ Scenario: Withdrawal of learner from start results in no FM36 block (FLP-969 AC3
 	Then fm36 data does not exist for that apprenticeship
 Examples:
 	| start_date      | end_date        | agreed_price | training_code | last_day_of_delivery |
-	| nextAY-08-01 | nextAY-07-31 | 15000        | 2             | nextAY-08-01      |
+	| currentAY-08-01 | currentAY-07-31 | 15000        | 2             | currentAY-08-01      |
 
