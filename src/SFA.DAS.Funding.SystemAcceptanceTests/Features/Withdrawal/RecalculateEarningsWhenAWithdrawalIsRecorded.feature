@@ -110,5 +110,5 @@ Scenario: Withdrawal is recorded before the end of the qualifying period; there 
 
 Examples:
 	| start_date | end_date   | agreed_price | training_code | planned_number_of_months | last_day_of_delivery |
-	| 2020-08-15 | 2021-07-31 | 15000        | 2             | 12                       | 2020-09-15           |
-	| 2020-01-31 | 2020-02-13 | 15000        | 254           | 1                        | 2020-02-12           |
+	| 2026-08-15 | 2027-07-31 | 15000        | 2             | 12                       | 2026-09-15           |
+	| 2027-01-31 | 2027-02-13 | 15000        | 254           | 1                        | 2027-02-12           |
