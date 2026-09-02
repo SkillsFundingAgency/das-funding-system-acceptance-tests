@@ -17,10 +17,10 @@ Scenario: 16-18 Incentive Earnings
 	And the second incentive earning is generated for provider & employer
 
 Examples:
-	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  16 |
-	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  17 |
-	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  18 |
+	| start_date   | planned_end_date | agreed_price | training_code | age |
+	| nextAY-08-01 | nextAY-07-31     |       15,000 |           614 |  16 |
+	| nextAY-08-01 | nextAY-07-31     |       15,000 |           614 |  17 |
+	| nextAY-08-01 | nextAY-07-31     |       15,000 |           614 |  18 |
 
 
 @regression
@@ -32,9 +32,9 @@ Scenario: 16-18 Incentive Earnings (duration only long enough for first earning 
 	And the second incentive earning is_not generated for provider & employer
 
 Examples:
-	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| nextAY-08-01 | nextAY-10-29  |       15,000 |           614 |  17 |
-	| nextAY-08-01 | nextAY-07-30  |       15,000 |           614 |  17 |
+	| start_date   | planned_end_date | agreed_price | training_code | age |
+	| nextAY-08-01 | nextAY-10-29     |       15,000 |           614 |  17 |
+	| nextAY-08-01 | nextAY-07-30     |       15,000 |           614 |  17 |
 
 
 @regression
@@ -46,8 +46,8 @@ Scenario: 16-18 Incentive Earnings (duration too short)
 	And the second incentive earning is_not generated for provider & employer
 
 Examples:
-	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| nextAY-08-01 | nextAY-10-28  |       15,000 |           614 |  17 |
+	| start_date   | planned_end_date | agreed_price | training_code | age |
+	| nextAY-08-01 | nextAY-10-28     |       15,000 |           614 |  17 |
 
 
 @regression
@@ -62,11 +62,11 @@ Scenario: No Incentives for 16-18 learner completing before threshold date
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
 
 Examples:
-	| start_date      | planned_end_date | agreed_price | training_code | age | completion_date | first_earnings_generated | second_earnings_generated |
-	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  17 | nextAY-10-28 | is_not                   | is_not                    |
-	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  18 | nextAY-10-29 | is                       | is_not                    |
-	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  17 | nextAY-07-29 | is                       | is_not                    |
-	| nextAY-08-01 | nextAY-07-31  |       15,000 |           614 |  18 | nextAY-07-31 | is                       | is                        |
+	| start_date   | planned_end_date | agreed_price | training_code | age | completion_date | first_earnings_generated | second_earnings_generated |
+	| nextAY-08-01 | nextAY-07-31     |       15,000 |           614 |  17 | nextAY-10-28    | is_not                   | is_not                    |
+	| nextAY-08-01 | nextAY-07-31     |       15,000 |           614 |  18 | nextAY-10-29    | is                       | is_not                    |
+	| nextAY-08-01 | nextAY-07-31     |       15,000 |           614 |  17 | nextAY-07-29    | is                       | is_not                    |
+	| nextAY-08-01 | nextAY-07-31     |       15,000 |           614 |  18 | nextAY-07-31    | is                       | is                        |
 
 @regression
 Scenario: No Incentives for 16-18 learner withdrawn before 90 day threshold date
@@ -83,5 +83,5 @@ Scenario: No Incentives for 16-18 learner withdrawn before 90 day threshold date
 
 Examples:
 	| withdrawal_date | first_earnings_generated | second_earnings_generated |
-	| nextAY-10-28 | is_not                   | is_not                    |
-	| nextAY-07-30 | is                       | is_not                    |
+	| nextAY-10-28    | is_not                   | is_not                    |
+	| nextAY-07-30    | is                       | is_not                    |

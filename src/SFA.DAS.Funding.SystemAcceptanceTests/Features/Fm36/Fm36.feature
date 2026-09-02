@@ -14,12 +14,12 @@ Scenario: Retrieve Valid Fm36 data
 	Then learner is found in the fm36 response
 
 Examples:
-	| start_date       | end_date         | agreed_price | training_code | age |
-	| nextAY-08-01  | nextAY-07-31     |        15000 |             2 |  19 |
-	| nextAY-08-01  | nextAY-07-31     |        15000 |             2 |  17 |
-	| nextAY-08-01  | nextAY-07-31  |        15000 |             2 |  23 |
-	| currentAY-08-01 | PreviousAY-07-31 |        15000 |           614 |  26 |
-	| currentAY-08-01 | nextAY-08-31  |        15000 |             2 |  26 |
+	| start_date      | end_date        | agreed_price | training_code | age |
+	| currentAY-08-01 | nextAY-07-31    |        15000 |             2 |  19 |
+	| currentAY-08-01 | nextAY-07-31    |        15000 |             2 |  17 |
+	| currentAY-08-01 | currentAY-07-31 |        15000 |             2 |  23 |
+	| currentAY-08-01 | nextAY-07-31    |        15000 |           614 |  26 |
+	| currentAY-08-01 | nextAY-08-31    |        15000 |             2 |  26 |
 
 
 
@@ -35,10 +35,10 @@ Scenario: Retrieve Fm36 data with Actual End Date
 	Then PriceEpisodeCompletionPayment for period <expected_completion_period> is amount <expected_completion_amount>
 
 Examples:
-	| start_date       | end_date         | agreed_price | training_code | completion_date | expected_completion_period | expected_completion_amount |
-	| nextAY-08-01  | nextAY-07-31  |        15000 |           614 | nextAY-07-20 | nextAY-R12              |                       3000 |
-	| currentAY-08-01 | currentAY-07-31 |        15000 |           614 | nextAY-08-20 | nextAY-R01              |                       3000 |
-	| currentAY-08-01 | nextAY-08-31  |        15000 |           614 | nextAY-08-20 | nextAY-R01              |                       3000 |
+	| start_date      | end_date        | agreed_price | training_code | completion_date | expected_completion_period | expected_completion_amount |
+	| nextAY-08-01    | nextAY-07-31    |        15000 |           614 | nextAY-07-20    | nextAY-R12                 |                       3000 |
+	| currentAY-08-01 | currentAY-07-31 |        15000 |           614 | nextAY-08-20    | nextAY-R01                 |                       3000 |
+	| currentAY-08-01 | nextAY-08-31    |        15000 |           614 | nextAY-08-20    | nextAY-R01                 |                       3000 |
 
 @regression
 Scenario: Retrieve Valid Fm36 data for learners aged 15
@@ -51,7 +51,7 @@ Scenario: Retrieve Valid Fm36 data for learners aged 15
 	Then incentives earnings are generated for learners aged 15
 
 Examples:
-	| start_date      | end_date     | agreed_price | training_code | age |
+	| start_date   | end_date     | agreed_price | training_code | age |
 	| nextAY-08-01 | nextAY-11-15 |        15000 |             2 |  15 |
 
 
