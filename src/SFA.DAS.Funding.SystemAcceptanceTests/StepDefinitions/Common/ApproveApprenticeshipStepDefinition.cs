@@ -104,6 +104,8 @@ public class ApproveApprenticeshipStepDefinition
         }, "Failed to find draft apprenticeship in Learning DB");
 
         await _context.PublishApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
+
+        Thread.Sleep(5000); // Without this a whole load of tests fail, need to investigate further
     }
 
     //Legacy approval method - retained for now

@@ -34,7 +34,7 @@ Scenario: 16-18 Incentive Earnings (duration only long enough for first earning 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age |
 	| nextAY-08-01 | nextAY-10-29     |       15,000 |           614 |  17 |
-	| nextAY-08-01 | nextAY-07-30     |       15,000 |           614 |  17 |
+	| nextAY-08-01 | nextAY-07-29     |       15,000 |           614 |  17 |
 
 
 @regression
@@ -84,4 +84,4 @@ Scenario: No Incentives for 16-18 learner withdrawn before 90 day threshold date
 Examples:
 	| withdrawal_date | first_earnings_generated | second_earnings_generated |
 	| nextAY-10-28    | is_not                   | is_not                    |
-	| nextAY-07-30    | is                       | is_not                    |
+	| nextAY-07-29    | is                       | is_not                    |
