@@ -16,7 +16,7 @@ Scenario: Price change approved; new price episode in FM36 block
 	
 Examples:
 	| start_date       | end_date        | agreed_price | training_code | pc_from_date     | new_total_price | pc_approved_date |
-	| currentAY-08-20 | nextAY-04-23 | 15000        | 2             | currentAY-09-29 | 18000           | currentAY-09-29 |
+	| currentAY-08-20  | nextAY-04-23    | 15000        | 2             | currentAY-09-01  | 18000           | currentAY-09-01  |
 
 @regression
 Scenario: Start date change approved
@@ -34,5 +34,5 @@ Scenario: Start date change approved
 	And Incentive periods and dates are updated in the fm36 response
 
 Examples:
-	| start_date       | end_date        | agreed_price | training_code | new_start_date   | previous_earnings | new_expected_earnings | age |
+	| start_date      | end_date     | agreed_price | training_code | new_start_date  | previous_earnings | new_expected_earnings | age |
 	| currentAY-08-23 | nextAY-08-23 | 15000        | 2             | currentAY-12-23 | 1000              | 1500                  | 17  |
