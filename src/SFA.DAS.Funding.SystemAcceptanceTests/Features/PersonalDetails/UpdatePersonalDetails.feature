@@ -34,9 +34,9 @@ Scenario: SLD inform us of a change to the aprentices date of birth
 
 Examples:
 	| start_date | age | dob        | first_incentive_due_date | second_incentive_due_date |
-	| 2026-08-01 |  17 | 2009-12-31 | 2026-10-29               | 2027-07-30                |
-	| 2026-08-01 |  17 | 2008-08-02 | 2026-10-29               | 2027-07-30                |
-	| 2026-08-05 |  18 | 2008-08-01 | 2026-11-02               | 2027-08-03                |
+	| 2026-08-01 |  17 | 2009-12-31 | 2026-10-29               | 2027-07-31                |
+	| 2026-08-01 |  17 | 2008-08-02 | 2026-10-29               | 2027-07-31                |
+	| 2026-08-05 |  18 | 2008-08-01 | 2026-11-02               | 2027-08-04                |
 
 # In the below scenario, the learner is initially 18 yo and hence employer and provider's incentives are generated.
 # The dob is then revised, making the learner 19 yo on start of the apprenticeship (Not marked as care leaver)
