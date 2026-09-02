@@ -61,17 +61,17 @@ Examples:
 
 @regression
 Scenario: Withdrawal is removed; with date set to null
-	Given an apprenticeship has a start date of 2024-08-01, a planned end date of 2025-07-31, an agreed price of 15000, and a training code 2
+	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
-	When SLD record on-programme cost as total price 15000 from date 2024-08-01 to date 2025-07-31
-	And Learning withdrawal date is recorded on 2024-12-15
+	When SLD record on-programme cost as total price 15000 from date 2026-08-01 to date 2027-07-31
+	And Learning withdrawal date is recorded on 2026-12-15
 	And SLD submit updated learners details
 	And the apprenticeship is marked as withdrawn
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are 4
-	And the earnings after the delivery period 4 and academic year 2425 are soft deleted
+	And the earnings after the delivery period 4 and academic year 2627 are soft deleted
 	And SLD resubmits ILR
-	And SLD record on-programme cost as total price 15000 from date 2024-08-01 to date 2025-07-31
+	And SLD record on-programme cost as total price 15000 from date 2026-08-01 to date 2027-07-31
 	And SLD submit updated learners details
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are 12
@@ -79,22 +79,22 @@ Scenario: Withdrawal is removed; with date set to null
 
 @regression
 Scenario: Withdrawal and price change applied together - reclalc earnings
-	Given an apprenticeship has a start date of 2024-08-01, a planned end date of 2025-07-31, an agreed price of 15000, and a training code 2
+	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
-	And SLD record on-programme cost as total price 15000 from date 2024-08-01 to date 2025-07-31
-	And Learning withdrawal date is recorded on 2025-05-27
+	And SLD record on-programme cost as total price 15000 from date 2026-08-01 to date 2027-07-31
+	And Learning withdrawal date is recorded on 2027-05-27
 	And SLD submit updated learners details
 	And the apprenticeship is marked as withdrawn
 	And earnings are recalculated
 	When SLD resubmits ILR
-	And SLD record on-programme cost as total price 18000 from date 2024-08-01 to date 2025-07-31
-	And Learning withdrawal date is recorded on 2025-05-27
+	And SLD record on-programme cost as total price 18000 from date 2026-08-01 to date 2027-07-31
+	And Learning withdrawal date is recorded on 2027-05-27
 	And SLD submit updated learners details
 	Then the apprenticeship is marked as withdrawn
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are 9
-	And the earnings after the delivery period 9 and academic year 2425 are soft deleted
-	And last day of learning is set to 2025-05-27 in learning and earning db
+	And the earnings after the delivery period 9 and academic year 2627 are soft deleted
+	And last day of learning is set to 2027-05-27 in learning and earning db
 
 @regression
 Scenario: Withdrawal is recorded before the end of the qualifying period; there will be no earnings retained
