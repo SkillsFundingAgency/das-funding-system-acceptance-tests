@@ -56,8 +56,8 @@ Scenario: Withdrawal is recorded again; with a different date
 
 Examples:
 	| start_date | end_date   | agreed_price | training_code | initial_last_day_of_delivery | initial_num_of_instalments | initial_delivery_period_string | academic_year_string | revised_last_day_of_delivery | revised_num_of_instalments | revised_delivery_period_string |
-	| 2024-11-01 | 2025-11-23 | 15000        | 2             | 2024-12-15                   | 1                          | 4                              | 2425                 | 2025-02-05                   | 3                          | 6                              |
-	| 2024-11-01 | 2025-11-23 | 15000        | 2             | 2025-05-15                   | 6                          | 9                              | 2425                 | 2025-02-05                   | 3                          | 6                              |
+	| 2026-11-01 | 2027-11-23 | 15000        | 2             | 2026-12-15                   | 1                          | 4                              | 2627                 | 2027-02-05                   | 3                          | 6                              |
+	| 2026-11-01 | 2027-11-23 | 15000        | 2             | 2027-05-15                   | 6                          | 9                              | 2627                 | 2027-02-05                   | 3                          | 6                              |
 
 @regression
 Scenario: Withdrawal is removed; with date set to null
