@@ -78,8 +78,8 @@ Scenario: Price change; Empty Costs array
 	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
 	And the AgreedPrice on the earnings entity is updated to <new_total_price>
 Examples:
-	| start_date       | end_date     | agreed_price | training_code | new_total_price | new_inst_amount | academic_year_string | delivery_period |
-	| currentAY-07-23 | nextAY-03-23 |        15000 |             2 |               0 |               0 | nextAY            |               2 |
+	| start_date      | end_date     | agreed_price | training_code | new_total_price | new_inst_amount | academic_year_string | delivery_period |
+	| currentAY-07-23 | currentAYPlusTwo-03-23 |        15000 |             2 |               0 |               0 | nextAY               |               2 |
 
 @regression
 Scenario: Price change; Both total price and start date changed
@@ -94,6 +94,6 @@ Scenario: Price change; Both total price and start date changed
 	And the AgreedPrice on the earnings entity is updated to <new_total_price>
 Examples:
 	| start_date       | end_date     | agreed_price | training_code | new_start_date  | pc_from_date    | new_total_price | new_inst_amount | academic_year_string | old_inst_amount | delivery_period |
-	| previousAY-07-23 | nextAY-03-23 |        15000 |             2 | currentAY-08-15 | currentAY-09-29 |           18000 |             765 | currentAY            |       631.57895 |               2 |
+	| currentAY-07-23 | currentAYPlusTwo-03-23 |        15000 |             2 | nextAY-08-15 | nextAY-09-29 |           18000 |             765 | nextAY            |       631.57895 |               2 |
 
 
