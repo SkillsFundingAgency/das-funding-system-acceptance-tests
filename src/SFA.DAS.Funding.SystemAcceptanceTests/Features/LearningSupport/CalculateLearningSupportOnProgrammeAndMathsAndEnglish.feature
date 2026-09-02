@@ -29,7 +29,7 @@ Scenario: Learning support for a Maths & English beyond end of On Programme Lear
 
 Examples:
 	| start_date      | end_date        | me_end_date  | me_ls_start_date | expected_first_ls_period | expected_last_ls_period |
-	| nextAY-08-01 | nextAY-07-31 | nextAY-10-31 | nextAY-08-01     | nextAY-R01            | nextAY-R03              |
+	| currentAY-08-01 | currentAY-07-31 | nextAY-10-31 | nextAY-08-01     | currentAY-R01            | nextAY-R03              |
 
 @regression
 Scenario: Learning support across multiple Maths & English courses with overlap

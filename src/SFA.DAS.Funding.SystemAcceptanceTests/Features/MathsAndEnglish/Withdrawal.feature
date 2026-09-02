@@ -73,13 +73,13 @@ Examples:
 
 @regression
 Scenario: English and Maths course withdrawn from the start
-	Given an apprenticeship has a start date of nextAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
-	And SLD record on-programme cost as total price 15000 from date nextAY-08-01 to date nextAY-08-23
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from nextAY-08-05 to nextAY-01-07 with learnAimRef 60342843, course Entry level English and amount 931
 	And SLD submit updated learners details
 	When SLD resubmits ILR
-	And SLD record on-programme cost as total price 15000 from date nextAY-08-01 to date nextAY-08-23
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from nextAY-08-05 for 156 days with learnAimRef 60342843, course Entry level English, amount 931 and withdrawal after 1 days
 	And SLD submit updated learners details
 	Then Maths and English earnings for course Entry level English are removed
@@ -100,36 +100,36 @@ Scenario: English and Maths course withdrawn when programme aim has completed
 
 @regression
 Scenario: English and Maths course withdrawn from the start then removed
-	Given an apprenticeship has a start date of nextAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
-	And SLD record on-programme cost as total price 15000 from date nextAY-08-01 to date nextAY-08-23
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from nextAY-08-05 to nextAY-01-07 with learnAimRef 60342843, course Entry level English and amount 1000
 	And SLD submit updated learners details
 	When SLD resubmits ILR
-	And SLD record on-programme cost as total price 15000 from date nextAY-08-01 to date nextAY-08-23
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from nextAY-08-05 for 156 days with learnAimRef 60342843, course Entry level English, amount 1000 and withdrawal after 1 days
 	And SLD submit updated learners details
 	Then Maths and English earnings for course Entry level English are removed
 	When SLD resubmits ILR
-	And SLD record on-programme cost as total price 15000 from date nextAY-08-01 to date nextAY-08-23
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And the maths and english courses are removed
 	And SLD submit updated learners details
 	Then Maths and English earnings for course Entry level English are removed
 
 @regression
 Scenario: English and Maths course withdrawn from the start then reinstated
-	Given an apprenticeship has a start date of nextAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
-	And SLD record on-programme cost as total price 15000 from date nextAY-08-01 to date nextAY-08-23
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from nextAY-08-05 to nextAY-01-07 with learnAimRef 60342843, course Entry level English and amount 1000
 	And SLD submit updated learners details
 	When SLD resubmits ILR
-	And SLD record on-programme cost as total price 15000 from date nextAY-08-01 to date nextAY-08-23
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from nextAY-08-05 for 156 days with learnAimRef 60342843, course Entry level English, amount 1000 and withdrawal after 1 days
 	And SLD submit updated learners details
 	Then Maths and English earnings for course Entry level English are removed
 	When SLD resubmits ILR
-	And SLD record on-programme cost as total price 15000 from date nextAY-08-01 to date nextAY-08-23
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from nextAY-08-05 to nextAY-01-07 with learnAimRef 60342843, course Entry level English and amount 1000
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods nextAY-R01 to nextAY-R05 with instalment amount 200 for course Entry level English

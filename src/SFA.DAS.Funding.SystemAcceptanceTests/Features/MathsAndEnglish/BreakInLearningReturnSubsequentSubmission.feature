@@ -5,9 +5,9 @@ I want the English and Maths earnings to be recalculated when a return from brea
 So that the provider acquires earnings once the learner has returned from a break
 
 Background: 
-	Given an apprenticeship has a start date of nextAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the apprenticeship commitment is approved
-	When SLD record on-programme cost as total price 15000 from date nextAY-08-01 to date nextAY-08-23
+	When SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And English and Maths learning is recorded from nextAY-08-05 to nextAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, pause date nextAY-12-25, learning support from nextAY-08-05 to nextAY-04-10
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods nextAY-R01 to nextAY-R04 with instalment amount 100 for course English Foundation

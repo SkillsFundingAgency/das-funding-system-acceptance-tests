@@ -31,7 +31,7 @@ Scenario: Retrieve Fm36 data with Actual End Date
 	And Learning Completion is recorded on <completion_date>
 	And Learning Achievement date is recorded on <completion_date>
 	And SLD submit updated learners details
-	And the fm36 data is retrieved for currentDate
+	And the fm36 data is retrieved for <completion_date>
 	Then PriceEpisodeCompletionPayment for period <expected_completion_period> is amount <expected_completion_amount>
 
 Examples:
@@ -52,7 +52,7 @@ Scenario: Retrieve Valid Fm36 data for learners aged 15
 
 Examples:
 	| start_date   | end_date     | agreed_price | training_code | age |
-	| nextAY-08-01 | nextAY-11-15 |        15000 |             2 |  15 |
+	| currentAY-08-01 | nextAY-11-15 |        15000 |             2 |  15 |
 
 
 @regression

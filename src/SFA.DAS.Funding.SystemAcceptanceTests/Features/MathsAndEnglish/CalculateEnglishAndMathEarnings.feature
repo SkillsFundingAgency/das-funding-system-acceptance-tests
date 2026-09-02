@@ -6,7 +6,7 @@ So that we know how much to pay providers when they deliver English and/or maths
 
 @regression
 Scenario: Calculate Single Math and English earnings
-	Given an apprenticeship has a start date of nextAY-09-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
+	Given an apprenticeship has a start date of currentAY-09-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 19
 	When the apprenticeship commitment is approved
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date nextAY-08-23
@@ -19,15 +19,15 @@ Examples:
 	| nextAY-09-25  | nextAY-01-15 | Entry level English |    931 | nextAY-R02                 | nextAY-R02                 | nextAY-R05        |     232.75 |
 	| nextAY-08-01  | nextAY-07-31 | Entry level Maths   |  12000 | nextAY-R01                 | nextAY-R01                 | nextAY-R12        |       1000 |
 	| currentAY-08-01 | nextAY-07-31 | GCSE English        |    864 | currentAY-R01                | nextAY-R01                 | nextAY-R12        |         36 |
-	| nextAY-08-01  | nextAY-07-31    | GCSE Maths          |    864 | nextAY-R01                 | nextAY-R01                 | nextAY-R12           |         36 |
+	| currentAY-08-01  | nextAY-07-31    | GCSE Maths          |    864 | currentAY-R01                 | currentAY-R01                 | nextAY-R12           |         36 |
 	| nextAY-02-01  | nextAY-02-26 | Level 2 English     |    724 | nextAY-R07                 | nextAY-R07                 | nextAY-R07        |        724 |
 
 @regression
 Scenario: Calculate Multiple Math and English earnings
-	Given an apprenticeship has a start date of nextAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
+	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 22
 	When the apprenticeship commitment is approved
-	And SLD record on-programme cost as total price 15000 from date nextAY-08-23 to date nextAY-08-23
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-23 to date nextAY-08-23
 	And Maths and English learning is recorded from <course1_start_date> to <course1_end_date> with learnAimRef 60342843, course <course1_name> and amount <course1_amount>
 	And Maths and English learning is recorded from <course2_start_date> to <course2_end_date> with learnAimRef 60342844, course <course2_name> and amount <course2_amount>
 	And SLD submit updated learners details
@@ -56,7 +56,7 @@ Examples:
 
 @regression
 Scenario: Maths and English instalments removed if maths and english courses removed
-	Given an apprenticeship has a start date of nextAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
+	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 22
 	When the apprenticeship commitment is approved
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date <end_date>

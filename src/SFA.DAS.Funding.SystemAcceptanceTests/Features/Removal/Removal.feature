@@ -12,7 +12,7 @@ Background:
 
 @regression
 Scenario: Apprentice removed from the ILR
-	Given a Maths and English learning is recorded from nextAY-08-01 to nextAY-08-23 with learnAimRef 60342843, course Entry level English, amount 1200, learning support from nextAY-10-12 to nextAY-02-15
+	Given a Maths and English learning is recorded from nextAY-08-01 to currentAYPlusTwo-08-23 with learnAimRef 60342843, course Entry level English, amount 1200, learning support from nextAY-10-12 to nextAY-02-15
 	And SLD inform us of a break in learning with pause date nextAY-01-15
 	And SLD inform us of a return from break in learning with a new learning start date nextAY-02-20
 	And SLD submit updated learners details
