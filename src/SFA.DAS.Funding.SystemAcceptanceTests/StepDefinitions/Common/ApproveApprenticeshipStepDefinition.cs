@@ -108,37 +108,11 @@ public class ApproveApprenticeshipStepDefinition
         Thread.Sleep(5000); // Without this a whole load of tests fail, need to investigate further
     }
 
-    //Legacy approval method - retained for now
-    //What is this for? Legacy apprenticeship creation?
-    // Can test that legacy appprenticeships are still created ok
-    // And have no earnings
-    public async Task ApproveApprenticeshipCommitment()
+    [Given(@"the apprenticeship commitment is approved via the legacy route")]
+    [When(@"the apprenticeship commitment is approved via the legacy route")]
+    public async Task TheApprenticeshipCommitmentIsApprovedViaTheLegacyRoute()
     {
         var testData = _context.Get<TestData>();
-
         await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
-
-        //Thread.Sleep(5000); // Without this a whole load of tests fail, need to investigate further
-
-        //var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
-
-        //EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
-
-        //await WaitHelper.WaitForIt(() =>
-        //{
-        //    earningsApprenticeshipModel = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
-        //    if (earningsApprenticeshipModel != null)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}, "Failed to find Earnings Entity");
-
-        //testData.EarningsProfileId = earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfile.EarningsProfileId;
-
-        //testData.InitialEarningsProfileId = earningsApprenticeshipModel!.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)!.StartDate)!.EarningsProfile.EarningsProfileId;
-        //testData.LearningKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
-        //var learning = _learningSqlClient.GetApprenticeshipByUln(testData.Uln);
-        //testData.LearnerKey = learning.LearnerKey;
     }
 }

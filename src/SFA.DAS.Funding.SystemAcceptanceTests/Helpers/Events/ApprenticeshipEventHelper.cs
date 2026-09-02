@@ -1,10 +1,7 @@
 ﻿using SFA.DAS.CommitmentsV2.Types;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
-using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using SFA.DAS.Learning.Types;
-using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 using CMT = SFA.DAS.CommitmentsV2.Messages.Events;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
@@ -67,32 +64,6 @@ internal static class ApprenticeshipEventHelper
             testData.LearningKey = learning.Key;
             return true;
         }, "Failed to find approved apprenticeship in Learning");
-
-        //await WaitHelper.WaitForIt(() =>
-        //{
-        //    LearningCreatedEvent? learningEvent =
-        //        ApprenticeshipsTypesEventHandler.GetMessage(x => x.Uln == apprenticeshipCreatedEvent.Uln);
-        //    if (learningEvent != null)
-        //    {
-        //        testData.LearningCreatedEvent = learningEvent;
-        //        return true;
-        //    }
-        //    return false;
-        //}, "Failed to find published event in Learning");
-
-        //await WaitHelper.WaitForIt(() =>
-        //{
-        //    EarningsGeneratedEvent? earningsEvent =
-        //        EarningsGeneratedEventHandler.GetMessage(x => x.Uln == apprenticeshipCreatedEvent.Uln);
-        //    if (earningsEvent != null)
-        //    {
-        //        testData.EarningsGeneratedEvent = earningsEvent;
-        //        return true;
-        //    }
-        //    return false;
-        //}, "Failed to find published event in Earnings");
-
-        //testData.LearningKey = testData.EarningsGeneratedEvent.ApprenticeshipKey;
 
     }
 }
