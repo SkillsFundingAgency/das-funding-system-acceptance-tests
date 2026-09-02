@@ -76,13 +76,13 @@ Scenario: Do not retrieve Fm36 data for learners with Actual Start Date in previ
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning Completion is recorded on <completion_date>
 	And SLD submit updated learners details
-	And the fm36 data is retrieved for currentDate
+	And the fm36 data is retrieved for oneYearFromNow
 	Then fm36 data does not exist for that apprenticeship
 
 Examples:
-	| start_date       | end_date         | agreed_price | training_code | completion_date  |
-	| previousAy-08-01 | previousAy-07-31 |        15000 |             2 | previousAy-07-22 |
-	| previousAy-08-01 | CurrentAy-07-31  |        15000 |             2 | previousAy-07-28 |
+	| start_date      | end_date        | agreed_price | training_code | completion_date |
+	| currentAY-08-01 | currentAY-07-31 |        15000 |             2 | currentAY-07-22 |
+	| currentAY-08-01 | nextAY-07-31    |        15000 |             2 | currentAY-07-28 |
 
 
 @regression

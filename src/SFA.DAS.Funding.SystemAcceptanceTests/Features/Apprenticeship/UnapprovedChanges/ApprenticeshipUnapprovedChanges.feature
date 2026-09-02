@@ -11,7 +11,6 @@ So that I can gauge the possible funding required
 Scenario: Calculate unapproved apprenticeship earnings
 	Given SLD inform us of a learner with apprenticeship, english and maths, incentives and learning support having start date nextAY-08-01, expected end date nextAY-07-31, standard code 615 and agreed price 15000
 	Then store the apprenticeship, english and maths and learning support details in learning db in a draft state
-    And learning FundingPlatformType is set to 2
 	And calculate 12 unapproved earnings for programme aim with amount 1000 
 	And Maths and English earnings are generated from periods nextAY-R01 to nextAY-R12 with regular instalment amount 83.33 for course English Foundation
 	And the first incentive earning is generated for provider & employer

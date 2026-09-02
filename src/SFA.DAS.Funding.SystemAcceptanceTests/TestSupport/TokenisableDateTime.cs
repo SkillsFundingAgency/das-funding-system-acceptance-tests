@@ -31,6 +31,11 @@ public class TokenisableDateTime
             return new TokenisableDateTime(DateTime.Now);
         }
 
+        if (value.ToLower() == TokenisableYearConstants.OneYearFromNow.ToLower())
+        {
+            return new TokenisableDateTime(DateTime.Now.AddYears(1));
+        }
+
         if (value.ToLower() == TokenisableYearConstants.NextMonthFirstDay.ToLower())
         {
             var nextMonth = DateTime.Now.AddMonths(1);
