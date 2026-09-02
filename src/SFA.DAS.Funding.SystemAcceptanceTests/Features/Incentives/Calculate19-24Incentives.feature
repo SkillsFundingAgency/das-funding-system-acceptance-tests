@@ -68,9 +68,9 @@ Scenario: 19-24 Incentive Earnings (duration only long enough for first earning 
 	And the second incentive earning is_not generated for provider & employer
 
 Examples:
-	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| nextAY-08-01 | nextAY-10-29  |        15000 |           614 |  20 |
-	| nextAY-08-01 | nextAY-07-30  |        15000 |           614 |  20 |
+	| start_date   | planned_end_date | agreed_price | training_code | age |
+	| nextAY-08-01 | nextAY-10-29     |        15000 |           614 |  20 |
+	| nextAY-08-01 | nextAY-07-29     |        15000 |           614 |  20 |
 
 
 @regression
@@ -84,8 +84,8 @@ Scenario: 19-24 Incentive Earnings (duration too short)
 	Then no incentive earning is generated for provider & employer
 
 Examples:
-	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| nextAY-08-01 | nextAY-10-28  |        15000 |           614 |  20 |
+	| start_date   | planned_end_date | agreed_price | training_code | age |
+	| nextAY-08-01 | nextAY-10-28     |        15000 |           614 |  20 |
 
 
 @regression
@@ -121,8 +121,8 @@ Scenario: No Incentives for 19+ learner withdrawn before 90-365 day threshold da
 
 Examples:
 	| withdrawal_date | first_earnings_generated | second_earnings_generated |
-	| nextAY-10-28 | is_not                   | is_not                    |
-	| nextAY-07-30 | is                       | is_not                    |
+	| nextAY-10-28    | is_not                   | is_not                    |
+	| nextAY-07-29    | is                       | is_not                    |
 
 #FLP-1512
 @regression
