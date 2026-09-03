@@ -108,7 +108,7 @@ public class LearningSteps (ScenarioContext context, LearningSqlClient learningS
 
         var episode = learningSqlClient
                 .GetApprenticeship(testData.LearningKey)
-                .Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
+                .Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, testData.LearningKey);
 
         Assert.AreEqual(testData.CommitmentsApprenticeshipCreatedEvent?.ApprenticeshipId, episode.ApprovalsApprenticeshipId, "Approvals Apprenticeship Id do not match.");
     }
@@ -122,7 +122,7 @@ public class LearningSteps (ScenarioContext context, LearningSqlClient learningS
 
         var episode = learningSqlClient
                 .GetApprenticeshipByUln(testData.Uln)
-                .Episodes.GetEpisode(Constants.UkPrn, testData.LearnerData.Delivery.OnProgramme.First().StandardCode.ToString());
+                .Episodes.GetEpisode(Constants.UkPrn, testData.LearningKey);
 
         var englishAndMaths = learningSqlClient.GetApprenticeshipByUln(testData.Uln)
             .EnglishAndMaths.First();
@@ -150,7 +150,7 @@ public class LearningSteps (ScenarioContext context, LearningSqlClient learningS
 
         var episode = learningSqlClient
             .GetApprenticeshipByUln(testData.Uln)
-            .Episodes.GetEpisode(Constants.UkPrn, testData.LearnerData.Delivery.OnProgramme.First().StandardCode.ToString());
+            .Episodes.GetEpisode(Constants.UkPrn, testData.LearningKey);
 
         Assert.IsNotNull(episode.FundingPlatform, "Expected FundingPlatform to be present in ApprenticeshipEpisode");
         Assert.AreEqual(expectedFundingPlatformType, (int)episode.FundingPlatform.Value, "FundingPlatformType does not match expected value.");

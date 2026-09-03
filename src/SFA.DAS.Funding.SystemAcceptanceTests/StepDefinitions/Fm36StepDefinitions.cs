@@ -165,7 +165,7 @@ public class Fm36StepDefinitions
         }
 
         var earningEpisode = earnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
-        var learningEpisode = apprenticeship.Episodes.GetEpisode(apprenticeshipCreatedEvent);
+        var learningEpisode = apprenticeship.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, testData.LearningKey);
 
         var expectedPriceEpisodeIdentifier = "25-" + apprenticeshipCreatedEvent.TrainingCode + "-" +
                                              apprenticeshipCreatedEvent.ActualStartDate?.ToString("dd/MM/yyyy");
