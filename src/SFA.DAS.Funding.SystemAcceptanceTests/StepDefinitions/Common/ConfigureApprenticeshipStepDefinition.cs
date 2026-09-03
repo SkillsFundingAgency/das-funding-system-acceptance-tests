@@ -136,4 +136,12 @@ public class ConfigureApprenticeshipStepDefinition
 
         ApprenticeshipEventHelper.UpdateApprenticeshipCreatedMessageWithEmployerType(testData.CommitmentsApprenticeshipCreatedEvent, employer);
     }
+
+    [Given(@"the provider is not enrolled")]
+    public void GivenTheProviderIsNotEnrolled()
+    {
+        var testData = _context.Get<TestData>();
+
+        testData.CommitmentsApprenticeshipCreatedEvent.ProviderId = Constants.NonEnrolledUkPrn;
+    }
 }
