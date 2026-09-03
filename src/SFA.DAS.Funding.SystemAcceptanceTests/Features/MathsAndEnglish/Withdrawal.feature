@@ -19,11 +19,11 @@ Scenario: Earnings for Maths and English after Withdrawal after Qualifying Perio
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for course <course>
 
 Examples:
-	| start_date       | duration_days | course              | agreed_price | withdrawal_on_day | expected_first_earning_period | expected_last_period | instalment |
-	| nextAY-09-25  |           240 | Entry level English |         5000 |                42 | nextAY-R02                 | nextAY-R03        |        625 |
-	| nextAY-09-25  |           180 | Entry level English |         5000 |                42 | nextAY-R02                 | nextAY-R03        |     833.33 |
-	| nextAY-09-25  |            14 | Entry level English |         5000 |                14 | nextAY-R02                 | nextAY-R02        |       5000 |
-	| currentAY-09-25 |            14 | Entry level English |         5000 |                14 | currentAY-R02                | currentAY-R02       |       5000 |
+	| start_date      | duration_days | course              | agreed_price | withdrawal_on_day | expected_first_earning_period | expected_last_period | instalment |
+	| currentAY-09-25 |           240 | Entry level English |         5000 |                42 | currentAY-R02                 | currentAY-R03        |        625 |
+	| currentAY-09-25 |           180 | Entry level English |         5000 |                42 | currentAY-R02                 | currentAY-R03        |     833.33 |
+	| currentAY-09-25 |            14 | Entry level English |         5000 |                14 | currentAY-R02                 | currentAY-R02        |       5000 |
+	| currentAY-09-25 |            14 | Entry level English |         5000 |                14 | currentAY-R02                 | currentAY-R02        |       5000 |
 	#| nextAY-09-25 |            13 | Entry level English |         5000 |                 1 | nextAY-R02                 | nextAY-R02        |       5000 | -- Uncomment this example as part of FLP-1424 
 
 
@@ -37,7 +37,7 @@ Scenario: Withdrawal for Maths and English can be after Planned end date
 
 Examples:
 	| start_date      | duration_days | course              | agreed_price | withdrawal_on_day | expected_first_earning_period | expected_last_period | instalment |
-	| nextAY-09-25 |           240 | Entry level English |         5000 |               270 | nextAY-R02                 | nextAY-R09        |        625 |
+	| currentAY-09-25 |           240 | Entry level English |         5000 |               270 | currentAY-R02                 | currentAY-R09        |        625 |
 	
 
 @regression
@@ -55,7 +55,7 @@ Scenario: Earnings for Maths and English are recalculated when withdrawal detail
 
 Examples:
 	| start_date      | duration_days | course              | agreed_price | first_withdrawal_on_day | first_withdrawal_earnings_start_period | first_withdrawal_earnings_end_period | instalment | second_withdrawal_on_day | second_withdrawal_earnings_start_period | second_withdrawal_earnings_end_period |
-	| nextAY-09-25 |           240 | Entry level English |         5000 |                      42 | nextAY-R02                          | nextAY-R03                        |        625 |                       70 | nextAY-R02                           | nextAY-R04                         |
+	| currentAY-09-25 |           240 | Entry level English |         5000 |                      42 | currentAY-R02                          | currentAY-R03                        |        625 |                       70 | currentAY-R02                           | currentAY-R04                         |
 
 @regression
 Scenario: Earnings for Maths and English after Withdrawal during Qualifying Period
@@ -67,8 +67,8 @@ Scenario: Earnings for Maths and English after Withdrawal during Qualifying Peri
 
 Examples:
 	| start_date      | duration_days | course              | agreed_price | withdrawal_on_day |
-	| nextAY-09-25 |           180 | Entry level English |         5000 |                41 |
-	| nextAY-09-25 |            14 | Entry level English |         5000 |                13 |
+	| currentAY-09-25 |           180 | Entry level English |         5000 |                41 |
+	| currentAY-09-25 |            14 | Entry level English |         5000 |                13 |
 
 
 @regression
