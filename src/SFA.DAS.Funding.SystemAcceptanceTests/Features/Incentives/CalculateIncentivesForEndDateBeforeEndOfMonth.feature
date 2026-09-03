@@ -17,7 +17,7 @@ Scenario: Incentive Earnings for learner ending after 90 days not at the end of 
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| nextAY-08-15 | nextAY-11-25  | 15,000       | 614           | 17  |
+	| currentAY-08-15 | currentAY-11-25  | 15,000       | 614           | 17  |
 
 
 @regression
