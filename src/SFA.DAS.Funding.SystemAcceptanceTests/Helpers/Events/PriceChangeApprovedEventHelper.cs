@@ -12,7 +12,7 @@ internal static class PriceChangeApprovedEventHelper
         var commitmentsEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
         var learning = new LearningSqlClient().GetApprenticeship(testData.LearningKey);
-        var episode = learning.Episodes.GetEpisode(commitmentsEvent.ProviderId, commitmentsEvent.TrainingCode);
+        var episode = learning.Episodes.GetEpisode(commitmentsEvent.ProviderId, testData.LearningKey);
         var latestPrice = episode.Prices.OrderByDescending(p => p.StartDate).First();
 
         var fixture = new Fixture();
@@ -48,7 +48,7 @@ internal static class PriceChangeApprovedEventHelper
             Ukprn = episode.Ukprn,
             Key = episode.Key,
             LegalEntityName = episode.LegalEntityName,
-            TrainingCode = episode.TrainingCode
+            TrainingCode = learning.TrainingCode
         })
         .With(_ => _.EffectiveFromDate, effectiveFromDate)
         .With(_ => _.ApprovedDate, approvedDate)
