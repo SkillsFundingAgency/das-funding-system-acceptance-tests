@@ -18,7 +18,7 @@ Examples:
 	| currentAY-08-01 | nextAY-07-31    |        15000 |             2 |  19 |
 	| currentAY-08-01 | nextAY-07-31    |        15000 |             2 |  17 |
 	| currentAY-08-01 | currentAY-07-31 |        15000 |             2 |  23 |
-	| currentAY-08-01 | nextAY-07-31    |        15000 |           614 |  26 |
+	| currentAY-08-01 | currentAY-07-31 |        15000 |           614 |  26 |
 	| currentAY-08-01 | nextAY-08-31    |        15000 |             2 |  26 |
 
 
@@ -112,8 +112,8 @@ Scenario: Retrieve Valid Fm36 19-24 incentives data
 
 Examples:
 	| start_date      | end_date        | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-07-31 |        15000 |             2 |  19 |
-	| currentAY-08-01 | currentAY-07-31 |        15000 |             2 |  24 |
+	| currentAY-08-01 | nextAY-07-31    |        15000 |             2 |  19 |
+	| currentAY-08-01 | nextAY-07-31    |        15000 |             2 |  24 |
 
 @regression
 Scenario: Retrieve Valid Fm36 learning support data
