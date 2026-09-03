@@ -15,9 +15,8 @@ public class LegacyApprenticeshipRouteStepDefinitions(ScenarioContext context, L
         var learning = learningSqlClient.GetApprenticeshipByUln(apprenticeshipCreatedEvent.Uln);
 
         Assert.IsNotNull(learning, "Expected a Learning record to be present in the database");
-        Assert.IsTrue(learning.Episodes.Any(e =>
-                e.Ukprn == apprenticeshipCreatedEvent.ProviderId &&
-                e.TrainingCode.Trim() == apprenticeshipCreatedEvent.TrainingCode),
+        Assert.IsTrue(learning.TrainingCode.Trim() == apprenticeshipCreatedEvent.TrainingCode &&
+                learning.Episodes.Any(e => e.Ukprn == apprenticeshipCreatedEvent.ProviderId),
             "Expected a matching episode to be present on the Learning record");
 
         testData.LearningKey = learning.Key;

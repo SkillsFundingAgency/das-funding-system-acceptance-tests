@@ -92,9 +92,9 @@ public class ApproveApprenticeshipStepDefinition
         await WaitHelper.WaitForIt(() =>
         {
             var learning = _learningSqlClient.TryGetApprenticeshipByUln(apprenticeshipCreatedEvent.Uln);
-            if (learning?.Episodes == null || !learning.Episodes.Any(e =>
-                    e.Ukprn == apprenticeshipCreatedEvent.ProviderId &&
-                    e.TrainingCode.Trim() == apprenticeshipCreatedEvent.TrainingCode))
+            if (learning?.Episodes == null ||
+                learning.TrainingCode.Trim() != apprenticeshipCreatedEvent.TrainingCode ||
+                !learning.Episodes.Any(e => e.Ukprn == apprenticeshipCreatedEvent.ProviderId))
             {
                 return false;
             }

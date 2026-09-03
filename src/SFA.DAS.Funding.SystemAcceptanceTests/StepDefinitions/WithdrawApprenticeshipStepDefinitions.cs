@@ -33,7 +33,8 @@ internal class WithdrawApprenticeshipStepDefinitions
         {
             apprenticeship = _apprenticeshipSqlClient.GetApprenticeship(testData.LearningKey);
 
-            return apprenticeship.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).WithdrawalDate == testData.LastDayOfLearning;
+            return apprenticeship.Episodes.GetEpisode
+            (testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, testData.LearningKey).WithdrawalDate == testData.LastDayOfLearning;
         }, $"Incorrect LastDayOfLearning found in the Learning db, Episode table.");
     }
 
@@ -50,7 +51,7 @@ internal class WithdrawApprenticeshipStepDefinitions
             var earnings  = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
             return 
-                apprenticeship.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).WithdrawalDate == withdrawalDate.Value && 
+                apprenticeship.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, testData.LearningKey).WithdrawalDate == withdrawalDate.Value && 
                 earnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).WithdrawalDate == withdrawalDate.Value;
         }, $"LastDayOfLearning did not change to {withdrawalDate} in learning db episode table");
     }

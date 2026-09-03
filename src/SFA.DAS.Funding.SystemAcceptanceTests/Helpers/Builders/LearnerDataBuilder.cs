@@ -13,7 +13,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         {
             Delivery = new Delivery
             {
-                OnProgramme = new List<Http.LearnerDataOuterApiClient.OnProgramme> { new Http.LearnerDataOuterApiClient.OnProgramme { AgreementId = "1", AimSequenceNumber = 1, LearnAimRef = "ZPROG001", Care = new Care(), StandardCode = 1}},
+                OnProgramme = new List<OnProgramme> { new OnProgramme { AgreementId = "1", AimSequenceNumber = 1, LearnAimRef = "ZPROG001", Care = new Care(), StandardCode = 1}},
             },
             Learner = new LearnerRequestDetails
             {

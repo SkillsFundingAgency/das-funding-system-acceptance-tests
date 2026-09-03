@@ -292,13 +292,15 @@ public class LearningSqlClient
 public class Learning
 {
     public Guid Key { get; set; }
-    public DateTime? CompletionDate { get; set; } = null;
     public List<Episode> Episodes { get; set; }
     public List<LearningHistoryModel> LearningHistory { get; set; }
     public Guid LearnerKey { get; set; }
     public Learner Learner { get; set; }
     public List<EnglishAndMaths> EnglishAndMaths { get; set; }
     public List<LearningSupport> LearningSupport { get; set; }
+    public string TrainingCode { get; set; } = null!;
+    public string? TrainingCourseVersion { get; set; }
+    public byte LearningType { get; set; }
 }
 
 public class Learner
@@ -324,14 +326,14 @@ public class Episode
     public long? FundingEmployerAccountId { get; set; }
     public string LegalEntityName { get; set; }
     public long? AccountLegalEntityId { get; set; }
-    public string TrainingCode { get; set; } = null!;
-    public string? TrainingCourseVersion { get; set; }
     public bool PaymentsFrozen { get; set; }
     public List<EpisodePrice> Prices { get; set; }
     public DateTime? WithdrawalDate { get; set; }
     public DateTime? PauseDate { get; set; }
     public bool isApproved { get; set; }
     public List<EpisodeBreakInLearning> EpisodeBreakInLearning { get; set; }
+    public DateTime? CompletionDate { get; set; } = null;
+    public DateTime? AchievementDate { get; set; } = null;
 }
 
 public class EpisodePrice
@@ -445,11 +447,11 @@ public static class ShortCourseModelExtensions
     [Obsolete("Use GetEpisode(...) instead", true)]
     public static Episode FirstOrDefault(this IEnumerable<Episode> episodes) { throw new InvalidOperationException(); }
 
-    public static Episode GetEpisode(this IEnumerable<Episode> episodes, long ukprn, string trainingCode)
+    public static Episode GetEpisode(this IEnumerable<Episode> episodes, long ukprn, Guid learningKey)
     {
         foreach (var episode in episodes)
         {
-            if (episode.Ukprn == ukprn && episode.TrainingCode.Trim() == trainingCode)
+            if (episode.Ukprn == ukprn && episode.LearningKey == learningKey)
             {
                 return episode;
             }
@@ -457,9 +459,16 @@ public static class ShortCourseModelExtensions
         throw new Exception("Matching episode not found");
     }
 
-    public static Episode GetEpisode(this IEnumerable<Episode> episodes, ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
+    public static Episode GetEpisode(this IEnumerable<Episode> episodes, Guid learningKey)
     {
-        return episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
+        foreach (var episode in episodes)
+        {
+            if (episode.LearningKey == learningKey)
+            {
+                return episode;
+            }
+        }
+        throw new Exception("Matching episode not found");
     }
 
     [Obsolete("Use GetEpisode(...) instead", true)]

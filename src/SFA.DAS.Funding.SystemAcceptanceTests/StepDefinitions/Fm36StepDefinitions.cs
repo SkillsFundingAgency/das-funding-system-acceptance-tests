@@ -130,9 +130,9 @@ public class Fm36StepDefinitions
             await WaitHelper.WaitForIt(() =>
             {
                 var learning = _apprenticeshipSqlClient.TryGetApprenticeshipByUln(apprenticeshipCreatedEvent.Uln);
-                if (learning?.Episodes == null || !learning.Episodes.Any(e =>
-                        e.Ukprn == apprenticeshipCreatedEvent.ProviderId &&
-                        e.TrainingCode.Trim() == apprenticeshipCreatedEvent.TrainingCode))
+                if (learning?.Episodes == null ||
+                    learning.TrainingCode.Trim() != apprenticeshipCreatedEvent.TrainingCode ||
+                    !learning.Episodes.Any(e => e.Ukprn == apprenticeshipCreatedEvent.ProviderId))
                 {
                     return false;
                 }
@@ -237,7 +237,7 @@ public class Fm36StepDefinitions
         }
 
         var earningEpisode = earnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent);
-        var learningEpisode = apprenticeship.Episodes.GetEpisode(apprenticeshipCreatedEvent);
+        var learningEpisode = apprenticeship.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, testData.LearningKey);
 
         var expectedPriceEpisodeIdentifier = "25-" + apprenticeshipCreatedEvent.TrainingCode + "-" +
                                              apprenticeshipCreatedEvent.ActualStartDate?.ToString("dd/MM/yyyy");
