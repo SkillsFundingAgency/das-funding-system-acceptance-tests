@@ -158,7 +158,7 @@ public class IncentivesAssertionsStepDefinitions
 
         var breaksInLearning = learning
             .Episodes.
-            GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
+            GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent.ProviderId, testData.LearningKey  )
             ?.EpisodeBreakInLearning;
 
         switch (incentiveEarningNumber)
