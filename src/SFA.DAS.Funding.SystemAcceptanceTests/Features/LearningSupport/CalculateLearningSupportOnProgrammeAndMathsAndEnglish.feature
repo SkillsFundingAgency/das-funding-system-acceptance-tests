@@ -64,35 +64,35 @@ Scenario: Dont pay learning support after english and maths completion
 
 @regression
 Scenario: Learning support continues to be paid for English and Maths course after on-prog withdrawal
-	Given a learning has a start date of previousAY-08-01, a planned end date of previousAY-07-31 and an agreed price of 15000
-	And SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date previousAY-07-31
-	And Learning withdrawal date is recorded on previousAY-11-15
-	And a Maths and English learning is recorded from previousAY-08-15 to previousAY-07-20 with learnAimRef 60342844, course Maths, amount 1000, learning support from previousAY-08-15 to previousAY-01-31
+	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
+	And Learning withdrawal date is recorded on currentAY-11-15
+	And a Maths and English learning is recorded from currentAY-08-15 to currentAY-07-20 with learnAimRef 60342844, course Maths, amount 1000, learning support from currentAY-08-15 to currentAY-01-31
 	When SLD submit updated learners details
-	Then learning support continues to be paid from periods previousAY-R01 to previousAY-R06
+	Then learning support continues to be paid from periods currentAY-R01 to currentAY-R06
 
 @regression
 Scenario: Learning support moved from English and Maths to On programme 
-	Given a learning has a start date of previousAY-08-01, a planned end date of previousAY-07-31 and an agreed price of 15000
-	And SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date previousAY-07-31
-	And Learning withdrawal date is recorded on previousAY-11-15
-	And a Maths and English learning is recorded from previousAY-08-15 to previousAY-07-20 with learnAimRef 60342844, course Maths, amount 1000, learning support from previousAY-08-01 to previousAY-01-31
+	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
+	And Learning withdrawal date is recorded on currentAY-11-15
+	And a Maths and English learning is recorded from currentAY-08-15 to currentAY-07-20 with learnAimRef 60342844, course Maths, amount 1000, learning support from currentAY-08-01 to currentAY-01-31
 	And SLD submit updated learners details
-	And learning support continues to be paid from periods previousAY-R01 to previousAY-R06
+	And learning support continues to be paid from periods currentAY-R01 to currentAY-R06
 	When SLD resubmits ILR
-	And SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date previousAY-07-31
-	And learning support is recorded from previousAY-08-01 to previousAY-01-31
-	And Learning withdrawal date is recorded on previousAY-11-15
-	And Maths and English learning is recorded from previousAY-08-01 to previousAY-07-31 with learnAimRef 6034284, course Maths Foundation and amount 931
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
+	And learning support is recorded from currentAY-08-01 to currentAY-01-31
+	And Learning withdrawal date is recorded on currentAY-11-15
+	And Maths and English learning is recorded from currentAY-08-01 to currentAY-07-31 with learnAimRef 6034284, course Maths Foundation and amount 931
 	And SLD submit updated learners details
-	Then learning support earnings are generated from periods previousAY-R01 to previousAY-R03
+	Then learning support earnings are generated from periods currentAY-R01 to currentAY-R03
 
 @regression
 Scenario: Learning support continues to be paid for On-prog after English and Maths is withdrawn
-	Given a learning has a start date of previousAY-08-01, a planned end date of previousAY-07-31 and an agreed price of 15000
-	And SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date previousAY-07-31
-	And learning support is recorded from previousAY-08-01 to previousAY-01-31
-	When English and Maths learning is recorded from previousAY-08-01 to previousAY-07-31 with learnAimRef 60342843, course English Foundation, amount 2000, withdrawal date previousAY-11-15, learning support from previousAY-08-01 to previousAY-07-31
+	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
+	And learning support is recorded from currentAY-08-01 to currentAY-01-31
+	When English and Maths learning is recorded from currentAY-08-01 to currentAY-07-31 with learnAimRef 60342843, course English Foundation, amount 2000, withdrawal date currentAY-11-15, learning support from currentAY-08-01 to currentAY-07-31
 	And SLD submit updated learners details
-	Then learning support continues to be paid from periods previousAY-R01 to previousAY-R06
+	Then learning support continues to be paid from periods currentAY-R01 to currentAY-R06
 

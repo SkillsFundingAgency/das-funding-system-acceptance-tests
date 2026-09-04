@@ -13,15 +13,15 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         {
             Delivery = new Delivery
             {
-                OnProgramme = new List<Http.LearnerDataOuterApiClient.OnProgramme> { new Http.LearnerDataOuterApiClient.OnProgramme { AgreementId = "1", AimSequenceNumber = 1, LearnAimRef = "ZPROG001", Care = new Care(), StandardCode = 1}},
+                OnProgramme = new List<OnProgramme> { new OnProgramme { AgreementId = "1", AimSequenceNumber = 1, LearnAimRef = "ZPROG001", Care = new Care(), StandardCode = 1}},
             },
             Learner = new LearnerRequestDetails
             {
                 Uln = long.Parse(testData.Uln),
-                FirstName = testData.LearningCreatedEvent.FirstName,
-                LastName = testData.LearningCreatedEvent.LastName,
-                Dob = testData.LearningCreatedEvent.DateOfBirth,
-                LearnerRef = testData.Uln
+                LearnerRef = testData.Uln,
+                FirstName = testData.CommitmentsApprenticeshipCreatedEvent.FirstName,
+                LastName = testData.CommitmentsApprenticeshipCreatedEvent.LastName,
+                Dob = testData.CommitmentsApprenticeshipCreatedEvent.DateOfBirth
             }
         };
 

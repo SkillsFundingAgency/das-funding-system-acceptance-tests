@@ -16,5 +16,5 @@
 #
 #Examples:
 #	| start_date       | end_date        | agreed_price | training_code | pause_date       | return_date     | expected_learning_deliveries |
-#	| previousAY-08-01 | currentAY-04-23 | 15000        | 2             | previousAY-05-01 | currentAY-08-01 | 1                            |
-#	| previousAY-08-01 | currentAY-04-23 | 15000        | 2             | currentAY-11-01  | currentAY-03-01 | 2                            |
+#	| currentAY-08-01 | nextAY-04-23 | 15000        | 2             | currentAY-05-01 | nextAY-08-01 | 1                            |
+#	| currentAY-08-01 | nextAY-04-23 | 15000        | 2             | nextAY-11-01  | nextAY-03-01 | 2                            |

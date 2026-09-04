@@ -9,6 +9,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Learning.Types;
 using System.Collections.Generic;
+using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
@@ -63,11 +64,16 @@ public class Fm36StepDefinitions
         // the content of the records is not important for paging tests.
         // To ensure that data exists in the cache for FM36 retrieval, we must also PUT a record for at least
         // 15 learners as well.
-
+        //
+        // Records are created via the draft apprenticeship POST and then approved, since the legacy event
+        // creation route results in no earnings
+        
         var testData = _context.Get<TestData>();
-        var recordsToCreate = 15; //always create 15 fresh records without re-using ulns (and therefore cache keys)
+        const int recordsToCreate = 15; //always create 15 fresh records without re-using ulns (and therefore cache keys)
 
-        for (int i = 0; i < recordsToCreate; i++)
+        var createdRecords = new List<(string Uln, TokenisableDateTime StartDate, TokenisableDateTime PlannedEndDate, ApprenticeshipCreatedEvent Event, Guid LearnerKey)>();
+
+        for (var i = 0; i < recordsToCreate; i++)
         {
             var uln = TestIdentifierProvider.GetNextUln();
 
@@ -77,24 +83,90 @@ public class Fm36StepDefinitions
             testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId = TestIdentifierProvider.GetNextApprovalsApprenticeshipId();
             testData.CommitmentsApprenticeshipCreatedEvent.Uln = uln;
 
-            await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
+            var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
-            testData.LearnerKey = _apprenticeshipSqlClient.GetApprenticeshipByUln(uln).LearnerKey;
+            var draftLearnerData = new LearnerDataRequest
+            {
+                ConsumerReference = "AcceptanceTests",
+                Learner = new StubLearner
+                {
+                    Uln = apprenticeshipCreatedEvent.Uln,
+                    LearnerRef = apprenticeshipCreatedEvent.Uln,
+                    Firstname = apprenticeshipCreatedEvent.FirstName,
+                    Lastname = apprenticeshipCreatedEvent.LastName,
+                    Dob = apprenticeshipCreatedEvent.DateOfBirth,
+                    HasEhcp = false
+                },
+                Delivery = new StubDelivery
+                {
+                    OnProgramme = new[]
+                    {
+                        new StubOnProgramme
+                        {
+                            Care = new Care(),
+                            StandardCode = int.Parse(apprenticeshipCreatedEvent.TrainingCode),
+                            AgreementId = "1",
+                            LearnAimRef = "ZPROG001",
+                            PercentageOfTrainingLeft = 0,
+                            IsFlexiJob = false,
+                            StartDate = apprenticeshipCreatedEvent.ActualStartDate,
+                            ExpectedEndDate = apprenticeshipCreatedEvent.EndDate,
+                            Costs = apprenticeshipCreatedEvent.PriceEpisodes.Select(p => new CostDetails
+                            {
+                                TrainingPrice = (int?)p.TrainingPrice,
+                                EpaoPrice = (int?)p.EndPointAssessmentPrice,
+                                FromDate = p.FromDate
+                            }).ToList(),
+                            LearningSupport = []
+                        }
+                    },
+                    EnglishAndMaths = []
+                }
+            };
 
+            await _learnerDataOuterApiHelper.AddLearnerData(apprenticeshipCreatedEvent.ProviderId, draftLearnerData);
+
+            var learnerKey = Guid.Empty;
+            await WaitHelper.WaitForIt(() =>
+            {
+                var learning = _apprenticeshipSqlClient.TryGetApprenticeshipByUln(apprenticeshipCreatedEvent.Uln);
+                if (learning?.Episodes == null ||
+                    learning.TrainingCode.Trim() != apprenticeshipCreatedEvent.TrainingCode ||
+                    !learning.Episodes.Any(e => e.Ukprn == apprenticeshipCreatedEvent.ProviderId))
+                {
+                    return false;
+                }
+
+                learnerKey = learning.LearnerKey;
+                return true;
+            }, "Failed to find draft apprenticeship in Learning DB");
+
+            await _context.PublishApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
+
+            createdRecords.Add((uln, startDate, plannedEndDate, apprenticeshipCreatedEvent, learnerKey));
+        }
+
+        Thread.Sleep(5000); // Same Wait as elsewhere following approval event publish
+
+        foreach (var record in createdRecords)
+        {
             var learnerDataBuilder = testData.GetLearnerDataBuilder();
             learnerDataBuilder
-                .WithCostDetails(10000, 2000, startDate.Value)
-                .WithStartDate(startDate.Value)
-                .WithExpectedEndDate(plannedEndDate.Value)
-                .WithStandardCode(Convert.ToInt32(testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode))
-                .WithUln(long.Parse(uln));
+                .WithCostDetails(10000, 2000, record.StartDate.Value)
+                .WithStartDate(record.StartDate.Value)
+                .WithExpectedEndDate(record.PlannedEndDate.Value)
+                .WithStandardCode(Convert.ToInt32(record.Event.TrainingCode))
+                .WithUln(long.Parse(record.Uln));
 
             var learnerData = learnerDataBuilder.Build();
 
-            await _learnerDataOuterApiHelper.UpdateLearning(testData.LearnerKey, learnerData);
+            await _learnerDataOuterApiHelper.UpdateLearning(record.LearnerKey, learnerData);
 
             testData.ResetLearnerDataBuilder();
         }
+
+        testData.CommitmentsApprenticeshipCreatedEvent = createdRecords.Last().Event;
+        testData.LearnerKey = createdRecords.Last().LearnerKey;
     }
 
     [When("the fm36 data is retrieved through LearnerData outer api for (.*)")]

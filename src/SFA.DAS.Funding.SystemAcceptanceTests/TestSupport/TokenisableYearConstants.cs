@@ -8,6 +8,7 @@ public static class TokenisableYearConstants
     public const string NextAyToken = "nextAY";
     public const string CurrentAyPlusTwoToken = "currentAYPlusTwo";
     public const string CurrentDate = "currentDate";
+    public const string OneYearFromNow = "oneYearFromNow";
     public const string NextMonthFirstDay = "nextMonthFirstDay";
     public const string LastDayOfCurrentMonth = "lastDayOfCurrentMonth";
 }

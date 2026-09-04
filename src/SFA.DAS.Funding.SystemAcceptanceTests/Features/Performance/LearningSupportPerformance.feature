@@ -1,4 +1,4 @@
-﻿Feature: LearningSupportPerformace
+﻿Feature: LearningSupportPerformance
 
 The below test calls the Maths and English earnings inner endpoint for a duration of 5 years. 
 Then it calls the On-programme Learning Support endpoint for the same duration a number of times.
@@ -26,7 +26,7 @@ Scenario: Learning Support for Maths and English Earnings over 5 years
 	Then learning support earnings are generated from periods <expected_first_earning_period> to <expected_last_earning_period>
 
 Examples:
-	| start_date          | end_date     | course              | expected_first_earning_period | expected_last_earning_period |
-	| TwoYearsAgoAY-08-01 | nextAY-07-31 | Entry level English | TwoYearsAgoAY-R01             | currentAY-R12                |
+	| start_date          | end_date               | course              | expected_first_earning_period | expected_last_earning_period |
+	| TwoYearsAgoAY-08-01 | nextAY-07-31            | Entry level English | TwoYearsAgoAY-R01             | currentAY-R12                |
 	
 

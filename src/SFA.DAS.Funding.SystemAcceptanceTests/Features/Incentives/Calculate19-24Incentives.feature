@@ -68,9 +68,9 @@ Scenario: 19-24 Incentive Earnings (duration only long enough for first earning 
 	And the second incentive earning is_not generated for provider & employer
 
 Examples:
-	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-10-29  |        15000 |           614 |  20 |
-	| currentAY-08-01 | currentAY-07-30  |        15000 |           614 |  20 |
+	| start_date   | planned_end_date | agreed_price | training_code | age |
+	| currentAY-08-01 | currentAY-10-29     |        15000 |           614 |  20 |
+	| currentAY-08-01 | currentAY-07-30     |        15000 |           614 |  20 |
 
 
 @regression
@@ -84,8 +84,8 @@ Scenario: 19-24 Incentive Earnings (duration too short)
 	Then no incentive earning is generated for provider & employer
 
 Examples:
-	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-01 | currentAY-10-28  |        15000 |           614 |  20 |
+	| start_date   | planned_end_date | agreed_price | training_code | age |
+	| currentAY-08-01 | currentAY-10-28     |        15000 |           614 |  20 |
 
 
 @regression
@@ -121,39 +121,39 @@ Scenario: No Incentives for 19+ learner withdrawn before 90-365 day threshold da
 
 Examples:
 	| withdrawal_date | first_earnings_generated | second_earnings_generated |
-	| currentAY-10-28 | is_not                   | is_not                    |
-	| currentAY-07-30 | is                       | is_not                    |
+	| currentAY-10-28    | is_not                   | is_not                    |
+	| currentAY-07-30    | is                       | is_not                    |
 
 #FLP-1512
 @regression
 Scenario: Validation of incentive earnings generation and clearance across different age bands
-	Given an apprenticeship has a start date of 2025-08-01, a planned end date of 2026-07-31, an agreed price of 15000, and a training code 614
+	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 25
 	And the apprenticeship commitment is approved
 	# Set learner as 25 years of age at app start and validate no incentives generated
-	When SLD record on-programme training price 12000 with epao as 3000 from date 2025-08-01 to date 2026-07-31
-	And Learner's date of birth is updated to 2000-08-01
+	When SLD record on-programme training price 12000 with epao as 3000 from date 2026-08-01 to date 2027-07-31
+	And Learner's date of birth is updated to 2001-08-01
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
 	Then the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
 	# Change dob to a day less then 25 years and validate incentives are generated
-	When Learner's date of birth is updated to 2000-08-02
+	When Learner's date of birth is updated to 2001-08-02
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
-	# Change start date so learner is 25 years again - incentives should clear 
+	# Change start date so learner is 25 years again - incentives should clear
 	When SLD resubmits ILR
-	And SLD record on-programme training price 12000 with epao as 3000 from date 2025-08-02 to date 2026-07-31
-	And Learner's date of birth is updated to 2000-08-02
+	And SLD record on-programme training price 12000 with epao as 3000 from date 2026-08-02 to date 2027-07-31
+	And Learner's date of birth is updated to 2001-08-02
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
 	Then the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
 	# Change start date so learner is below 25 years - incentives should generate
 	When SLD resubmits ILR
-	And SLD record on-programme training price 12000 with epao as 3000 from date 2025-08-01 to date 2026-07-31
-	And Learner's date of birth is updated to 2000-08-02
+	And SLD record on-programme training price 12000 with epao as 3000 from date 2026-08-01 to date 2027-07-31
+	And Learner's date of birth is updated to 2001-08-02
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer

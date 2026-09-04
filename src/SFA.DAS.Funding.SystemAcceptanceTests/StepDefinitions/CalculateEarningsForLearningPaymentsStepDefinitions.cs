@@ -35,8 +35,9 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     public void VerifyInstalmentAmountIsCalculatedEquallyIntoAllEarningMonths(decimal instalmentAmount)
     {
         var testData = _context.Get<TestData>();
-        var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
-        deliveryPeriods.FilterByOnProg().ToList().ForEach(dp => dp.LearningAmount.Should().Be(instalmentAmount));
+        var earnings = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
+        var episode = earnings!.Episodes.GetEpisode(testData);
+        episode.EarningsProfile.Instalments.FilterByOnProg().ToList().ForEach(i => i.Amount.Should().Be(instalmentAmount));
     }
 
     [Given(@"the planned number of months must be the number of months from the start date to the planned end date (.*)")]
@@ -44,8 +45,9 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     public void VerifyThePlannedDurationMonthsWithinTheEarningsGenerated(short numberOfInstalments)
     {
         var testData = _context.Get<TestData>();
-        var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
-        deliveryPeriods.FilterByOnProg().Should().HaveCount(numberOfInstalments);
+        var earnings = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
+        var episode = earnings!.Episodes.GetEpisode(testData);
+        episode.EarningsProfile.Instalments.FilterByOnProg().Should().HaveCount(numberOfInstalments);
     }
 
     [Given(@"the delivery period for each instalment must be the delivery period from the collection calendar with a matching calendar month and year")]
@@ -53,8 +55,9 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
     public void ThenTheDeliveryPeriodForEachInstalmentMustBeTheDeliveryPeriodFromTheCollectionCalendarWithAMatchingCalendarMonthYear(Table table)
     {
         var testData = _context.Get<TestData>();
-        var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
-        deliveryPeriods.FilterByOnProg().ToList().ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
+        var earnings = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
+        var episode = earnings!.Episodes.GetEpisode(testData);
+        episode.EarningsProfile.Instalments.FilterByOnProg().ToList().ShouldHaveCorrectFundingPeriods(table.ToExpectedPeriods());
     }
 
     [Then(@"the total completion amount (.*) should be calculated as 20% of the adjusted price")]
@@ -63,15 +66,5 @@ public class CalculateEarningsForLearningPaymentsStepDefinitions
         var apprenticeshipEntity = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
         Assert.AreEqual(completionAmount, apprenticeshipEntity!.Episodes.MaxBy(x => x.Prices.MaxBy(y => y.StartDate)!.StartDate)!.EarningsProfile.CompletionPayment);
-    }
-
-    [Then(@"the leaners age (.*) at the start of the course and funding line type (.*) must be calculated")]
-    public void ValidateAgeAndFundingLineTypeCalculated(int age, string fundingLineType)
-    {
-        var testData = _context.Get<TestData>();
-        Assert.AreEqual(testData.LearningCreatedEvent.Episode.AgeAtStartOfLearning, age, $"Expected age is: {age} but found age: {testData.LearningCreatedEvent.Episode.AgeAtStartOfLearning}");
-
-        var deliveryPeriods = testData.EarningsGeneratedEvent.DeliveryPeriods;
-        deliveryPeriods.FilterByOnProg().ToList().ShouldHaveCorrectFundingLineType(fundingLineType);
     }
 }

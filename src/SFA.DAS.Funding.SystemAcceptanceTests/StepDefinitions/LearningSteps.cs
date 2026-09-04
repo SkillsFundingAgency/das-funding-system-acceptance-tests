@@ -155,5 +155,4 @@ public class LearningSteps (ScenarioContext context, LearningSqlClient learningS
         Assert.IsNotNull(episode.FundingPlatform, "Expected FundingPlatform to be present in ApprenticeshipEpisode");
         Assert.AreEqual(expectedFundingPlatformType, (int)episode.FundingPlatform.Value, "FundingPlatformType does not match expected value.");
     }
-
 }
