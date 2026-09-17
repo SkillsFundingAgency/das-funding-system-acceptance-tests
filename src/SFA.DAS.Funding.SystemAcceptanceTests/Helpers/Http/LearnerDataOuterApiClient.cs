@@ -200,7 +200,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public async Task UpdateLearning(long ukprn, Guid learningKey, UpdateLearnerRequest learningData)
         {
-            var startDate = learningData.Delivery.OnProgramme.FirstOrDefault()?.StartDate ?? DateTime.UtcNow;
+            var startDate = learningData.Delivery.OnProgramme.OrderByDescending(x => x.StartDate).FirstOrDefault()?.StartDate ?? DateTime.UtcNow;
             var ay = startDate.ToAcademicYearAndPeriod();
             var request = new HttpRequestMessage(HttpMethod.Put, _urlProvider.UpdateLearning(ukprn, learningKey, ay.AcademicYear, ay.Period));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
@@ -365,6 +365,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         public class OnProgramme
         {
             public int StandardCode { get; set; }
+            public bool IsFlexiJob { get; set; } = false;
             public string AgreementId { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime ExpectedEndDate { get; set; }
