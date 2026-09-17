@@ -247,16 +247,19 @@ public class LearningSqlClient
             WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             /*===========================================================
-            8. Delete Short Course Milestones
+            8. Delete from Short Course tables
             ===========================================================*/
+            DELETE sclh
+            FROM History.ShortCourseLearningHistory sclh
+            JOIN dbo.ShortCourseLearning scl ON sclh.LearningKey = scl.[Key]
+            JOIN dbo.ShortCourseEpisode sce ON scl.[Key] = sce.LearningKey
+            WHERE sce.Ukprn in (@Ukprn1, @Ukprn2);
+
             DELETE scm
             FROM dbo.ShortCourseMilestone scm
             JOIN dbo.ShortCourseEpisode e ON scm.EpisodeKey = e.[Key]
             WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
-            /*===========================================================
-            9. Delete Short Course Learning Support
-            ===========================================================*/
             DELETE scls
             FROM dbo.ShortCourseLearningSupport scls
             JOIN dbo.ShortCourseEpisode e ON scls.EpisodeKey = e.[Key]
