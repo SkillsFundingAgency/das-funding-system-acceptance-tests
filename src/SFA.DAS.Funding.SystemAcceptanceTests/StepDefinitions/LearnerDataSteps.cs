@@ -312,6 +312,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithStartDate(startDate.Value);
         }
 
+        [When("the learner progresses onto a new apprenticeship with start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
+        public void LearnerProgressesOntoANewApprenticeship(TokenisableDateTime startDate, TokenisableDateTime expectedEndDate, decimal agreedPrice, int standardCode)
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            int? trainingPrice = (int)(agreedPrice * 0.8m);
+            int? epaoPrice = (int)(agreedPrice * 0.2m);
+
+            learnerDataBuilder.WithProgressionLearning(startDate.Value, expectedEndDate.Value, trainingPrice, epaoPrice, standardCode);
+        }
+
+
         [Then(@"the learner's details are added to Learner Data db")]
         public async Task ThenTheLearnerIsAddedToLearnerData()
         {
