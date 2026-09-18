@@ -148,6 +148,15 @@ public class LearningSqlClient
         return learnings;
     }
 
+    public List<ShortCourseLearningHistoryModel> GetShortCourseLearningHistory(Guid learningKey)
+    {
+        return _sqlServerClient.GetList<ShortCourseLearningHistoryModel>(
+            @"SELECT [Key], [LearningKey], [AcademicYear], [Operation], [Changes], [CreatedOn], [State]
+              FROM [History].[ShortCourseLearningHistory]
+              WHERE [LearningKey] = @learningKey",
+            new { learningKey });
+    }
+
     public List<Http.LearnerDataOuterApiClient.Learning> GetApprovedLearners(long ukprn, int academicYear)
     {
         var dates = AcademicYearParser.ParseFrom(academicYear);
@@ -418,6 +427,17 @@ public class ShortCourseEpisode
     public bool IsRemoved { get; set; }
     public List<ShortCourseLearningSupport> LearningSupport { get; set; }
     public List<ShortCourseMilestone> Milestones { get; set; }
+}
+
+public class ShortCourseLearningHistoryModel
+{
+    public Guid Key { get; set; }
+    public Guid LearningKey { get; set; }
+    public int? AcademicYear { get; set; }
+    public string Operation { get; set; }
+    public string? Changes { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public string State { get; set; }
 }
 
 public class ShortCourseLearningSupport
