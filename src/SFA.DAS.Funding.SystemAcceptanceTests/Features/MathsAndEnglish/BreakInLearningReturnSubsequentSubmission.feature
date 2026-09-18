@@ -14,7 +14,7 @@ Background:
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R04
 
 #FLP-1421 - AC1
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider records a return from E&M break in learning
 	Given SLD record a return from break in learning for English and Maths course with new start date currentAY-01-15
 	And SLD submit updated learners details
@@ -22,7 +22,7 @@ Scenario: Training provider records a return from E&M break in learning
 	And Maths and English earnings are generated from periods currentAY-R06 to currentAY-R08 with instalment amount 133.33000 for course English Foundation
 
 #FLP-1421 - AC3
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider corrects a return from E&M break in learning 
 	Given SLD record a return from break in learning for English and Maths course with new start date currentAY-01-15
 	And SLD submit updated learners details
@@ -34,7 +34,7 @@ Scenario: Training provider corrects a return from E&M break in learning
 	And Maths and English earnings are generated from periods currentAY-R07 to currentAY-R08 with instalment amount 200 for course English Foundation
 
 #FLP-1421 - AC4
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider removes a previously recorded return from E&M break in learning 
 	Given SLD record a return from break in learning for English and Maths course with new start date currentAY-01-15
 	And SLD submit updated learners details

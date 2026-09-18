@@ -312,6 +312,19 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             learnerDataBuilder.WithStartDate(startDate.Value);
         }
 
+        [When("the learner progresses onto a new apprenticeship with start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
+        public void LearnerProgressesOntoANewApprenticeship(TokenisableDateTime startDate, TokenisableDateTime expectedEndDate, decimal agreedPrice, int standardCode)
+        {
+            var testData = context.Get<TestData>();
+            var learnerDataBuilder = testData.GetLearnerDataBuilder();
+
+            int? trainingPrice = (int)(agreedPrice * 0.8m);
+            int? epaoPrice = (int)(agreedPrice * 0.2m);
+
+            learnerDataBuilder.WithProgressionLearning(startDate.Value, expectedEndDate.Value, trainingPrice, epaoPrice, standardCode);
+        }
+
+
         [Then(@"the learner's details are added to Learner Data db")]
         public async Task ThenTheLearnerIsAddedToLearnerData()
         {
@@ -329,6 +342,23 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             data.StartDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.First().StartDate!.Value.Date);
             data.PlannedEndDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.First().ExpectedEndDate!.Value.Date);
         }
+
+        [Then("the progression learning with training code (.*) and start date (.*) is added to Learner Data db")]
+        public async Task ProgressionLearningIsAddedToLearnerDataDb(int trainingCode, TokenisableDateTime startDate)
+        {
+            var testData = context.Get<TestData>();
+            var uln = testData.Uln;
+
+            await WaitHelper.WaitForIt(() => learnerDataSqlClient.GetLearnerData(Convert.ToInt64(uln)) != null, "Unable to find LearnerData for Uln");
+
+            var data = learnerDataSqlClient.GetLearnerData(Convert.ToInt64(uln));
+
+            Assert.IsNotNull(data);
+
+            data.TrainingCode.Should().Be(testData.UpdateLearnerData.Delivery.OnProgramme.OrderByDescending(x => x.StartDate).FirstOrDefault()?.StandardCode);
+            data.StartDate.Date.Should().Be(testData.UpdateLearnerData.Delivery.OnProgramme.OrderByDescending(x => x.StartDate).FirstOrDefault()?.StartDate!.Date);
+        }
+
 
         [Then("treat Training price as (.*), EPAO price as (.*) and fromDate as Start Date")]
         public async Task TreatTrainingPriceAsEPAOPriceAsAndFromDateAs(int? trainingPrice, int? epaoPrice)

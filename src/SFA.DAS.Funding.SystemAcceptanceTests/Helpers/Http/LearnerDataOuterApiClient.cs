@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using System.Net;
+using System.Text.Json.Schema;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
@@ -200,7 +201,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public async Task UpdateLearning(long ukprn, Guid learningKey, UpdateLearnerRequest learningData)
         {
-            var startDate = learningData.Delivery.OnProgramme.FirstOrDefault()?.StartDate ?? DateTime.UtcNow;
+            var startDate = learningData.Delivery.OnProgramme.OrderByDescending(x => x.StartDate).FirstOrDefault()?.StartDate ?? DateTime.UtcNow;
             var ay = startDate.ToAcademicYearAndPeriod();
             var request = new HttpRequestMessage(HttpMethod.Put, _urlProvider.UpdateLearning(ukprn, learningKey, ay.AcademicYear, ay.Period));
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
@@ -211,6 +212,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
                 System.Text.Json.JsonSerializer.Serialize(learningData),
                 System.Text.Encoding.UTF8,
                 "application/json");
+
+            var stringContent = await jsonContent.ReadAsStringAsync();
 
             request.Content = jsonContent;
 
@@ -339,6 +342,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class UpdateLearnerRequest
         {
+            public string ConsumerReference { get; set; } = "AcceptanceTests";
             public Delivery Delivery { get; set; } = new();
             public LearnerRequestDetails Learner { get; set; }
         }
@@ -365,6 +369,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         public class OnProgramme
         {
             public int StandardCode { get; set; }
+            public bool IsFlexiJob { get; set; } = false;
             public string AgreementId { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime ExpectedEndDate { get; set; }

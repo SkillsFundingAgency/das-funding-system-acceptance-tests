@@ -14,6 +14,9 @@ public class ParallelizationHooks
     [AfterScenario("nonparallelizable")]
     public void AfterNonParallelScenario()
     {
-        Monitor.Exit(_lock);
+        if (Monitor.IsEntered(_lock))
+        {
+            Monitor.Exit(_lock);
+        }
     }
 }

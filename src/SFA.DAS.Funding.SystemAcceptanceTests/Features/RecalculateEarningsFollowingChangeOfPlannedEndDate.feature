@@ -8,7 +8,7 @@ So that earnings and [payments can be recalculated based on the latest data
 Example 1: Planned End date moves earlier
 Example 2: Planned End date moves later
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Planned End Date change; recalc earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved

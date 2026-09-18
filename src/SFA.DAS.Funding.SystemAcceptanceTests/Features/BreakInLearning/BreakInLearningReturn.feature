@@ -14,7 +14,7 @@ Background:
 
 
 #FLP-1360 AC1 previousAY return
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider records a return from a break in learning in previous academic year
 	Given SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
 	When SLD submit updated learners details
@@ -25,7 +25,7 @@ Scenario: Training provider records a return from a break in learning in previou
 	And earnings are updated with second period in learning from previousAY-03-01 to null
 
 #FLP-1360 AC1 current AY return
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider records a return from a break in learning in current academic year
 	Given SLD inform us of a return from break in learning with a new learning start date currentAY-05-01
 	When SLD submit updated learners details
@@ -36,7 +36,7 @@ Scenario: Training provider records a return from a break in learning in current
 #FLP-1360 AC2 see BreakInLearningBreakAndReturnInSameSubmission.feature
 
 #FLP-1360 AC3 training provider corrects previously recorded return previousAY
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider corrects a previous recorded return from a break in learning in previous academic year
 	Given SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
 	And SLD submit updated learners details
@@ -48,7 +48,7 @@ Scenario: Training provider corrects a previous recorded return from a break in 
 	And the earnings of 678.57143 between previousAY-R11 and currentAY-R12 are maintained
 
 #FLP-1360 AC3 training provider corrects previously recorded return currentAY
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider corrects a previous recorded return from a break in learning in current academic year
 	Given SLD inform us of a return from break in learning with a new learning start date currentAY-05-01
 	And SLD submit updated learners details
@@ -60,7 +60,7 @@ Scenario: Training provider corrects a previous recorded return from a break in 
 	And the earnings of 4750.00000 between currentAY-R11 and currentAY-R12 are maintained
 
 #FLP-1360 AC4 training provider removes previously recorded return previousAY
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider removes a previously recorded return from a break in learning in previous academic year
 	Given SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
 	And SLD submit updated learners details
@@ -71,7 +71,7 @@ Scenario: Training provider removes a previously recorded return from a break in
 	And the earnings of 500 between previousAY-R01 and previousAY-R05 are maintained
 
 #FLP-1360 AC4 training provider removes previously recorded return currentAY
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider removes a previously recorded return from a break in learning in current academic year
 	Given SLD inform us of a return from break in learning with a new learning start date currentAY-03-01
 	And SLD submit updated learners details
@@ -83,7 +83,7 @@ Scenario: Training provider removes a previously recorded return from a break in
 
 #@regression
 #FLP-1360 AC4 training provider removes previously recorded return & entire break previousAY
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider removes a previously recorded return from, and break in learning in previous academic year
 	Given SLD inform us of a return from break in learning with a new learning start date previousAY-03-01
 	And SLD submit updated learners details
@@ -94,7 +94,7 @@ Scenario: Training provider removes a previously recorded return from, and break
 	And the earnings of 500 between previousAY-R01 and currentAY-R12 are maintained
 
 #FLP-1360 AC4 training provider removes previously recorded return & entire break currentAY
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider removes a previously recorded return from, and break in learning in current academic year
 	Given SLD inform us of a return from break in learning with a new learning start date currentAY-03-01
 	And SLD submit updated learners details

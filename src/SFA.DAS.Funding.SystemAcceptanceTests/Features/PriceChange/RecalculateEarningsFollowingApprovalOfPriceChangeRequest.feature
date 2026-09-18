@@ -14,7 +14,7 @@ Example 3: Price Rise in year 2 - New Price at Funding Band Max
 Example 4: Price Drop in year 2 - New Price below Funding Band Max
 Example 5: Price Rise in R13 of year 1 - New Price at Funding Band Max
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Price change - Total price change ONLY - recalc earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
@@ -36,7 +36,7 @@ Examples:
 	| currentAY-08-26 | nextAY-04-26 |        15000 |             1 | nextAY-08-01    |            8000 |            -100 | nextAY               |             600 |               1 |
 	| currentAY-08-27 | nextAY-04-27 |        15000 |             2 | currentAY-08-29 |           18000 |             720 | currentAY            |             600 |               1 |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Price change; Costs array combinations
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
@@ -52,7 +52,7 @@ Examples:
 	| previousAY-07-23 | nextAY-03-23     |        15000 |             2 | null             |               0 | null           | null |             750 | previousAY           |              12 |
 	| previousAY-08-01 | previousAY-07-31 |        15000 |             2 | null             |           18000 |          15000 | 3000 |            1200 | previousAY           |               1 |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Price change; new total price is the same but training and epao costs changed
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
@@ -67,7 +67,7 @@ Examples:
 
 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Price change; Empty Costs array
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved
@@ -82,7 +82,7 @@ Examples:
 	| start_date       | end_date     | agreed_price | training_code | new_total_price | new_inst_amount | academic_year_string | delivery_period |
 	| previousAY-07-23 | nextAY-03-23 |        15000 |             2 |               0 |               0 | currentAY            |               2 |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Price change; Both total price and start date changed
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the apprenticeship commitment is approved

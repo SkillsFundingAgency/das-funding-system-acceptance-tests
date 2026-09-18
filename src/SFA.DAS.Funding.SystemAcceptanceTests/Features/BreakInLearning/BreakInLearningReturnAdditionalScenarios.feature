@@ -9,7 +9,7 @@ So that the provider acquires earnings once the learner has returned from a brea
 
 #TODO when earnings event is fixed
 #BIL followed by another BiL a few months later (BIL and return same time -> BiL again after 3 months -> return (in my head) )
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider records multiple breaks in learning with returns
 	Given a learning has a start date of previousAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date previousAY-08-01 to date currentAY-07-31
@@ -28,7 +28,7 @@ Scenario: Training provider records multiple breaks in learning with returns
 	And the earnings of 711.22995 between currentAY-R02 and currentAY-R12 are maintained
 
 #BiL, Return then Completion 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider records break in learning, return, then completion
 	Given a learning has a start date of previousAY-08-20, a planned end date of currentAY-07-31 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date previousAY-08-20 to date currentAY-07-31
@@ -65,7 +65,7 @@ Examples:
 
 
 #End date pushed back to account for BIL with no price change
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider pushes end date back to account for break in learning with no price change
 	Given a learning has a start date of previousAY-10-01, a planned end date of currentAY-09-30 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-09-30
@@ -78,7 +78,7 @@ Scenario: Training provider pushes end date back to account for break in learnin
 	And the earnings of 1000 between previousAY-R10 and currentAY-R05 are maintained
 
 #Apprenticeship duration is increased after BIL with no price change
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider increases duration after break in learning with no price change
 	Given a learning has a start date of previousAY-10-01, a planned end date of currentAY-09-30 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-09-30
@@ -91,7 +91,7 @@ Scenario: Training provider increases duration after break in learning with no p
 	And the earnings of 727.27 between previousAY-R10 and currentAY-R08 are maintained
 
 #Apprenticeship duration is increased after BIL with price increase
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider increases duration after break in learning with price increase
 	Given a learning has a start date of previousAY-10-01, a planned end date of currentAY-09-30 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-09-30
@@ -105,7 +105,7 @@ Scenario: Training provider increases duration after break in learning with pric
 	And the earnings of 872.72727 between previousAY-R10 and currentAY-R08 are maintained
 
 #Withdrawal after BIL return
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider withdraws apprenticeship after return from break in learning
 	Given a learning has a start date of previousAY-10-01, a planned end date of currentAY-09-30 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-09-30
@@ -135,7 +135,7 @@ Examples:
 	| previousAY-05-31  | previousAY-06-13 | currentAY-11-13  |        1333.33333 | previousAY-R10   | previousAY-R10 |
 
 #Withdrawal replaces BIL return - FLP-1429 AC2
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider replaces return from break in learning with withdrawal
 	Given a learning has a start date of previousAY-10-01, a planned end date of currentAY-09-30 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-09-30
@@ -155,7 +155,7 @@ Examples:
 
 
 #Withdrawal after 3 months of their return from BIL
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider withdraws apprenticeship 3 months after return from break in learning
 	Given a learning has a start date of previousAY-10-01, a planned end date of currentAY-09-30 and an agreed price of 15000
 	When SLD record on-programme cost as total price 15000 from date previousAY-10-01 to date currentAY-09-30
