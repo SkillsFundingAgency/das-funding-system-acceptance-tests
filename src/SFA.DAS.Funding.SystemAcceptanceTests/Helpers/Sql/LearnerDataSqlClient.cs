@@ -38,7 +38,7 @@
             public string? AgreementId { get; set; }
             public bool IsFlexiJob { get; set; }
             public int? PlannedOTJTrainingHours { get; set; }
-            public int StandardCode { get; set; }
+            public int TrainingCode { get; set; }
             public string ConsumerReference { get; set; }
         }
     }

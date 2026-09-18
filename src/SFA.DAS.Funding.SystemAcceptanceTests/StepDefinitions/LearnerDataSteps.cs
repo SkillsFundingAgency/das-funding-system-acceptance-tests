@@ -343,6 +343,23 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             data.PlannedEndDate.Date.Should().Be(testData.LearnerData.Delivery.OnProgramme.First().ExpectedEndDate!.Value.Date);
         }
 
+        [Then("the progression learning with training code (.*) and start date (.*) is added to Learner Data db")]
+        public async Task ProgressionLearningIsAddedToLearnerDataDb(int trainingCode, TokenisableDateTime startDate)
+        {
+            var testData = context.Get<TestData>();
+            var uln = testData.Uln;
+
+            await WaitHelper.WaitForIt(() => learnerDataSqlClient.GetLearnerData(Convert.ToInt64(uln)) != null, "Unable to find LearnerData for Uln");
+
+            var data = learnerDataSqlClient.GetLearnerData(Convert.ToInt64(uln));
+
+            Assert.IsNotNull(data);
+
+            data.TrainingCode.Should().Be(testData.UpdateLearnerData.Delivery.OnProgramme.OrderByDescending(x => x.StartDate).FirstOrDefault()?.StandardCode);
+            data.StartDate.Date.Should().Be(testData.UpdateLearnerData.Delivery.OnProgramme.OrderByDescending(x => x.StartDate).FirstOrDefault()?.StartDate!.Date);
+        }
+
+
         [Then("treat Training price as (.*), EPAO price as (.*) and fromDate as Start Date")]
         public async Task TreatTrainingPriceAsEPAOPriceAsAndFromDateAs(int? trainingPrice, int? epaoPrice)
         {

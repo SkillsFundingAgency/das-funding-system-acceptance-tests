@@ -15,4 +15,5 @@ Scenario: Learner progresses onto a new apprenticeship mid-academic year
 	And Learning Completion is recorded on 2025-11-25
 	When the learner progresses onto a new apprenticeship with start date of currentAY-08-01, a planned end date of nextAY-07-31, an agreed price of 15000, and a training code 614
 	And SLD submit updated learners details
+	Then the progression learning with training code 614 and start date currentAY-08-01 is added to Learner Data db
 
