@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using System.Net;
+using System.Text.Json.Schema;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
@@ -212,6 +213,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
                 System.Text.Encoding.UTF8,
                 "application/json");
 
+            var stringContent = await jsonContent.ReadAsStringAsync();
+
             request.Content = jsonContent;
 
             var response = await _apiClient.SendAsync(request);
@@ -339,6 +342,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class UpdateLearnerRequest
         {
+            public string ConsumerReference { get; set; } = "AcceptanceTests";
             public Delivery Delivery { get; set; } = new();
             public LearnerRequestDetails Learner { get; set; }
         }
