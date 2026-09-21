@@ -50,3 +50,13 @@ Scenario: Set the default funding line type for unapproved short courses
 	And the short course is not approved
 	When SLD requests short course earnings data for collection period currentAY-01
 	Then the funding line type for the short course is GSO Short Courses (Apprenticeship Units) Non-Levy
+
+#FLP-1899 
+@regression
+Scenario Outline: Get short course earnings - return empty earnings array 
+	Given SLD informs us of a new learner with a short course starting on previousAY-07-01 and ending on currentAY-08-25
+	And the basic short course earnings are generated
+	And SLD informs us the short course learning has withdrawn on currentAY-08-05 if applicable
+	And the short course is approved
+	When SLD requests short course earnings data for collection period currentAY-01
+	Then empty earnings array is returned for short course learner

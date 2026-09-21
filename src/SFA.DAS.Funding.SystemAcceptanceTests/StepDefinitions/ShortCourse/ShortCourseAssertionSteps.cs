@@ -316,6 +316,16 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         Assert.IsNull(learner, "Short course learner was unexpectedly found in the earnings response for this collection period.");
     }
 
+    [Then(@"empty earnings array is returned for short course learner")]
+    public void ThenEmptyEarningsArrayIsReturnedForShortCourseLearner()
+    {
+        var testData = context.Get<TestData>();
+
+        var learner = testData.ShortCourseEarningsResponse.Learners.SingleOrDefault(x => x.Key == testData.ShortCourseLearnerKey.ToString());
+
+        Assert.IsEmpty(learner.Courses.Single().Earnings, "Expected empty earnings array for short course learner.");
+    }
+
     [Then(@"the funding line type for the short course is (.*)")]
     public void ThenTheFundingLineTypeForTheShortCourseIs(string expectedFundingLineType)
     {
