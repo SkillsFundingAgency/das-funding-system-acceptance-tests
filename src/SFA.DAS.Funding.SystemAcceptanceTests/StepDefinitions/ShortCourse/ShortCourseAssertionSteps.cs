@@ -396,6 +396,37 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         }
     }
 
+    [Then(@"the short course learning history contains (.*) ""(.*)"" operations")]
+    public async Task ThenTheShortCourseLearningHistoryContainsOperations(int expectedOperationCount, string operation)
+    {
+        var testData = context.Get<TestData>();
+        List<ShortCourseLearningHistoryModel>? historyRecords = null;
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var shortCourseLearning = learningSqlClient.GetShortCourseLearning(testData.Uln.ToString());
+            var learningKey = shortCourseLearning?.FirstOrDefault()?.Key;
+
+            if (learningKey == null || learningKey == Guid.Empty)
+            {
+                return false;
+            }
+
+            historyRecords = learningSqlClient.GetShortCourseLearningHistory(learningKey.Value);
+
+            var matchingOperationCount = historyRecords.Count(x =>
+                string.Equals(x.Operation?.Trim(), operation?.Trim(), StringComparison.OrdinalIgnoreCase));
+
+            return matchingOperationCount == expectedOperationCount;
+        }, $"Failed to find exactly {expectedOperationCount} '{operation}' operation records in short course learning history.");
+
+        var actualOperationCount = historyRecords!.Count(x =>
+            string.Equals(x.Operation?.Trim(), operation?.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        Assert.AreEqual(expectedOperationCount, actualOperationCount,
+            $"Expected {expectedOperationCount} '{operation}' operation records but found {actualOperationCount}.");
+    }
+
     [Then("inform approvals of the new withdrawal reason")]
     [Then(@"inform approvals that the learner has been withdrawn from the short course")]
     public async Task ThenInformApprovalsThatTheLearnerHasBeenWithdrawnFromTheShortCourse()

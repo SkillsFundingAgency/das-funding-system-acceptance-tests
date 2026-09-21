@@ -3,6 +3,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
 using LearningSupport = SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient.LearningSupport;
@@ -28,6 +29,91 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
             var learnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, Constants.UkPrn, new List<CostDetails>());
             testData.LearnerData = learnerData;
             context.Set(testData);
+        }
+
+        [Given("SLD inform us of a learner with with 2 onprogramme deliveries")]
+        public async Task GivenSldInformUsOfALearnerWithWith2OnprogrammeDeliveries()
+        {
+            var testData = context.Get<TestData>();
+
+            var earliestStartDate = DateTime.UtcNow.Date;
+            var earliestEndDate = earliestStartDate.AddYears(1);
+
+            var firstOnProgrammeCosts = new List<CostDetails>
+            {
+                new CostDetails
+                {
+                    TrainingPrice = 12000,
+                    EpaoPrice = 3000,
+                    FromDate = earliestStartDate
+                }
+            };
+
+            var learnerData = learnerDataOuterApiHelper.CreateLearnerDataRequest(
+                testData.Uln,
+                firstOnProgrammeCosts,
+                earliestStartDate,
+                earliestEndDate,
+                614,
+                new List<LearningSupport>(),
+                new List<StubEnglishAndMaths>());
+
+            var secondOnProgrammeStartDate = earliestStartDate.AddMonths(1);
+            learnerData.Delivery.OnProgramme =
+            [
+                learnerData.Delivery.OnProgramme.Single(),
+                new StubOnProgramme
+                {
+                    Care = new Care(),
+                    StandardCode = 811,
+                    AgreementId = "AG1",
+                    LearnAimRef = "ZPROG001",
+                    StartDate = secondOnProgrammeStartDate,
+                    ExpectedEndDate = secondOnProgrammeStartDate.AddYears(1),
+                    CompletionDate = null,
+                    WithdrawalDate = null,
+                    Costs = new List<CostDetails>
+                    {
+                        new CostDetails
+                        {
+                            TrainingPrice = 12000,
+                            EpaoPrice = 3000,
+                            FromDate = secondOnProgrammeStartDate
+                        }
+                    },
+                    LearningSupport = new List<LearningSupport>(),
+                    IsFlexiJob = false,
+                    PercentageOfTrainingLeft = 0
+                }
+            ];
+
+            await learnerDataOuterApiHelper.AddLearnerData(Constants.UkPrn, learnerData);
+
+            testData.LearnerData = learnerData;
+            context.Set(testData);
+        }
+
+        [Then("only inform Approvals of the course with the earliest start date")]
+        public async Task ThenOnlyInformApprovalsOfTheCourseWithTheEarliestStartDate()
+        {
+            var testData = context.Get<TestData>();
+            var expectedStandardCode = testData.LearnerData!.Delivery.OnProgramme
+                .OrderBy(x => x.StartDate)
+                .First().StandardCode;
+
+            await WaitHelper.WaitForIt(() =>
+            {
+                var publishedEvent = LearnerDataEventHandler.GetMessage(x => x.ULN == long.Parse(testData.Uln));
+                if (publishedEvent == null)
+                {
+                    return false;
+                }
+
+                Assert.AreEqual(expectedStandardCode, publishedEvent.StandardCode,
+                    $"Expected StandardCode {expectedStandardCode} from earliest start date delivery but found {publishedEvent.StandardCode}");
+
+                return true;
+            }, "Failed to find published LearnerDataEvent for the learner.");
         }
 
         [Given("SLD inform us of a learner with apprenticeship, english and maths, incentives and learning support having start date (.*), expected end date (.*), standard code (.*?) and agreed price (.*)")]
