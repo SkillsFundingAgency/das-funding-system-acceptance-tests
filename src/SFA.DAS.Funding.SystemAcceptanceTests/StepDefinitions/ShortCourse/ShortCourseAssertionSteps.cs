@@ -254,6 +254,38 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
         Assert.AreEqual(1, learnerCount, "Short course learner was expected exactly once in the earnings response for this collection period, but found a different count.");
     }
 
+    [Then(@"only 30% short course earning is returned in the earnings response")]
+    public void Only30PercentShortCourseEarningIsReturned()
+    {
+        var testData = context.Get<TestData>();
+
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
+        var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
+
+        var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln).Single().Learner.Key;
+
+        var learner = testData.ShortCourseEarningsResponse?.Learners.Where(x => x.Key == learnerKey.ToString()).FirstOrDefault();
+
+        Assert.AreEqual(Milestone.ThirtyPercentLearningComplete.ToString(),
+            learner.Courses.Single().Earnings.Single().Milestone, "Short course learner was expected to only have 30% learning complete milestone.");
+    }
+
+    [Then(@"only completion short course earning is returned in the earnings response")]
+    public void OnlyCompletionShortCourseEarningIsReturned()
+    {
+        var testData = context.Get<TestData>();
+
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
+        var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
+
+        var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln).Single().Learner.Key;
+
+        var learner = testData.ShortCourseEarningsResponse?.Learners.Where(x => x.Key == learnerKey.ToString()).FirstOrDefault();
+
+        Assert.AreEqual(Milestone.LearningComplete.ToString(),
+            learner.Courses.Single().Earnings.Single().Milestone, "Short course learner was expected to only have completion milestone.");
+    }
+
     [Then(@"the short course learner is returned as (.*) in the earnings response")]
     public void ShortCourseLearnerIsReturnedInTheEarningsResponse(string action)
     {
