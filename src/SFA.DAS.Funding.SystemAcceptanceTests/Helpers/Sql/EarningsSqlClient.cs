@@ -83,6 +83,20 @@ public class EarningsSqlClient
         return apprenticeship;
     }
 
+    public bool EarningsExistForTrainingCode(string uln, int trainingCode)
+    {
+        const string sql = @"
+            SELECT COUNT(1)
+            FROM [Domain].[ApprenticeshipEpisode] e
+            INNER JOIN [Domain].[ApprenticeshipLearning] l ON l.LearningKey = e.LearningKey
+            WHERE l.Uln = @uln
+              AND e.TrainingCode = @trainingCode
+              AND e.IsDeleted = 0";
+
+        var count = _sqlServerClient.GetList<int>(sql, new { uln, trainingCode }).FirstOrDefault();
+        return count > 0;
+    }
+
     public List<ShortCourseEarningsModel>? GetShortCourseEarningsEntityModel(string uln)
     {
         var shortCourse = _sqlServerClient.GetList<ShortCourseEarningsModel>($"SELECT * FROM [Domain].[ShortCourseLearning] Where [Uln] ='{uln}'");

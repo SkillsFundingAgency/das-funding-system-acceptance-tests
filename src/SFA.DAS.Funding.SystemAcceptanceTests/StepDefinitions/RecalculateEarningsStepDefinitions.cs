@@ -256,6 +256,17 @@ public class RecalculateEarningsStepDefinitions
             $"Expected first unapproved earning amount to be {amount} but found {instalments.First().Amount}");
     }
 
+    [Then("no earnings are calculated for the apprenticeship with training code (.*)")]
+    public async Task ThenNoEarningsAreCalculatedForTheApprenticeshipWithTrainingCode(int trainingCode)
+    {
+        var testData = _context.Get<TestData>();
+
+        await WaitHelper.WaitForUnexpected(() =>
+        {
+            return _earningsEntitySqlClient.EarningsExistForTrainingCode(testData.Uln, trainingCode);
+        }, $"Unexpected earnings found for ULN {testData.Uln} with training code {trainingCode}.");
+    }
+
     [Given("an earning profile is created")]
     public void CaptureEarningProfileId()
     {
