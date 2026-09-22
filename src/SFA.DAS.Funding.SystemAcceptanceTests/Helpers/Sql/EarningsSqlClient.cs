@@ -90,8 +90,7 @@ public class EarningsSqlClient
             FROM [Domain].[ApprenticeshipEpisode] e
             INNER JOIN [Domain].[ApprenticeshipLearning] l ON l.LearningKey = e.LearningKey
             WHERE l.Uln = @uln
-              AND e.TrainingCode = @trainingCode
-              AND e.IsDeleted = 0";
+              AND e.TrainingCode = @trainingCode";
 
         var count = _sqlServerClient.GetList<int>(sql, new { uln, trainingCode }).FirstOrDefault();
         return count > 0;
