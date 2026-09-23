@@ -33,6 +33,7 @@ public class ConfigureApprenticeshipStepDefinition
 
     [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
     [Given(@"a learning has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
+    [When(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
     public void ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice, string trainingCode)
     {
         var testData = _context.Get<TestData>();
