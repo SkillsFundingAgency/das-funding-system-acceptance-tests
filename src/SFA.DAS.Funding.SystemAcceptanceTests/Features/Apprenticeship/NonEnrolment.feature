@@ -24,5 +24,4 @@ Scenario: Removal of non-opted in learner
 	And the provider is not enrolled
 	When the apprenticeship commitment is approved
 	And sld inform us that the learner is to removed
-	#Then remove the learner from Learning
-	#And inform Approvals
+	# note the purpose of this test is to ensure the remove does not throw an exception in this scenario
