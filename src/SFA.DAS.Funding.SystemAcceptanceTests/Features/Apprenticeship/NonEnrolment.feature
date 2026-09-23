@@ -17,3 +17,12 @@ Scenario: Apprenticeship for a non-enrolled provider generates no earnings
 	When the apprenticeship commitment is approved
 	Then the learning is created
 	And no earnings are generated for the apprenticeship
+
+@regression
+Scenario: Removal of non-opted in learner
+	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
+	And the provider is not enrolled
+	When the apprenticeship commitment is approved
+	And sld inform us that the learner is to removed
+	#Then remove the learner from Learning
+	#And inform Approvals
