@@ -217,9 +217,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
             return request;
         }
 
-        public async Task RemoveLearner(Guid learningKey, short? academicYearOverride = null)
+        public async Task RemoveLearner(Guid learningKey, long ukprn, short? academicYearOverride = null)
         {
-            await _apiClient.DeleteLearner(Constants.UkPrn, learningKey, academicYearOverride);
+            await _apiClient.DeleteLearner(ukprn, learningKey, academicYearOverride);
         }
     }
 }

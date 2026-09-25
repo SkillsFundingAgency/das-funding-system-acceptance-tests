@@ -23,5 +23,5 @@ Scenario: Removal of non-opted in learner
 	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And the provider is not enrolled
 	When the apprenticeship commitment is approved
-	And sld inform us that the learner is to removed
+	And sld inform us that the learner is to removed for non opted in provider
 	# note the purpose of this test is to ensure the remove does not throw an exception in this scenario
