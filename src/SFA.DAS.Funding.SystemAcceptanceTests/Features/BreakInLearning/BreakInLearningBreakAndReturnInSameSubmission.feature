@@ -9,7 +9,8 @@ So that the provider acquires earnings only when the learner is not on a break
 #FLP-1360 AC2 SLD informs us of break and return at the same time previous AY
 @regression
 Scenario: Training provider records a break and return at the same time in previous academic year
-	Given a learning has a start date of currentAY-08-01, a planned end date of nextAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-01, planned end date nextAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-07-31
 	And learning support is recorded from currentAY-08-01 to nextAY-07-31
 	And SLD inform us of a break in learning with pause date currentAY-01-15
@@ -23,7 +24,8 @@ Scenario: Training provider records a break and return at the same time in previ
 #FLP-1360 AC2 SLD informs us of break and return at the same time current AY
 @regression
 Scenario: Training provider records a break and return at the same time in current academic year
-	Given a learning has a start date of currentAY-08-01, a planned end date of nextAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-01, planned end date nextAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-07-31
 	And learning support is recorded from currentAY-08-01 to nextAY-07-31
 	And SLD inform us of a break in learning with pause date currentAY-01-15

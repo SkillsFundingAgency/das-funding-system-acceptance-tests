@@ -12,7 +12,8 @@ The Qualifying Period varies depending upon the length of the course:
 
 @regression
 Scenario: Earnings for Maths and English after Withdrawal after Qualifying Period
-	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
+	Given a learning is created with start date <start_date>, duration of <duration_days> and agreed price <agreed_price>
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And SLD submit updated learners details
@@ -28,7 +29,8 @@ Examples:
 
 @regression
 Scenario: Withdrawal for Maths and English can be after Planned end date
-	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
+	Given a learning is created with start date <start_date>, duration of <duration_days> and agreed price <agreed_price>
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And SLD submit updated learners details
@@ -41,7 +43,8 @@ Examples:
 
 @regression
 Scenario: Earnings for Maths and English are recalculated when withdrawal details have changed
-	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
+	Given a learning is created with start date <start_date>, duration of <duration_days> and agreed price <agreed_price>
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <first_withdrawal_on_day> days
 	And SLD submit updated learners details
@@ -58,7 +61,8 @@ Examples:
 
 @regression
 Scenario: Earnings for Maths and English after Withdrawal during Qualifying Period
-	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
+	Given a learning is created with start date <start_date>, duration of <duration_days> and agreed price <agreed_price>
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And SLD submit updated learners details

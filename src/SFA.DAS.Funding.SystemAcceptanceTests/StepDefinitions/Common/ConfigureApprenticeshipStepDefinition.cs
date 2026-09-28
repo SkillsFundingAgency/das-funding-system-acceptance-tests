@@ -1,13 +1,12 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
 
 [Binding]
 /// <summary>
-/// This will be the first step in most of the tests. It will configure the apprenticeship which will later
-/// be approved/created in the ApproveApprenticeshipStepDefinition class.
+/// This will be the first step in most of the tests. It configures apprenticeship event data
+/// that is then used by create/approve steps.
 /// </summary>
 public class ConfigureApprenticeshipStepDefinition
 {
@@ -39,29 +38,6 @@ public class ConfigureApprenticeshipStepDefinition
         var testData = _context.Get<TestData>();
         testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
     }
-
-    [Given(@"a learning has a start date of (.*), a planned end date of (.*) and an agreed price of (.*)")]
-    public async Task LearningHasAStartDateOfAPlannedEndDateOfAndAnAgreedPrice(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice)
-    {
-        var testData = _context.Get<TestData>();
-        testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, "1");
-
-        var approveApprenticeshipStepDefinition =
-            new ApproveApprenticeshipStepDefinition(_context, new EarningsSqlClient(), new LearningSqlClient(), new LearnerDataOuterApiHelper());
-
-        await approveApprenticeshipStepDefinition.CreateDraftApprenticeshipAndApproveIt();
-    }
-
-
-    [Given(@"a learning has a start date of (.*), a duration of (.*) and an agreed price of (.*)")]
-    public async Task LearningHasAStartDateOfADurationAndAnAgreedPrice(TokenisableDateTime startDate, int duration, decimal agreedPrice)
-    {
-        var plannedEndDate = startDate.Value.AddDays(duration - 1);
-        var tokenised = new TokenisableDateTime(plannedEndDate);
-
-        await LearningHasAStartDateOfAPlannedEndDateOfAndAnAgreedPrice(startDate, tokenised, agreedPrice);
-    }
-
 
     [Given(@"an apprenticeship with start date over (.*) months ago and duration of (.*) months and an agreed price of (.*), and a training code (.*)")]
     public void ApprenticeshipWithStartDateOverMonthsAgoAndDurationOfMonthsAndAnAgreedPriceOfAndATrainingCode(int monthsSinceStart, int duration, decimal agreedPrice, string trainingCode)

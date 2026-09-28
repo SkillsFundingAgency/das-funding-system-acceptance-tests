@@ -14,6 +14,24 @@ public class CreateDraftStepDefinitions(
     LearningSqlClient learningSqlClient)
 {
 
+    [Given(@"a learning is created with start date (.*), planned end date (.*) and agreed price (.*)")]
+    public async Task ALearningIsCreatedWithStartDatePlannedEndDateAndAgreedPrice(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice)
+    {
+        var testData = context.Get<TestData>();
+        testData.CommitmentsApprenticeshipCreatedEvent = context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, "1");
+
+        await ADraftApprenticeshipLearningIsCreated();
+    }
+
+    [Given(@"a learning is created with start date (.*), duration of (.*) and agreed price (.*)")]
+    public async Task ALearningIsCreatedWithStartDateDurationAndAgreedPrice(TokenisableDateTime startDate, int duration, decimal agreedPrice)
+    {
+        var plannedEndDate = startDate.Value.AddDays(duration - 1);
+        var tokenisedPlannedEndDate = new TokenisableDateTime(plannedEndDate);
+
+        await ALearningIsCreatedWithStartDatePlannedEndDateAndAgreedPrice(startDate, tokenisedPlannedEndDate, agreedPrice);
+    }
+
     [Given("SLD inform us of a learner with with 2 onprogramme deliveries")]
     public async Task GivenSldInformUsOfALearnerWithWith2OnprogrammeDeliveries()
     {

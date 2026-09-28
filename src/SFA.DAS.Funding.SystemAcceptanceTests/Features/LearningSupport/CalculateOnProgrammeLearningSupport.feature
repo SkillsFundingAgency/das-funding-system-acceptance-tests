@@ -6,7 +6,8 @@ So that earnings and payments can be recalculated based on the latest data
 
 @regression
 Scenario: Learning support added for On programme learning
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
+	And the apprenticeship learning is approved
 	When learning support is recorded from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
@@ -21,7 +22,8 @@ Examples:
 
 @regression
 Scenario: Learning support removed for On programme learning
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
+	And the apprenticeship learning is approved
 	When learning support is recorded from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
@@ -35,7 +37,8 @@ Examples:
 
 @regression
 Scenario: No LSF earnings after learner withdraws from the programme aim
-	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	Given a learning is created with start date currentAY-09-25, planned end date currentAY-04-15 and agreed price 12000
+	And the apprenticeship learning is approved
 	When learning support is recorded from currentAY-11-15 to currentAY-03-10
 	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
 	And Learning withdrawal date is recorded on currentAY-01-15

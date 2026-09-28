@@ -7,7 +7,8 @@ So that the provider does not accure earnings while the learner is on a break
 @regression
 #FLP-728 AC1
 Scenario: Training provider records a break in learning without specifying a return
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And learning support is recorded from currentAY-08-01 to currentAY-07-31
 	And SLD inform us of a break in learning with pause date currentAY-05-15
@@ -19,7 +20,8 @@ Scenario: Training provider records a break in learning without specifying a ret
 @regression
 #FLP-728 AC2
 Scenario: Training provider corrects a previous break in learning without specifying a return
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And learning support is recorded from currentAY-08-01 to currentAY-07-31
 	And SLD inform us of a break in learning with pause date currentAY-05-15
@@ -37,7 +39,8 @@ Scenario: Training provider corrects a previous break in learning without specif
 @regression
 #FLP-728 AC3
 Scenario: Training provider removes a previous break in learning
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And learning support is recorded from currentAY-08-01 to currentAY-07-31
 	And SLD inform us of a break in learning with pause date currentAY-05-15
@@ -54,7 +57,8 @@ Scenario: Training provider removes a previous break in learning
 @regression
 #FLP-728 AC1 - Added this scenario to cover BIL without learning support as there is an issue whereby the earnings recalculated event is nont published for pause, pause remove, and BIL return, to be fixed as part of FLP-1360.
 Scenario: Training provider records a break in learning without specifying a return (no learning support)
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And SLD inform us of a break in learning with pause date currentAY-05-15
 	And SLD submit updated learners details

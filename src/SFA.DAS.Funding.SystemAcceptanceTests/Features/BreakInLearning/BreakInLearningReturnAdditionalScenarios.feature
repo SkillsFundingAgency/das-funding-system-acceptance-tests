@@ -11,7 +11,8 @@ So that the provider acquires earnings once the learner has returned from a brea
 #BIL followed by another BiL a few months later (BIL and return same time -> BiL again after 3 months -> return (in my head) )
 @regression
 Scenario: Training provider records multiple breaks in learning with returns
-	Given a learning has a start date of currentAY-08-01, a planned end date of nextAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-01, planned end date nextAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-07-31
 	And SLD inform us of a break in learning with pause date currentAY-01-15
 	And SLD inform us of a return from break in learning with a new learning start date currentAY-03-15
@@ -30,7 +31,8 @@ Scenario: Training provider records multiple breaks in learning with returns
 #BiL, Return then Completion 
 @regression
 Scenario: Training provider records break in learning, return, then completion
-	Given a learning has a start date of currentAY-08-20, a planned end date of nextAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-20, planned end date nextAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-08-20 to date nextAY-07-31
 	And SLD inform us of a break in learning with pause date currentAY-01-15
 	And SLD inform us of a return from break in learning with both a new learning start date <return_start_date> and new expected end date <new_end_date>
@@ -67,7 +69,8 @@ Examples:
 #End date pushed back to account for BIL with no price change
 @regression
 Scenario: Training provider pushes end date back to account for break in learning with no price change
-	Given a learning has a start date of currentAY-10-01, a planned end date of nextAY-09-30 and an agreed price of 15000
+	Given a learning is created with start date currentAY-10-01, planned end date nextAY-09-30 and agreed price 15000
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-10-01 to date nextAY-09-30
 	And SLD inform us of a break in learning with pause date currentAY-02-01
 	And SLD submit updated learners details
@@ -80,7 +83,8 @@ Scenario: Training provider pushes end date back to account for break in learnin
 #Apprenticeship duration is increased after BIL with no price change
 @regression
 Scenario: Training provider increases duration after break in learning with no price change
-	Given a learning has a start date of currentAY-10-01, a planned end date of nextAY-09-30 and an agreed price of 15000
+	Given a learning is created with start date currentAY-10-01, planned end date nextAY-09-30 and agreed price 15000
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-10-01 to date nextAY-09-30
 	And SLD inform us of a break in learning with pause date currentAY-02-01
 	And SLD submit updated learners details
@@ -93,7 +97,8 @@ Scenario: Training provider increases duration after break in learning with no p
 #Apprenticeship duration is increased after BIL with price increase
 @regression
 Scenario: Training provider increases duration after break in learning with price increase
-	Given a learning has a start date of currentAY-10-01, a planned end date of nextAY-09-30 and an agreed price of 15000
+	Given a learning is created with start date currentAY-10-01, planned end date nextAY-09-30 and agreed price 15000
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-10-01 to date nextAY-09-30
 	And SLD inform us of a break in learning with pause date currentAY-02-01
 	And SLD submit updated learners details
@@ -107,7 +112,8 @@ Scenario: Training provider increases duration after break in learning with pric
 #Withdrawal after BIL return
 @regression
 Scenario: Training provider withdraws apprenticeship after return from break in learning
-	Given a learning has a start date of currentAY-10-01, a planned end date of nextAY-09-30 and an agreed price of 15000
+	Given a learning is created with start date currentAY-10-01, planned end date nextAY-09-30 and agreed price 15000
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-10-01 to date nextAY-09-30
 	And SLD inform us of a break in learning with pause date currentAY-02-01
 	And SLD submit updated learners details
@@ -137,7 +143,8 @@ Examples:
 #Withdrawal replaces BIL return - FLP-1429 AC2
 @regression
 Scenario: Training provider replaces return from break in learning with withdrawal
-	Given a learning has a start date of currentAY-10-01, a planned end date of nextAY-09-30 and an agreed price of 15000
+	Given a learning is created with start date currentAY-10-01, planned end date nextAY-09-30 and agreed price 15000
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-10-01 to date nextAY-09-30
 	And SLD inform us of a break in learning with pause date currentAY-02-01
 	And SLD inform us of a return from break in learning with a new learning start date <return_start_date>
@@ -157,7 +164,8 @@ Examples:
 #Withdrawal after 3 months of their return from BIL
 @regression
 Scenario: Training provider withdraws apprenticeship 3 months after return from break in learning
-	Given a learning has a start date of currentAY-10-01, a planned end date of nextAY-09-30 and an agreed price of 15000
+	Given a learning is created with start date currentAY-10-01, planned end date nextAY-09-30 and agreed price 15000
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-10-01 to date nextAY-09-30
 	And SLD inform us of a break in learning with pause date currentAY-02-01
 	And SLD submit updated learners details
