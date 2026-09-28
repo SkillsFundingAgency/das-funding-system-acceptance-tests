@@ -28,6 +28,7 @@ public class ApproveApprenticeshipStepDefinition
     }
 
     [Given(@"the apprenticeship commitment is approved")]
+    [Given(@"SLD POST a draft apprenticeship")]
     [Given(@"the learning is approved")]
     [When(@"the apprenticeship commitment is approved")]
     [When(@"the learning is approved")]

@@ -1,0 +1,27 @@
+﻿Feature: EarningsToPayments
+
+Tests FLP-2003
+
+@tag1
+Scenario: Send apprenticeship earnings to payments on approval 
+	Given SLD POST a draft apprenticeship
+	When the apprenticeship is approved by the employer
+	Then send the apprenticeship approved <earning type> earnings to payments
+
+	| earning type |
+	| :----------: |
+	|  learning    |
+	|  completion  |
+	|  balancing   |
+
+Scenario: Send the apprenticeship learning type to payments
+	Given SLD POST a draft apprenticeship
+	When the apprenticeship is approved by the employer
+	Then the apprenticeship "learning type" is sent to Payments
+
+Scenario: Inform payments when an apprenticeship is being funded by a levy transfer
+	Given SLD POST a draft apprenticeship
+	And that apprentice record has been approved by the employer
+	And the learner is being funded by a levy transfer
+	When payments are informed of on-programme earnings
+	Then inform payments that the learner is being funded by a levy transfer
