@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Data;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http.LearnerDataOuterApiClient;
@@ -9,8 +10,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Apprenticeship.C
 [Binding]
 public class CreateDraftStepDefinitions(
     ScenarioContext context, 
-    LearnerDataOuterApiHelper learnerDataOuterApiHelper, 
-    LearnerDataSqlClient learnerDataSqlClient, 
+    LearnerDataOuterApiHelper learnerDataOuterApiHelper,
     LearningSqlClient learningSqlClient)
 {
 
