@@ -109,11 +109,5 @@ public class ApproveApprenticeshipStepDefinition
         Thread.Sleep(5000); // Without this a whole load of tests fail, need to investigate further
     }
 
-    [Given(@"the apprenticeship commitment is approved via the legacy route")]
-    [When(@"the apprenticeship commitment is approved via the legacy route")]
-    public async Task TheApprenticeshipCommitmentIsApprovedViaTheLegacyRoute()
-    {
-        var testData = _context.Get<TestData>();
-        await _context.PublishApprenticeshipApprovedMessage(testData.CommitmentsApprenticeshipCreatedEvent);
-    }
+
 }

@@ -8,7 +8,8 @@ So that we know how much to pay providers when they deliver English and/or maths
 Scenario: Calculate Single Math and English earnings
 	Given an apprenticeship has a start date of currentAY-09-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 19
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date nextAY-08-23
 	And Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course> and amount <amount>
 	And SLD submit updated learners details
@@ -26,7 +27,8 @@ Examples:
 Scenario: Calculate Multiple Math and English earnings
 	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 22
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-23 to date nextAY-08-23
 	And Maths and English learning is recorded from <course1_start_date> to <course1_end_date> with learnAimRef 60342843, course <course1_name> and amount <course1_amount>
 	And Maths and English learning is recorded from <course2_start_date> to <course2_end_date> with learnAimRef 60342844, course <course2_name> and amount <course2_amount>
@@ -43,7 +45,8 @@ Examples:
 Scenario: Learning Support for Maths and English Earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date <end_date>
 	And a Maths and English learning is recorded from <start_date> to <maths_and_english_end_date> with learnAimRef 60342843, course <course>, amount 12000, learning support from <start_date> to <maths_and_english_end_date>
 	And SLD submit updated learners details
@@ -58,7 +61,8 @@ Examples:
 Scenario: Maths and English instalments removed if maths and english courses removed
 	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 22
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date <end_date>
 	And Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course> and amount <amount>
 	And SLD submit updated learners details

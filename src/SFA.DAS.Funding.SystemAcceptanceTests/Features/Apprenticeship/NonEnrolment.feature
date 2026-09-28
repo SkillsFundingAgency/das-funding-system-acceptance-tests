@@ -6,7 +6,8 @@ I want no earnings calculated for Providers who are not enrolled, or for Apprent
 @regression
 Scenario: Apprenticeship with a start date before 01 August 2026 generates no earnings
 	Given an apprenticeship has a start date of 2026-07-31, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	Then the learning is created
 	And no earnings are generated for the apprenticeship
 
@@ -14,6 +15,7 @@ Scenario: Apprenticeship with a start date before 01 August 2026 generates no ea
 Scenario: Apprenticeship for a non-enrolled provider generates no earnings
 	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And the provider is not enrolled
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	Then the learning is created
 	And no earnings are generated for the apprenticeship

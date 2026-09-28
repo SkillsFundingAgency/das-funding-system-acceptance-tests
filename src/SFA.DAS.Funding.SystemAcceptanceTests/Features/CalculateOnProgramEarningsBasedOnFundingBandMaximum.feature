@@ -11,7 +11,8 @@ So we don’t overpay for apprenticeship funding
 @regression
 Scenario: On program earnings generation when agreed price is above funding band max
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And the agreed price is above the funding band maximum for the selected course
 	Then Funding band maximum price is used to calculate the on-program earnings which is divided equally into number of planned months <instalment_amount>
 	

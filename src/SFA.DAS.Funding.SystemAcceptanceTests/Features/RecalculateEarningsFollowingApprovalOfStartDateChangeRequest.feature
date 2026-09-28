@@ -15,7 +15,8 @@ Example 3: Start date move forwards, into next year
 @regression
 Scenario: Start Date change approved; recalc earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <new_start_date> to date <end_date>
 	And SLD submit updated learners details
 	Then the earnings are recalculated based on the new expected earnings <new_expected_earnings>

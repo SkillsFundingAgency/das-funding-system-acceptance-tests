@@ -6,7 +6,8 @@ Fm36 Change Of Circumstance
 @regression
 Scenario: Price change approved; new price episode in FM36 block
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And the total price is above or below or at the funding band maximum
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD record on-programme cost as total price <new_total_price> from date <pc_from_date> to date <end_date>
@@ -22,7 +23,8 @@ Examples:
 Scenario: Start date change approved
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	And the fm36 data is retrieved for currentDate

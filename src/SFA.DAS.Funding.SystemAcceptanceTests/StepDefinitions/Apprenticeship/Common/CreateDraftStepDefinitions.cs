@@ -207,5 +207,68 @@ public class CreateDraftStepDefinitions(
         context.Set(testData);
     }
 
+    [Given("a draft apprenticeship learning is created")]
+    [When("a draft apprenticeship learning is created")]
+    public async Task ADraftApprenticeshipLearningIsCreated()
+    {
+        var testData = context.Get<TestData>();
+        var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
+
+        var draftLearnerData = new LearnerDataRequest
+        {
+            ConsumerReference = "AcceptanceTests",
+            Learner = new StubLearner
+            {
+                Uln = apprenticeshipCreatedEvent.Uln,
+                LearnerRef = apprenticeshipCreatedEvent.Uln,
+                Firstname = apprenticeshipCreatedEvent.FirstName,
+                Lastname = apprenticeshipCreatedEvent.LastName,
+                Dob = apprenticeshipCreatedEvent.DateOfBirth,
+                HasEhcp = false
+            },
+            Delivery = new StubDelivery
+            {
+                OnProgramme = new[]
+                {
+                    new StubOnProgramme
+                    {
+                        Care = new Care(),
+                        StandardCode = int.Parse(apprenticeshipCreatedEvent.TrainingCode),
+                        AgreementId = "1",
+                        LearnAimRef = "ZPROG001",
+                        PercentageOfTrainingLeft = 0,
+                        IsFlexiJob = false,
+                        StartDate = apprenticeshipCreatedEvent.ActualStartDate,
+                        ExpectedEndDate = apprenticeshipCreatedEvent.EndDate,
+                        Costs = apprenticeshipCreatedEvent.PriceEpisodes.Select(p => new CostDetails
+                        {
+                            TrainingPrice = (int?)p.TrainingPrice,
+                            EpaoPrice = (int?)p.EndPointAssessmentPrice,
+                            FromDate = p.FromDate
+                        }).ToList(),
+                        LearningSupport = new List<Helpers.Http.LearnerDataOuterApiClient.LearningSupport>()
+                    }
+                },
+                EnglishAndMaths = new List<StubEnglishAndMaths>()
+            }
+        };
+
+        await learnerDataOuterApiHelper.AddLearnerData(apprenticeshipCreatedEvent.ProviderId, draftLearnerData);
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var learning = learningSqlClient.TryGetApprenticeshipByUln(apprenticeshipCreatedEvent.Uln);
+            if (learning?.Episodes == null ||
+                learning.TrainingCode.Trim() != apprenticeshipCreatedEvent.TrainingCode ||
+                !learning.Episodes.Any(e => e.Ukprn == apprenticeshipCreatedEvent.ProviderId))
+            {
+                return false;
+            }
+
+            testData.LearnerKey = learning.LearnerKey;
+            return true;
+        }, "Failed to find draft apprenticeship in Learning DB");
+
+    }
 
 }
