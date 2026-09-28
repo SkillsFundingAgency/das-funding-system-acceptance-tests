@@ -142,16 +142,29 @@ public class CreateDraftStepDefinitions(
     }
 
     [When(@"SLD submit a record where the Training code resolves to a learningType of ""(.*)"" in the Courses API")]
-    public async Task WhenSldSubmitLearningType(string learningType)
+    [When(@"the record is resubmitted with a different Training code which resolves to ""(.*)""")]
+    public async Task WhenLearningTypeIsSubmittedOrResubmitted(string learningType)
     {
         var testData = context.Get<TestData>();
 
-        testData.LearnerData = await learnerDataOuterApiHelper.AddLearnerData(testData.Uln, Constants.UkPrn, LearningTypeHelper.Parse(learningType));
+        if (testData.LearnerData == null)
+        {
+            testData.LearnerData = await learnerDataOuterApiHelper.AddLearnerData(
+                testData.Uln,
+                Constants.UkPrn,
+                LearningTypeHelper.Parse(learningType));
+        }
+        else
+        {
+            testData.LearnerData.Delivery.OnProgramme.First().StandardCode = LearningTypeHelper.GetStandardCode(learningType);
+            await learnerDataOuterApiHelper.AddLearnerData(Constants.UkPrn, testData.LearnerData);
+        }
 
+        context.Set(testData);
     }
 
-    [When(@"the record is resubmitted with a different Training code which resolves to ""(.*)""")]
-    public async Task WhenTheRecordIsResubmittedWithADifferentTrainingCodeWhichResolvesTo(string learningType)
+    [When(@"SLD inform us that the training provider has resubmitted the same learner( with price change)?")]
+    public async Task WhenSldInformUsThatTheTrainingProviderHasResubmittedTheSameLearner(string withPriceChange)
     {
         var testData = context.Get<TestData>();
 
@@ -160,31 +173,14 @@ public class CreateDraftStepDefinitions(
             throw new InvalidOperationException("No learner data has been prepared for resubmission");
         }
 
-        var standardCode = LearningTypeHelper.GetStandardCode(learningType);
-        testData.LearnerData.Delivery.OnProgramme.First().StandardCode = standardCode;
+        if (!string.IsNullOrWhiteSpace(withPriceChange))
+        {
+            var onProgramme = testData.LearnerData.Delivery.OnProgramme.First();
+            var latestCost = onProgramme.Costs.OrderByDescending(c => c.FromDate).First();
 
-        await learnerDataOuterApiHelper.AddLearnerData(Constants.UkPrn, testData.LearnerData);
-        context.Set(testData);
-    }
-
-    [When("SLD inform us that the training provider has resubmitted the same learner")]
-    public async Task WhenSldInformUsThatTheTrainingProviderHasResubmittedTheSameLearner()
-    {
-        var testData = context.Get<TestData>();
-        await learnerDataOuterApiHelper.AddLearnerData(Constants.UkPrn, testData.LearnerData);
-        context.Set(testData);
-    }
-
-    [When("SLD inform us that the training provider has resubmitted the same learner with price change")]
-    public async Task WhenSldInformUsThatTheTrainingProviderHasResubmittedTheSameLearnerWithPriceChange()
-    {
-        var testData = context.Get<TestData>();
-
-        var onProgramme = testData.LearnerData!.Delivery.OnProgramme.First();
-        var latestCost = onProgramme.Costs.OrderByDescending(c => c.FromDate).First();
-
-        latestCost.TrainingPrice = 6000;
-        latestCost.EpaoPrice = 1500;
+            latestCost.TrainingPrice = 6000;
+            latestCost.EpaoPrice = 1500;
+        }
 
         await learnerDataOuterApiHelper.AddLearnerData(Constants.UkPrn, testData.LearnerData);
         context.Set(testData);
