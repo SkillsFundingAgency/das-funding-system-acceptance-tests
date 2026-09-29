@@ -46,7 +46,6 @@ public class TestData
     internal PaymentsApprenticeshipModel? PaymentsApprenticeshipModel { get; set; }
     internal ApprenticeshipEarningsRecalculatedEvent? ApprenticeshipEarningsRecalculatedEvent { get; set; }
     internal CommitmentsMessages.ApprenticeshipCreatedEvent CommitmentsApprenticeshipCreatedEvent { get; set; }
-    internal LearningCreatedEvent LearningCreatedEvent { get; set; }
     internal EarningsGeneratedEvent EarningsGeneratedEvent { get; set; }
     internal List<FinalisedOnProgammeLearningPaymentEvent> FinalisedPaymentsList { get; set; }
     internal List<CalculateOnProgrammePayment> CalculatedOnProgrammePaymentList { get; set; }

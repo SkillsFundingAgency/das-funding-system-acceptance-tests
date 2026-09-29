@@ -54,11 +54,25 @@ public class LearningSqlClient
 
         }
 
-        learning.LearningHistory = _sqlServerClient.GetList<LearningHistoryModel>($"SELECT * FROM [History].[LearningHistory] WHERE LearningId = '{learning.Key}'");
+        learning.LearningHistory = _sqlServerClient.GetList<LearningHistoryModel>($"SELECT * FROM [History].[ApprenticeshipLearningHistory] WHERE LearningKey = '{learning.Key}'");
 
         learning.EnglishAndMaths = _sqlServerClient.GetList<EnglishAndMaths>($"SELECT * FROM [dbo].[EnglishAndMaths] WHERE LearningKey = '{learning.Key}'");
 
         learning.LearningSupport = _sqlServerClient.GetList<LearningSupport>($"SELECT * FROM [dbo].[ApprenticeshipLearningSupport] WHERE LearningKey = '{learning.Key}'");
+
+        return learning;
+    }
+
+    public Learning? TryGetApprenticeshipByUln(string uln)
+    {
+        var learner = _sqlServerClient.GetList<Learner>("SELECT * from [dbo].[Learner] WHERE Uln = @uln", new { uln }).FirstOrDefault();
+        if (learner == null) return null;
+
+        var learning = _sqlServerClient.GetList<Learning>("SELECT * FROM [dbo].[ApprenticeshipLearning] WHERE LearnerKey = @learnerKey", new { learnerKey = learner.Key }).FirstOrDefault();
+        if (learning == null) return null;
+
+        learning.Learner = learner;
+        learning.Episodes = _sqlServerClient.GetList<Episode>($"SELECT * FROM [dbo].[ApprenticeshipEpisode] WHERE LearningKey = '{learning.Key}'");
 
         return learning;
     }
@@ -134,6 +148,15 @@ public class LearningSqlClient
         return learnings;
     }
 
+    public List<ShortCourseLearningHistoryModel> GetShortCourseLearningHistory(Guid learningKey)
+    {
+        return _sqlServerClient.GetList<ShortCourseLearningHistoryModel>(
+            @"SELECT [Key], [LearningKey], [AcademicYear], [Operation], [Changes], [CreatedOn], [State]
+              FROM [History].[ShortCourseLearningHistory]
+              WHERE [LearningKey] = @learningKey",
+            new { learningKey });
+    }
+
     public List<Http.LearnerDataOuterApiClient.Learning> GetApprovedLearners(long ukprn, int academicYear)
     {
         var dates = AcademicYearParser.ParseFrom(academicYear);
@@ -168,11 +191,11 @@ public class LearningSqlClient
             WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             /*===========================================================
-            2. Delete Learning History 
+            2. Delete Apprenticeship Learning History 
             ===========================================================*/
             DELETE lh
-            FROM History.LearningHistory lh
-            JOIN dbo.ApprenticeshipLearning l ON lh.LearningId = l.[Key]
+            FROM History.ApprenticeshipLearningHistory lh
+            JOIN dbo.ApprenticeshipLearning l ON lh.LearningKey = l.[Key]
             JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
@@ -233,16 +256,19 @@ public class LearningSqlClient
             WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             /*===========================================================
-            8. Delete Short Course Milestones
+            8. Delete from Short Course tables
             ===========================================================*/
+            DELETE sclh
+            FROM History.ShortCourseLearningHistory sclh
+            JOIN dbo.ShortCourseLearning scl ON sclh.LearningKey = scl.[Key]
+            JOIN dbo.ShortCourseEpisode sce ON scl.[Key] = sce.LearningKey
+            WHERE sce.Ukprn in (@Ukprn1, @Ukprn2);
+
             DELETE scm
             FROM dbo.ShortCourseMilestone scm
             JOIN dbo.ShortCourseEpisode e ON scm.EpisodeKey = e.[Key]
             WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
-            /*===========================================================
-            9. Delete Short Course Learning Support
-            ===========================================================*/
             DELETE scls
             FROM dbo.ShortCourseLearningSupport scls
             JOIN dbo.ShortCourseEpisode e ON scls.EpisodeKey = e.[Key]
@@ -278,13 +304,15 @@ public class LearningSqlClient
 public class Learning
 {
     public Guid Key { get; set; }
-    public DateTime? CompletionDate { get; set; } = null;
     public List<Episode> Episodes { get; set; }
     public List<LearningHistoryModel> LearningHistory { get; set; }
     public Guid LearnerKey { get; set; }
     public Learner Learner { get; set; }
     public List<EnglishAndMaths> EnglishAndMaths { get; set; }
     public List<LearningSupport> LearningSupport { get; set; }
+    public string TrainingCode { get; set; } = null!;
+    public string? TrainingCourseVersion { get; set; }
+    public byte LearningType { get; set; }
 }
 
 public class Learner
@@ -310,14 +338,14 @@ public class Episode
     public long? FundingEmployerAccountId { get; set; }
     public string LegalEntityName { get; set; }
     public long? AccountLegalEntityId { get; set; }
-    public string TrainingCode { get; set; } = null!;
-    public string? TrainingCourseVersion { get; set; }
     public bool PaymentsFrozen { get; set; }
     public List<EpisodePrice> Prices { get; set; }
     public DateTime? WithdrawalDate { get; set; }
     public DateTime? PauseDate { get; set; }
     public bool isApproved { get; set; }
     public List<EpisodeBreakInLearning> EpisodeBreakInLearning { get; set; }
+    public DateTime? CompletionDate { get; set; } = null;
+    public DateTime? AchievementDate { get; set; } = null;
 }
 
 public class EpisodePrice
@@ -334,9 +362,12 @@ public class EpisodePrice
 
 public class LearningHistoryModel
 {
-    public Guid LearningId { get; set; }
+    public Guid LearningKey { get; set; }
     public DateTime CreatedOn { get; set; }
     public string State { get; set; }
+    public string Operation { get; set; }
+    public int AcademicYear { get; set; }
+    public string? Changes { get; set; }
 }
 
 public class EnglishAndMaths
@@ -401,6 +432,17 @@ public class ShortCourseEpisode
     public List<ShortCourseMilestone> Milestones { get; set; }
 }
 
+public class ShortCourseLearningHistoryModel
+{
+    public Guid Key { get; set; }
+    public Guid LearningKey { get; set; }
+    public int? AcademicYear { get; set; }
+    public string Operation { get; set; }
+    public string? Changes { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public string State { get; set; }
+}
+
 public class ShortCourseLearningSupport
 {
     public Guid Key { get; set; }
@@ -431,11 +473,11 @@ public static class ShortCourseModelExtensions
     [Obsolete("Use GetEpisode(...) instead", true)]
     public static Episode FirstOrDefault(this IEnumerable<Episode> episodes) { throw new InvalidOperationException(); }
 
-    public static Episode GetEpisode(this IEnumerable<Episode> episodes, long ukprn, string trainingCode)
+    public static Episode GetEpisode(this IEnumerable<Episode> episodes, long ukprn, Guid learningKey)
     {
         foreach (var episode in episodes)
         {
-            if (episode.Ukprn == ukprn && episode.TrainingCode.Trim() == trainingCode)
+            if (episode.Ukprn == ukprn && episode.LearningKey == learningKey)
             {
                 return episode;
             }
@@ -443,9 +485,16 @@ public static class ShortCourseModelExtensions
         throw new Exception("Matching episode not found");
     }
 
-    public static Episode GetEpisode(this IEnumerable<Episode> episodes, ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
+    public static Episode GetEpisode(this IEnumerable<Episode> episodes, Guid learningKey)
     {
-        return episodes.GetEpisode(apprenticeshipCreatedEvent.ProviderId, apprenticeshipCreatedEvent.TrainingCode);
+        foreach (var episode in episodes)
+        {
+            if (episode.LearningKey == learningKey)
+            {
+                return episode;
+            }
+        }
+        throw new Exception("Matching episode not found");
     }
 
     [Obsolete("Use GetEpisode(...) instead", true)]

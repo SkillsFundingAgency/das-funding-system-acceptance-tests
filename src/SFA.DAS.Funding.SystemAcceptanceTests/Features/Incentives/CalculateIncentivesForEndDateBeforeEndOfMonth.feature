@@ -29,5 +29,5 @@ Scenario: Incentive Earnings for learner ending after 365 days not at the end of
 	And the second incentive earning is generated for provider & employer
 
 Examples:
-	| start_date      | planned_end_date | agreed_price | training_code | age |
-	| currentAY-08-15 | nextAY-08-25     | 15,000       | 614           | 17  |
+	| start_date   | planned_end_date | agreed_price | training_code | age |
+	| nextAY-08-15 | currentAYPlusTwo-08-25 | 15,000 |     614 |  17 |

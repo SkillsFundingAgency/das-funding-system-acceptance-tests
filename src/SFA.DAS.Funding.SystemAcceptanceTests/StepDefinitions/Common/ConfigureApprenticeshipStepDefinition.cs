@@ -33,6 +33,7 @@ public class ConfigureApprenticeshipStepDefinition
 
     [Given(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
     [Given(@"a learning has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
+    [When(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
     public void ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice, string trainingCode)
     {
         var testData = _context.Get<TestData>();
@@ -46,9 +47,9 @@ public class ConfigureApprenticeshipStepDefinition
         testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, "1");
 
         var approveApprenticeshipStepDefinition =
-            new ApproveApprenticeshipStepDefinition(_context, new EarningsSqlClient(), new LearningSqlClient());
+            new ApproveApprenticeshipStepDefinition(_context, new EarningsSqlClient(), new LearningSqlClient(), new LearnerDataOuterApiHelper());
 
-        await approveApprenticeshipStepDefinition.ApproveApprenticeshipCommitment();
+        await approveApprenticeshipStepDefinition.CreateDraftApprenticeshipAndApproveIt();
     }
 
 
@@ -135,5 +136,13 @@ public class ConfigureApprenticeshipStepDefinition
         var employer = employerType == "Levy" ? CommitmentsV2.Types.ApprenticeshipEmployerType.Levy : CommitmentsV2.Types.ApprenticeshipEmployerType.NonLevy;
 
         ApprenticeshipEventHelper.UpdateApprenticeshipCreatedMessageWithEmployerType(testData.CommitmentsApprenticeshipCreatedEvent, employer);
+    }
+
+    [Given(@"the provider is not enrolled")]
+    public void GivenTheProviderIsNotEnrolled()
+    {
+        var testData = _context.Get<TestData>();
+
+        testData.CommitmentsApprenticeshipCreatedEvent.ProviderId = Constants.NonEnrolledUkPrn;
     }
 }

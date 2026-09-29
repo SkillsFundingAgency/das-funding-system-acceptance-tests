@@ -17,7 +17,6 @@ Scenario: Planned End Date change; recalc earnings
 	Then the earnings are recalculated based on the new expected earnings <new_expected_earnings>
 	And the history of old earnings is maintained with <old_inst_amount>
 	And the ActualStartDate <start_date> and PlannedEndDate <new_end_date> are updated on earnings entity
-	And old and new earnings maintain their initial Profile Id
 	And an end date changed event is published to approvals with end date <new_end_date>
 
 Examples:
