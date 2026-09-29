@@ -1,8 +1,6 @@
-﻿using FluentAssertions.Execution;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
-using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
@@ -16,11 +14,22 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         [When("sld inform us that the learner is to removed")]
         public async Task WhenSldInformUThatTheLearnerIsToRemoved()
         {
+            await RemoveLearner(Constants.UkPrn);
+        }
+
+        [When("sld inform us that the learner is to removed for non opted in provider")]
+        public async Task WhenSldInformUThatTheLearnerIsToRemovedForNonOptedInProvider()
+        {
+            await RemoveLearner(Constants.NonEnrolledUkPrn);
+        }
+
+        private async Task RemoveLearner(long ukprn)
+        {
             var testData = context.Get<TestData>();
             var apprenticeshipKey = testData.LearningKey;
             ApprenticeshipEarningsRecalculatedEventHandler.Clear(x => x.ApprenticeshipKey == apprenticeshipKey);
             var academicYear = testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate!.Value.ToAcademicYearAndPeriod().AcademicYear;
-            await learnerDataOuterApiHelper.RemoveLearner(testData.LearnerKey, academicYear);
+            await learnerDataOuterApiHelper.RemoveLearner(testData.LearnerKey, ukprn, academicYear);
         }
 
         [Given("a learning withdrawn event is published to approvals with last day of learning as (.*)")]

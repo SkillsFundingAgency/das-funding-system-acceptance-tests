@@ -20,6 +20,7 @@ public class LearningSqlClient
         var sql = $@"
             DELETE FROM [dbo].[EnglishAndMaths] WHERE LearningKey = '{learningKey}';
             DELETE FROM [dbo].[ApprenticeshipLearningSupport] WHERE LearningKey = '{learningKey}';
+            DELETE FROM [dbo].[ApprenticeshipLearningHistory] WHERE LearningKey = '{learningKey}';
         ";
         _sqlServerClient.Execute(sql);
 
@@ -100,7 +101,7 @@ public class LearningSqlClient
 
         }
 
-        learning.LearningHistory = _sqlServerClient.GetList<LearningHistoryModel>($"SELECT * FROM [History].[LearningHistory] WHERE LearningId = '{learning.Key}'");
+        learning.LearningHistory = _sqlServerClient.GetList<LearningHistoryModel>($"SELECT * FROM [History].[ApprenticeshipLearningHistory] WHERE LearningKey = '{learning.Key}'");
 
         learning.EnglishAndMaths = _sqlServerClient.GetList<EnglishAndMaths>($"SELECT * FROM [dbo].[EnglishAndMaths] WHERE LearningKey = '{learning.Key}'");
 
