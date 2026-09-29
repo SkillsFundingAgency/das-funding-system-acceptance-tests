@@ -441,6 +441,8 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             Assert.IsNotNull(data);
 
+            data = learnerDataSqlClient.GetLearnerData(Convert.ToInt64(uln));
+
             data.TrainingCode.Should().Be(testData.UpdateLearnerData.Delivery.OnProgramme.OrderByDescending(x => x.StartDate).FirstOrDefault()?.StandardCode);
             data.StartDate.Date.Should().Be(testData.UpdateLearnerData.Delivery.OnProgramme.OrderByDescending(x => x.StartDate).FirstOrDefault()?.StartDate!.Date);
         }
