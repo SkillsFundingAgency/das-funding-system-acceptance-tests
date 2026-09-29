@@ -54,7 +54,7 @@ public class LearningSqlClient
 
         }
 
-        learning.LearningHistory = _sqlServerClient.GetList<LearningHistoryModel>($"SELECT * FROM [History].[LearningHistory] WHERE LearningId = '{learning.Key}'");
+        learning.LearningHistory = _sqlServerClient.GetList<LearningHistoryModel>($"SELECT * FROM [History].[ApprenticeshipLearningHistory] WHERE LearningKey = '{learning.Key}'");
 
         learning.EnglishAndMaths = _sqlServerClient.GetList<EnglishAndMaths>($"SELECT * FROM [dbo].[EnglishAndMaths] WHERE LearningKey = '{learning.Key}'");
 
@@ -191,11 +191,11 @@ public class LearningSqlClient
             WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             /*===========================================================
-            2. Delete Learning History 
+            2. Delete Apprenticeship Learning History 
             ===========================================================*/
             DELETE lh
-            FROM History.LearningHistory lh
-            JOIN dbo.ApprenticeshipLearning l ON lh.LearningId = l.[Key]
+            FROM History.ApprenticeshipLearningHistory lh
+            JOIN dbo.ApprenticeshipLearning l ON lh.LearningKey = l.[Key]
             JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
             WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
@@ -362,9 +362,12 @@ public class EpisodePrice
 
 public class LearningHistoryModel
 {
-    public Guid LearningId { get; set; }
+    public Guid LearningKey { get; set; }
     public DateTime CreatedOn { get; set; }
     public string State { get; set; }
+    public string Operation { get; set; }
+    public int AcademicYear { get; set; }
+    public string? Changes { get; set; }
 }
 
 public class EnglishAndMaths
