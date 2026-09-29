@@ -10,7 +10,7 @@ Background:
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R08
 
 #FLP-1421 - AC2	
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider records a return from E&M break in learning - Pause and return in same ilr submission
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
@@ -21,7 +21,7 @@ Scenario: Training provider records a return from E&M break in learning - Pause 
 	And Maths and English earnings are generated from periods currentAY-R06 to currentAY-R08 with regular instalment amount 133.33000 for course English Foundation
 
 #---------------------- FLP-1421 - Additional Scenarios -------------------------------------------------------------------
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider records a return from E&M break in learning with expected end date pushed back
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
@@ -31,7 +31,7 @@ Scenario: Training provider records a return from E&M break in learning with exp
 	And Maths and English earnings are generated from periods currentAY-R01 to currentAY-R04 with regular instalment amount 100 for course English Foundation
 	And Maths and English earnings are generated from periods currentAY-R06 to currentAY-R10 with instalment amount 80 for course English Foundation
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider records a return from E&M break in learning with withdrawal date during second period in learning
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
@@ -42,7 +42,7 @@ Scenario: Training provider records a return from E&M break in learning with wit
 	And Maths and English earnings are generated from periods currentAY-R06 to currentAY-R07 with instalment amount 133.33000 for course English Foundation
 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider records a return from E&M break in learning with completion date during second period in learning
 	Given SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
@@ -53,7 +53,7 @@ Scenario: Training provider records a return from E&M break in learning with com
 	And Maths and English earnings are generated from periods currentAY-R06 to currentAY-R07 with instalment amount 133.33000 for course English Foundation
 	And a Maths and English balancing earning of 133.33000 is generated for course English Foundation for period currentAY-R08
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider records multiple retuns from E&M break in learning
 	When SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23

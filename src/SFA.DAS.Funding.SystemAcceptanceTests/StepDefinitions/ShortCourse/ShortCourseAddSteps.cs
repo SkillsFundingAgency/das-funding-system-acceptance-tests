@@ -147,6 +147,18 @@ public class ShortCourseAddSteps(ScenarioContext context, LearnerDataOuterApiCli
         await WhenSLDInformsUsTheShortCourseLearningHasCompletedOn(TokenisableDateTime.FromString(completionDate));
     }
 
+    [Given(@"SLD informs us the short course learning has withdrawn on (.*) if applicable")]
+    [When(@"SLD informs us the short course learning has withdrawn on (.*) if applicable")]
+    public async Task SLDInformsUsTheShortCourseLearningHasWithdrawn(TokenisableDateTime withdrawalDate)
+    {
+        var testData = context.Get<TestData>();
+
+        var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
+        shortCourseRequest.Delivery.OnProgramme.Single().WithdrawalDate = withdrawalDate.Value;
+
+        await learnerDataOuterApiHelper.AddShortCourseLearnerData(Constants.UkPrn, shortCourseRequest);
+    }
+
     [When(@"SLD informs us the short course changes provider")]
     public async Task WhenSLDInformsUsTheShortCourseChangesProvider()
     {
