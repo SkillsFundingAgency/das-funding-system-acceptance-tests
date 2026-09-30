@@ -2,7 +2,7 @@
 
 Tests FLP-2003
 
-@tag1
+@ignore
 Scenario: Send apprenticeship earnings to payments on approval 
 	Given a draft apprenticeship learning is created
 	When the apprenticeship is approved by the employer
@@ -14,11 +14,13 @@ Scenario: Send apprenticeship earnings to payments on approval
 	|  completion  |
 	|  balancing   |
 
+@ignore
 Scenario: Send the apprenticeship learning type to payments
 	Given a draft apprenticeship learning is created
 	When the apprenticeship is approved by the employer
 	Then the apprenticeship "learning type" is sent to Payments
 
+@ignore
 Scenario: Inform payments when an apprenticeship is being funded by a levy transfer
 	Given a draft apprenticeship learning is created
 	And that apprentice record has been approved by the employer

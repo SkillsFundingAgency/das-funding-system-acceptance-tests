@@ -39,6 +39,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     ConsumerReference = fixture.Create<string>(),
                     Learner = fixture.Build<StubLearner>()
                     .With(x => x.Uln, uln)
+                    .With(x => x.LearnerRef, $"LR{uln}")
                     .With(x => x.Email, $"{uln}@test.com")
                     .Create(),
                     Delivery = new StubDelivery
@@ -79,6 +80,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     ConsumerReference = fixture.Create<string>(),
                     Learner = fixture.Build<StubLearner>()
                     .With(x => x.Uln, uln)
+                    .With(x => x.LearnerRef, uln)
                     .With(x => x.Email, $"{uln}@test.com")
                     .Create(),
                     Delivery = new StubDelivery
@@ -131,6 +133,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 ConsumerReference = fixture.Create<string>(),
                 Learner = fixture.Build<StubLearner>()
                     .With(x => x.Uln, uln)
+                    .With(x => x.LearnerRef, uln)
                     .With(x => x.Email, $"{uln}@test.com")
                     .With(x => x.Dob, startDate.AddYears(-17))
                     .Create(),
@@ -170,6 +173,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 ConsumerReference = fixture.Create<string>(),
                 Learner = fixture.Build<StubLearner>()
                     .With(x => x.Uln, uln)
+                    .With(x => x.LearnerRef, uln)
                     .With(x => x.Email, $"{uln}@test.com")
                     .Create(),
                 Delivery = new StubDelivery
