@@ -181,8 +181,9 @@ public class CreateDraftStepDefinitions(
         context.Set(testData);
     }
 
-    [When(@"SLD inform us that the training provider has resubmitted the same learner( with price change)?")]
-    public async Task WhenSldInformUsThatTheTrainingProviderHasResubmittedTheSameLearner(string withPriceChange)
+    [When("SLD inform us that the training provider has resubmitted the same learner")]
+    [When("SLD inform us that the training provider has resubmitted the same learner with price change")]
+    public async Task WhenSldInformUsThatTheTrainingProviderHasResubmittedTheSameLearner()
     {
         var testData = context.Get<TestData>();
 
@@ -191,7 +192,10 @@ public class CreateDraftStepDefinitions(
             throw new InvalidOperationException("No learner data has been prepared for resubmission");
         }
 
-        if (!string.IsNullOrWhiteSpace(withPriceChange))
+        var scenarioText = context.StepContext.StepInfo.Text;
+        var withPriceChange = scenarioText.Contains("with price change", StringComparison.OrdinalIgnoreCase);
+
+        if (withPriceChange)
         {
             var onProgramme = testData.LearnerData.Delivery.OnProgramme.First();
             var latestCost = onProgramme.Costs.OrderByDescending(c => c.FromDate).First();

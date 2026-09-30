@@ -10,6 +10,7 @@ they have progressed onto a new apprenticeship. This new apprenticeship will not
 @regression
 Scenario: Learner progresses onto a new apprenticeship mid-academic year
 	Given an apprenticeship has a start date of 2024-11-01, a planned end date of 2025-11-23, an agreed price of 15000, and a training code 2
+	And a draft apprenticeship learning is created
 	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 1500 from date 2024-11-01 to date 2025-11-23
 	And Learning Completion is recorded on 2025-11-25
