@@ -6,7 +6,7 @@ So that we know how much to pay providers when they deliver English and/or maths
 
 When M&E is marked as "Complete", earnings for subsequent delivery periods are "rolled up" into a single Balancing earning
 	
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Balancing earnings for Maths and English on Completion
 	Given a learning is created with start date currentAY-09-25, planned end date currentAY-04-15 and agreed price 12000
 	And the apprenticeship learning is approved
@@ -16,7 +16,7 @@ Scenario: Balancing earnings for Maths and English on Completion
 	Then Maths and English earnings are generated from periods currentAY-R02 to currentAY-R05 with regular instalment amount 133 for course Entry level English
 	And a Maths and English balancing earning of 399 is generated for course Entry level English for period currentAY-R06
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Balancing earnings for Maths and English on Completion moved earlier
 	Given a learning is created with start date currentAY-09-25, planned end date currentAY-04-15 and agreed price 12000
 	And the apprenticeship learning is approved
@@ -32,7 +32,7 @@ Scenario: Balancing earnings for Maths and English on Completion moved earlier
 	Then Maths and English earnings are generated from periods currentAY-R02 to currentAY-R04 with regular instalment amount 133 for course Entry level English
 	And a Maths and English balancing earning of 532 is generated for course Entry level English for period currentAY-R05
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Balancing earnings for Maths and English on Completion moved later
 	Given a learning is created with start date currentAY-09-25, planned end date currentAY-04-15 and agreed price 12000
 	And the apprenticeship learning is approved
@@ -48,7 +48,7 @@ Scenario: Balancing earnings for Maths and English on Completion moved later
 	Then Maths and English earnings are generated from periods currentAY-R02 to currentAY-R06 with instalment amount 133 for course Entry level English
 	And a Maths and English balancing earning of 266 is generated for course Entry level English for period currentAY-R07
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Balancing earnings for Maths and English on Completion - Completion removed
 	Given a learning is created with start date currentAY-09-25, planned end date currentAY-04-15 and agreed price 12000
 	And the apprenticeship learning is approved
@@ -64,7 +64,7 @@ Scenario: Balancing earnings for Maths and English on Completion - Completion re
 	Then Maths and English earnings are generated from periods currentAY-R02 to currentAY-R08 with regular instalment amount 133 for course Entry level English
 	And Maths and English balancing earning is removed for course Entry level English
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Balancing earnings for Maths and English - Completion in same period as planned end date
 	Given a learning is created with start date currentAY-09-25, planned end date currentAY-04-15 and agreed price 12000
 	And the apprenticeship learning is approved
@@ -74,7 +74,7 @@ Scenario: Balancing earnings for Maths and English - Completion in same period a
 	Then Maths and English earnings are generated from periods currentAY-R02 to currentAY-R08 with instalment amount 125 for course Entry level English
 	And a Maths and English balancing earning of 125 is generated for course Entry level English for period currentAY-R09
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: No Balancing earnings for Maths and English - Completion after planned end date
 	Given a learning is created with start date currentAY-09-25, planned end date currentAY-04-15 and agreed price 12000
 	And the apprenticeship learning is approved

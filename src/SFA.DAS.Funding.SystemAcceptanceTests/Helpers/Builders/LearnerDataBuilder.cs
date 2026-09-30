@@ -13,15 +13,26 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
         {
             Delivery = new Delivery
             {
-                OnProgramme = new List<OnProgramme> { new OnProgramme { AgreementId = "1", AimSequenceNumber = 1, LearnAimRef = "ZPROG001", Care = new Care(), StandardCode = 1}},
+                OnProgramme = new List<Http.LearnerDataOuterApiClient.OnProgramme> 
+                {
+                    new Http.LearnerDataOuterApiClient.OnProgramme 
+                { 
+                    AgreementId = "1", 
+                    AimSequenceNumber = 1, 
+                    LearnAimRef = "ZPROG001", 
+                    Care = new Care(), 
+                    StandardCode = 1,
+                    IsFlexiJob = false,
+                }
+                },
             },
             Learner = new LearnerRequestDetails
             {
                 Uln = long.Parse(testData.Uln),
-                LearnerRef = testData.Uln,
                 FirstName = testData.CommitmentsApprenticeshipCreatedEvent.FirstName,
                 LastName = testData.CommitmentsApprenticeshipCreatedEvent.LastName,
-                Dob = testData.CommitmentsApprenticeshipCreatedEvent.DateOfBirth
+                Dob = testData.CommitmentsApprenticeshipCreatedEvent.DateOfBirth,
+                LearnerRef = testData.Uln
             }
         };
 
@@ -88,6 +99,32 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
 
             return this;
         }
+
+        public LearnerDataBuilder WithProgressionLearning (DateTime startDate, DateTime expectedEndDate, int? trainingPrice, int? epaoPrice, int standardCode)
+        {
+        _request.Delivery.OnProgramme.Add(new OnProgramme
+            {
+                AgreementId = "1",
+                LearnAimRef = "ZPROG001",
+                StandardCode = standardCode,
+                AimSequenceNumber = 2,
+                StartDate = startDate,
+                ExpectedEndDate = expectedEndDate,
+                Care = new Care(),
+                Costs = new List<CostDetails>
+                {
+                    new CostDetails
+                    {
+                        TrainingPrice = trainingPrice,
+                        EpaoPrice = epaoPrice,
+                        FromDate = startDate
+                    }
+                },
+                LearningSupport = new List<LearningSupport>(),
+                IsFlexiJob = false
+        });
+            return this;
+        }   
 
         public LearnerDataBuilder WithAchievementDate(DateTime? achievementDate)
         {

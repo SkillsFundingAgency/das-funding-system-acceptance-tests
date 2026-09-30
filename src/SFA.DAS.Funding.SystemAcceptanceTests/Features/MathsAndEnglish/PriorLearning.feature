@@ -7,7 +7,7 @@ So that we know how much to pay providers when they deliver English and/or maths
 SLD can indicate a percentage adjustment to make for prior learning.
 M&E Earnings must be multipled by this percentage amount.
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Earnings for Maths and English with prior learning %
 	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price <agreed_price>
 	And the apprenticeship learning is approved

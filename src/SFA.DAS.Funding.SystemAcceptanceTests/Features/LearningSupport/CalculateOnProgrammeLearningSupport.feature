@@ -4,7 +4,7 @@ As the DfE
 I want to know when the details for learning support has changed for an apprentice
 So that earnings and payments can be recalculated based on the latest data
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learning support added for On programme learning
 	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
 	And the apprenticeship learning is approved
@@ -20,7 +20,7 @@ Examples:
 	| currentAY-08-01 | currentAY-07-31 | currentAY-09-01 | currentAY-12-15 | currentAY-R02            | currentAY-R04           |
 	| currentAY-08-01 | nextAY-07-31    | currentAY-09-01 | currentAY-05-15 | currentAY-R02            | currentAY-R09           |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learning support removed for On programme learning
 	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
 	And the apprenticeship learning is approved
@@ -35,7 +35,7 @@ Examples:
 	| start_date      | end_date        | ls_start_date   | ls_end_date     |
 	| currentAY-09-25 | currentAY-04-15 | currentAY-11-15 | currentAY-03-10 |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: No LSF earnings after learner withdraws from the programme aim
 	Given a learning is created with start date currentAY-09-25, planned end date currentAY-04-15 and agreed price 12000
 	And the apprenticeship learning is approved

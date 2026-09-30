@@ -4,7 +4,7 @@ As the DfE
 I want to know when the details for learning support has changed for an apprentice
 So that earnings and payments can be recalculated based on the latest data
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learning support added for Maths and English course
 	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
 	And the apprenticeship learning is approved
@@ -17,7 +17,7 @@ Examples:
 	| start_date      | end_date        | course              | amount | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
 	| currentAY-09-25 | currentAY-04-15 | Entry level English |    931 | currentAY-10-12 | currentAY-02-15 | currentAY-R03            | currentAY-R06           |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learning support added for Maths and English course - paid until completion
 	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
 	And the apprenticeship learning is approved
@@ -30,7 +30,7 @@ Examples:
 	| start_date      | end_date        | course              | amount | completion_date | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
 	| currentAY-09-25 | currentAY-04-15 | Entry level English |    931 | currentAY-03-20 | currentAY-10-12 | currentAY-04-15 | currentAY-R03            | currentAY-R07           |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: No LSF earnings when learner Withdraws from E&M
 	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
 	And the apprenticeship learning is approved

@@ -4,7 +4,7 @@ As the Dfe
 I want the apprenticeship earnings to be recalculated when a break in learning is recorded 
 So that the provider does not accure earnings while the learner is on a break
 
-@regression
+@regression @ignoreInPREPRODandPP
 #FLP-728 AC1
 Scenario: Training provider records a break in learning without specifying a return
 	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
@@ -17,7 +17,7 @@ Scenario: Training provider records a break in learning without specifying a ret
 	And the earnings after the delivery period 09 and academic year currentAY are soft deleted
 	And learning support continues to be paid from periods currentAY-R01 to currentAY-R09
 
-@regression
+@regression @ignoreInPREPRODandPP
 #FLP-728 AC2
 Scenario: Training provider corrects a previous break in learning without specifying a return
 	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
@@ -36,7 +36,7 @@ Scenario: Training provider corrects a previous break in learning without specif
 	And the earnings after the delivery period 10 and academic year currentAY are soft deleted
 	And learning support continues to be paid from periods currentAY-R01 to currentAY-R10
 
-@regression
+@regression @ignoreInPREPRODandPP
 #FLP-728 AC3
 Scenario: Training provider removes a previous break in learning
 	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
@@ -54,7 +54,7 @@ Scenario: Training provider removes a previous break in learning
 	And earnings of 1000 are generated from periods currentAY-R01 to currentAY-R12
 	And learning support earnings are generated from periods currentAY-R01 to currentAY-R12
 
-@regression
+@regression @ignoreInPREPRODandPP
 #FLP-728 AC1 - Added this scenario to cover BIL without learning support as there is an issue whereby the earnings recalculated event is nont published for pause, pause remove, and BIL return, to be fixed as part of FLP-1360.
 Scenario: Training provider records a break in learning without specifying a return (no learning support)
 	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000

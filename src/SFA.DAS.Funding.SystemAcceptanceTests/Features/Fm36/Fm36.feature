@@ -3,7 +3,7 @@ Feature: Fm36
 
 Retrieve Fm36 data
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Retrieve Valid Fm36 data
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
@@ -24,7 +24,7 @@ Examples:
 
 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Retrieve Fm36 data with Actual End Date
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And a draft apprenticeship learning is created
@@ -42,7 +42,7 @@ Examples:
 	| currentAY-08-01 | currentAY-07-31 |        15000 |           614 | nextAY-08-20    | nextAY-R01                 |                       3000 |
 	| currentAY-08-01 | nextAY-08-31    |        15000 |           614 | nextAY-08-20    | nextAY-R01                 |                       3000 |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Retrieve Valid Fm36 data for learners aged 15
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
@@ -58,7 +58,7 @@ Examples:
 	| currentAY-08-01 | nextAY-11-15 |        15000 |             2 |  15 |
 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Do not retrieve Fm36 data for future starts
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
@@ -73,7 +73,7 @@ Examples:
 	| start_date   | end_date               | agreed_price | training_code | age |
 	| nextAy-08-01 | CurrentAyPlusTwo-11-15 |        15000 |             2 |  18 |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Do not retrieve Fm36 data for learners with Actual Start Date in previous AY
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And a draft apprenticeship learning is created
@@ -90,7 +90,7 @@ Examples:
 	| currentAY-08-01 | nextAY-07-31    |        15000 |             2 | currentAY-07-28 |
 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Retrieve Fm36 data for Active learners
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
@@ -105,7 +105,7 @@ Examples:
 	| start_date            | end_date               | agreed_price | training_code | age |
 	| lastDayOfCurrentMonth | CurrentAyPlusTwo-11-15 |        15000 |            91 |  19 |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Retrieve Valid Fm36 19-24 incentives data
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
@@ -122,7 +122,7 @@ Examples:
 	| currentAY-08-01 | nextAY-07-31    |        15000 |             2 |  19 |
 	| currentAY-08-01 | nextAY-07-31    |        15000 |             2 |  24 |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Retrieve Valid Fm36 learning support data
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19

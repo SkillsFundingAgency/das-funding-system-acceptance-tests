@@ -3,7 +3,7 @@ Feature: FM36OnProgrammeCompletion
 
 Fm36 Withdrawl tests
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: On programme completion
 	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
 	And the apprenticeship learning is approved

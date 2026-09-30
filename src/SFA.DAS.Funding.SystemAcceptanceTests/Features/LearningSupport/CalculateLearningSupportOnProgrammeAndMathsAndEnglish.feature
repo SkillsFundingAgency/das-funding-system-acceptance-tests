@@ -4,7 +4,7 @@ As the DfE
 I want to pay Learning Support only once per Learning for a given period
 Even when it is claimed against both the On programme Learning and Maths & English at the same time
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learning support not duplicated when claimed against On programme learning and Maths & English at the same time
 	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
 	And the apprenticeship learning is approved
@@ -19,7 +19,7 @@ Examples:
 	| currentAY-09-25 | currentAY-04-15 | currentAY-11-15 | currentAY-03-10 | currentAY-R04            | currentAY-R07           |
 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learning support for a Maths & English beyond end of On Programme Learning
 	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
 	And the apprenticeship learning is approved
@@ -33,7 +33,7 @@ Examples:
 	| start_date      | end_date        | me_end_date  | me_ls_start_date | expected_first_ls_period | expected_last_ls_period |
 	| currentAY-08-01 | currentAY-07-31 | nextAY-10-31 | nextAY-08-01     | currentAY-R01            | nextAY-R03              |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learning support across multiple Maths & English courses with overlap
 	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
 	And the apprenticeship learning is approved
@@ -48,7 +48,7 @@ Examples:
 	| currentAY-08-01 | currentAY-07-31 | currentAY-08-01  | currentAY-12-31 | currentAY-12-01    | currentAY-07-31  | currentAY-R01            | currentAY-R12           |
 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Dont pay learning support after on-programme completion
 	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
 	And the apprenticeship learning is approved
@@ -58,7 +58,7 @@ Scenario: Dont pay learning support after on-programme completion
 	And SLD submit updated learners details
 	Then learning support earnings are generated from periods currentAY-R01 to currentAY-R8
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Dont pay learning support after english and maths completion
 	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
 	And the apprenticeship learning is approved
@@ -67,7 +67,7 @@ Scenario: Dont pay learning support after english and maths completion
 	And SLD submit updated learners details
 	Then learning support earnings are generated from periods currentAY-R01 to currentAY-R8
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learning support continues to be paid for English and Maths course after on-prog withdrawal
 	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
 	And the apprenticeship learning is approved
@@ -77,7 +77,7 @@ Scenario: Learning support continues to be paid for English and Maths course aft
 	When SLD submit updated learners details
 	Then learning support continues to be paid from periods currentAY-R01 to currentAY-R06
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learning support moved from English and Maths to On programme 
 	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
 	And the apprenticeship learning is approved
@@ -94,7 +94,7 @@ Scenario: Learning support moved from English and Maths to On programme
 	And SLD submit updated learners details
 	Then learning support earnings are generated from periods currentAY-R01 to currentAY-R03
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learning support continues to be paid for On-prog after English and Maths is withdrawn
 	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
 	And the apprenticeship learning is approved

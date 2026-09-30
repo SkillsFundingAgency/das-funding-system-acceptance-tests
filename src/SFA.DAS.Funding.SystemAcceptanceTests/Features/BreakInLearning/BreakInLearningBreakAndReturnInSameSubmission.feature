@@ -7,7 +7,7 @@ So that the provider acquires earnings only when the learner is not on a break
 #todo remove learning support from these tests to prove the earnings fix to re-calc event as part of BIL
 
 #FLP-1360 AC2 SLD informs us of break and return at the same time previous AY
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider records a break and return at the same time in previous academic year
 	Given a learning is created with start date currentAY-08-01, planned end date nextAY-07-31 and agreed price 15000
 	And the apprenticeship learning is approved
@@ -22,7 +22,7 @@ Scenario: Training provider records a break and return at the same time in previ
 
 #@regression
 #FLP-1360 AC2 SLD informs us of break and return at the same time current AY
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Training provider records a break and return at the same time in current academic year
 	Given a learning is created with start date currentAY-08-01, planned end date nextAY-07-31 and agreed price 15000
 	And the apprenticeship learning is approved

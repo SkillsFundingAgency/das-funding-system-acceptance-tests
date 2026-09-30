@@ -10,7 +10,7 @@ Example 3: app never started - withdraw from start - no earnings are retained
 Example 4: after hard close - earnings up-to last complete delivery period before withdrawal are retained
 Example 5:  after hard close - app never started - no earnings are retained
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is recorded; recalc earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And a draft apprenticeship learning is created
@@ -35,7 +35,7 @@ Examples:
 	| 2026-10-05 | 2028-06-10 | 18000        | 2             | 20                       | 2027-06-02           | 8                      | 10                     | 2627                 |
 	| 2026-10-05 | 2028-06-10 | 18000        | 91            | 20                       | 2026-10-05           | 0                      | null                   | null                 |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is recorded again; with a different date
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And a draft apprenticeship learning is created
@@ -61,7 +61,7 @@ Examples:
 	| 2026-11-01 | 2027-11-23 | 15000        | 2             | 2026-12-15                   | 1                          | 4                              | 2627                 | 2027-02-05                   | 3                          | 6                              |
 	| 2026-11-01 | 2027-11-23 | 15000        | 2             | 2027-05-15                   | 6                          | 9                              | 2627                 | 2027-02-05                   | 3                          | 6                              |
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is removed; with date set to null
 	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And a draft apprenticeship learning is created
@@ -80,7 +80,7 @@ Scenario: Withdrawal is removed; with date set to null
 	And the expected number of earnings instalments after withdrawal are 12
 	And a withdrawal reverted event is published to approvals
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Withdrawal and price change applied together - reclalc earnings
 	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And a draft apprenticeship learning is created
@@ -100,7 +100,7 @@ Scenario: Withdrawal and price change applied together - reclalc earnings
 	And the earnings after the delivery period 9 and academic year 2627 are soft deleted
 	And last day of learning is set to 2027-05-27 in learning and earning db
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is recorded before the end of the qualifying period; there will be no earnings retained
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And a draft apprenticeship learning is created

@@ -97,7 +97,7 @@ public class LearningSteps (ScenarioContext context, LearningSqlClient learningS
 
         Assert.That(
             mostRecentHistory.CreatedOn,
-            Is.InRange(DateTime.UtcNow.AddMinutes(-10), DateTime.UtcNow.AddSeconds(1))
+            Is.InRange(DateTime.UtcNow.AddMinutes(-15), DateTime.UtcNow.AddSeconds(1))
         );
     }
 

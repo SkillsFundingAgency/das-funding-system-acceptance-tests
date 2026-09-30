@@ -13,7 +13,7 @@ Background:
 	And the second incentive due date for provider & employer is 2027-09-30
 
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learner goes on break 1 day before 90th day incentive and returns after 30 day break
 	Given SLD record on-programme cost as total price 15000 from date 2026-10-01 to date 2028-07-31
 	And SLD inform us of a break in learning with pause date 2026-12-28
@@ -26,7 +26,7 @@ Scenario: Learner goes on break 1 day before 90th day incentive and returns afte
 	And the first incentive due date for provider & employer is 2027-01-28
 	And the second incentive due date for provider & employer is 2027-10-30
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learner goes on break on 90th day incentive and returns after 30 day break
 	Given SLD record on-programme cost as total price 15000 from date 2026-10-01 to date 2028-07-31
 	And SLD inform us of a break in learning with pause date 2026-12-29
@@ -39,7 +39,7 @@ Scenario: Learner goes on break on 90th day incentive and returns after 30 day b
 	And the first incentive due date for provider & employer is 2026-12-29
 	And the second incentive due date for provider & employer is 2027-10-30
 
-@regression
+@regression @ignoreInPREPRODandPP
 Scenario: Learner goes on break on 365th day incentive
 	Given SLD record on-programme cost as total price 15000 from date 2026-10-01 to date 2028-07-31
 	And SLD inform us of a break in learning with pause date 2027-09-30
