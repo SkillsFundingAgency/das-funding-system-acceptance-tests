@@ -7,7 +7,8 @@ So that incentive earnings are not paid early (or late)
 Background:
 	Given an apprenticeship has a start date of 2026-10-01, a planned end date of 2028-07-31, an agreed price of 15000, and a training code 2
 	And the age at the start of the apprenticeship is 18
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	Then the first incentive due date for provider & employer is 2026-12-29
 	And the second incentive due date for provider & employer is 2027-09-30
 

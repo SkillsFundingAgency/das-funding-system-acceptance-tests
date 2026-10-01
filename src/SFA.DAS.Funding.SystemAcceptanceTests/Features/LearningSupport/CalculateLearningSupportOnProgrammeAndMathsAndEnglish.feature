@@ -6,7 +6,8 @@ Even when it is claimed against both the On programme Learning and Maths & Engli
 
 @regression @ignoreInPREPRODandPP
 Scenario: Learning support not duplicated when claimed against On programme learning and Maths & English at the same time
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
+	And the apprenticeship learning is approved
 	When learning support is recorded from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And a Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342844, course Maths, amount 1000, learning support from <ls_start_date> to <ls_end_date>
@@ -20,7 +21,8 @@ Examples:
 
 @regression @ignoreInPREPRODandPP
 Scenario: Learning support for a Maths & English beyond end of On Programme Learning
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
+	And the apprenticeship learning is approved
 	When learning support is recorded from <start_date> to <end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And a Maths and English learning is recorded from <start_date> to <me_end_date> with learnAimRef 60342844, course Maths, amount 1000, learning support from <me_ls_start_date> to <me_end_date>
@@ -33,7 +35,8 @@ Examples:
 
 @regression @ignoreInPREPRODandPP
 Scenario: Learning support across multiple Maths & English courses with overlap
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
+	And the apprenticeship learning is approved
 	When a Maths and English learning is recorded from <maths_start_date> to <maths_end_date> with learnAimRef 60342844, course Maths, amount 1000, learning support from <maths_start_date> to <maths_end_date>
 	And a Maths and English learning is recorded from <english_start_date> to <english_end_date> with learnAimRef 60342843, course English, amount 2000, learning support from <english_start_date> to <english_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
@@ -47,7 +50,8 @@ Examples:
 
 @regression @ignoreInPREPRODandPP
 Scenario: Dont pay learning support after on-programme completion
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	When learning support is recorded from currentAY-08-15 to currentAY-07-20
 	And Learning Completion is recorded on currentAY-04-15
@@ -56,7 +60,8 @@ Scenario: Dont pay learning support after on-programme completion
 
 @regression @ignoreInPREPRODandPP
 Scenario: Dont pay learning support after english and maths completion
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	When an English and Maths learning is recorded from currentAY-08-15 to currentAY-07-20 with learnAimRef 60342844, course Maths, amount 1000, completion date as currentAY-04-10, learning support from currentAY-08-25 to currentAY-07-20
 	And SLD submit updated learners details
@@ -64,7 +69,8 @@ Scenario: Dont pay learning support after english and maths completion
 
 @regression @ignoreInPREPRODandPP
 Scenario: Learning support continues to be paid for English and Maths course after on-prog withdrawal
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And Learning withdrawal date is recorded on currentAY-11-15
 	And a Maths and English learning is recorded from currentAY-08-15 to currentAY-07-20 with learnAimRef 60342844, course Maths, amount 1000, learning support from currentAY-08-15 to currentAY-01-31
@@ -73,7 +79,8 @@ Scenario: Learning support continues to be paid for English and Maths course aft
 
 @regression @ignoreInPREPRODandPP
 Scenario: Learning support moved from English and Maths to On programme 
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And Learning withdrawal date is recorded on currentAY-11-15
 	And a Maths and English learning is recorded from currentAY-08-15 to currentAY-07-20 with learnAimRef 60342844, course Maths, amount 1000, learning support from currentAY-08-01 to currentAY-01-31
@@ -89,7 +96,8 @@ Scenario: Learning support moved from English and Maths to On programme
 
 @regression @ignoreInPREPRODandPP
 Scenario: Learning support continues to be paid for On-prog after English and Maths is withdrawn
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date currentAY-08-01, planned end date currentAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And learning support is recorded from currentAY-08-01 to currentAY-01-31
 	When English and Maths learning is recorded from currentAY-08-01 to currentAY-07-31 with learnAimRef 60342843, course English Foundation, amount 2000, withdrawal date currentAY-11-15, learning support from currentAY-08-01 to currentAY-07-31

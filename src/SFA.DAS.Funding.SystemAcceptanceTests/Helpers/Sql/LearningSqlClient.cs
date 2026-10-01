@@ -217,7 +217,18 @@ public class LearningSqlClient
             WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
 
             /*===========================================================
-            5. Delete English and Maths Breaks In Learning
+            5a. Delete English and Maths Breaks In Learning
+            ===========================================================*/
+            DELETE mels
+            FROM dbo.EnglishAndMathsLearningSupport mels
+            JOIN dbo.EnglishAndMaths me on mels.EnglishAndMathsKey = me.[Key]
+            JOIN dbo.ApprenticeshipLearning l ON me.LearningKey = l.[Key]
+            JOIN dbo.ApprenticeshipEpisode e ON l.[Key] = e.LearningKey
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
+ 
+
+            /*===========================================================
+            5b. Delete English and Maths Breaks In Learning
             ===========================================================*/
             DELETE mebil
             FROM dbo.EnglishAndMathsBreakInLearning mebil

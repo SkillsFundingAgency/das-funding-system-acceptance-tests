@@ -1,33 +1,25 @@
 ﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 
-namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Common;
+namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Apprenticeship.Common;
 
 [Binding]
 /// <summary>
-/// This will be the first step in most of the tests. It will configure the apprenticeship which will later
-/// be approved/created in the ApproveApprenticeshipStepDefinition class.
+/// This will be the first step in most of the tests. It configures apprenticeship event data
+/// that is then used by create/approve steps.
 /// </summary>
-public class ConfigureApprenticeshipStepDefinition
+public class ConfigureApprenticeshipCreatedEventStepDefinitions(ScenarioContext context)
 {
-    private readonly ScenarioContext _context;
-
-    public ConfigureApprenticeshipStepDefinition(ScenarioContext context)
-    {
-        _context = context;
-    }
-
     [Given(@"there is an apprenticeship")]
     public void CreateBasicApprenticeship()
     {
-        var testData = _context.Get<TestData>();
+        var testData = context.Get<TestData>();
         var startDate = TokenisableDateTime.FromString("currentAY-08-23");
         var plannedEndDate = TokenisableDateTime.FromString("currentAYPlusTwo-08-23");
         var agreedPrice = 15000;
         var trainingCode = "2";
 
-        testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
+        testData.CommitmentsApprenticeshipCreatedEvent = context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
 
     }
 
@@ -36,42 +28,19 @@ public class ConfigureApprenticeshipStepDefinition
     [When(@"an apprenticeship has a start date of (.*), a planned end date of (.*), an agreed price of (.*), and a training code (.*)")]
     public void ApprenticeshipHasAStartDateOfAPlannedEndDateOfAnAgreedPriceOfAndACourseCourseId(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice, string trainingCode)
     {
-        var testData = _context.Get<TestData>();
-        testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
+        var testData = context.Get<TestData>();
+        testData.CommitmentsApprenticeshipCreatedEvent = context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, trainingCode);
     }
-
-    [Given(@"a learning has a start date of (.*), a planned end date of (.*) and an agreed price of (.*)")]
-    public async Task LearningHasAStartDateOfAPlannedEndDateOfAndAnAgreedPrice(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice)
-    {
-        var testData = _context.Get<TestData>();
-        testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, "1");
-
-        var approveApprenticeshipStepDefinition =
-            new ApproveApprenticeshipStepDefinition(_context, new EarningsSqlClient(), new LearningSqlClient(), new LearnerDataOuterApiHelper());
-
-        await approveApprenticeshipStepDefinition.CreateDraftApprenticeshipAndApproveIt();
-    }
-
-
-    [Given(@"a learning has a start date of (.*), a duration of (.*) and an agreed price of (.*)")]
-    public async Task LearningHasAStartDateOfADurationAndAnAgreedPrice(TokenisableDateTime startDate, int duration, decimal agreedPrice)
-    {
-        var plannedEndDate = startDate.Value.AddDays(duration - 1);
-        var tokenised = new TokenisableDateTime(plannedEndDate);
-
-        await LearningHasAStartDateOfAPlannedEndDateOfAndAnAgreedPrice(startDate, tokenised, agreedPrice);
-    }
-
 
     [Given(@"an apprenticeship with start date over (.*) months ago and duration of (.*) months and an agreed price of (.*), and a training code (.*)")]
     public void ApprenticeshipWithStartDateOverMonthsAgoAndDurationOfMonthsAndAnAgreedPriceOfAndATrainingCode(int monthsSinceStart, int duration, decimal agreedPrice, string trainingCode)
     {
-        var testData = _context.Get<TestData>();
+        var testData = context.Get<TestData>();
         DateTime today = DateTime.Today;
         var startDate = new DateTime(today.Year, today.Month, 1).AddMonths(-monthsSinceStart);
         var plannedEndDate = startDate.AddMonths(duration).AddDays(-1);
 
-        testData.CommitmentsApprenticeshipCreatedEvent = _context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
+        testData.CommitmentsApprenticeshipCreatedEvent = context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate, plannedEndDate, agreedPrice, trainingCode);
     }
 
     [Given(@"an apprenticeship has a start date in the current month with a duration of (.*) months")]
@@ -89,7 +58,7 @@ public class ConfigureApprenticeshipStepDefinition
     [Given(@"the apprenticeship learner has a date of birth (.*)")]
     public void AddDateOfBirthToCommitmentsApprenticeshipCreatedEvent(DateTime dob)
     {
-        var testData = _context.Get<TestData>();
+        var testData = context.Get<TestData>();
 
         ApprenticeshipEventHelper.UpdateApprenticeshipCreatedMessageWithDoB(testData.CommitmentsApprenticeshipCreatedEvent, dob);
     }
@@ -98,7 +67,7 @@ public class ConfigureApprenticeshipStepDefinition
     [Given("the age at the start of the learning is (.*)")]
     public void TheAgeAtTheStartOfTheApprenticeshipIs(int age)
     {
-        var testData = _context.Get<TestData>();
+        var testData = context.Get<TestData>();
 
         var dob = testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.Value.AddYears(-age);
 
@@ -108,7 +77,7 @@ public class ConfigureApprenticeshipStepDefinition
     [Given("the learner is aged (.*) at the start of the apprenticeship")]
     public void LearnerIsAgedAtTheStartOfTheApprenticeship(int age)
     {
-        var testData = _context.Get<TestData>();
+        var testData = context.Get<TestData>();
 
         var dob = testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.Value.AddYears(-(age+1)).AddMonths(1);
 
@@ -118,7 +87,7 @@ public class ConfigureApprenticeshipStepDefinition
     [Given(@"the apprenticeship learner's age is (below|at) (.*)")]
     public void ApprenticeshipLearnersAgeIsBelowOrAt(string condition, int age)
     {
-        var testData = _context.Get<TestData>();
+        var testData = context.Get<TestData>();
 
         var dob = testData.CommitmentsApprenticeshipCreatedEvent.ActualStartDate.Value.AddYears(-age);
 
@@ -131,7 +100,7 @@ public class ConfigureApprenticeshipStepDefinition
     [Given(@"apprenticeship employer type is (Levy|NonLevy)")]
     public void EmployerTypeIsLevyOrNonLevy(string employerType)
     {
-        var testData = _context.Get<TestData>();
+        var testData = context.Get<TestData>();
 
         var employer = employerType == "Levy" ? CommitmentsV2.Types.ApprenticeshipEmployerType.Levy : CommitmentsV2.Types.ApprenticeshipEmployerType.NonLevy;
 
@@ -141,7 +110,7 @@ public class ConfigureApprenticeshipStepDefinition
     [Given(@"the provider is not enrolled")]
     public void GivenTheProviderIsNotEnrolled()
     {
-        var testData = _context.Get<TestData>();
+        var testData = context.Get<TestData>();
 
         testData.CommitmentsApprenticeshipCreatedEvent.ProviderId = Constants.NonEnrolledUkPrn;
     }

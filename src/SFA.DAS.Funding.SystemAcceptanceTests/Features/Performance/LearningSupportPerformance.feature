@@ -8,7 +8,8 @@ With this test we want to ensure that the call of Learning Support inner endpoin
 Scenario: Learning Support for Maths and English Earnings over 5 years
 	Given an apprenticeship has a start date of currentAY-08-23, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date nextAY-08-23
 	And Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course course and amount 12000
 	And learning support is recorded from <start_date> to <end_date>

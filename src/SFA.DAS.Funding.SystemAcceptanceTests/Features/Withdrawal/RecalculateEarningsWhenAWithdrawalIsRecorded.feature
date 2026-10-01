@@ -13,7 +13,8 @@ Example 5:  after hard close - app never started - no earnings are retained
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is recorded; recalc earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And the planned number of months must be the number of months from the start date to the planned end date <planned_number_of_months>
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning withdrawal date is recorded on <last_day_of_delivery>
@@ -37,7 +38,8 @@ Examples:
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is recorded again; with a different date
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning withdrawal date is recorded on <initial_last_day_of_delivery>
 	And SLD submit updated learners details
@@ -62,7 +64,8 @@ Examples:
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is removed; with date set to null
 	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date 2026-08-01 to date 2027-07-31
 	And Learning withdrawal date is recorded on 2026-12-15
 	And SLD submit updated learners details
@@ -80,7 +83,8 @@ Scenario: Withdrawal is removed; with date set to null
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal and price change applied together - reclalc earnings
 	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date 2026-08-01 to date 2027-07-31
 	And Learning withdrawal date is recorded on 2027-05-27
 	And SLD submit updated learners details
@@ -99,7 +103,8 @@ Scenario: Withdrawal and price change applied together - reclalc earnings
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is recorded before the end of the qualifying period; there will be no earnings retained
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And the planned number of months must be the number of months from the start date to the planned end date <planned_number_of_months>
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning withdrawal date is recorded on <last_day_of_delivery>

@@ -12,7 +12,8 @@ The Qualifying Period varies depending upon the length of the course:
 
 @regression @ignoreInPREPRODandPP
 Scenario: Earnings for Maths and English after Withdrawal after Qualifying Period
-	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
+	Given a learning is created with start date <start_date>, duration of <duration_days> and agreed price <agreed_price>
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And SLD submit updated learners details
@@ -28,7 +29,8 @@ Examples:
 
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal for Maths and English can be after Planned end date
-	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
+	Given a learning is created with start date <start_date>, duration of <duration_days> and agreed price <agreed_price>
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And SLD submit updated learners details
@@ -41,7 +43,8 @@ Examples:
 
 @regression @ignoreInPREPRODandPP
 Scenario: Earnings for Maths and English are recalculated when withdrawal details have changed
-	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
+	Given a learning is created with start date <start_date>, duration of <duration_days> and agreed price <agreed_price>
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <first_withdrawal_on_day> days
 	And SLD submit updated learners details
@@ -58,7 +61,8 @@ Examples:
 
 @regression @ignoreInPREPRODandPP
 Scenario: Earnings for Maths and English after Withdrawal during Qualifying Period
-	Given a learning has a start date of <start_date>, a duration of <duration_days> and an agreed price of <agreed_price>
+	Given a learning is created with start date <start_date>, duration of <duration_days> and agreed price <agreed_price>
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from <start_date> for <duration_days> days with learnAimRef 60342843, course <course>, amount <agreed_price> and withdrawal after <withdrawal_on_day> days
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> with duration <duration_days>
 	And SLD submit updated learners details
@@ -73,7 +77,8 @@ Examples:
 @regression @ignoreInPREPRODandPP
 Scenario: English and Maths course withdrawn from the start
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with learnAimRef 60342843, course Entry level English and amount 931
 	And SLD submit updated learners details
@@ -86,7 +91,8 @@ Scenario: English and Maths course withdrawn from the start
 @regression @ignoreInPREPRODandPP
 Scenario: English and Maths course withdrawn when programme aim has completed
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from nextAY-08-25 to nextAY-01-07 with learnAimRef 60342843, course Entry level English and amount 931
 	And SLD submit updated learners details
@@ -100,7 +106,8 @@ Scenario: English and Maths course withdrawn when programme aim has completed
 @regression @ignoreInPREPRODandPP
 Scenario: English and Maths course withdrawn from the start then removed
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with learnAimRef 60342843, course Entry level English and amount 1000
 	And SLD submit updated learners details
@@ -118,7 +125,8 @@ Scenario: English and Maths course withdrawn from the start then removed
 @regression @ignoreInPREPRODandPP
 Scenario: English and Maths course withdrawn from the start then reinstated
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-08-23, an agreed price of 15000, and a training code 2
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-08-23
 	And Maths and English learning is recorded from currentAY-08-05 to currentAY-01-07 with learnAimRef 60342843, course Entry level English and amount 1000
 	And SLD submit updated learners details

@@ -6,7 +6,8 @@ Fm36 Withdrawl tests
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal of learner - FundStart should be False if withdrawn before qualifying period end (FLP-969 AC1)
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning withdrawal date is recorded on <last_day_of_delivery>
 	And SLD submit updated learners details
@@ -32,7 +33,8 @@ Examples:
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal of learner from start results in no FM36 block (FLP-969 AC3)
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning withdrawal date is recorded on <last_day_of_delivery>
 	And SLD submit updated learners details

@@ -6,7 +6,8 @@ So that earnings and payments can be recalculated based on the latest data
 
 @regression @ignoreInPREPRODandPP
 Scenario: Learning support added for Maths and English course
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
+	And the apprenticeship learning is approved
 	When a Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
@@ -18,7 +19,8 @@ Examples:
 
 @regression @ignoreInPREPRODandPP
 Scenario: Learning support added for Maths and English course - paid until completion
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
+	And the apprenticeship learning is approved
 	When an English and Maths learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount>, completion date as <completion_date>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
@@ -30,7 +32,8 @@ Examples:
 
 @regression @ignoreInPREPRODandPP
 Scenario: No LSF earnings when learner Withdraws from E&M
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
+	And the apprenticeship learning is approved
 	When English and Maths learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount>, withdrawal date <withdrawal_date>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details

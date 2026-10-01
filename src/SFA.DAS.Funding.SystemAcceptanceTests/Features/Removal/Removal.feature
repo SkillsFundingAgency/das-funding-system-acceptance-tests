@@ -5,7 +5,8 @@ I want to know when an apprentice is removed from the ILR
 So that earnings and payments can be recalculated based on the latest data
 
 Background:
-	Given a learning has a start date of nextAY-08-01, a planned end date of nextAY-07-31 and an agreed price of 15000
+	Given a learning is created with start date nextAY-08-01, planned end date nextAY-07-31 and agreed price 15000
+	And the apprenticeship learning is approved
 	And the age at the start of the apprenticeship is 17
 	And SLD record on-programme cost as total price 15000 from date nextAY-08-01 to date nextAY-07-31
 	And SLD submit updated learners details

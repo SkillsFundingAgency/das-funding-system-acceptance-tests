@@ -7,7 +7,8 @@ Retrieve Fm36 data
 Scenario: Retrieve Valid Fm36 data
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	And the fm36 data is retrieved for currentDate
@@ -26,7 +27,8 @@ Examples:
 @regression @ignoreInPREPRODandPP
 Scenario: Retrieve Fm36 data with Actual End Date
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning Completion is recorded on <completion_date>
 	And Learning Achievement date is recorded on <completion_date>
@@ -44,7 +46,8 @@ Examples:
 Scenario: Retrieve Valid Fm36 data for learners aged 15
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	And the fm36 data is retrieved for currentDate
@@ -59,7 +62,8 @@ Examples:
 Scenario: Do not retrieve Fm36 data for future starts
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	And the fm36 data is retrieved for currentDate
@@ -72,7 +76,8 @@ Examples:
 @regression @ignoreInPREPRODandPP
 Scenario: Do not retrieve Fm36 data for learners with Actual Start Date in previous AY
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning Completion is recorded on <completion_date>
 	And SLD submit updated learners details
@@ -89,7 +94,8 @@ Examples:
 Scenario: Retrieve Fm36 data for Active learners
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the learner is aged <age> at the start of the apprenticeship
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	And the fm36 data is retrieved for currentDate
@@ -103,7 +109,8 @@ Examples:
 Scenario: Retrieve Valid Fm36 19-24 incentives data
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
@@ -119,7 +126,8 @@ Examples:
 Scenario: Retrieve Valid Fm36 learning support data
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And learning support is recorded from <learning_support_start> to <learning_support_end>
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And SLD submit updated learners details

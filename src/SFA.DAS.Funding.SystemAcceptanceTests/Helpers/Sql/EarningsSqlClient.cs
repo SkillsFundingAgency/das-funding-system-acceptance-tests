@@ -187,6 +187,20 @@ public class EarningsSqlClient
         var sql = @"
 
             /*===========================================================
+            0. Delete Maths & English Additional payments
+            ===========================================================*/
+            DELETE meap
+            FROM Domain.EnglishAndMathsAdditionalPayment AS meap
+            JOIN Domain.EnglishAndMaths AS me 
+                ON meap.EnglishAndMathsKey = me.[Key]
+            JOIN Domain.ApprenticeshipEarningsProfile AS ep 
+                ON me.EarningsProfileId = ep.EarningsProfileId
+            JOIN Domain.ApprenticeshipEpisode e 
+                ON ep.EpisodeKey = e.[Key]
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
+
+
+            /*===========================================================
             1. Delete Maths & English Instalments
             ===========================================================*/
             DELETE mei
