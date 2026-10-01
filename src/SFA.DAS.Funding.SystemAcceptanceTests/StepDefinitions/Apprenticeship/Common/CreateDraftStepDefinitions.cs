@@ -150,6 +150,7 @@ public class CreateDraftStepDefinitions(
         context.Set(testData);
     }
 
+    [Given(@"SLD inform us of a new Learner")]
     [When(@"SLD inform us of a new Learner")]
     public async Task WhenSldInformUsOfANewLearner()
     {
