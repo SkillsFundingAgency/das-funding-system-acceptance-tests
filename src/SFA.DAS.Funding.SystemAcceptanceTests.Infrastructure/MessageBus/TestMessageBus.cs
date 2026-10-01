@@ -24,20 +24,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.MessageBus
 
             if (NotUsingLearningTransport(config))
             {
-                if (config.UseWebSockets)
-                {
-                    var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
 
-                    transport.UseWebSockets();
-                    transport.ConnectionString(config.SharedServiceBusFqdn);
+                var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
 
-                    transport.CustomTokenCredential(new Azure.Identity.DefaultAzureCredential());
-                }
-                else
-                {
-                    endpointConfiguration
-                    .UseAzureServiceBusTransport(Config.SharedServiceBusFqdn);
-                }
+                transport.UseWebSockets();
+                transport.ConnectionString(config.SharedServiceBusFqdn);
+
+                transport.CustomTokenCredential(new Azure.Identity.DefaultAzureCredential());
             }
             else
             {

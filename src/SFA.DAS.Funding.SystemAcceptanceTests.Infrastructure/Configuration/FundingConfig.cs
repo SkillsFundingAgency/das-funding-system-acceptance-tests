@@ -35,5 +35,4 @@ public class FundingConfig
     public string CertificateSecretClientUrl { get; set; } = NotSet;
     public string CertificateSecretName { get; set; } = NotSet;
     public bool UseLegacyLearnerDataOuterUrls { get; set; } = false;
-    public bool UseWebSockets { get; set; } = false;
 }
