@@ -22,9 +22,9 @@ Scenario: Send apprenticeship earnings to payments on approval
 	| 8              | 500.00000 | learning   |
 	| 1              | 500.00000 | learning   |
 
-@ignore
 Scenario: Send the apprenticeship learning type to payments
-	Given a draft apprenticeship learning is created
+	Given there is an apprenticeship
+	And a draft apprenticeship learning is created
 	When the apprenticeship learning is approved
 	Then the apprenticeship "learning type" is sent to Payments
 

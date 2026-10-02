@@ -1,4 +1,5 @@
 using System.Globalization;
+using GraphQL;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 
@@ -60,6 +61,35 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
                     Convert.ToDecimal(period.Amount, CultureInfo.InvariantCulture) == expectedAmount);
             });
         }, "Failed to find the expected apprenticeship earnings instalments in the growth and skills payments recalculated event.");
+    }
+
+    [Then("the apprenticeship \"learning type\" is sent to Payments")]
+    public async Task ThenTheApprenticeshipLearningTypeIsSentToPayments()
+    {
+        var testData = context.Get<TestData>();
+
+        Guid? learnerKey = null;
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var learning = learningSqlClient.TryGetApprenticeshipByUln(testData.Uln);
+            learnerKey = learning?.Learner?.Key;
+            return learnerKey != null;
+        }, "Failed to find the expected learner in learning DB");
+
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler
+                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
+
+            testData.CalculateGrowthAndSkillsPaymentsEvent =
+                growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+
+            return testData.CalculateGrowthAndSkillsPaymentsEvent != null;
+        }, "Failed to find growth and skills payments recalculated event.");
+
+        testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Training.LearningType.ToString().Should().Be("Apprenticeship");
     }
 
     private static string GetCellValue(DataTableRow row, params string[] columnNames)
