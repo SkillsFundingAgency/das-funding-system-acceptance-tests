@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Data;
+﻿using SFA.DAS.CommitmentsV2.Messages.Events;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Data;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
@@ -21,6 +22,34 @@ public class CreateDraftStepDefinitions(
         testData.CommitmentsApprenticeshipCreatedEvent = context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, "1");
 
         await ADraftApprenticeshipLearningIsCreated();
+    }
+
+    [Given(@"a draft apprenticeship learning is created with a completion and achievement date of (.*)")]
+    public async Task ADraftApprenticeshipLearningIsCreatedWithCompletionDate(TokenisableDateTime completionDate)
+    {
+        var testData = context.Get<TestData>();
+        var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
+
+        var draftLearnerData = CreateBasicDraftLearner(apprenticeshipCreatedEvent);
+        draftLearnerData.Delivery.OnProgramme.First().CompletionDate = completionDate.Value;
+        draftLearnerData.Delivery.OnProgramme.First().AchievementDate = completionDate.Value;
+
+        await learnerDataOuterApiHelper.AddLearnerData(apprenticeshipCreatedEvent.ProviderId, draftLearnerData);
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var learning = learningSqlClient.TryGetApprenticeshipByUln(apprenticeshipCreatedEvent.Uln);
+            if (learning?.Episodes == null ||
+                learning.TrainingCode.Trim() != apprenticeshipCreatedEvent.TrainingCode ||
+                !learning.Episodes.Any(e => e.Ukprn == apprenticeshipCreatedEvent.ProviderId))
+            {
+                return false;
+            }
+
+            testData.LearnerKey = learning.LearnerKey;
+            return true;
+        }, "Failed to find draft apprenticeship in Learning DB");
+
     }
 
     [Given(@"a learning is created with start date (.*), duration of (.*) and agreed price (.*)")]
@@ -237,7 +266,29 @@ public class CreateDraftStepDefinitions(
         var testData = context.Get<TestData>();
         var apprenticeshipCreatedEvent = testData.CommitmentsApprenticeshipCreatedEvent;
 
-        var draftLearnerData = new LearnerDataRequest
+        var draftLearnerData = CreateBasicDraftLearner(apprenticeshipCreatedEvent);
+
+        await learnerDataOuterApiHelper.AddLearnerData(apprenticeshipCreatedEvent.ProviderId, draftLearnerData);
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var learning = learningSqlClient.TryGetApprenticeshipByUln(apprenticeshipCreatedEvent.Uln);
+            if (learning?.Episodes == null ||
+                learning.TrainingCode.Trim() != apprenticeshipCreatedEvent.TrainingCode ||
+                !learning.Episodes.Any(e => e.Ukprn == apprenticeshipCreatedEvent.ProviderId))
+            {
+                return false;
+            }
+
+            testData.LearnerKey = learning.LearnerKey;
+            return true;
+        }, "Failed to find draft apprenticeship in Learning DB");
+
+    }
+
+    private static LearnerDataRequest CreateBasicDraftLearner(ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
+    {
+        return new LearnerDataRequest
         {
             ConsumerReference = "AcceptanceTests",
             Learner = new StubLearner
@@ -275,23 +326,6 @@ public class CreateDraftStepDefinitions(
                 EnglishAndMaths = new List<StubEnglishAndMaths>()
             }
         };
-
-        await learnerDataOuterApiHelper.AddLearnerData(apprenticeshipCreatedEvent.ProviderId, draftLearnerData);
-
-        await WaitHelper.WaitForIt(() =>
-        {
-            var learning = learningSqlClient.TryGetApprenticeshipByUln(apprenticeshipCreatedEvent.Uln);
-            if (learning?.Episodes == null ||
-                learning.TrainingCode.Trim() != apprenticeshipCreatedEvent.TrainingCode ||
-                !learning.Episodes.Any(e => e.Ukprn == apprenticeshipCreatedEvent.ProviderId))
-            {
-                return false;
-            }
-
-            testData.LearnerKey = learning.LearnerKey;
-            return true;
-        }, "Failed to find draft apprenticeship in Learning DB");
-
     }
 
 }

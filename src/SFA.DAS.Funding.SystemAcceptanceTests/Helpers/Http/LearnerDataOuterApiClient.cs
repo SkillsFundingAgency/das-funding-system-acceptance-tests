@@ -487,6 +487,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public List<CostDetails> Costs { get; set; }
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
+            public DateTime? AchievementDate { get; set; }
             public List<LearningSupport> LearningSupport { get; set; }
             public bool? IsFlexiJob { get; set; }
         }
