@@ -27,11 +27,3 @@ Scenario: Send the apprenticeship learning type to payments
 	And a draft apprenticeship learning is created
 	When the apprenticeship learning is approved
 	Then the apprenticeship "learning type" is sent to Payments
-
-@ignore
-Scenario: Inform payments when an apprenticeship is being funded by a levy transfer
-	Given a draft apprenticeship learning is created
-	And the apprenticeship learning is approved
-	And the learner is being funded by a levy transfer
-	When payments are informed of on-programme earnings
-	Then inform payments that the learner is being funded by a levy transfer
