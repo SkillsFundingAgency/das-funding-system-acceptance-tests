@@ -30,6 +30,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                         .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
                         .With(x => x.AgreementId, "AG1")
                         .With(x => x.StandardCode, 57)
+                        .With(x => x.AchievementDate, (DateTime?)null)
                         .With(x => x.Costs, new List<CostDetails> { fixture.Create<CostDetails>() })
                         .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
                         .Create();
@@ -70,6 +71,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 .With(x => x.AgreementId, "AG1")
                 .With(x => x.LearnAimRef, "ZPROG001")
                 .With(x => x.StandardCode, 57)
+                .With(x => x.AchievementDate, (DateTime?)null)
                 .With(x => x.Costs, costs)
                 .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
                 .Create();
@@ -122,6 +124,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 .With(x => x.LearnAimRef, "ZPROG001")
                 .With(x => x.StandardCode, standardCode)
                 .With(x => x.CompletionDate, (DateTime?)null)
+                .With(x => x.AchievementDate, (DateTime?)null)
                 .With(x => x.WithdrawalDate, (DateTime?)null)
                 .With(x => x.Costs, costs)
                 .With(x => x.LearningSupport, learningSupports)
@@ -163,6 +166,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                         .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
                         .With(x => x.AgreementId, "AG1")
                         .With(x => x.StandardCode, 57)
+                        .With(x => x.AchievementDate, (DateTime?)null)
                         .With(x => x.Costs, new List<CostDetails> { fixture.Create<CostDetails>() })
                         .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
                         .With(x => x.StandardCode, standardCode)
