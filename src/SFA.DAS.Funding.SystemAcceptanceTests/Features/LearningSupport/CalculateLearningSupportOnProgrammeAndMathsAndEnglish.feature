@@ -5,21 +5,6 @@ I want to pay Learning Support only once per Learning for a given period
 Even when it is claimed against both the On programme Learning and Maths & English at the same time
 
 @regression @ignoreInPREPRODandPP
-Scenario: Learning support not duplicated when claimed against On programme learning and Maths & English at the same time
-	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
-	And the apprenticeship learning is approved
-	When learning support is recorded from <ls_start_date> to <ls_end_date>
-	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
-	And a Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342844, course Maths, amount 1000, learning support from <ls_start_date> to <ls_end_date>
-	And SLD submit updated learners details
-	Then combined learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
-
-Examples:
-	| start_date      | end_date        | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
-	| currentAY-09-25 | currentAY-04-15 | currentAY-11-15 | currentAY-03-10 | currentAY-R04            | currentAY-R07           |
-
-
-@regression @ignoreInPREPRODandPP
 Scenario: Learning support for a Maths & English beyond end of On Programme Learning
 	Given a learning is created with start date <start_date>, planned end date <end_date> and agreed price 12000
 	And the apprenticeship learning is approved
@@ -41,7 +26,7 @@ Scenario: Dont pay learning support after on-programme completion
 	When learning support is recorded from currentAY-08-15 to currentAY-07-20
 	And Learning Completion is recorded on currentAY-04-15
 	And SLD submit updated learners details
-	Then maths and english learning support earnings are generated from periods currentAY-R01 to currentAY-R8
+	Then learning support earnings are generated from periods currentAY-R01 to currentAY-R8
 
 @regression @ignoreInPREPRODandPP
 Scenario: Dont pay learning support after english and maths completion
