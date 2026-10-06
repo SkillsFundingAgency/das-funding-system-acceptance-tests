@@ -52,6 +52,37 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
         AssertLearningSupportEarnings(additionalPayments, learningSupportStart, learningSupportEnd);
     }
 
+    [Then(@"combined learning support earnings are generated from periods (.*) to (.*)")]
+    public async Task VerifyCombinedLearningSupportEarnings(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
+    {
+        var testData = context.Get<TestData>();
+        EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
+            return !testData.IsLearningSupportAdded || earningsApprenticeshipModel.Episodes.GetEpisode(testData).EarningsProfileHistory.Any();
+        }, "Failed to find updated earnings entity.");
+
+        var episode = earningsApprenticeshipModel.Episodes.GetEpisode(testData);
+
+        var onProgrammePayments = episode?.AdditionalPayments?
+            .Where(x => x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport)
+            .Select(x => new LearningSupportPayment(x.AcademicYear, x.DeliveryPeriod, x.Amount, x.AdditionalPaymentType))
+            .ToList() ?? [];
+
+        var mathsAndEnglishPayments = episode?.MathsAndEnglishAdditionalPayments?
+            .Where(x => x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport)
+            .Select(x => new LearningSupportPayment(x.AcademicYear, x.DeliveryPeriod, x.Amount, x.AdditionalPaymentType))
+            .ToList() ?? [];
+
+        var combinedPayments = onProgrammePayments.Concat(mathsAndEnglishPayments).ToList();
+
+        testData.EarningsProfileId = episode.EarningsProfile.EarningsProfileId;
+
+        AssertLearningSupportEarnings(combinedPayments, learningSupportStart, learningSupportEnd);
+    }
+
     [Given(@"maths and english learning support earnings are generated from periods (.*) to (.*)")]
     [Then(@"maths and english learning support earnings are generated from periods (.*) to (.*)")]
     public async Task VerifyMathsAndEnglishLearningSupportEarnings(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
@@ -98,7 +129,35 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
         TokenisablePeriod learningSupportStart,
         TokenisablePeriod learningSupportEnd)
     {
+        additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
+        var learningSupportPayments = additionalPayments!
+            .Where(x => x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport)
+            .ToList();
+
+        learningSupportPayments.Should().NotContain(x =>
+                new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(learningSupportStart.Value),
+            $"Expected no Learning Support earnings before {learningSupportStart.Value.ToCollectionPeriodString()}");
+
+        learningSupportPayments.Should().NotContain(x =>
+                learningSupportEnd.Value.IsBefore(new Period(x.AcademicYear, x.DeliveryPeriod)),
+            $"Expected no Learning Support earnings after {learningSupportEnd.Value.ToCollectionPeriodString()}");
+
+        while (learningSupportStart.Value.IsBefore(learningSupportEnd.Value.GetNextPeriod()))
+        {
+            learningSupportPayments.Should().Contain(x =>
+                    x.Amount == 150
+                    && x.AcademicYear == learningSupportStart.Value.AcademicYear
+                    && x.DeliveryPeriod == learningSupportStart.Value.PeriodValue, $"Expected learning support earning for {learningSupportStart.Value.ToCollectionPeriodString()}");
+
+            learningSupportStart.Value = learningSupportStart.Value.GetNextPeriod();
+        }
+    }
+
+    private static void AssertLearningSupportEarnings(List<LearningSupportPayment> additionalPayments,
+        TokenisablePeriod learningSupportStart,
+        TokenisablePeriod learningSupportEnd)
+    {
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
         additionalPayments.Should().NotContain(x =>
@@ -115,32 +174,38 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
                     x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport
                     && x.Amount == 150
                     && x.AcademicYear == learningSupportStart.Value.AcademicYear
-                    && x.DeliveryPeriod == learningSupportStart.Value.PeriodValue, $"Expected learning support earning for {learningSupportStart.Value.ToCollectionPeriodString()}");
+                    && x.DeliveryPeriod == learningSupportStart.Value.PeriodValue,
+                $"Expected learning support earning for {learningSupportStart.Value.ToCollectionPeriodString()}");
 
             learningSupportStart.Value = learningSupportStart.Value.GetNextPeriod();
         }
     }
 
+    private record LearningSupportPayment(short AcademicYear, byte DeliveryPeriod, decimal Amount,
+        AdditionalPaymentType AdditionalPaymentType);
+
     private static void AssertLearningSupportEarnings(List<EnglishAndMathsAdditionalPaymentEntity>? additionalPayments,
         TokenisablePeriod learningSupportStart,
         TokenisablePeriod learningSupportEnd)
     {
-
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
-        additionalPayments.Should().NotContain(x =>
+        var learningSupportPayments = additionalPayments!
+            .Where(x => x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport)
+            .ToList();
+
+        learningSupportPayments.Should().NotContain(x =>
                 new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(learningSupportStart.Value),
             $"Expected no Learning Support earnings before {learningSupportStart.Value.ToCollectionPeriodString()}");
 
-        additionalPayments.Should().NotContain(x =>
+        learningSupportPayments.Should().NotContain(x =>
                 learningSupportEnd.Value.IsBefore(new Period(x.AcademicYear, x.DeliveryPeriod)),
             $"Expected no Learning Support earnings after {learningSupportEnd.Value.ToCollectionPeriodString()}");
 
         while (learningSupportStart.Value.IsBefore(learningSupportEnd.Value.GetNextPeriod()))
         {
-            additionalPayments.Should().ContainSingle(x =>
-                    x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport
-                    && x.Amount == 150
+            learningSupportPayments.Should().ContainSingle(x =>
+                    x.Amount == 150
                     && x.AcademicYear == learningSupportStart.Value.AcademicYear
                     && x.DeliveryPeriod == learningSupportStart.Value.PeriodValue, $"Expected learning support earning for {learningSupportStart.Value.ToCollectionPeriodString()}");
 
