@@ -11,7 +11,7 @@ Scenario: Learning support added for Maths and English course
 	When a Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	Then learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	Then maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | course              | amount | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
@@ -24,7 +24,7 @@ Scenario: Learning support added for Maths and English course - paid until compl
 	When an English and Maths learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount>, completion date as <completion_date>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	Then learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	Then maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | course              | amount | completion_date | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
@@ -37,7 +37,7 @@ Scenario: No LSF earnings when learner Withdraws from E&M
 	When English and Maths learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount>, withdrawal date <withdrawal_date>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	Then learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	Then maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | course              | amount | withdrawal_date | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |

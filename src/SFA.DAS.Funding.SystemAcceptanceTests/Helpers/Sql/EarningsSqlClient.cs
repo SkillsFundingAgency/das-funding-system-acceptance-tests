@@ -46,6 +46,19 @@ public class EarningsSqlClient
 
             episode.AdditionalPayments = _sqlServerClient.GetList<AdditionalPaymentsModel>($"SELECT * FROM [Domain].[ApprenticeshipAdditionalPayment] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
 
+            episode.MathsAndEnglishAdditionalPayments = _sqlServerClient.GetList<EnglishAndMathsAdditionalPaymentEntity>($@"
+                SELECT
+                    meap.[Key],
+                    meap.EnglishAndMathsKey,
+                    meap.AcademicYear,
+                    meap.DeliveryPeriod,
+                    meap.Amount,
+                    meap.AdditionalPaymentType,
+                    meap.DueDate
+                FROM [Domain].[EnglishAndMathsAdditionalPayment] meap
+                INNER JOIN [Domain].[EnglishAndMaths] me ON meap.EnglishAndMathsKey = me.[Key]
+                WHERE me.EarningsProfileId = '{episode.EarningsProfile.EarningsProfileId}'");
+
             episode.MathsAndEnglish = _sqlServerClient.GetList<MathsAndEnglishModel>($"SELECT * FROM [Domain].[EnglishAndMaths] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
 
             if (episode.MathsAndEnglishInstalments == null)

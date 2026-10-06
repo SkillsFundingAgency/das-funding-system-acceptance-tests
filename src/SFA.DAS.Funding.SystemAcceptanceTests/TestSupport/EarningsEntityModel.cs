@@ -29,6 +29,7 @@ public class EpisodeModel
     public EarningsProfileModel EarningsProfile { get; set; }
     public List<EarningsProfileHistoryModel> EarningsProfileHistory { get; set; }
     public List<AdditionalPaymentsModel> AdditionalPayments { get; set; }
+    public List<EnglishAndMathsAdditionalPaymentEntity> MathsAndEnglishAdditionalPayments { get; set; }
     public List<MathsAndEnglishModel> MathsAndEnglish { get; set; }
     public List<MathsAndEnglishInstalment> MathsAndEnglishInstalments { get; set; }
     public List<MathsAndEnglishPeriodInLearning> MathsAndEnglishPeriodInLearning { get; set; }
@@ -83,6 +84,17 @@ public class InstalmentModel : InstalmentModelBase
 
 public class AdditionalPaymentsModel : InstalmentModelBase
 {
+    public AdditionalPaymentType AdditionalPaymentType { get; set; }
+    public DateTime DueDate { get; set; }
+}
+
+public class EnglishAndMathsAdditionalPaymentEntity
+{
+    public Guid Key { get; set; }
+    public Guid EnglishAndMathsKey { get; set; }
+    public short AcademicYear { get; set; }
+    public byte DeliveryPeriod { get; set; }
+    public decimal Amount { get; set; }
     public AdditionalPaymentType AdditionalPaymentType { get; set; }
     public DateTime DueDate { get; set; }
 }

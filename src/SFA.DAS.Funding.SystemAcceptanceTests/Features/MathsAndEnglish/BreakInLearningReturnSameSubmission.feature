@@ -8,7 +8,7 @@ Background:
 	And a Maths and English learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, learning support from currentAY-08-05 to currentAY-04-10
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R08 with instalment amount 100 for course English Foundation
-	And learning support earnings are generated from periods currentAY-R01 to currentAY-R08
+	And maths and english learning support earnings are generated from periods currentAY-R01 to currentAY-R08
 
 #FLP-1421 - AC2	
 @regression @ignoreInPREPRODandPP

@@ -49,6 +49,83 @@ public class LearningSupportAssertionsStepDefinitions(ScenarioContext context, E
 
         testData.EarningsProfileId = episode.EarningsProfile.EarningsProfileId;
 
+        AssertLearningSupportEarnings(additionalPayments, learningSupportStart, learningSupportEnd);
+    }
+
+    [Given(@"maths and english learning support earnings are generated from periods (.*) to (.*)")]
+    [Then(@"maths and english learning support earnings are generated from periods (.*) to (.*)")]
+    public async Task VerifyMathsAndEnglishLearningSupportEarnings(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
+    {
+        var testData = context.Get<TestData>();
+        EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
+            return !testData.IsLearningSupportAdded || earningsApprenticeshipModel.Episodes.GetEpisode(testData).EarningsProfileHistory.Any();
+        }, "Failed to find updated earnings entity.");
+
+        var episode = earningsApprenticeshipModel.Episodes.GetEpisode(testData);
+
+        var additionalPayments = episode?.MathsAndEnglishAdditionalPayments;
+
+        testData.EarningsProfileId = episode.EarningsProfile.EarningsProfileId;
+
+        AssertLearningSupportEarnings(additionalPayments, learningSupportStart, learningSupportEnd);
+    }
+
+    [Then(@"no maths and english learning support earnings are generated")]
+    public async Task ThenNoMathsAndEnglishLearningSupportEarningsAreGenerated()
+    {
+        var testData = context.Get<TestData>();
+        EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            earningsApprenticeshipModel = earningsEntitySqlClient.GetApprenticeshipEarningsEntityModel(context);
+            return earningsApprenticeshipModel.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EarningsProfileHistory.Any();
+        }, "Failed to find updated earnings entity.");
+
+        var additionalPayments = earningsApprenticeshipModel
+            .Episodes
+            .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
+            ?.MathsAndEnglishAdditionalPayments;
+
+        additionalPayments.Should().NotContain(x => x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport);
+    }
+
+    private static void AssertLearningSupportEarnings(List<AdditionalPaymentsModel>? additionalPayments,
+        TokenisablePeriod learningSupportStart,
+        TokenisablePeriod learningSupportEnd)
+    {
+
+        additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
+
+        additionalPayments.Should().NotContain(x =>
+                new Period(x.AcademicYear, x.DeliveryPeriod).IsBefore(learningSupportStart.Value),
+            $"Expected no Learning Support earnings before {learningSupportStart.Value.ToCollectionPeriodString()}");
+
+        additionalPayments.Should().NotContain(x =>
+                learningSupportEnd.Value.IsBefore(new Period(x.AcademicYear, x.DeliveryPeriod)),
+            $"Expected no Learning Support earnings after {learningSupportEnd.Value.ToCollectionPeriodString()}");
+
+        while (learningSupportStart.Value.IsBefore(learningSupportEnd.Value.GetNextPeriod()))
+        {
+            additionalPayments.Should().ContainSingle(x =>
+                    x.AdditionalPaymentType == AdditionalPaymentType.LearningSupport
+                    && x.Amount == 150
+                    && x.AcademicYear == learningSupportStart.Value.AcademicYear
+                    && x.DeliveryPeriod == learningSupportStart.Value.PeriodValue, $"Expected learning support earning for {learningSupportStart.Value.ToCollectionPeriodString()}");
+
+            learningSupportStart.Value = learningSupportStart.Value.GetNextPeriod();
+        }
+    }
+
+    private static void AssertLearningSupportEarnings(List<EnglishAndMathsAdditionalPaymentEntity>? additionalPayments,
+        TokenisablePeriod learningSupportStart,
+        TokenisablePeriod learningSupportEnd)
+    {
+
         additionalPayments.Should().NotBeNull("No episode found on earnings apprenticeship model");
 
         additionalPayments.Should().NotContain(x =>

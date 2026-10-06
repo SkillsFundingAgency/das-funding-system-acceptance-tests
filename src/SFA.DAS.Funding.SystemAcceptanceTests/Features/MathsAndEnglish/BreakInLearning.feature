@@ -13,7 +13,7 @@ Background:
 	And a Maths and English learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, learning support from currentAY-08-05 to currentAY-04-10
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R08 with instalment amount 100 for course English Foundation
-	And learning support earnings are generated from periods currentAY-R01 to currentAY-R08
+	And maths and english learning support earnings are generated from periods currentAY-R01 to currentAY-R08
 	
 @regression @ignoreInPREPRODandPP
 Scenario: Training provider records an E&M break in learning without specifying a return
@@ -22,7 +22,7 @@ Scenario: Training provider records an E&M break in learning without specifying 
 	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, pause date currentAY-02-25, learning support from currentAY-08-05 to currentAY-04-10
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R06 with instalment amount 100 for course English Foundation
-	And learning support earnings are generated from periods currentAY-R01 to currentAY-R06
+	And maths and english learning support earnings are generated from periods currentAY-R01 to currentAY-R06
 
 @regression @ignoreInPREPRODandPP
 Scenario: Training provider corrects a previously recorded E&M break in learning without specifying a return
@@ -35,7 +35,7 @@ Scenario: Training provider corrects a previously recorded E&M break in learning
 	When English and Maths learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, pause date currentAY-03-25, learning support from currentAY-08-05 to currentAY-04-10
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R07 with instalment amount 100 for course English Foundation
-	And learning support earnings are generated from periods currentAY-R01 to currentAY-R07
+	And maths and english learning support earnings are generated from periods currentAY-R01 to currentAY-R07
 
 @regression @ignoreInPREPRODandPP
 Scenario: Training provider removes a previously recorded E&M break in learning
@@ -48,4 +48,4 @@ Scenario: Training provider removes a previously recorded E&M break in learning
 	When a Maths and English learning is recorded from currentAY-08-05 to currentAY-04-10 with learnAimRef 60342843, course English Foundation, amount 800, learning support from currentAY-08-05 to currentAY-04-10
 	And SLD submit updated learners details
 	Then Maths and English earnings are generated from periods currentAY-R01 to currentAY-R08 with instalment amount 100 for course English Foundation
-	And learning support earnings are generated from periods currentAY-R01 to currentAY-R08
+	And maths and english learning support earnings are generated from periods currentAY-R01 to currentAY-R08
