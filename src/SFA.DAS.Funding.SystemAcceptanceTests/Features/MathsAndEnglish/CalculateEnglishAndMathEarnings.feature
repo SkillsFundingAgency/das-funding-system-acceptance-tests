@@ -50,7 +50,7 @@ Scenario: Learning Support for Maths and English Earnings
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date <end_date>
 	And a Maths and English learning is recorded from <start_date> to <maths_and_english_end_date> with learnAimRef 60342843, course <course>, amount 12000, learning support from <start_date> to <maths_and_english_end_date>
 	And SLD submit updated learners details
-	Then learning support earnings are generated from periods <expected_first_earning_period> to <expected_last_earning_period>
+	Then maths and english learning support earnings are generated from periods <expected_first_earning_period> to <expected_last_earning_period>
 
 Examples:
 	| start_date      | end_date     | maths_and_english_end_date | course                           | expected_first_earning_period | expected_last_earning_period |
