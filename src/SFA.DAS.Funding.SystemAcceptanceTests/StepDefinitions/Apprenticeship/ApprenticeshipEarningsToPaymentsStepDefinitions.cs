@@ -65,8 +65,7 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     public async Task ThenTheApprenticeshipLearningTypeIsSentToPayments()
     {
         var testData = context.Get<TestData>();
-
-        await GetPaymentsPeriods(testData);
+        testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
 
         testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Training.LearningType.ToString().Should().Be("Apprenticeship");
     }
@@ -75,7 +74,8 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     public async Task ThenTheIncentiveEarningIsSentToPaymentsForProviderAndEmployer(string incentiveEarningNumber, string outcome)
     {
         var testData = context.Get<TestData>();
-        var periods = await GetPaymentsPeriods(testData);
+        testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
+        var periods = GetPaymentsPeriods(testData);
 
         var incentiveExpected = outcome == "is";
 
@@ -90,7 +90,8 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     public async Task ThenTheIncentiveEarningIsSentToPaymentsForEmployer(string incentiveEarningNumber, string outcome)
     {
         var testData = context.Get<TestData>();
-        var periods = await GetPaymentsPeriods(testData);
+        testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
+        var periods = GetPaymentsPeriods(testData);
 
         var incentiveExpected = outcome == "is";
 
@@ -102,7 +103,8 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     public async Task ThenNoIncentiveEarningIsSentToPaymentsForProviderAndEmployer()
     {
         var testData = context.Get<TestData>();
-        var periods = await GetPaymentsPeriods(testData);
+        testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
+        var periods = GetPaymentsPeriods(testData);
 
         periods.Any(x => x.EarningType.ToString().Contains("ProviderIncentive", StringComparison.OrdinalIgnoreCase))
             .Should().BeFalse("no provider incentive payment events should be present");
@@ -134,7 +136,7 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
         };
     }
 
-    private async Task<List<dynamic>> GetPaymentsPeriods(TestData testData)
+    private async Task<dynamic> GetGrowthAndSkillsPaymentsEvent(TestData testData)
     {
         Guid? learnerKey = null;
 
@@ -145,26 +147,26 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
             return learnerKey != null;
         }, "Failed to find the expected learner in learning DB");
 
-        List<dynamic>? periods = null;
-
         await WaitHelper.WaitForIt(() =>
         {
             var growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler
                 .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
 
-            testData.CalculateGrowthAndSkillsPaymentsEvent =
-                growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
 
-            periods = testData.CalculateGrowthAndSkillsPaymentsEvent?.Command.Earnings
-                .SelectMany(x => x.PricePeriods)
-                .SelectMany(x => x.Periods)
-                .Cast<dynamic>()
-                .ToList();
-
-            return testData.CalculateGrowthAndSkillsPaymentsEvent != null && periods != null;
+            return testData.CalculateGrowthAndSkillsPaymentsEvent != null;
         }, "Failed to find growth and skills payments recalculated event.");
 
-        return periods!;
+        return testData.CalculateGrowthAndSkillsPaymentsEvent;
+    }
+
+    private static List<dynamic> GetPaymentsPeriods(TestData testData)
+    {
+        return testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings
+            .SelectMany(x => x.PricePeriods)
+            .SelectMany(x => x.Periods)
+            .Cast<dynamic>()
+            .ToList();
     }
 
     private static bool HasIncentivePeriod(List<dynamic> periods, string incentiveEarningNumber, string recipient)
