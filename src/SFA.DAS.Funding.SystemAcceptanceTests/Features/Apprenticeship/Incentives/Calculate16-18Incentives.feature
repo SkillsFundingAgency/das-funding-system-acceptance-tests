@@ -16,6 +16,8 @@ Scenario: 16-18 Incentive Earnings
 	And the apprenticeship learning is approved
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is sent to payments for provider & employer
 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age |
@@ -32,6 +34,8 @@ Scenario: 16-18 Incentive Earnings (duration only long enough for first earning 
 	And the apprenticeship learning is approved
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is_not sent to payments for provider & employer
 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age |
@@ -47,6 +51,8 @@ Scenario: 16-18 Incentive Earnings (duration too short)
 	And the apprenticeship learning is approved
 	Then the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
+	And the first incentive earning is_not sent to payments for provider & employer
+	And the second incentive earning is_not sent to payments for provider & employer
 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age |
@@ -64,6 +70,8 @@ Scenario: No Incentives for 16-18 learner completing before threshold date
 	And SLD submit updated learners details
 	Then the first incentive earning <first_earnings_generated> generated for provider & employer
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
+	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
+	And the second incentive earning <second_earnings_generated> sent to payments for provider & employer
 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age | completion_date | first_earnings_generated | second_earnings_generated |
@@ -85,6 +93,8 @@ Scenario: No Incentives for 16-18 learner withdrawn before 90 day threshold date
 	And SLD submit updated learners details
 	Then the first incentive earning <first_earnings_generated> generated for provider & employer
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
+	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
+	And the second incentive earning <second_earnings_generated> sent to payments for provider & employer
 
 Examples:
 	| withdrawal_date | first_earnings_generated | second_earnings_generated |
