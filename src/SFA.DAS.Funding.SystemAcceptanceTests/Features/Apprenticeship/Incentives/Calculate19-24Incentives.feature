@@ -19,6 +19,8 @@ Scenario: 19-24 Incentive Earnings - Learner is a Care Leaver with Employer cons
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is sent to payments for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
@@ -37,6 +39,8 @@ Scenario: 19-24 Incentive Earnings - Learner is a Care Leaver without Employer C
 	And SLD submit updated learners details
 	Then the first incentive earning is_not generated for employer
 	And the second incentive earning is_not generated for employer
+	And the first incentive earning is_not sent to payments for employer
+	And the second incentive earning is_not sent to payments for employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
@@ -53,6 +57,8 @@ Scenario: 19-24 Incentive Earnings - Learner has EHCP
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is sent to payments for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
@@ -70,6 +76,8 @@ Scenario: 19-24 Incentive Earnings (duration only long enough for first earning 
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is_not sent to payments for provider & employer
 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age |
@@ -87,6 +95,7 @@ Scenario: 19-24 Incentive Earnings (duration too short)
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
 	Then no incentive earning is generated for provider & employer
+	And no incentive earning is sent to payments for provider & employer
 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age |
@@ -105,6 +114,8 @@ Scenario: No Incentives for 19-24 learner completing before threshold date
 	And SLD submit updated learners details
 	Then the first incentive earning <first_earnings_generated> generated for provider & employer
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
+	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
+	And the second incentive earning <second_earnings_generated> sent to payments for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age | completion_date | first_earnings_generated | second_earnings_generated |
@@ -125,6 +136,8 @@ Scenario: No Incentives for 19+ learner withdrawn before 90-365 day threshold da
 	And SLD submit updated learners details
 	Then the first incentive earning <first_earnings_generated> generated for provider & employer
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
+	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
+	And the second incentive earning <second_earnings_generated> sent to payments for provider & employer
 
 Examples:
 	| withdrawal_date | first_earnings_generated | second_earnings_generated |
@@ -145,11 +158,15 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And SLD submit updated learners details
 	Then the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
+	And the first incentive earning is_not sent to payments for provider & employer
+	And the second incentive earning is_not sent to payments for provider & employer
 	# Change dob to a day less then 25 years and validate incentives are generated
 	When Learner's date of birth is updated to 2001-08-02
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is sent to payments for provider & employer
 	# Change start date so learner is 25 years again - incentives should clear
 	When SLD resubmits ILR
 	And SLD record on-programme training price 12000 with epao as 3000 from date 2026-08-02 to date 2027-07-31
@@ -158,6 +175,8 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And SLD submit updated learners details
 	Then the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
+	And the first incentive earning is_not sent to payments for provider & employer
+	And the second incentive earning is_not sent to payments for provider & employer
 	# Change start date so learner is below 25 years - incentives should generate
 	When SLD resubmits ILR
 	And SLD record on-programme training price 12000 with epao as 3000 from date 2026-08-01 to date 2027-07-31
@@ -166,3 +185,5 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is sent to payments for provider & employer
