@@ -38,7 +38,7 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
                 return false;
             }
 
-            var periods = GetPaymentsPeriods(testData);
+            var periods = GetPaymentsPeriods(testData.CalculateGrowthAndSkillsPaymentsEvent);
 
             if (periods.Count != table.Rows.Count)
             {
@@ -73,7 +73,7 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     {
         var testData = context.Get<TestData>();
         testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
-        var periods = GetPaymentsPeriods(testData);
+        var periods = GetPaymentsPeriods(testData.CalculateGrowthAndSkillsPaymentsEvent);
 
         var incentiveExpected = outcome == "is";
 
@@ -89,7 +89,7 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     {
         var testData = context.Get<TestData>();
         testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
-        var periods = GetPaymentsPeriods(testData);
+        var periods = GetPaymentsPeriods(testData.CalculateGrowthAndSkillsPaymentsEvent);
 
         var incentiveExpected = outcome == "is";
 
@@ -102,7 +102,7 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     {
         var testData = context.Get<TestData>();
         testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
-        var periods = GetPaymentsPeriods(testData);
+        var periods = GetPaymentsPeriods(testData.CalculateGrowthAndSkillsPaymentsEvent);
 
         periods.Any(x => x.EarningType.ToString().Contains("ProviderIncentive", StringComparison.OrdinalIgnoreCase))
             .Should().BeFalse("no provider incentive payment events should be present");
@@ -116,7 +116,7 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     {
         var testData = context.Get<TestData>();
         testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
-        var periods = GetPaymentsPeriods(testData);
+        var periods = GetPaymentsPeriods(testData.CalculateGrowthAndSkillsPaymentsEvent);
 
         var learningSupportPeriods = periods
             .Where(x => x.EarningType.Contains("LearningSupport", StringComparison.OrdinalIgnoreCase))
@@ -151,7 +151,7 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     {
         var testData = context.Get<TestData>();
         testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
-        var periods = GetPaymentsPeriods(testData);
+        var periods = GetPaymentsPeriods(testData.CalculateGrowthAndSkillsPaymentsEvent);
 
         periods.Any(x => x.EarningType.Contains("LearningSupport", StringComparison.OrdinalIgnoreCase))
             .Should().BeFalse("no learning support payment earnings should be present");
@@ -204,9 +204,9 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
         return testData.CalculateGrowthAndSkillsPaymentsEvent;
     }
 
-    private static List<PaymentsPeriodModel> GetPaymentsPeriods(TestData testData)
+    private static List<PaymentsPeriodModel> GetPaymentsPeriods(GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPaymentsEvent)
     {
-        return testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings
+        return growthAndSkillsPaymentsEvent.Command.Earnings
             .SelectMany(earning => earning.PricePeriods
                 .SelectMany(pricePeriod => pricePeriod.Periods
                     .Select(period => new PaymentsPeriodModel(
