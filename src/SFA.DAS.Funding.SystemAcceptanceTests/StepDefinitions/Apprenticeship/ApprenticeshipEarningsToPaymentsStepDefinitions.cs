@@ -1,4 +1,5 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
+using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using System.Globalization;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Apprenticeship;
@@ -37,10 +38,7 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
                 return false;
             }
 
-            var periods = testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings
-                .SelectMany(x => x.PricePeriods)
-                .SelectMany(x => x.Periods)
-                .ToList();
+            var periods = GetPaymentsPeriods(testData);
 
             if (periods.Count != table.Rows.Count)
             {
@@ -55,8 +53,8 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
 
                 return periods.Any(period =>
                     period.DeliveryPeriod == expectedDeliveryPeriod &&
-                    expectedTypes.Contains(period.EarningType.ToString(), StringComparer.OrdinalIgnoreCase) &&
-                    Convert.ToDecimal(period.Amount, CultureInfo.InvariantCulture) == expectedAmount);
+                    expectedTypes.Contains(period.EarningType, StringComparer.OrdinalIgnoreCase) &&
+                    period.Amount == expectedAmount);
             });
         }, "Failed to find the expected apprenticeship earnings instalments in the growth and skills payments recalculated event.");
     }
@@ -113,6 +111,52 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
             .Should().BeFalse("no employer incentive payment events should be present");
     }
 
+    [Then("learning support earnings are sent to payments from periods (.*) to (.*)")]
+    public async Task ThenLearningSupportEarningsAreSentToPaymentsFromPeriods(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
+    {
+        var testData = context.Get<TestData>();
+        testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
+        var periods = GetPaymentsPeriods(testData);
+
+        var learningSupportPeriods = periods
+            .Where(x => x.EarningType.Contains("LearningSupport", StringComparison.OrdinalIgnoreCase))
+            .Select(x => new Period(
+                x.AcademicYear,
+                x.DeliveryPeriod))
+            .ToList();
+
+        learningSupportPeriods.Should().NotBeEmpty("expected learning support earnings to be sent to payments");
+
+        learningSupportPeriods.Should().NotContain(x =>
+                x.IsBefore(learningSupportStart.Value),
+            $"Expected no Learning Support payment earnings before {learningSupportStart.Value.ToCollectionPeriodString()}");
+
+        learningSupportPeriods.Should().NotContain(x =>
+                learningSupportEnd.Value.IsBefore(x),
+            $"Expected no Learning Support payment earnings after {learningSupportEnd.Value.ToCollectionPeriodString()}");
+
+        while (learningSupportStart.Value.IsBefore(learningSupportEnd.Value.GetNextPeriod()))
+        {
+            learningSupportPeriods.Should().ContainSingle(x =>
+                x.AcademicYear == learningSupportStart.Value.AcademicYear &&
+                x.PeriodValue == learningSupportStart.Value.PeriodValue,
+                $"Expected a single Learning Support payment earning for {learningSupportStart.Value.ToCollectionPeriodString()}");
+
+            learningSupportStart.Value = learningSupportStart.Value.GetNextPeriod();
+        }
+    }
+
+    [Then("no learning support earnings are sent to payments")]
+    public async Task ThenNoLearningSupportApprovedEarningsAreSentToPayments()
+    {
+        var testData = context.Get<TestData>();
+        testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
+        var periods = GetPaymentsPeriods(testData);
+
+        periods.Any(x => x.EarningType.Contains("LearningSupport", StringComparison.OrdinalIgnoreCase))
+            .Should().BeFalse("no learning support payment earnings should be present");
+    }
+
     private static string GetCellValue(DataTableRow row, params string[] columnNames)
     {
         var matchedKey = row.Keys.FirstOrDefault(key => columnNames.Any(name => key.Equals(name, StringComparison.OrdinalIgnoreCase)));
@@ -136,7 +180,7 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
         };
     }
 
-    private async Task<dynamic> GetGrowthAndSkillsPaymentsEvent(TestData testData)
+    private async Task<GrowthAndSkillsPaymentsRecalculatedEvent> GetGrowthAndSkillsPaymentsEvent(TestData testData)
     {
         Guid? learnerKey = null;
 
@@ -160,16 +204,20 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
         return testData.CalculateGrowthAndSkillsPaymentsEvent;
     }
 
-    private static List<dynamic> GetPaymentsPeriods(TestData testData)
+    private static List<PaymentsPeriodModel> GetPaymentsPeriods(TestData testData)
     {
         return testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings
-            .SelectMany(x => x.PricePeriods)
-            .SelectMany(x => x.Periods)
-            .Cast<dynamic>()
+            .SelectMany(earning => earning.PricePeriods
+                .SelectMany(pricePeriod => pricePeriod.Periods
+                    .Select(period => new PaymentsPeriodModel(
+                        Convert.ToInt16(earning.AcademicYear, CultureInfo.InvariantCulture),
+                        Convert.ToByte(period.DeliveryPeriod, CultureInfo.InvariantCulture),
+                        Convert.ToDecimal(period.Amount, CultureInfo.InvariantCulture),
+                        period.EarningType.ToString()))))
             .ToList();
     }
 
-    private static bool HasIncentivePeriod(List<dynamic> periods, string incentiveEarningNumber, string recipient)
+    private static bool HasIncentivePeriod(List<PaymentsPeriodModel> periods, string incentiveEarningNumber, string recipient)
     {
         var expectedPrefix = incentiveEarningNumber.ToLowerInvariant() switch
         {
@@ -186,7 +234,9 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
         };
 
         return periods.Any(x =>
-            x.EarningType.ToString().Contains(expectedPrefix, StringComparison.OrdinalIgnoreCase) &&
-            x.EarningType.ToString().Contains(expectedSuffix, StringComparison.OrdinalIgnoreCase));
+            x.EarningType.Contains(expectedPrefix, StringComparison.OrdinalIgnoreCase) &&
+            x.EarningType.Contains(expectedSuffix, StringComparison.OrdinalIgnoreCase));
     }
+
+    private sealed record PaymentsPeriodModel(short AcademicYear, byte DeliveryPeriod, decimal Amount, string EarningType);
 }

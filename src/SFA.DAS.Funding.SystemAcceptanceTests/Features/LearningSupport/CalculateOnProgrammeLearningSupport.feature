@@ -12,6 +12,7 @@ Scenario: Learning support added for On programme learning
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	Then learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	And learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
@@ -30,6 +31,7 @@ Scenario: Learning support removed for On programme learning
 	And learning support is removed
 	And SLD submit updated learners details
 	Then no learning support earnings are generated
+	And no learning support earnings are sent to payments
 
 Examples:
 	| start_date      | end_date        | ls_start_date   | ls_end_date     |
@@ -44,5 +46,6 @@ Scenario: No LSF earnings after learner withdraws from the programme aim
 	And Learning withdrawal date is recorded on currentAY-01-15
 	And SLD submit updated learners details
 	Then learning support earnings are generated from periods currentAY-R04 to currentAY-R05
+	And learning support earnings are sent to payments from periods currentAY-R04 to currentAY-R05
 
 
