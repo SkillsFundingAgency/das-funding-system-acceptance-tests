@@ -24,6 +24,13 @@ public class CreateDraftStepDefinitions(
         await ADraftApprenticeshipLearningIsCreated();
     }
 
+    [When("sld inform us that learner is reinstated by the provider")]
+    public async Task SldInformUsThatLearnerIsReinstatedByTheProvider()
+    {
+        await ADraftApprenticeshipLearningIsCreated();
+    }
+
+
     [Given(@"a draft apprenticeship learning is created with a completion and achievement date of (.*)")]
     public async Task ADraftApprenticeshipLearningIsCreatedWithCompletionDate(TokenisableDateTime completionDate)
     {
