@@ -14,16 +14,6 @@ public class CreateDraftStepDefinitions(
     LearnerDataOuterApiHelper learnerDataOuterApiHelper,
     LearningSqlClient learningSqlClient)
 {
-
-    [Given(@"a learning is created with start date (.*), planned end date (.*) and agreed price (.*)")]
-    public async Task ALearningIsCreatedWithStartDatePlannedEndDateAndAgreedPrice(TokenisableDateTime startDate, TokenisableDateTime plannedEndDate, decimal agreedPrice)
-    {
-        var testData = context.Get<TestData>();
-        testData.CommitmentsApprenticeshipCreatedEvent = context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, plannedEndDate.Value, agreedPrice, "1");
-
-        await ADraftApprenticeshipLearningIsCreated();
-    }
-
     [Given(@"a draft apprenticeship learning is created with a completion and achievement date of (.*)")]
     public async Task ADraftApprenticeshipLearningIsCreatedWithCompletionDate(TokenisableDateTime completionDate)
     {
@@ -58,7 +48,10 @@ public class CreateDraftStepDefinitions(
         var plannedEndDate = startDate.Value.AddDays(duration - 1);
         var tokenisedPlannedEndDate = new TokenisableDateTime(plannedEndDate);
 
-        await ALearningIsCreatedWithStartDatePlannedEndDateAndAgreedPrice(startDate, tokenisedPlannedEndDate, agreedPrice);
+        var testData = context.Get<TestData>();
+        testData.CommitmentsApprenticeshipCreatedEvent = context.CreateApprenticeshipCreatedMessageWithCustomValues(startDate.Value, tokenisedPlannedEndDate.Value, agreedPrice, "1");
+
+        await ADraftApprenticeshipLearningIsCreated();
     }
 
     [Given("SLD inform us of a learner with with 2 onprogramme deliveries")]
