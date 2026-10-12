@@ -12,6 +12,7 @@ Scenario: Learning support added for Maths and English course
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	Then maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	And learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | course              | amount | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
@@ -25,6 +26,7 @@ Scenario: Learning support added for Maths and English course - paid until compl
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	Then maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	And learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | course              | amount | completion_date | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
@@ -38,6 +40,7 @@ Scenario: No LSF earnings when learner Withdraws from E&M
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	Then maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	And learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | course              | amount | withdrawal_date | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
