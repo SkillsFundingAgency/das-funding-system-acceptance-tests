@@ -40,3 +40,11 @@ Scenario: Apprentice removed from the ILR and Get Earnings endpoint called
 	When sld inform us that the learner is to removed
 	And the fm36 data is retrieved for currentDate
 	Then fm36 data does not exist for that apprenticeship
+
+# FLP-2005 AC2
+@regression @ignoreInPREPRODandPP
+Scenario: Inform Approvals of approved apps reinstated
+	Given sld inform us that the learner is to removed
+	And a learning removed event is published to approvals
+	When sld inform us that learner is reinstated by the provider
+	Then a learning reinstated event is published to approvals

@@ -261,6 +261,7 @@ public class CreateDraftStepDefinitions(
 
     [Given("a draft apprenticeship learning is created")]
     [When("a draft apprenticeship learning is created")]
+    [When("sld inform us that learner is reinstated by the provider")]
     public async Task ADraftApprenticeshipLearningIsCreated()
     {
         var testData = context.Get<TestData>();
