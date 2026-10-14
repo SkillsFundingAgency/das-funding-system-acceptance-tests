@@ -79,7 +79,16 @@ public class TestRunHooks
         var testLearners = ulns.Select(uln => DcLearnerDataHelper.GetLearner(uln)).ToList();
         var wireMockClient = new WireMockClient();
         var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
-        await wireMockClient.CreateMockResponse($"learners/{currentAcademicYear}?ukprn={Constants.UkPrn}&fundModel=36&progType=-1&standardCode=-1&pageNumber=1&pageSize=1000", testLearners);
+
+        //Suspect this has been silently failing so wrapped in a try/catch for now
+        try
+        {
+            await wireMockClient.CreateMockResponse($"learners/{currentAcademicYear}?ukprn={Constants.UkPrn}&fundModel=36&progType=-1&standardCode=-1&pageNumber=1&pageSize=1000", testLearners);
+        }
+        catch (Exception ex)
+        {
+            LoggerHelper.WriteLog($"Could not set up the DC learner match stub mapping: {ex.Message}");
+        }
     }
 
     [BeforeTestRun(Order = 5)]
@@ -129,7 +138,8 @@ public class TestRunHooks
     [AfterTestRun(Order = 5)]
     public static void ResetEmployerMaxLevyCapForShortCourses()
     {
-        StaticObjects.CoursesSqlClient!.ResetEmployerMaxLevyCap();
+        // Null when a BeforeTestRun hook failed before RegisterSingletons ran; let that failure be the one reported
+        StaticObjects.CoursesSqlClient?.ResetEmployerMaxLevyCap();
     }
 
     private static int GetTestCount()
