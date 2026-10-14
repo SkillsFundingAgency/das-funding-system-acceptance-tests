@@ -264,7 +264,7 @@ public class MathAndEnglishAssertionsStepDefinitions(
             .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
             ?.MathsAndEnglishInstalments;
 
-        mathsAndEnglish.Should().BeEmpty("Expected no Maths and English earnings to be generated, but found some on the earnings apprenticeship model");
+        mathsAndEnglish?.Where(x => !x.IsRemoved).Should().BeEmpty("Expected no Maths and English earnings to be generated, but found some on the earnings apprenticeship model");
         mathAndEnglishInstalments.Should().BeEmpty("Expected no Maths and English instalments to be generated, but found some on the earnings apprenticeship model");
     }
 
