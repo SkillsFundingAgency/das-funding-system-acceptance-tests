@@ -12,12 +12,15 @@ So we both get paid incentives correctly
 Scenario: 19-24 Incentive Earnings - Learner is a Care Leaver with Employer consent
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is sent to payments for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
@@ -29,12 +32,15 @@ Examples:
 Scenario: 19-24 Incentive Earnings - Learner is a Care Leaver without Employer Consent
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And the apprentice is marked as a care leaver without employer consent
 	And SLD submit updated learners details
 	Then the first incentive earning is_not generated for employer
 	And the second incentive earning is_not generated for employer
+	And the first incentive earning is_not sent to payments for employer
+	And the second incentive earning is_not sent to payments for employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
@@ -44,12 +50,15 @@ Examples:
 Scenario: 19-24 Incentive Earnings - Learner has EHCP
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And the apprentice is on a EHCP plan
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is sent to payments for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age |
@@ -60,12 +69,15 @@ Examples:
 Scenario: 19-24 Incentive Earnings (duration only long enough for first earning only)
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is_not sent to payments for provider & employer
 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age |
@@ -77,11 +89,13 @@ Examples:
 Scenario: 19-24 Incentive Earnings (duration too short)
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
 	Then no incentive earning is generated for provider & employer
+	And no incentive earning is sent to payments for provider & employer
 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age |
@@ -92,13 +106,16 @@ Examples:
 Scenario: No Incentives for 19-24 learner completing before threshold date
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
 	And the apprentice is marked as a care leaver
 	And Learning Completion is recorded on <completion_date>
 	And SLD submit updated learners details
 	Then the first incentive earning <first_earnings_generated> generated for provider & employer
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
+	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
+	And the second incentive earning <second_earnings_generated> sent to payments for provider & employer
 
 Examples:
 	| start_date      | planned_end_date | agreed_price | training_code | age | completion_date | first_earnings_generated | second_earnings_generated |
@@ -111,13 +128,16 @@ Examples:
 Scenario: No Incentives for 19+ learner withdrawn before 90-365 day threshold date
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 19
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
 	And the apprentice is marked as a care leaver
 	And Learning withdrawal date is recorded on <withdrawal_date>
 	And SLD submit updated learners details
 	Then the first incentive earning <first_earnings_generated> generated for provider & employer
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
+	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
+	And the second incentive earning <second_earnings_generated> sent to payments for provider & employer
 
 Examples:
 	| withdrawal_date | first_earnings_generated | second_earnings_generated |
@@ -129,7 +149,8 @@ Examples:
 Scenario: Validation of incentive earnings generation and clearance across different age bands
 	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 25
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	# Set learner as 25 years of age at app start and validate no incentives generated
 	When SLD record on-programme training price 12000 with epao as 3000 from date 2026-08-01 to date 2027-07-31
 	And Learner's date of birth is updated to 2001-08-01
@@ -137,11 +158,15 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And SLD submit updated learners details
 	Then the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
+	And the first incentive earning is_not sent to payments for provider & employer
+	And the second incentive earning is_not sent to payments for provider & employer
 	# Change dob to a day less then 25 years and validate incentives are generated
 	When Learner's date of birth is updated to 2001-08-02
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is sent to payments for provider & employer
 	# Change start date so learner is 25 years again - incentives should clear
 	When SLD resubmits ILR
 	And SLD record on-programme training price 12000 with epao as 3000 from date 2026-08-02 to date 2027-07-31
@@ -150,6 +175,8 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And SLD submit updated learners details
 	Then the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
+	And the first incentive earning is_not sent to payments for provider & employer
+	And the second incentive earning is_not sent to payments for provider & employer
 	# Change start date so learner is below 25 years - incentives should generate
 	When SLD resubmits ILR
 	And SLD record on-programme training price 12000 with epao as 3000 from date 2026-08-01 to date 2027-07-31
@@ -158,3 +185,5 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And SLD submit updated learners details
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is sent to payments for provider & employer

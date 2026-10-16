@@ -9,7 +9,9 @@ M&E Earnings must be multipled by this percentage amount.
 
 @regression @ignoreInPREPRODandPP
 Scenario: Earnings for Maths and English with prior learning %
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of <agreed_price>
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount> and prior learning adjustment of <prior_learning> percent and other funding adjustment of <other_funding_adjustment> percent
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And SLD submit updated learners details

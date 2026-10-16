@@ -8,7 +8,9 @@ When M&E is marked as "Complete", earnings for subsequent delivery periods are "
 	
 @regression @ignoreInPREPRODandPP
 Scenario: Balancing earnings for Maths and English on Completion
-	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	Given an apprenticeship has a start date of currentAY-09-25, a planned end date of currentAY-04-15, an agreed price of 12000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with learnAimRef 60342843, course Entry level English, amount 931 and completion on currentAY-01-01
 	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
 	And SLD submit updated learners details
@@ -17,7 +19,9 @@ Scenario: Balancing earnings for Maths and English on Completion
 
 @regression @ignoreInPREPRODandPP
 Scenario: Balancing earnings for Maths and English on Completion moved earlier
-	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	Given an apprenticeship has a start date of currentAY-09-25, a planned end date of currentAY-04-15, an agreed price of 12000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with learnAimRef 60342843, course Entry level English, amount 931 and completion on currentAY-01-01
 	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
 	And SLD submit updated learners details
@@ -32,7 +36,9 @@ Scenario: Balancing earnings for Maths and English on Completion moved earlier
 
 @regression @ignoreInPREPRODandPP
 Scenario: Balancing earnings for Maths and English on Completion moved later
-	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	Given an apprenticeship has a start date of currentAY-09-25, a planned end date of currentAY-04-15, an agreed price of 12000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with learnAimRef 60342843, course Entry level English, amount 931 and completion on currentAY-01-01
 	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
 	And SLD submit updated learners details
@@ -47,7 +53,9 @@ Scenario: Balancing earnings for Maths and English on Completion moved later
 
 @regression @ignoreInPREPRODandPP
 Scenario: Balancing earnings for Maths and English on Completion - Completion removed
-	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	Given an apprenticeship has a start date of currentAY-09-25, a planned end date of currentAY-04-15, an agreed price of 12000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-15 with learnAimRef 60342843, course Entry level English, amount 931 and completion on currentAY-01-01
 	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
 	And SLD submit updated learners details
@@ -62,7 +70,9 @@ Scenario: Balancing earnings for Maths and English on Completion - Completion re
 
 @regression @ignoreInPREPRODandPP
 Scenario: Balancing earnings for Maths and English - Completion in same period as planned end date
-	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	Given an apprenticeship has a start date of currentAY-09-25, a planned end date of currentAY-04-15, an agreed price of 12000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-30 with learnAimRef 60342843, course Entry level English, amount 1000 and completion on currentAY-04-07
 	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
 	And SLD submit updated learners details
@@ -71,7 +81,9 @@ Scenario: Balancing earnings for Maths and English - Completion in same period a
 
 @regression @ignoreInPREPRODandPP
 Scenario: No Balancing earnings for Maths and English - Completion after planned end date
-	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	Given an apprenticeship has a start date of currentAY-09-25, a planned end date of currentAY-04-15, an agreed price of 12000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When Maths and English learning is recorded from currentAY-09-25 to currentAY-04-30 with learnAimRef 60342843, course Entry level English, amount 1000 and completion on currentAY-06-27
 	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
 	And SLD submit updated learners details

@@ -11,7 +11,8 @@ Scenario: New learner is created with a short course
 @regression
 Scenario: Existing learner is updated when a short course is added with updated learner details
 	Given an apprenticeship has a start date of previousAY-08-01, a planned end date of previousAY-07-31, an agreed price of 10000, and a training code 241
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD informs us of a short course for the learner starting on currentAY-08-01 with updated learner details
 		| FirstName | LastName | DateOfBirth | EmailAddress      |
 		| Shaun     | Murphy   | 1999-09-09  | shaun@example.com |

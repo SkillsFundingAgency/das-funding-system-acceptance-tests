@@ -75,16 +75,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             Guid? apprenticeshipLearningKey = testData.LearningKey;
 
-            var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
-            var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
+            var shortCourseRequest = testData.ShortCourseCreateUpdateRequests?.GetValueOrDefault(Constants.UkPrn);
+            var courseCode = shortCourseRequest?.Delivery?.OnProgramme?.SingleOrDefault()?.CourseCode;
 
-            var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+            var shortCourseLearningKey = courseCode == null
+                ? null
+                : learningSqlClient.GetShortCourseLearning(testData.Uln)?
+                .GetEpisode(Constants.UkPrn, courseCode)?
+                .LearningKey;
 
             var learningKeyToUse = apprenticeshipLearningKey.HasValue && apprenticeshipLearningKey.Value != Guid.Empty
                 ? apprenticeshipLearningKey.Value
                 : shortCourseLearningKey;
 
-            await context.ReceiveLearningReinstatedEvent(learningKeyToUse);
+            await context.ReceiveLearningReinstatedEvent((Guid)learningKeyToUse);
         }
 
 

@@ -6,11 +6,14 @@ So that earnings and payments can be recalculated based on the latest data
 
 @regression @ignoreInPREPRODandPP
 Scenario: Learning support added for Maths and English course
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of 12000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When a Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	Then learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	Then maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	And learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | course              | amount | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
@@ -18,11 +21,14 @@ Examples:
 
 @regression @ignoreInPREPRODandPP
 Scenario: Learning support added for Maths and English course - paid until completion
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of 12000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When an English and Maths learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount>, completion date as <completion_date>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	Then learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	Then maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	And learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | course              | amount | completion_date | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
@@ -30,11 +36,14 @@ Examples:
 
 @regression @ignoreInPREPRODandPP
 Scenario: No LSF earnings when learner Withdraws from E&M
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of 12000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When English and Maths learning is recorded from <start_date> to <end_date> with learnAimRef 60342843, course <course>, amount <amount>, withdrawal date <withdrawal_date>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	Then learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	Then maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	And learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | course              | amount | withdrawal_date | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |

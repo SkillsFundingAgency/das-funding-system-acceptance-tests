@@ -6,7 +6,9 @@ And record the completion payment as earned
 
 @regression @ignoreInPREPRODandPP
 Scenario: Balancing and Completion earnings on Completion
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When Learning Completion is recorded on currentAY-06-15
 	And Learning Achievement date is recorded on currentAY-07-22
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
@@ -17,7 +19,9 @@ Scenario: Balancing and Completion earnings on Completion
 
 @regression @ignoreInPREPRODandPP
 Scenario: Balancing and Completion earnings on Completion - Completion removed
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And Learning Completion is recorded on currentAY-06-15
 	And Learning Achievement date is recorded on currentAY-06-15
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
@@ -36,7 +40,9 @@ Scenario: Balancing and Completion earnings on Completion - Completion removed
 
 @regression @ignoreInPREPRODandPP
 Scenario: Balancing and Completion earnings on Completion - Completion moved earlier
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And Learning Completion is recorded on currentAY-06-15
 	And Learning Achievement date is recorded on currentAY-06-15
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
@@ -55,7 +61,9 @@ Scenario: Balancing and Completion earnings on Completion - Completion moved ear
 
 @regression @ignoreInPREPRODandPP
 Scenario: Balancing and Completion earnings on Completion - Completion moved later
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And Learning Completion is recorded on currentAY-06-15
 	And Learning Achievement date is recorded on currentAY-06-15
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
@@ -74,7 +82,9 @@ Scenario: Balancing and Completion earnings on Completion - Completion moved lat
 
 @regression @ignoreInPREPRODandPP
 Scenario: Balancing and Completion earnings on Completion - Change of price post Completion
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And Learning Completion is recorded on currentAY-06-15
 	And Learning Achievement date is recorded on currentAY-06-15
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
@@ -93,7 +103,9 @@ Scenario: Balancing and Completion earnings on Completion - Change of price post
 
 @regression @ignoreInPREPRODandPP
 Scenario: Recalculate earnings based on qualifying period when completion date is recorded - qualifying period met
-	Given a learning has a start date of <start_date>, a planned end date of <planned_end_date> and an agreed price of <agreed_price>
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When Learning Completion is recorded on <completion_date>
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And SLD submit updated learners details
