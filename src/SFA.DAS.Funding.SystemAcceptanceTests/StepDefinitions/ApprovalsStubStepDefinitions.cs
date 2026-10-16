@@ -4,11 +4,12 @@ using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
 [Binding]
-internal class ApprovalsStubStepDefinitions(ApprovalsStubClient approvalsStubClient)
+internal class ApprovalsStubStepDefinitions(ScenarioContext context, ApprovalsStubClient approvalsStubClient)
 {
-    [Given("Approvals will auto-approve a start date change from (.*) to (.*) for a new learning key")]
-    public async Task GivenApprovalsWillAutoApproveAStartDateChangeForANewLearningKey(TokenisableDateTime oldStartDate, TokenisableDateTime newStartDate)
+    [Given("Approvals will auto-approve a start date change from (.*) to (.*) for the learning")]
+    public async Task GivenApprovalsWillAutoApproveAStartDateChangeForTheLearning(TokenisableDateTime oldStartDate, TokenisableDateTime newStartDate)
     {
-        await approvalsStubClient.SetUpAutoApproval(Guid.NewGuid(), oldStartDate.Value, newStartDate.Value);
+        var testData = context.Get<TestData>();
+        await approvalsStubClient.SetUpAutoApproval(testData.LearningKey, oldStartDate.Value, newStartDate.Value);
     }
 }
