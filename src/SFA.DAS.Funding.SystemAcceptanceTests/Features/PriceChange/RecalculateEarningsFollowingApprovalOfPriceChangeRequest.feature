@@ -91,6 +91,7 @@ Scenario: Price change; Both total price and start date changed
 	And a draft apprenticeship learning is created
 	And the apprenticeship learning is approved
 	And the total price is above or below or at the funding band maximum
+	And Approvals will auto-approve a start date change from <start_date> to <new_start_date> for the learning
 	When SLD record on-programme cost as total price <agreed_price> from date <new_start_date> to date <end_date>
 	And SLD record on-programme cost as total price <new_total_price> from date <pc_from_date> to date <end_date>
 	And SLD submit updated learners details
