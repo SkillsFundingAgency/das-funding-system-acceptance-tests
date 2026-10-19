@@ -108,6 +108,7 @@ public class MathsAndEnglishModel
     public string Course { get; set; } = null!; 
     public decimal Amount { get; set; }
     public List<MathsAndEnglishPeriodInLearning> MathsAndEnglishPeriodInLearning { get; set; }
+    public bool IsRemoved { get; set; }
 }
 
 public class MathsAndEnglishPeriodInLearning
