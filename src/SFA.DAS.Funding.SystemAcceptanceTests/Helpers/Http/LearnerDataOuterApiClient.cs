@@ -377,6 +377,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? CompletionDate { get; set; }
             public DateTime? AchievementDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
+            public short? WithdrawalReasonCode { get; set; }
             public DateTime? PauseDate { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
             public Care Care { get; set; }
