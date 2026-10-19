@@ -26,7 +26,7 @@ internal static class ApprenticeshipEventHelper
            .With(_ => _.ApprenticeshipEmployerTypeOnApproval, ApprenticeshipEmployerType.Levy)
            .With(_ => _.AccountId, 3871)
            .With(_ => _.TransferSenderId, (long?)null)
-           .With(_ => _.DateOfBirth, DateTime.Now.AddYears((-25)))
+           .With(_ => _.DateOfBirth, DateTime.Now.AddYears((-25)).Date)
            .With(_ => _.IsOnFlexiPaymentPilot, true)
            .With(_ => _.TrainingCourseVersion, "1.0")
            .With(_ => _.ProviderId, Constants.UkPrn)
@@ -49,21 +49,34 @@ internal static class ApprenticeshipEventHelper
     internal static async Task PublishApprenticeshipApprovedMessage(this ScenarioContext context, CMT.ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
     {
         var learningSqlClient = new LearningSqlClient();
+        var earningsSqlClient = new EarningsSqlClient();
 
         var testData = context.Get<TestData>();
 
+        // Some Episodes do not have an earnings profile, so we only check Approval for those that do
+        var unapprovedEarningsEpisodeKeys = earningsSqlClient.GetUnapprovedEarningsEpisodeKeys(apprenticeshipCreatedEvent.Uln);
+
         await TestServiceBus.Das.SendApprenticeshipApprovedMessage(apprenticeshipCreatedEvent);
+
+        var approvedEpisodeKey = Guid.Empty;
 
         await WaitHelper.WaitForIt(() =>
         {
             var learning = learningSqlClient.TryGetApprenticeshipByUln(apprenticeshipCreatedEvent.Uln);
-            if (learning is null || !learning.Episodes.Any(e => e.ApprovalsApprenticeshipId == apprenticeshipCreatedEvent.ApprenticeshipId))
+            var episode = learning?.Episodes.FirstOrDefault(e => e.ApprovalsApprenticeshipId == apprenticeshipCreatedEvent.ApprenticeshipId && e.isApproved);
+            if (episode is null)
             {
                 return false;
             }
-            testData.LearningKey = learning.Key;
+            testData.LearningKey = learning!.Key;
+            approvedEpisodeKey = episode.Key;
             return true;
-        }, "Failed to find approved apprenticeship in Learning");
+        }, "Failed to find approved episode in Learning");
 
+        if (unapprovedEarningsEpisodeKeys.Contains(approvedEpisodeKey))
+        {
+            await WaitHelper.WaitForIt(() => earningsSqlClient.EarningsProfileIsApproved(approvedEpisodeKey),
+                "Failed to find approved earnings profile in Earnings");
+        }
     }
 }

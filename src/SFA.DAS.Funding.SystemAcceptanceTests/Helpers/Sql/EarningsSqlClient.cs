@@ -109,6 +109,31 @@ public class EarningsSqlClient
         return count > 0;
     }
 
+    public List<Guid> GetUnapprovedEarningsEpisodeKeys(string uln)
+    {
+        const string sql = @"
+            SELECT p.[EpisodeKey]
+            FROM [Domain].[ApprenticeshipEarningsProfile] p
+            INNER JOIN [Domain].[ApprenticeshipEpisode] e ON e.[Key] = p.[EpisodeKey]
+            INNER JOIN [Domain].[ApprenticeshipLearning] l ON l.[LearningKey] = e.[LearningKey]
+            WHERE l.[Uln] = @uln
+              AND p.[IsApproved] = 0";
+
+        return _sqlServerClient.GetList<Guid>(sql, new { uln });
+    }
+
+    public bool EarningsProfileIsApproved(Guid episodeKey)
+    {
+        const string sql = @"
+            SELECT COUNT(1)
+            FROM [Domain].[ApprenticeshipEarningsProfile]
+            WHERE [EpisodeKey] = @episodeKey
+              AND [IsApproved] = 1";
+
+        var count = _sqlServerClient.GetList<int>(sql, new { episodeKey }).FirstOrDefault();
+        return count > 0;
+    }
+
     public List<ShortCourseEarningsModel>? GetShortCourseEarningsEntityModel(string uln)
     {
         var shortCourse = _sqlServerClient.GetList<ShortCourseEarningsModel>($"SELECT * FROM [Domain].[ShortCourseLearning] Where [Uln] ='{uln}'");
