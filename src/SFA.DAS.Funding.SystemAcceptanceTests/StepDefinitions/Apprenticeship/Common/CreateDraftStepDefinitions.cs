@@ -146,13 +146,11 @@ public class CreateDraftStepDefinitions(
             {
                 new StubEnglishAndMaths
                 {
-                    Course = "English Foundation",
-                    LearnAimRef = "12345678",
+                    LearnAimRef = "60075880",
                     StartDate = startDate.Value,
                     EndDate = expectedEndDate.Value,
                     CompletionDate = null,
                     WithdrawalDate = null,
-                    Amount = 1000.00m,
                     LearningSupport = learningSupport,
                     AimSequenceNumber = 2
                 }
