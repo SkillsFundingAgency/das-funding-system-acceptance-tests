@@ -377,6 +377,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? CompletionDate { get; set; }
             public DateTime? AchievementDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
+            public short? WithdrawalReasonCode { get; set; }
             public DateTime? PauseDate { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
             public Care Care { get; set; }
@@ -392,9 +393,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
         }
 
         public class EnglishAndMaths
-        {
-            public string Course { get; set; }
-            public string LearnAimRef { get; set; }
+        {            public string LearnAimRef { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
             public DateTime? CompletionDate { get; set; }
@@ -402,7 +401,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public DateTime? PauseDate { get; set; }
             public int? PriorLearningAdjustment { get; set; }
             public int? OtherFundingAdjustment { get; set; }
-            public decimal Amount { get; set; }
             public List<LearningSupport> LearningSupport { get; set; } = new List<LearningSupport>();
             public int? AimSequenceNumber { get; set; } = 1;
         }
@@ -487,6 +485,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public List<CostDetails> Costs { get; set; }
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
+            public DateTime? AchievementDate { get; set; }
             public List<LearningSupport> LearningSupport { get; set; }
             public bool? IsFlexiJob { get; set; }
         }
@@ -499,7 +498,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 
         public class StubEnglishAndMaths
         {
-            public string Course { get; set; }
             public DateTime? StartDate { get; set; }
             public DateTime? EndDate { get; set; }
             public int? CourseCode { get; set; }
@@ -507,7 +505,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             public int? PriorLearningPercentage { get; set; }
             public DateTime? CompletionDate { get; set; }
             public DateTime? WithdrawalDate { get; set; }
-            public decimal Amount { get; set; }
             public List<LearningSupport> LearningSupport { get; set; }
             public int? AimSequenceNumber { get; set; } = 2;
         }

@@ -13,56 +13,66 @@ Example 5:  after hard close - app never started - no earnings are retained
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is recorded; recalc earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And the planned number of months must be the number of months from the start date to the planned end date <planned_number_of_months>
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning withdrawal date is recorded on <last_day_of_delivery>
+	And Learning withdrawal reason is recorded as <withdrawal_reason_code>
 	And SLD submit updated learners details
 	Then the apprenticeship is marked as withdrawn
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are <new_num_of_instalments>
 	And the earnings after the delivery period <delivery_period_string> and academic year <academic_year_string> are soft deleted
 	And a learning withdrawn event is published to approvals with last day of learning as <last_day_of_delivery>
-	And a withdrawal reason 0 is sent to approvals in the learning withdrawn event
+	And a withdrawal reason <withdrawal_reason_code> is sent to approvals in the learning withdrawn event
 
 
 Examples:
-	| start_date | end_date   | agreed_price | training_code | planned_number_of_months | last_day_of_delivery | new_num_of_instalments | delivery_period_string | academic_year_string |
-	| 2026-11-01 | 2027-11-23 | 15000        | 2             | 12                       | 2026-12-15           | 1                      | 4                      | 2627                 |
-	| 2026-11-15 | 2027-11-20 | 24000        | 254           | 12                       | 2026-12-25           | 0                      | 4                      | 2627                 |
-	| 2026-12-05 | 2027-12-20 | 15000        | 91            | 12                       | 2026-12-05           | 0                      | null                   | null                 |
-	| 2026-10-05 | 2028-06-10 | 18000        | 2             | 20                       | 2027-06-02           | 8                      | 10                     | 2627                 |
-	| 2026-10-05 | 2028-06-10 | 18000        | 91            | 20                       | 2026-10-05           | 0                      | null                   | null                 |
+	| start_date | end_date   | agreed_price | training_code | planned_number_of_months | last_day_of_delivery | withdrawal_reason_code | new_num_of_instalments | delivery_period_string | academic_year_string |
+	| 2026-11-01 | 2027-11-23 | 15000        | 2             | 12                       | 2026-12-15           | OtherPersonalReasons   | 1                      | 4                      | 2627                 |
+	| 2026-11-15 | 2027-11-20 | 24000        | 254           | 12                       | 2026-12-25           | OtherPersonalReasons   | 0                      | 4                      | 2627                 |
+	| 2026-12-05 | 2027-12-20 | 15000        | 91            | 12                       | 2026-12-05           | OtherPersonalReasons   | 0                      | null                   | null                 |
+	| 2026-10-05 | 2028-06-10 | 18000        | 2             | 20                       | 2027-06-02           | OtherPersonalReasons   | 8                      | 10                     | 2627                 |
+	| 2026-10-05 | 2028-06-10 | 18000        | 91            | 20                       | 2026-10-05           | OtherPersonalReasons   | 0                      | null                   | null                 |
 
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is recorded again; with a different date
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning withdrawal date is recorded on <initial_last_day_of_delivery>
+	And Learning withdrawal reason is recorded as <initial_withdrawal_reason_code>
 	And SLD submit updated learners details
 	And the apprenticeship is marked as withdrawn
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are <initial_num_of_instalments>
 	And the earnings after the delivery period <initial_delivery_period_string> and academic year <academic_year_string> are soft deleted
+	And a learning withdrawn event is published to approvals with last day of learning as <initial_last_day_of_delivery>
+	And a withdrawal reason <initial_withdrawal_reason_code> is sent to approvals in the learning withdrawn event
 	And SLD resubmits ILR
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning withdrawal date is recorded on <revised_last_day_of_delivery>
+	And Learning withdrawal reason is recorded as <revised_withdrawal_reason_code>
 	And SLD submit updated learners details
 	And the apprenticeship is marked as withdrawn
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are <revised_num_of_instalments>
 	And the earnings after the delivery period <revised_delivery_period_string> and academic year <academic_year_string> are soft deleted
+	And a learning withdrawn event is published to approvals with last day of learning as <revised_last_day_of_delivery>
+	And a withdrawal reason <revised_withdrawal_reason_code> is sent to approvals in the learning withdrawn event
 
 Examples:
-	| start_date | end_date   | agreed_price | training_code | initial_last_day_of_delivery | initial_num_of_instalments | initial_delivery_period_string | academic_year_string | revised_last_day_of_delivery | revised_num_of_instalments | revised_delivery_period_string |
-	| 2026-11-01 | 2027-11-23 | 15000        | 2             | 2026-12-15                   | 1                          | 4                              | 2627                 | 2027-02-05                   | 3                          | 6                              |
-	| 2026-11-01 | 2027-11-23 | 15000        | 2             | 2027-05-15                   | 6                          | 9                              | 2627                 | 2027-02-05                   | 3                          | 6                              |
+	| start_date | end_date   | agreed_price | training_code | initial_last_day_of_delivery | initial_withdrawal_reason_code | initial_num_of_instalments | initial_delivery_period_string | academic_year_string | revised_last_day_of_delivery | revised_withdrawal_reason_code | revised_num_of_instalments | revised_delivery_period_string |
+	| 2026-11-01 | 2027-11-23 | 15000        | 2             | 2026-12-15                   | ReasonNotKnown                 | 1                          | 4                              | 2627                 | 2027-02-05                   | MadeRedundant                  | 3                          | 6                              |
+	| 2026-11-01 | 2027-11-23 | 15000        | 2             | 2027-05-15                   | ReasonNotKnown                 | 6                          | 9                              | 2627                 | 2027-02-05                   | MadeRedundant                  | 3                          | 6                              |
 
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is removed; with date set to null
 	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date 2026-08-01 to date 2027-07-31
 	And Learning withdrawal date is recorded on 2026-12-15
 	And SLD submit updated learners details
@@ -80,7 +90,8 @@ Scenario: Withdrawal is removed; with date set to null
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal and price change applied together - reclalc earnings
 	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date 2026-08-01 to date 2027-07-31
 	And Learning withdrawal date is recorded on 2027-05-27
 	And SLD submit updated learners details
@@ -99,7 +110,8 @@ Scenario: Withdrawal and price change applied together - reclalc earnings
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is recorded before the end of the qualifying period; there will be no earnings retained
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And the planned number of months must be the number of months from the start date to the planned end date <planned_number_of_months>
 	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
 	And Learning withdrawal date is recorded on <last_day_of_delivery>

@@ -24,6 +24,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Given("a learning withdrawn event is published to approvals with last day of learning as (.*)")]
+        [When("a learning withdrawn event is published to approvals with last day of learning as (.*)")]
         [Then("a learning withdrawn event is published to approvals with last day of learning as (.*)")]
         public async Task LearningWithdrawnEventIsPublishedToApprovals(TokenisableDateTime lastDayOfLearning)
         {
@@ -35,11 +36,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Then("a withdrawal reason (.*) is sent to approvals in the learning withdrawn event")]
-        public void ThenAWithdrawalReasonReasonIsSentToApprovalsInTheLearningWithdrawnEvent(short reasonCode)
+        [When("a withdrawal reason (.*) is sent to approvals in the learning withdrawn event")]
+        public void ThenAWithdrawalReasonReasonIsSentToApprovalsInTheLearningWithdrawnEvent(string reasonCode)
         {
             var testData = context.Get<TestData>();
 
-            testData.LearningWithdrawnEvent.WithdrawalReasonCode.Should().Be(reasonCode, "Unexpected withdrawal reason code found in the event!");
+            testData.LearningWithdrawnEvent.WithdrawalReasonCode.Should().Be(reasonCode.ToWithdrawalReasonCode(), "Unexpected withdrawal reason code found in the event!");
         }
 
 
@@ -75,16 +77,20 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
 
             Guid? apprenticeshipLearningKey = testData.LearningKey;
 
-            var shortCourseRequest = testData.ShortCourseCreateUpdateRequests[Constants.UkPrn];
-            var courseCode = shortCourseRequest.Delivery.OnProgramme.Single().CourseCode;
+            var shortCourseRequest = testData.ShortCourseCreateUpdateRequests?.GetValueOrDefault(Constants.UkPrn);
+            var courseCode = shortCourseRequest?.Delivery?.OnProgramme?.SingleOrDefault()?.CourseCode;
 
-            var shortCourseLearningKey = learningSqlClient.GetShortCourseLearning(testData.Uln).GetEpisode(Constants.UkPrn, courseCode).LearningKey;
+            var shortCourseLearningKey = courseCode == null
+                ? null
+                : learningSqlClient.GetShortCourseLearning(testData.Uln)?
+                .GetEpisode(Constants.UkPrn, courseCode)?
+                .LearningKey;
 
             var learningKeyToUse = apprenticeshipLearningKey.HasValue && apprenticeshipLearningKey.Value != Guid.Empty
                 ? apprenticeshipLearningKey.Value
                 : shortCourseLearningKey;
 
-            await context.ReceiveLearningReinstatedEvent(learningKeyToUse);
+            await context.ReceiveLearningReinstatedEvent((Guid)learningKeyToUse);
         }
 
 

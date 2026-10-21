@@ -112,4 +112,13 @@ internal class WithdrawApprenticeshipStepDefinitions
         testData.LastDayOfLearning = withdrawalDate.Value;
     }
 
+    [Given("Learning withdrawal reason is recorded as (.*)")]
+    [When("Learning withdrawal reason is recorded as (.*)")]
+    public void LearningWithdrawalReasonIsRecordedAs(string withdrawalReasonCode)
+    {
+        var testData = _context.Get<TestData>();
+        var learnerDataBuilder = testData.GetLearnerDataBuilder();
+        learnerDataBuilder.WithWithdrawalReasonCode(withdrawalReasonCode.ToWithdrawalReasonCode());
+    }
+
 }

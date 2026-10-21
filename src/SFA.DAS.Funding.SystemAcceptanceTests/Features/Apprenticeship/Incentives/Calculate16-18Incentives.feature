@@ -12,9 +12,12 @@ So we both get paid incentives correctly
 Scenario: 16-18 Incentive Earnings
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is sent to payments for provider & employer
 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age |
@@ -27,9 +30,12 @@ Examples:
 Scenario: 16-18 Incentive Earnings (duration only long enough for first earning only)
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
+	And the first incentive earning is sent to payments for provider & employer
+	And the second incentive earning is_not sent to payments for provider & employer
 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age |
@@ -41,9 +47,12 @@ Examples:
 Scenario: 16-18 Incentive Earnings (duration too short)
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	Then the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
+	And the first incentive earning is_not sent to payments for provider & employer
+	And the second incentive earning is_not sent to payments for provider & employer
 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age |
@@ -54,12 +63,15 @@ Examples:
 Scenario: No Incentives for 16-18 learner completing before threshold date
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
 	And Learning Completion is recorded on <completion_date>
 	And SLD submit updated learners details
 	Then the first incentive earning <first_earnings_generated> generated for provider & employer
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
+	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
+	And the second incentive earning <second_earnings_generated> sent to payments for provider & employer
 
 Examples:
 	| start_date   | planned_end_date | agreed_price | training_code | age | completion_date | first_earnings_generated | second_earnings_generated |
@@ -72,7 +84,8 @@ Examples:
 Scenario: No Incentives for 16-18 learner withdrawn before 90 day threshold date
 	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 614
 	And the age at the start of the apprenticeship is 17
-	And the apprenticeship commitment is approved
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 	When SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
@@ -80,6 +93,8 @@ Scenario: No Incentives for 16-18 learner withdrawn before 90 day threshold date
 	And SLD submit updated learners details
 	Then the first incentive earning <first_earnings_generated> generated for provider & employer
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
+	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
+	And the second incentive earning <second_earnings_generated> sent to payments for provider & employer
 
 Examples:
 	| withdrawal_date | first_earnings_generated | second_earnings_generated |

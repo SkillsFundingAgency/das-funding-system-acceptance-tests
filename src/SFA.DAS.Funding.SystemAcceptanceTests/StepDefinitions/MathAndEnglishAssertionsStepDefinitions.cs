@@ -11,71 +11,71 @@ public class MathAndEnglishAssertionsStepDefinitions(
     ScenarioContext context,
     EarningsSqlClient earningsEntitySqlClient)
 {
-    [Given("Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*) and amount (.*)")]
-    [When("Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*) and amount (.*)")]
-    public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount)
+    [Given("Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*)")]
+    [When("Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*)")]
+    public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef)
     {
         var testData = context.Get<TestData>();
 
         var learnerDataBuilder = testData.GetLearnerDataBuilder();
-        learnerDataBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, learnAimRef);
+        learnerDataBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, learnAimRef);
 
         testData.IsMathsAndEnglishAdded = true;
     }
 
-    [When("Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*) and completion on (.*)")]
-    public async Task AddMathsAndEnglishLearningWithCompletion(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime completionDate)
+    [When("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*) and completion on (.*)")]
+    public async Task AddMathsAndEnglishLearningWithCompletion(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, TokenisableDateTime completionDate)
     {
         var testData = context.Get<TestData>();
 
         var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-        learnerDataBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, learnAimRef, completionDate: completionDate.Value);
+        learnerDataBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, learnAimRef, completionDate: completionDate.Value);
 
         testData.IsMathsAndEnglishAdded = true;
     }
 
-    [Given("a Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), learning support from (.*) to (.*)")]
-    [When("a Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), learning support from (.*) to (.*)")]
-    public async Task AddMathsAndEnglishLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount,
+    [Given("a Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*) and learning support from (.*) to (.*)")]
+    [When("a Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*) and learning support from (.*) to (.*)")]
+    public async Task AddMathsAndEnglishLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef,
         TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
     {
         var testData = context.Get<TestData>();
 
         var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-        learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef, 2)
+        learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, learnAimRef, 2)
                     .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
         testData.IsMathsAndEnglishAdded = true;
     }
 
 
-    [When("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), withdrawal date (.*), learning support from (.*) to (.*)")]
-    public async Task AddMathsAndEnglishWithWithdrawalAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime withdrawalDate,
+    [When("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), withdrawal date (.*), learning support from (.*) to (.*)")]
+    public async Task AddMathsAndEnglishWithWithdrawalAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, TokenisableDateTime withdrawalDate,
         TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
     {
         var testData = context.Get<TestData>();
 
         var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-        learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef, 2)
+        learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, learnAimRef, 2)
                     .WithWithdrawalDate(withdrawalDate.Value)
                     .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
         testData.IsMathsAndEnglishAdded = true;
     }
 
-    [Given("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), pause date (.*), learning support from (.*) to (.*)")]
-    [When("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), pause date (.*), learning support from (.*) to (.*)")]
-    public async Task AddMathsAndEnglishWithPauseAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime pauseDate,
+    [Given("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), pause date (.*), learning support from (.*) to (.*)")]
+    [When("English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), pause date (.*), learning support from (.*) to (.*)")]
+    public async Task AddMathsAndEnglishWithPauseAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, TokenisableDateTime pauseDate,
         TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
     {
         var testData = context.Get<TestData>();
 
         var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-        learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef, 2)
+        learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, learnAimRef, 2)
                     .WithPauseDate(pauseDate.Value)
                     .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
@@ -156,24 +156,24 @@ public class MathAndEnglishAssertionsStepDefinitions(
     }
 
 
-    [When("an English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*), completion date as (.*), learning support from (.*) to (.*)")]
-    public async Task AddMathsAndEnglishWithCompletionAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course, decimal amount, TokenisableDateTime completionDate,
+    [When("an English and Maths learning is recorded from (.*) to (.*) with learnAimRef (.*), completion date as (.*), learning support from (.*) to (.*)")]
+    public async Task AddMathsAndEnglishWithCompletionAndLearningSupport(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, TokenisableDateTime completionDate,
         TokenisableDateTime learningSupportStartDate, TokenisableDateTime learningSupportEndDate)
     {
         var testData = context.Get<TestData>();
 
         var learnerDataBuilder = testData.GetLearnerDataBuilder();
 
-        learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, course, amount, learnAimRef, 2)
+        learnerDataBuilder.WithMathsAndEnglish(me => me.WithCourseDetails(startDate.Value, endDate.Value, learnAimRef, 2)
         .WithCompletionDate(completionDate.Value)
         .WithLearningSupport(learningSupportStartDate.Value, learningSupportEndDate.Value));
 
         testData.IsMathsAndEnglishAdded = true;
     }
 
-    [Given("Maths and English learning is recorded from (.*) for (.*) days with learnAimRef (.*), course (.*), amount (.*) and withdrawal after (.*) days")]
-    [When("Maths and English learning is recorded from (.*) for (.*) days with learnAimRef (.*), course (.*), amount (.*) and withdrawal after (.*) days")]
-    public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, int duration, string learnAimRef, string course, decimal amount, int withdrawalOnDay)
+    [Given("Maths and English learning is recorded from (.*) for (.*) days with learnAimRef (.*) and withdrawal after (.*) days")]
+    [When("Maths and English learning is recorded from (.*) for (.*) days with learnAimRef (.*) and withdrawal after (.*) days")]
+    public async Task AddMathsAndEnglishLearningWithWithdrawal(TokenisableDateTime startDate, int duration, string learnAimRef, int withdrawalOnDay)
     {
         var testData = context.Get<TestData>();
 
@@ -182,15 +182,14 @@ public class MathAndEnglishAssertionsStepDefinitions(
 
         var learnerBuilder = testData.GetLearnerDataBuilder();
 
-        learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate, course, amount, learnAimRef, withdrawalDate: withdrawalDate);
+        learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate, learnAimRef, withdrawalDate: withdrawalDate);
 
         testData.IsMathsAndEnglishAdded = true;
     }
 
 
-    [When("Maths and English learning is recorded from (.*) to (.*) with learnAimRef (.*), course (.*), amount (.*) and prior learning adjustment of (.*) percent and other funding adjustment of (.*) percent")]
-    public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string course,
-        decimal amount, string? priorLearning, string? otherFunding)
+    [When("Math and English learning is recorded from (.*) to (.*) with learnAimRef (.*) and prior learning adjustment of (.*) percent and other funding adjustment of (.*) percent")]
+    public async Task AddMathsAndEnglishLearning(TokenisableDateTime startDate, TokenisableDateTime endDate, string learnAimRef, string? priorLearning, string? otherFunding)
     {
         var testData = context.Get<TestData>();
         var learnerBuilder = testData.GetLearnerDataBuilder();
@@ -199,19 +198,19 @@ public class MathAndEnglishAssertionsStepDefinitions(
         int? otherFundingPercentage = ToNullableInt(otherFunding);
 
 
-        learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, course, amount, learnAimRef, 2, null, null,
+        learnerBuilder.WithEnglishAndMaths(startDate.Value, endDate.Value, learnAimRef, 2, null, null,
             priorLearningPercentage, otherFundingPercentage);
 
         testData.IsMathsAndEnglishAdded = true;
     }
 
-    [Given("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for course (.*)")]
-    [When("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for course (.*)")]
-    [Then("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for course (.*)")]
+    [Given("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for learnAimRef (.*)")]
+    [When("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for learnAimRef (.*)")]
+    [Then("Maths and English earnings are generated from periods (.*) to (.*) with instalment amount (.*) for learnAimRef (.*)")]
     public async Task VerifyMathsAndEnglishInstalmentEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
-        TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course)
+        TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string learnAimRef)
     {
-        await VerifyMathsAndEnglishEarnings(mathsAndEnglishStartPeriod, mathsAndEnglishEndPeriod, amount, course,
+        await VerifyMathsAndEnglishEarnings(mathsAndEnglishStartPeriod, mathsAndEnglishEndPeriod, amount, learnAimRef,
             true);
     }
 
@@ -223,13 +222,13 @@ public class MathAndEnglishAssertionsStepDefinitions(
         testData.ResetLearnerDataBuilder();
     }
 
-    [Given("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
-    [When("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
-    [Then("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for course (.*)")]
+    [Given("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for learnAimRef (.*)")]
+    [When("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for learnAimRef (.*)")]
+    [Then("Maths and English earnings are generated from periods (.*) to (.*) with regular instalment amount (.*) for learnAimRef (.*)")]
     public async Task VerifyRegularMathsAndEnglishInstalmentEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
-        TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course)
+        TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string learnAimRef)
     {
-        await VerifyMathsAndEnglishEarnings(mathsAndEnglishStartPeriod, mathsAndEnglishEndPeriod, amount, course,
+        await VerifyMathsAndEnglishEarnings(mathsAndEnglishStartPeriod, mathsAndEnglishEndPeriod, amount, learnAimRef,
             false);
     }
 
@@ -264,12 +263,12 @@ public class MathAndEnglishAssertionsStepDefinitions(
             .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
             ?.MathsAndEnglishInstalments;
 
-        mathsAndEnglish.Should().BeEmpty("Expected no Maths and English earnings to be generated, but found some on the earnings apprenticeship model");
+        mathsAndEnglish?.Where(x => !x.IsRemoved).Should().BeEmpty("Expected no Maths and English earnings to be generated, but found some on the earnings apprenticeship model");
         mathAndEnglishInstalments.Should().BeEmpty("Expected no Maths and English instalments to be generated, but found some on the earnings apprenticeship model");
     }
 
     private async Task VerifyMathsAndEnglishEarnings(TokenisablePeriod mathsAndEnglishStartPeriod,
-        TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string course, bool assertNoSubsequentEarningsExist, bool assertNoPriorEarningsExist = false)
+        TokenisablePeriod mathsAndEnglishEndPeriod, decimal amount, string learnAimRef, bool assertNoSubsequentEarningsExist, bool assertNoPriorEarningsExist = false)
     {
         var testData = context.Get<TestData>();
         EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
@@ -286,7 +285,7 @@ public class MathAndEnglishAssertionsStepDefinitions(
 
         var mathsAndEnglish = epidsode?.MathsAndEnglish;
 
-        var mathsAndEnglishKey = mathsAndEnglish.FirstOrDefault(x => x.Course.Contains(course)).Key;
+        var mathsAndEnglishKey = mathsAndEnglish.FirstOrDefault(x => x.LearnAimRef.Contains(learnAimRef)).Key;
 
 
         var mathsAndEnglishInstalments = epidsode
@@ -327,11 +326,11 @@ public class MathAndEnglishAssertionsStepDefinitions(
         }
     }
 
-    [When("a Maths and English balancing earning of (.*) is generated for course (.*) for period (.*)")]
-    [Then("a Maths and English balancing earning of (.*) is generated for course (.*) for period (.*)")]
-    public async Task VerifyMathsAndEnglishEarnings(decimal amount, string course, TokenisablePeriod period)
+    [When("a Maths and English balancing earning of (.*) is generated for learnAimRef (.*) for period (.*)")]
+    [Then("a Maths and English balancing earning of (.*) is generated for learnAimRef (.*) for period (.*)")]
+    public async Task VerifyMathsAndEnglishEarnings(decimal amount, string learnAimRef, TokenisablePeriod period)
     {
-        var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(course, "Balancing");
+        var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(learnAimRef, "Balancing");
 
         mathsAndEnglishInstalments.Should()
             .NotBeNull("No Maths and English balancing instalment data found on earnings apprenticeship model");
@@ -343,25 +342,25 @@ public class MathAndEnglishAssertionsStepDefinitions(
                 x.Amount == amount);
     }
 
-    [Then("No Maths and English balancing earning for course (.*) is generated")]
-    [Then("Maths and English balancing earning is removed for course (.*)")]
-    public void MathsAndEnglishBalancingEarningIsRemovedForCourse(string course)
+    [Then("No Maths and English balancing earning for learnAimRef (.*) is generated")]
+    [Then("Maths and English balancing earning is removed for learnAimRef (.*)")]
+    public void MathsAndEnglishBalancingEarningIsRemovedForCourse(string learnAimRef)
     {
 
-        var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(course, "Balancing");
+        var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(learnAimRef, "Balancing");
 
         Assert.Zero(mathsAndEnglishInstalments.Result.Count, "Unexpected Balancing earning for English and Maths found! ");
     }
 
-    [Then("Maths and English earnings for course (.*) are removed")]
-    public async Task VerifyMathsAndEnglishEarningsAreRemoved(string course)
+    [Then("Maths and English earnings for learnAimRef (.*) are removed")]
+    public async Task VerifyMathsAndEnglishEarningsAreRemoved(string learnAimRef)
     {
-        var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(course, "Regular");
+        var mathsAndEnglishInstalments = GetLatestMathsAndEnglishInstalmentsOfType(learnAimRef, "Regular");
 
         mathsAndEnglishInstalments.Result.Should().BeEmpty("Unexpected Maths and English instalment data found on earnings apprenticeship model");
     }
 
-    private async Task<List<MathsAndEnglishInstalment>> GetLatestMathsAndEnglishInstalmentsOfType(string course, string type)
+    private async Task<List<MathsAndEnglishInstalment>> GetLatestMathsAndEnglishInstalmentsOfType(string learnAimRef, string type)
     {
         var testData = context.Get<TestData>();
         EarningsApprenticeshipModel? earningsApprenticeshipModel = null;
@@ -382,7 +381,7 @@ public class MathAndEnglishAssertionsStepDefinitions(
             return new List<MathsAndEnglishInstalment>();
 
         var mathsAndEnglishKey = episode.MathsAndEnglish
-            .FirstOrDefault(x => x.Course.Contains(course))?
+            .FirstOrDefault(x => x.LearnAimRef.Contains(learnAimRef))?
             .Key;
 
         if (mathsAndEnglishKey == null)

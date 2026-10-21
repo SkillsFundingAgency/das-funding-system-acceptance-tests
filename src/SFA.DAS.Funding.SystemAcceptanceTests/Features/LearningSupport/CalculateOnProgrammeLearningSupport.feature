@@ -6,11 +6,14 @@ So that earnings and payments can be recalculated based on the latest data
 
 @regression @ignoreInPREPRODandPP
 Scenario: Learning support added for On programme learning
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of 12000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When learning support is recorded from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	Then learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	And learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
@@ -21,13 +24,16 @@ Examples:
 
 @regression @ignoreInPREPRODandPP
 Scenario: Learning support removed for On programme learning
-	Given a learning has a start date of <start_date>, a planned end date of <end_date> and an agreed price of 12000
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of 12000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When learning support is recorded from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
 	And learning support is removed
 	And SLD submit updated learners details
 	Then no learning support earnings are generated
+	And no learning support earnings are sent to payments
 
 Examples:
 	| start_date      | end_date        | ls_start_date   | ls_end_date     |
@@ -35,11 +41,14 @@ Examples:
 
 @regression @ignoreInPREPRODandPP
 Scenario: No LSF earnings after learner withdraws from the programme aim
-	Given a learning has a start date of currentAY-09-25, a planned end date of currentAY-04-15 and an agreed price of 12000
+	Given an apprenticeship has a start date of currentAY-09-25, a planned end date of currentAY-04-15, an agreed price of 12000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When learning support is recorded from currentAY-11-15 to currentAY-03-10
 	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
 	And Learning withdrawal date is recorded on currentAY-01-15
 	And SLD submit updated learners details
 	Then learning support earnings are generated from periods currentAY-R04 to currentAY-R05
+	And learning support earnings are sent to payments from periods currentAY-R04 to currentAY-R05
 
 

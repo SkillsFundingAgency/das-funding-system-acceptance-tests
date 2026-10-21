@@ -11,7 +11,8 @@ So we both get paid incentives correctly
 Scenario: Generate Incentive Earnings For current Academic Year 19-24
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
@@ -26,7 +27,8 @@ Examples:
 Scenario: Generate Incentive Earnings For Current Academic Year 16-18
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 

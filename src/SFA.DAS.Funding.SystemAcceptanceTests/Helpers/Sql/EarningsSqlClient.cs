@@ -46,6 +46,19 @@ public class EarningsSqlClient
 
             episode.AdditionalPayments = _sqlServerClient.GetList<AdditionalPaymentsModel>($"SELECT * FROM [Domain].[ApprenticeshipAdditionalPayment] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
 
+            episode.MathsAndEnglishAdditionalPayments = _sqlServerClient.GetList<EnglishAndMathsAdditionalPaymentEntity>($@"
+                SELECT
+                    meap.[Key],
+                    meap.EnglishAndMathsKey,
+                    meap.AcademicYear,
+                    meap.DeliveryPeriod,
+                    meap.Amount,
+                    meap.AdditionalPaymentType,
+                    meap.DueDate
+                FROM [Domain].[EnglishAndMathsAdditionalPayment] meap
+                INNER JOIN [Domain].[EnglishAndMaths] me ON meap.EnglishAndMathsKey = me.[Key]
+                WHERE me.EarningsProfileId = '{episode.EarningsProfile.EarningsProfileId}'");
+
             episode.MathsAndEnglish = _sqlServerClient.GetList<MathsAndEnglishModel>($"SELECT * FROM [Domain].[EnglishAndMaths] Where EarningsProfileId ='{episode.EarningsProfile.EarningsProfileId}'");
 
             if (episode.MathsAndEnglishInstalments == null)
@@ -185,6 +198,20 @@ public class EarningsSqlClient
         var ukprn2 = Constants.AlternativeUkPrn;
 
         var sql = @"
+
+            /*===========================================================
+            0. Delete Maths & English Additional payments
+            ===========================================================*/
+            DELETE meap
+            FROM Domain.EnglishAndMathsAdditionalPayment AS meap
+            JOIN Domain.EnglishAndMaths AS me 
+                ON meap.EnglishAndMathsKey = me.[Key]
+            JOIN Domain.ApprenticeshipEarningsProfile AS ep 
+                ON me.EarningsProfileId = ep.EarningsProfileId
+            JOIN Domain.ApprenticeshipEpisode e 
+                ON ep.EpisodeKey = e.[Key]
+            WHERE e.Ukprn in (@Ukprn1, @Ukprn2);
+
 
             /*===========================================================
             1. Delete Maths & English Instalments

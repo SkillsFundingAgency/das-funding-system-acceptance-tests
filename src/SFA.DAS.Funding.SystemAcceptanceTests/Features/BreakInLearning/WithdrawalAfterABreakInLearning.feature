@@ -1,7 +1,9 @@
 ﻿Feature: WithdrawalReplacesABreakInLearning
 
 Background:
-	Given a learning has a start date of currentAY-08-01, a planned end date of nextAY-07-31 and an agreed price of 15000
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of nextAY-07-31, an agreed price of 15000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date nextAY-07-31
 	And SLD inform us of a break in learning with pause date currentAY-01-15
 	And SLD submit updated learners details

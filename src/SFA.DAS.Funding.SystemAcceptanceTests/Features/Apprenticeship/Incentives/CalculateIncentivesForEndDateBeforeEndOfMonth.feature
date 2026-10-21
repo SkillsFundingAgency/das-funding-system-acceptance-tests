@@ -11,7 +11,8 @@ So we both get paid incentives correctly
 Scenario: Incentive Earnings for learner ending after 90 days not at the end of the month
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
 
@@ -24,7 +25,8 @@ Examples:
 Scenario: Incentive Earnings for learner ending after 365 days not at the end of the month
 	Given an apprenticeship has a start date of <start_date>, a planned end date of <planned_end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And the age at the start of the apprenticeship is <age>
-	When the apprenticeship commitment is approved
+	When a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	Then the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 

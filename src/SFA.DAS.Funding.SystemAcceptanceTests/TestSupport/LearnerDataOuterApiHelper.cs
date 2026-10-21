@@ -30,6 +30,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                         .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
                         .With(x => x.AgreementId, "AG1")
                         .With(x => x.StandardCode, 57)
+                        .With(x => x.AchievementDate, (DateTime?)null)
                         .With(x => x.Costs, new List<CostDetails> { fixture.Create<CostDetails>() })
                         .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
                         .Create();
@@ -39,6 +40,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     ConsumerReference = fixture.Create<string>(),
                     Learner = fixture.Build<StubLearner>()
                     .With(x => x.Uln, uln)
+                    .With(x => x.LearnerRef, $"LR{uln}")
                     .With(x => x.Email, $"{uln}@test.com")
                     .Create(),
                     Delivery = new StubDelivery
@@ -46,7 +48,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                         EnglishAndMaths = new List<StubEnglishAndMaths>
                         {
                             fixture.Build<StubEnglishAndMaths>()
-                            .With(x => x.LearnAimRef, "E&M")
+                            .With(x => x.LearnAimRef, "60075880")
                             .Create(),
                         },
                         OnProgramme = new[] { onProgramme }
@@ -69,6 +71,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 .With(x => x.AgreementId, "AG1")
                 .With(x => x.LearnAimRef, "ZPROG001")
                 .With(x => x.StandardCode, 57)
+                .With(x => x.AchievementDate, (DateTime?)null)
                 .With(x => x.Costs, costs)
                 .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
                 .Create();
@@ -79,6 +82,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     ConsumerReference = fixture.Create<string>(),
                     Learner = fixture.Build<StubLearner>()
                     .With(x => x.Uln, uln)
+                    .With(x => x.LearnerRef, uln)
                     .With(x => x.Email, $"{uln}@test.com")
                     .Create(),
                     Delivery = new StubDelivery
@@ -86,7 +90,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                         EnglishAndMaths = new List<StubEnglishAndMaths>
                         {
                             fixture.Build<StubEnglishAndMaths>()
-                            .With(x => x.LearnAimRef, "E&M")
+                            .With(x => x.LearnAimRef, "60075880")
                             .Create(),
                         },
                         OnProgramme = new[] { onProgramme }
@@ -120,6 +124,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 .With(x => x.LearnAimRef, "ZPROG001")
                 .With(x => x.StandardCode, standardCode)
                 .With(x => x.CompletionDate, (DateTime?)null)
+                .With(x => x.AchievementDate, (DateTime?)null)
                 .With(x => x.WithdrawalDate, (DateTime?)null)
                 .With(x => x.Costs, costs)
                 .With(x => x.LearningSupport, learningSupports)
@@ -131,6 +136,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 ConsumerReference = fixture.Create<string>(),
                 Learner = fixture.Build<StubLearner>()
                     .With(x => x.Uln, uln)
+                    .With(x => x.LearnerRef, uln)
                     .With(x => x.Email, $"{uln}@test.com")
                     .With(x => x.Dob, startDate.AddYears(-17))
                     .Create(),
@@ -160,6 +166,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                         .With(x => x.ExpectedEndDate, DateTime.UtcNow.AddYears(1))
                         .With(x => x.AgreementId, "AG1")
                         .With(x => x.StandardCode, 57)
+                        .With(x => x.AchievementDate, (DateTime?)null)
                         .With(x => x.Costs, new List<CostDetails> { fixture.Create<CostDetails>() })
                         .With(x => x.LearningSupport, fixture.Create<List<LearningSupport>>())
                         .With(x => x.StandardCode, standardCode)
@@ -170,6 +177,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                 ConsumerReference = fixture.Create<string>(),
                 Learner = fixture.Build<StubLearner>()
                     .With(x => x.Uln, uln)
+                    .With(x => x.LearnerRef, uln)
                     .With(x => x.Email, $"{uln}@test.com")
                     .Create(),
                 Delivery = new StubDelivery
@@ -177,7 +185,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     EnglishAndMaths = new List<StubEnglishAndMaths>
                         {
                             fixture.Build<StubEnglishAndMaths>()
-                            .With(x => x.LearnAimRef, "E&M")
+                            .With(x => x.LearnAimRef, "60075880")
                             .Create(),
                         },
                     OnProgramme = new[] { onProgramme }

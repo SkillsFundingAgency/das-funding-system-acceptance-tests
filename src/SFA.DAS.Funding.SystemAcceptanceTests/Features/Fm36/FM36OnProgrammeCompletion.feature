@@ -5,7 +5,9 @@ Fm36 Withdrawl tests
 
 @regression @ignoreInPREPRODandPP
 Scenario: On programme completion
-	Given a learning has a start date of currentAY-08-01, a planned end date of currentAY-07-31 and an agreed price of 15000
+	Given an apprenticeship has a start date of currentAY-08-01, a planned end date of currentAY-07-31, an agreed price of 15000, and a training code 1
+	And a draft apprenticeship learning is created
+	And the apprenticeship learning is approved
 	When Learning Completion is recorded on currentAY-06-15
 	And Learning Achievement date is recorded on currentAY-07-01
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
