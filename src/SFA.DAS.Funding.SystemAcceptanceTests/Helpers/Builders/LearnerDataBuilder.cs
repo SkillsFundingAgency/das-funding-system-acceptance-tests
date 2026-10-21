@@ -147,6 +147,13 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
+        public LearnerDataBuilder WithWithdrawalReasonCode(short? withdrawalReasonCode)
+        {
+            _request.Delivery.OnProgramme.Latest().WithdrawalReasonCode = withdrawalReasonCode;
+
+            return this;
+        }
+
         public LearnerDataBuilder WithEhcp (bool hasEhcp)
         {
             _request.Learner.HasEhcp = hasEhcp;

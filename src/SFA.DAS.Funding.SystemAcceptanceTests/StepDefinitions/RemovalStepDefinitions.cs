@@ -24,6 +24,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Given("a learning withdrawn event is published to approvals with last day of learning as (.*)")]
+        [When("a learning withdrawn event is published to approvals with last day of learning as (.*)")]
         [Then("a learning withdrawn event is published to approvals with last day of learning as (.*)")]
         public async Task LearningWithdrawnEventIsPublishedToApprovals(TokenisableDateTime lastDayOfLearning)
         {
@@ -35,11 +36,12 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [Then("a withdrawal reason (.*) is sent to approvals in the learning withdrawn event")]
-        public void ThenAWithdrawalReasonReasonIsSentToApprovalsInTheLearningWithdrawnEvent(short reasonCode)
+        [When("a withdrawal reason (.*) is sent to approvals in the learning withdrawn event")]
+        public void ThenAWithdrawalReasonReasonIsSentToApprovalsInTheLearningWithdrawnEvent(string reasonCode)
         {
             var testData = context.Get<TestData>();
 
-            testData.LearningWithdrawnEvent.WithdrawalReasonCode.Should().Be(reasonCode, "Unexpected withdrawal reason code found in the event!");
+            testData.LearningWithdrawnEvent.WithdrawalReasonCode.Should().Be(reasonCode.ToWithdrawalReasonCode(), "Unexpected withdrawal reason code found in the event!");
         }
 
 
