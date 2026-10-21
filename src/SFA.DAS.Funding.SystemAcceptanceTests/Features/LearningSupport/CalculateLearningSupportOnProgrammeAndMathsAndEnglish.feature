@@ -11,7 +11,7 @@ Scenario: Learning support for a Maths & English beyond end of On Programme Lear
 	And the apprenticeship learning is approved
 	When learning support is recorded from <start_date> to <end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
-	And a Maths and English learning is recorded from <start_date> to <me_end_date> with learnAimRef 60342844, course Maths, amount 1000, learning support from <me_ls_start_date> to <me_end_date>
+	And a Maths and English learning is recorded from <start_date> to <me_end_date> with learnAimRef 60075880 and learning support from <me_ls_start_date> to <me_end_date>
 	And SLD submit updated learners details
 	Then combined learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
 
@@ -36,7 +36,7 @@ Scenario: Dont pay learning support after english and maths completion
 	And a draft apprenticeship learning is created
 	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
-	When an English and Maths learning is recorded from currentAY-08-15 to currentAY-07-20 with learnAimRef 60342844, course Maths, amount 1000, completion date as currentAY-04-10, learning support from currentAY-08-25 to currentAY-07-20
+	When an English and Maths learning is recorded from currentAY-08-15 to currentAY-07-20 with learnAimRef 60075880, completion date as currentAY-04-10, learning support from currentAY-08-25 to currentAY-07-20
 	And SLD submit updated learners details
 	Then maths and english learning support earnings are generated from periods currentAY-R01 to currentAY-R8
 
@@ -47,7 +47,7 @@ Scenario: Learning support continues to be paid for English and Maths course aft
 	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And Learning withdrawal date is recorded on currentAY-11-15
-	And a Maths and English learning is recorded from currentAY-08-15 to currentAY-07-20 with learnAimRef 60342844, course Maths, amount 1000, learning support from currentAY-08-15 to currentAY-01-31
+	And a Maths and English learning is recorded from currentAY-08-15 to currentAY-07-20 with learnAimRef 60075880 and learning support from currentAY-08-15 to currentAY-01-31
 	When SLD submit updated learners details
 	Then maths and english learning support earnings are generated from periods currentAY-R01 to currentAY-R06
 
@@ -58,14 +58,14 @@ Scenario: Learning support moved from English and Maths to On programme
 	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And Learning withdrawal date is recorded on currentAY-11-15
-	And a Maths and English learning is recorded from currentAY-08-15 to currentAY-07-20 with learnAimRef 60342844, course Maths, amount 1000, learning support from currentAY-08-01 to currentAY-01-31
+	And a Maths and English learning is recorded from currentAY-08-15 to currentAY-07-20 with learnAimRef 60075880 and learning support from currentAY-08-01 to currentAY-01-31
 	And SLD submit updated learners details
 	And maths and english learning support earnings are generated from periods currentAY-R01 to currentAY-R06
 	When SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And learning support is recorded from currentAY-08-01 to currentAY-01-31
 	And Learning withdrawal date is recorded on currentAY-11-15
-	And Maths and English learning is recorded from currentAY-08-01 to currentAY-07-31 with learnAimRef 6034284, course Maths Foundation and amount 931
+	And Maths and English learning is recorded from currentAY-08-01 to currentAY-07-31 with learnAimRef 60075880
 	And SLD submit updated learners details
 	Then learning support earnings are generated from periods currentAY-R01 to currentAY-R03
 
@@ -76,7 +76,7 @@ Scenario: Learning support continues to be paid for On-prog after English and Ma
 	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date currentAY-08-01 to date currentAY-07-31
 	And learning support is recorded from currentAY-08-01 to currentAY-01-31
-	When English and Maths learning is recorded from currentAY-08-01 to currentAY-07-31 with learnAimRef 60342843, course English Foundation, amount 2000, withdrawal date currentAY-11-15, learning support from currentAY-08-01 to currentAY-07-31
+	When English and Maths learning is recorded from currentAY-08-01 to currentAY-07-31 with learnAimRef 60075880, withdrawal date currentAY-11-15, learning support from currentAY-08-01 to currentAY-07-31
 	And SLD submit updated learners details
 	Then learning support continues to be paid from periods currentAY-R01 to currentAY-R06
 

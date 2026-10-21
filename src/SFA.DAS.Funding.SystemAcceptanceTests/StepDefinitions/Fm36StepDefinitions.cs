@@ -955,6 +955,12 @@ public class Fm36StepDefinitions
 
         string fundingLineType = age < 19 ? "16-18 Apprenticeship (Employer on App Service)" : "19+ Apprenticeship (Employer on App Service)";
 
+        var earnings = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
+
+
+        var englishAndMathsAmount = earnings.Episodes.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)
+            .MathsAndEnglish.Where(x => x.LearnAimRef == EnglishAndMathsLearnerData.LearnAimRef).First().Amount;
+
         Assert.Multiple(() =>
         {
 
@@ -997,7 +1003,7 @@ public class Fm36StepDefinitions
                  $"Not all {LearningDeliveryPeriodisedValuesAttributeNames.MathEngBalPayment} are 0.");
 
             englishAndMathLearningDeliveries.LearningDeliveryPeriodisedValues
-              .AssertValuesForPeriods(LearningDeliveryPeriodisedValuesAttributeNames.MathEngOnProgPayment, startPeriod, endPeriod, EnglishAndMathsLearnerData.Amount/endPeriod, 0);
+              .AssertValuesForPeriods(LearningDeliveryPeriodisedValuesAttributeNames.MathEngOnProgPayment, startPeriod, endPeriod, englishAndMathsAmount / endPeriod, 0);
 
             // Learning Delivery Periodised Text Values
 

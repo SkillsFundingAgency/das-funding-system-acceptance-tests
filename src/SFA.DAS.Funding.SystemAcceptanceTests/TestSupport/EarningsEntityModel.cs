@@ -105,6 +105,7 @@ public class MathsAndEnglishModel
     public Guid EarningsProfileId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
+    public string LearnAimRef { get; set; }
     public string Course { get; set; } = null!; 
     public decimal Amount { get; set; }
     public List<MathsAndEnglishPeriodInLearning> MathsAndEnglishPeriodInLearning { get; set; }

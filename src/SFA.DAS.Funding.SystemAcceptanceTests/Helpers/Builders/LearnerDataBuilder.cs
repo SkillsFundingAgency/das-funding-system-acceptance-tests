@@ -200,7 +200,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             return this;
         }
 
-        public LearnerDataBuilder WithEnglishAndMaths(DateTime startDate, DateTime endDate, string course, decimal amount, 
+        public LearnerDataBuilder WithEnglishAndMaths(DateTime startDate, DateTime endDate, 
             string learnAimRef, int? aimSequenceNumber = 2, DateTime? completionDate = null, DateTime? withdrawalDate = null, 
             int? priorLearningPercentage = null, int? otherFundingAdjustment = null)
         {
@@ -209,8 +209,6 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             {
                 StartDate = startDate,
                 EndDate = endDate,
-                Course = course,
-                Amount = amount,
                 CompletionDate = completionDate,
                 WithdrawalDate = withdrawalDate,
                 PriorLearningAdjustment = priorLearningPercentage,
@@ -281,11 +279,9 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders
             
             _request.Delivery.EnglishAndMaths.Add(new EnglishAndMaths
             {
-                Course = _request.Delivery.EnglishAndMaths.Last().Course,
                 LearnAimRef = _request.Delivery.EnglishAndMaths.Last().LearnAimRef,
                 StartDate = newLearningStartDate,
                 EndDate = newExpectedEndDate ?? _request.Delivery.EnglishAndMaths.Last().EndDate,
-                Amount = newAmount ??_request.Delivery.EnglishAndMaths.Last().Amount,
                 LearningSupport = _request.Delivery.EnglishAndMaths.Last().LearningSupport,
                 WithdrawalDate = newWithdrawalDate,
                 CompletionDate = newCompletionDate,

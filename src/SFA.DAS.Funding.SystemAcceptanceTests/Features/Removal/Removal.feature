@@ -14,13 +14,13 @@ Background:
 
 @regression @ignoreInPREPRODandPP
 Scenario: Apprentice removed from the ILR
-	Given a Maths and English learning is recorded from nextAY-08-01 to currentAYPlusTwo-08-23 with learnAimRef 60342843, course Entry level English, amount 1200, learning support from nextAY-10-12 to nextAY-02-15
+	Given a Maths and English learning is recorded from nextAY-08-01 to currentAYPlusTwo-08-23 with learnAimRef 60075880 and learning support from nextAY-10-12 to nextAY-02-15
 	And SLD inform us of a break in learning with pause date nextAY-01-15
 	And SLD inform us of a return from break in learning with a new learning start date nextAY-02-20
 	And SLD submit updated learners details
 	When sld inform us that the learner is to removed
 	Then earnings are recalculated
-	And Maths and English earnings for course Entry level English are removed
+	And Maths and English earnings for learnAimRef 60075880 are removed
 	And there are 0 on-programme earnings instalments
 	And the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
