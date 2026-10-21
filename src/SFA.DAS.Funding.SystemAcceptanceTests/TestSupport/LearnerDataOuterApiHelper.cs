@@ -48,7 +48,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                         EnglishAndMaths = new List<StubEnglishAndMaths>
                         {
                             fixture.Build<StubEnglishAndMaths>()
-                            .With(x => x.LearnAimRef, "E&M")
+                            .With(x => x.LearnAimRef, "60075880")
                             .Create(),
                         },
                         OnProgramme = new[] { onProgramme }
@@ -90,7 +90,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                         EnglishAndMaths = new List<StubEnglishAndMaths>
                         {
                             fixture.Build<StubEnglishAndMaths>()
-                            .With(x => x.LearnAimRef, "E&M")
+                            .With(x => x.LearnAimRef, "60075880")
                             .Create(),
                         },
                         OnProgramme = new[] { onProgramme }
@@ -185,7 +185,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport
                     EnglishAndMaths = new List<StubEnglishAndMaths>
                         {
                             fixture.Build<StubEnglishAndMaths>()
-                            .With(x => x.LearnAimRef, "E&M")
+                            .With(x => x.LearnAimRef, "60075880")
                             .Create(),
                         },
                     OnProgramme = new[] { onProgramme }

@@ -9,15 +9,11 @@ public class EnglishAndMathsBuilder
     public EnglishAndMathsBuilder WithCourseDetails(
         DateTime startDate,
         DateTime endDate,
-        string course,
-        decimal amount, 
         string learnAimRef,
         int? aimSequenceNumber)
     {
-        _course.Course = course;
         _course.StartDate = startDate;
         _course.EndDate = endDate;
-        _course.Amount = amount;
         _course.LearnAimRef = learnAimRef;
         _course.AimSequenceNumber = aimSequenceNumber;
         return this;
