@@ -1,5 +1,6 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Payments.EarningEvents.Messages.External;
 using System.Globalization;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Apprenticeship;
@@ -12,14 +13,24 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     {
         var testData = context.Get<TestData>();
 
-        GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPaymentsEvent = learningType.Replace(" ", string.Empty).ToLowerInvariant() switch
+        var normalizedLearningType = NormalizeLearningType(learningType);
+        var growthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData, normalizedLearningType);
+
+        switch (normalizedLearningType)
         {
-            "apprenticeship" => testData.ApprenticeshipGrowthAndSkillsPaymentsEvent = await GetApprenticeshipGrowthAndSkillsPaymentsEvent(testData),
-            "functionalskill" or "functionalskills" or "englishandmaths" => testData.MathsAndEnglishGrowthAndSkillsPaymentsEvent = await GetMathsAndEnglishGrowthAndSkillsPaymentsEvent(testData),
-            "shortcourse" => testData.ShortCourseGrowthAndSkillsPaymentsEvent = await GetShortCourseGrowthAndSkillsPaymentsEvent(testData),
-            _ => throw new ArgumentOutOfRangeException(nameof(learningType), learningType,
-                "Supported values are apprenticeship, shortCourse and functionalSkill")
-        };
+            case CourseType.Apprenticeship:
+                testData.ApprenticeshipGrowthAndSkillsPaymentsEvent = growthAndSkillsPaymentsEvent;
+                break;
+            case CourseType.FunctionalSkill:
+                testData.MathsAndEnglishGrowthAndSkillsPaymentsEvent = growthAndSkillsPaymentsEvent;
+                break;
+            case CourseType.ShortCourse:
+                testData.ShortCourseGrowthAndSkillsPaymentsEvent = growthAndSkillsPaymentsEvent;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(learningType), learningType,
+                    "Supported values are apprenticeship, shortcourse and functionalskill");
+        }
     }
 
     [Then("send the (.*) approved earnings to payments")]
@@ -176,44 +187,10 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
         };
     }
 
-    private Task<GrowthAndSkillsPaymentsRecalculatedEvent> GetApprenticeshipGrowthAndSkillsPaymentsEvent(TestData testData)
-    {
-        return GetGrowthAndSkillsPaymentsEvent(testData, IsOnProgrammeCourseType,
-            "Failed to find apprenticeship growth and skills payments recalculated event.");
-    }
-
-    private Task<GrowthAndSkillsPaymentsRecalculatedEvent> GetMathsAndEnglishGrowthAndSkillsPaymentsEvent(TestData testData)
-    {
-        return GetGrowthAndSkillsPaymentsEvent(testData, IsMathsAndEnglishCourseType,
-            "Failed to find maths and English growth and skills payments recalculated event.");
-    }
-
-    private async Task<GrowthAndSkillsPaymentsRecalculatedEvent> GetShortCourseGrowthAndSkillsPaymentsEvent(TestData testData)
-    {
-        Guid? learnerKey = null;
-
-        await WaitHelper.WaitForIt(() =>
-        {
-            learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.LearnerKey;
-            return learnerKey != null;
-        }, "Failed to find the expected short course learner in learning DB");
-
-        GrowthAndSkillsPaymentsRecalculatedEvent? growthAndSkillsPaymentsEvent = null;
-        await WaitHelper.WaitForIt(() =>
-        {
-            growthAndSkillsPaymentsEvent = GrowthAndSkillsPaymentsRecalculatedEventHandler
-                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey && IsShortCourseCourseType(GetCourseTypeValue(x)));
-
-            return growthAndSkillsPaymentsEvent != null;
-        }, "Failed to find short course growth and skills payments recalculated event.");
-
-        return growthAndSkillsPaymentsEvent!;
-    }
 
     private async Task<GrowthAndSkillsPaymentsRecalculatedEvent> GetGrowthAndSkillsPaymentsEvent(
         TestData testData,
-        Func<string?, bool> courseTypePredicate,
-        string failureMessage)
+        CourseType courseType)
     {
         Guid? learnerKey = null;
 
@@ -228,39 +205,13 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
         await WaitHelper.WaitForIt(() =>
         {
             growthAndSkillsPaymentsEvent = GrowthAndSkillsPaymentsRecalculatedEventHandler
-                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey && courseTypePredicate(GetCourseTypeValue(x)));
+                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey && 
+                                x.Command.Training.CourseType == courseType);
 
             return growthAndSkillsPaymentsEvent != null;
-        }, failureMessage);
+        }, $"Failed to find growth and skills payments recalculated event for learner key {learnerKey} and course type {courseType}");
 
         return growthAndSkillsPaymentsEvent!;
-    }
-
-    private static string? GetCourseTypeValue(GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments)
-    {
-        var courseTypeProperty = growthAndSkillsPayments.Command.Training?.GetType().GetProperty("CourseType");
-        return courseTypeProperty?.GetValue(growthAndSkillsPayments.Command.Training)?.ToString();
-    }
-
-    private static bool IsMathsAndEnglishCourseType(string? courseTypeValue)
-    {
-        return string.Equals(courseTypeValue, "EnglishAndMaths", StringComparison.OrdinalIgnoreCase)
-               || string.Equals(courseTypeValue, "FunctionalSkill", StringComparison.OrdinalIgnoreCase)
-               || string.Equals(courseTypeValue, "FunctionalSkills", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static bool IsOnProgrammeCourseType(string? courseTypeValue)
-    {
-        return string.IsNullOrWhiteSpace(courseTypeValue)
-               || string.Equals(courseTypeValue, "OnProgramme", StringComparison.OrdinalIgnoreCase)
-               || string.Equals(courseTypeValue, "OnProgram", StringComparison.OrdinalIgnoreCase)
-               || string.Equals(courseTypeValue, "Apprenticeship", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static bool IsShortCourseCourseType(string? courseTypeValue)
-    {
-        return string.Equals(courseTypeValue, "ShortCourse", StringComparison.OrdinalIgnoreCase)
-               || string.Equals(courseTypeValue, "Short Courses", StringComparison.OrdinalIgnoreCase);
     }
 
     private static GrowthAndSkillsPaymentsRecalculatedEvent GetCapturedGrowthAndSkillsPaymentsEvent(string? learningType, TestData testData)
@@ -269,23 +220,26 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
 
         return normalizedLearningType switch
         {
-            "apprenticeship" => testData.ApprenticeshipGrowthAndSkillsPaymentsEvent
+            CourseType.Apprenticeship => testData.ApprenticeshipGrowthAndSkillsPaymentsEvent
                                 ?? throw new InvalidOperationException("Apprenticeship payments event has not been captured. Call 'the apprenticeship earnings are sent to payments' first."),
-            "functionalskill" => testData.MathsAndEnglishGrowthAndSkillsPaymentsEvent
+            CourseType.FunctionalSkill => testData.MathsAndEnglishGrowthAndSkillsPaymentsEvent
                                  ?? throw new InvalidOperationException("Functional skill payments event has not been captured. Call 'the functionalSkill earnings are sent to payments' first."),
-            "shortcourse" => testData.ShortCourseGrowthAndSkillsPaymentsEvent
+            CourseType.ShortCourse => testData.ShortCourseGrowthAndSkillsPaymentsEvent
                               ?? throw new InvalidOperationException("Short course payments event has not been captured. Call 'the shortCourse earnings are sent to payments'  first."),
             _ => throw new InvalidOperationException("Approved earnings learning type has not been set. Call the approved earnings capture step first.")
         };
     }
 
-    private static string NormalizeLearningType(string? learningType)
+    private static CourseType NormalizeLearningType(string? learningType)
     {
         var normalized = learningType?.Replace(" ", string.Empty).ToLowerInvariant();
         return normalized switch
         {
-            "functionalskills" or "englishandmaths" => "functionalskill",
-            _ => normalized ?? string.Empty
+            "apprenticeship" => CourseType.Apprenticeship,
+            "functionalskill" => CourseType.FunctionalSkill,
+            "shortcourse" => CourseType.ShortCourse,
+            _ => throw new ArgumentOutOfRangeException(nameof(learningType), learningType,
+                "Supported values are apprenticeship, shortcourse and functionalskill")
         };
     }
 
