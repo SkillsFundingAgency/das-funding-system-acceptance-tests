@@ -20,6 +20,7 @@ Scenario: Apprentice removed from the ILR
 	And SLD submit updated learners details
 	When sld inform us that the learner is to removed
 	Then earnings are recalculated
+	And the apprenticeship earnings are sent to payments 
 	And Maths and English earnings for learnAimRef 60075880 are removed
 	And there are 0 on-programme earnings instalments
 	And the first incentive earning is_not generated for provider & employer

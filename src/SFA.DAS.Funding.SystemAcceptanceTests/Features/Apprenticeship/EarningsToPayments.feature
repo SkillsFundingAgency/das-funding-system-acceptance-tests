@@ -7,7 +7,7 @@ Scenario: Send apprenticeship earnings to payments on approval
 	And a draft apprenticeship learning is created with a completion and achievement date of currentAY-07-31
 	When the apprenticeship learning is approved
 	Then send the apprenticeship approved earnings to payments
-	| deliveryPeriod | amount    | type       |
+	| deliveryPeriod | amount | type       |
 	| 3              | 500.00000 | learning   |
 	| 10             | 500.00000 | learning   |
 	| 11             | 500.00000 | learning   |
@@ -26,4 +26,4 @@ Scenario: Send the apprenticeship learning type to payments
 	Given there is an apprenticeship
 	And a draft apprenticeship learning is created
 	When the apprenticeship learning is approved
-	Then the apprenticeship "learning type" is sent to Payments
+	Then the apprenticeship earnings are sent to payments

@@ -7,73 +7,54 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Apprenticeship;
 [Binding]
 public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext context, LearningSqlClient learningSqlClient)
 {
-    [Then("send the apprenticeship approved earnings to payments")]
-    public async Task ThenSendTheApprenticeshipApprovedEarningsToPayments(Table table)
+    [Then("the (.*) earnings are sent to payments")]
+    public async Task ThenSendTheApprovedEarningsToPayments(string learningType)
     {
         var testData = context.Get<TestData>();
 
-        Guid? learnerKey = null;
-
-        await WaitHelper.WaitForIt(() =>
+        GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPaymentsEvent = learningType.Replace(" ", string.Empty).ToLowerInvariant() switch
         {
-            var learning = learningSqlClient.TryGetApprenticeshipByUln(testData.Uln);
-            learnerKey = learning?.Learner?.Key;
-            if (learnerKey == null)
-            {
-                return false;
-            }
-
-            return true;
-        }, "Failed to find the expected learner in learning DB");
-
-
-        await WaitHelper.WaitForIt(() =>
-        {
- 
-            var growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
-            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
-
-            if (testData.CalculateGrowthAndSkillsPaymentsEvent == null)
-            {
-                return false;
-            }
-
-            var periods = GetPaymentsPeriods(testData.CalculateGrowthAndSkillsPaymentsEvent);
-
-            if (periods.Count != table.Rows.Count)
-            {
-                return false;
-            }
-
-            return table.Rows.All(row =>
-            {
-                var expectedDeliveryPeriod = int.Parse(GetCellValue(row, "deliveryPeriod"), CultureInfo.InvariantCulture);
-                var expectedAmount = decimal.Parse(GetCellValue(row, "amount"), CultureInfo.InvariantCulture);
-                var expectedTypes = GetExpectedTypeAliases(GetCellValue(row, "type"));
-
-                return periods.Any(period =>
-                    period.DeliveryPeriod == expectedDeliveryPeriod &&
-                    expectedTypes.Contains(period.EarningType, StringComparer.OrdinalIgnoreCase) &&
-                    period.Amount == expectedAmount);
-            });
-        }, "Failed to find the expected apprenticeship earnings instalments in the growth and skills payments recalculated event.");
+            "apprenticeship" => testData.ApprenticeshipGrowthAndSkillsPaymentsEvent = await GetApprenticeshipGrowthAndSkillsPaymentsEvent(testData),
+            "functionalskill" or "functionalskills" or "englishandmaths" => testData.MathsAndEnglishGrowthAndSkillsPaymentsEvent = await GetMathsAndEnglishGrowthAndSkillsPaymentsEvent(testData),
+            "shortcourse" => testData.ShortCourseGrowthAndSkillsPaymentsEvent = await GetShortCourseGrowthAndSkillsPaymentsEvent(testData),
+            _ => throw new ArgumentOutOfRangeException(nameof(learningType), learningType,
+                "Supported values are apprenticeship, shortCourse and functionalSkill")
+        };
     }
 
-    [Then("the apprenticeship \"learning type\" is sent to Payments")]
-    public async Task ThenTheApprenticeshipLearningTypeIsSentToPayments()
+    [Then("send the (.*) approved earnings to payments")]
+    public async Task ThenSendTheApprovedEarningsToPayments(string learningType, Table table)
     {
-        var testData = context.Get<TestData>();
-        testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
+        await ThenSendTheApprovedEarningsToPayments(learningType);
 
-        testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Training.LearningType.ToString().Should().Be("Apprenticeship");
+        var testData = context.Get<TestData>();
+        var growthAndSkillsPaymentsEvent = GetCapturedGrowthAndSkillsPaymentsEvent(learningType, testData);
+
+        var periods = GetPaymentsPeriods(growthAndSkillsPaymentsEvent);
+
+        periods.Count.Should().Be(table.Rows.Count,
+            "expected number of payments periods should match expected rows");
+
+        table.Rows.All(row =>
+        {
+            var expectedDeliveryPeriod = int.Parse(GetCellValue(row, "deliveryPeriod"), CultureInfo.InvariantCulture);
+            var expectedAmount = decimal.Parse(GetCellValue(row, "amount"), CultureInfo.InvariantCulture);
+            var expectedTypes = GetExpectedTypeAliases(GetCellValue(row, "type"));
+
+            return periods.Any(period =>
+                period.DeliveryPeriod == expectedDeliveryPeriod &&
+                expectedTypes.Contains(period.EarningType, StringComparer.OrdinalIgnoreCase) &&
+                period.Amount == expectedAmount);
+        }).Should().BeTrue("expected payments periods should match expected values");
     }
 
     [Then("the {word} incentive earning {word} sent to payments for provider & employer")]
     public async Task ThenTheIncentiveEarningIsSentToPaymentsForProviderAndEmployer(string incentiveEarningNumber, string outcome)
     {
         var testData = context.Get<TestData>();
-        testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
-        var periods = GetPaymentsPeriods(testData.CalculateGrowthAndSkillsPaymentsEvent);
+        var growthAndSkillsPaymentsEvent = testData.ApprenticeshipGrowthAndSkillsPaymentsEvent;
+
+        var periods = GetPaymentsPeriods(growthAndSkillsPaymentsEvent);
 
         var incentiveExpected = outcome == "is";
 
@@ -88,8 +69,9 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     public async Task ThenTheIncentiveEarningIsSentToPaymentsForEmployer(string incentiveEarningNumber, string outcome)
     {
         var testData = context.Get<TestData>();
-        testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
-        var periods = GetPaymentsPeriods(testData.CalculateGrowthAndSkillsPaymentsEvent);
+        var growthAndSkillsPaymentsEvent = testData.ApprenticeshipGrowthAndSkillsPaymentsEvent;
+
+        var periods = GetPaymentsPeriods(growthAndSkillsPaymentsEvent);
 
         var incentiveExpected = outcome == "is";
 
@@ -101,8 +83,9 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     public async Task ThenNoIncentiveEarningIsSentToPaymentsForProviderAndEmployer()
     {
         var testData = context.Get<TestData>();
-        testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
-        var periods = GetPaymentsPeriods(testData.CalculateGrowthAndSkillsPaymentsEvent);
+        var growthAndSkillsPaymentsEvent = testData.ApprenticeshipGrowthAndSkillsPaymentsEvent;
+
+        var periods = GetPaymentsPeriods(growthAndSkillsPaymentsEvent);
 
         periods.Any(x => x.EarningType.ToString().Contains("ProviderIncentive", StringComparison.OrdinalIgnoreCase))
             .Should().BeFalse("no provider incentive payment events should be present");
@@ -111,12 +94,13 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
             .Should().BeFalse("no employer incentive payment events should be present");
     }
 
-    [Then("learning support earnings are sent to payments from periods (.*) to (.*)")]
-    public async Task ThenLearningSupportEarningsAreSentToPaymentsFromPeriods(TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
+    [Then("(.*) learning support earnings are sent to payments from periods (.*) to (.*)")]
+    public async Task ThenLearningSupportEarningsAreSentToPaymentsFromPeriods(string learningType, TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
     {
         var testData = context.Get<TestData>();
-        testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
-        var periods = GetPaymentsPeriods(testData.CalculateGrowthAndSkillsPaymentsEvent);
+        var growthAndSkillsPaymentsEvent = GetCapturedGrowthAndSkillsPaymentsEvent(learningType, testData);
+
+        var periods = GetPaymentsPeriods(growthAndSkillsPaymentsEvent);
 
         var learningSupportPeriods = periods
             .Where(x => x.EarningType.Contains("LearningSupport", StringComparison.OrdinalIgnoreCase))
@@ -146,15 +130,27 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
         }
     }
 
-    [Then("no learning support earnings are sent to payments")]
-    public async Task ThenNoLearningSupportApprovedEarningsAreSentToPayments()
+    [Then("no {word} learning support earnings are sent to payments")]
+    public async Task ThenNoLearningSupportApprovedEarningsAreSentToPayments(string learningType)
     {
         var testData = context.Get<TestData>();
-        testData.CalculateGrowthAndSkillsPaymentsEvent = await GetGrowthAndSkillsPaymentsEvent(testData);
-        var periods = GetPaymentsPeriods(testData.CalculateGrowthAndSkillsPaymentsEvent);
+        var growthAndSkillsPaymentsEvent = GetCapturedGrowthAndSkillsPaymentsEvent(learningType, testData);
+
+        var periods = GetPaymentsPeriods(growthAndSkillsPaymentsEvent);
 
         periods.Any(x => x.EarningType.Contains("LearningSupport", StringComparison.OrdinalIgnoreCase))
             .Should().BeFalse("no learning support payment earnings should be present");
+    }
+
+    [Then("no {word} earnings are sent to payments")]
+    public async Task ThenNoEarningsAreSentToPayments(string learningType)
+    {
+        var testData = context.Get<TestData>();
+        var growthAndSkillsPaymentsEvent = GetCapturedGrowthAndSkillsPaymentsEvent(learningType, testData);
+
+        var periods = GetPaymentsPeriods(growthAndSkillsPaymentsEvent);
+
+        periods.Should().BeEmpty("expected no apprenticeship earnings periods to be sent to payments");
     }
 
     private static string GetCellValue(DataTableRow row, params string[] columnNames)
@@ -180,7 +176,44 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
         };
     }
 
-    private async Task<GrowthAndSkillsPaymentsRecalculatedEvent> GetGrowthAndSkillsPaymentsEvent(TestData testData)
+    private Task<GrowthAndSkillsPaymentsRecalculatedEvent> GetApprenticeshipGrowthAndSkillsPaymentsEvent(TestData testData)
+    {
+        return GetGrowthAndSkillsPaymentsEvent(testData, IsOnProgrammeCourseType,
+            "Failed to find apprenticeship growth and skills payments recalculated event.");
+    }
+
+    private Task<GrowthAndSkillsPaymentsRecalculatedEvent> GetMathsAndEnglishGrowthAndSkillsPaymentsEvent(TestData testData)
+    {
+        return GetGrowthAndSkillsPaymentsEvent(testData, IsMathsAndEnglishCourseType,
+            "Failed to find maths and English growth and skills payments recalculated event.");
+    }
+
+    private async Task<GrowthAndSkillsPaymentsRecalculatedEvent> GetShortCourseGrowthAndSkillsPaymentsEvent(TestData testData)
+    {
+        Guid? learnerKey = null;
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.LearnerKey;
+            return learnerKey != null;
+        }, "Failed to find the expected short course learner in learning DB");
+
+        GrowthAndSkillsPaymentsRecalculatedEvent? growthAndSkillsPaymentsEvent = null;
+        await WaitHelper.WaitForIt(() =>
+        {
+            growthAndSkillsPaymentsEvent = GrowthAndSkillsPaymentsRecalculatedEventHandler
+                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey && IsShortCourseCourseType(GetCourseTypeValue(x)));
+
+            return growthAndSkillsPaymentsEvent != null;
+        }, "Failed to find short course growth and skills payments recalculated event.");
+
+        return growthAndSkillsPaymentsEvent!;
+    }
+
+    private async Task<GrowthAndSkillsPaymentsRecalculatedEvent> GetGrowthAndSkillsPaymentsEvent(
+        TestData testData,
+        Func<string?, bool> courseTypePredicate,
+        string failureMessage)
     {
         Guid? learnerKey = null;
 
@@ -191,17 +224,69 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
             return learnerKey != null;
         }, "Failed to find the expected learner in learning DB");
 
+        GrowthAndSkillsPaymentsRecalculatedEvent? growthAndSkillsPaymentsEvent = null;
         await WaitHelper.WaitForIt(() =>
         {
-            var growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler
-                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
+            growthAndSkillsPaymentsEvent = GrowthAndSkillsPaymentsRecalculatedEventHandler
+                .GetMessage(x => x.Command.Learner.LearnerKey == learnerKey && courseTypePredicate(GetCourseTypeValue(x)));
 
-            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+            return growthAndSkillsPaymentsEvent != null;
+        }, failureMessage);
 
-            return testData.CalculateGrowthAndSkillsPaymentsEvent != null;
-        }, "Failed to find growth and skills payments recalculated event.");
+        return growthAndSkillsPaymentsEvent!;
+    }
 
-        return testData.CalculateGrowthAndSkillsPaymentsEvent;
+    private static string? GetCourseTypeValue(GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments)
+    {
+        var courseTypeProperty = growthAndSkillsPayments.Command.Training?.GetType().GetProperty("CourseType");
+        return courseTypeProperty?.GetValue(growthAndSkillsPayments.Command.Training)?.ToString();
+    }
+
+    private static bool IsMathsAndEnglishCourseType(string? courseTypeValue)
+    {
+        return string.Equals(courseTypeValue, "EnglishAndMaths", StringComparison.OrdinalIgnoreCase)
+               || string.Equals(courseTypeValue, "FunctionalSkill", StringComparison.OrdinalIgnoreCase)
+               || string.Equals(courseTypeValue, "FunctionalSkills", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsOnProgrammeCourseType(string? courseTypeValue)
+    {
+        return string.IsNullOrWhiteSpace(courseTypeValue)
+               || string.Equals(courseTypeValue, "OnProgramme", StringComparison.OrdinalIgnoreCase)
+               || string.Equals(courseTypeValue, "OnProgram", StringComparison.OrdinalIgnoreCase)
+               || string.Equals(courseTypeValue, "Apprenticeship", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsShortCourseCourseType(string? courseTypeValue)
+    {
+        return string.Equals(courseTypeValue, "ShortCourse", StringComparison.OrdinalIgnoreCase)
+               || string.Equals(courseTypeValue, "Short Courses", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static GrowthAndSkillsPaymentsRecalculatedEvent GetCapturedGrowthAndSkillsPaymentsEvent(string? learningType, TestData testData)
+    {
+        var normalizedLearningType = NormalizeLearningType(learningType);
+
+        return normalizedLearningType switch
+        {
+            "apprenticeship" => testData.ApprenticeshipGrowthAndSkillsPaymentsEvent
+                                ?? throw new InvalidOperationException("Apprenticeship payments event has not been captured. Call 'the apprenticeship earnings are sent to payments' first."),
+            "functionalskill" => testData.MathsAndEnglishGrowthAndSkillsPaymentsEvent
+                                 ?? throw new InvalidOperationException("Functional skill payments event has not been captured. Call 'the functionalSkill earnings are sent to payments' first."),
+            "shortcourse" => testData.ShortCourseGrowthAndSkillsPaymentsEvent
+                              ?? throw new InvalidOperationException("Short course payments event has not been captured. Call 'the shortCourse earnings are sent to payments'  first."),
+            _ => throw new InvalidOperationException("Approved earnings learning type has not been set. Call the approved earnings capture step first.")
+        };
+    }
+
+    private static string NormalizeLearningType(string? learningType)
+    {
+        var normalized = learningType?.Replace(" ", string.Empty).ToLowerInvariant();
+        return normalized switch
+        {
+            "functionalskills" or "englishandmaths" => "functionalskill",
+            _ => normalized ?? string.Empty
+        };
     }
 
     private static List<PaymentsPeriodModel> GetPaymentsPeriods(GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPaymentsEvent)
