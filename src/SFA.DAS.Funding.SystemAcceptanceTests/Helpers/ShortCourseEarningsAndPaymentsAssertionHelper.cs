@@ -139,17 +139,17 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
 
                     GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
 
-                    testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+                    testData.ShortCourseGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.ShortCourseGrowthAndSkillsPaymentsEvent;
 
-                    if (testData.CalculateGrowthAndSkillsPaymentsEvent != null)
+                    if (testData.ShortCourseGrowthAndSkillsPaymentsEvent != null)
                     {
                         var commandMilestoneValid = milestoneExpected
-                            ? testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Milestone1)))
-                            : testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Milestone1)));
+                            ? testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Milestone1)))
+                            : testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Milestone1)));
 
                         var commandCompletionValid = completionExpected
-                            ? testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Completion)))
-                            : testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Completion)));
+                            ? testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Earnings.Any(e => e.PricePeriods.Any(p => p.Periods.Any(ep => ep.EarningType == EarningType.Completion)))
+                            : testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Earnings.All(e => e.PricePeriods.All(p => p.Periods.All(ep => ep.EarningType != EarningType.Completion)));
 
                         commandValid = commandMilestoneValid && commandCompletionValid;
                     }
@@ -388,16 +388,16 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers
         {
             var testData = context.Get<TestData>();
 
-            var commandValid = testData.CalculateGrowthAndSkillsPaymentsEvent != null && predicate.Invoke(testData.CalculateGrowthAndSkillsPaymentsEvent);
+            var commandValid = testData.ShortCourseGrowthAndSkillsPaymentsEvent != null && predicate.Invoke(testData.ShortCourseGrowthAndSkillsPaymentsEvent);
 
             if (!commandValid)
             {
                 var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.First().Learner.Key;
 
                 GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
-                testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+                testData.ShortCourseGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.ShortCourseGrowthAndSkillsPaymentsEvent;
 
-                commandValid = testData.CalculateGrowthAndSkillsPaymentsEvent != null && predicate.Invoke(testData.CalculateGrowthAndSkillsPaymentsEvent);
+                commandValid = testData.ShortCourseGrowthAndSkillsPaymentsEvent != null && predicate.Invoke(testData.ShortCourseGrowthAndSkillsPaymentsEvent);
             }
 
             return commandValid;

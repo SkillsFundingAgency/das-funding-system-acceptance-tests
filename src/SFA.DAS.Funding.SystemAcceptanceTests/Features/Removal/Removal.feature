@@ -25,6 +25,7 @@ Scenario: Apprentice removed from the ILR
 	And the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
 	And no learning support earnings are generated
+	And no apprenticeship earnings are sent to payments
 	And Break in Learning record is removed from earnings db
 	And a learning removed event is published to approvals
 
