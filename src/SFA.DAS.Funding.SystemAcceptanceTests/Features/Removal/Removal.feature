@@ -21,12 +21,14 @@ Scenario: Apprentice removed from the ILR
 	When sld inform us that the learner is to removed
 	Then earnings are recalculated
 	And the apprenticeship earnings are sent to payments 
+	And the functionalSkill earnings are sent to payments
 	And Maths and English earnings for learnAimRef 60075880 are removed
 	And there are 0 on-programme earnings instalments
 	And the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
 	And no learning support earnings are generated
 	And no apprenticeship earnings are sent to payments
+	And no functionalSkill earnings are sent to payments
 	And Break in Learning record is removed from earnings db
 	And a learning removed event is published to approvals
 
