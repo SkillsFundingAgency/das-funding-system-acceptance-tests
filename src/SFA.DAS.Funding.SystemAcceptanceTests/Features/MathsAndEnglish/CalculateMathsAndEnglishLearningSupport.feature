@@ -15,7 +15,7 @@ Scenario: Learning support added for Maths and English course
 	When a Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60075880 and learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	Then the functionalSkill earnings are sent to payments
+	Then the functionalSkill earnings event is sent to payments
 	And maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
 	And functionalSkill learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
@@ -31,7 +31,7 @@ Scenario: Learning support added for Maths and English course - paid until compl
 	When an English and Maths learning is recorded from <start_date> to <end_date> with learnAimRef 60075880, completion date as <completion_date>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	Then the functionalSkill earnings are sent to payments
+	Then the functionalSkill earnings event is sent to payments
 	And maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
 	And functionalSkill learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
@@ -47,7 +47,7 @@ Scenario: No LSF earnings when learner Withdraws from E&M
 	When English and Maths learning is recorded from <start_date> to <end_date> with learnAimRef 60075880, withdrawal date <withdrawal_date>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	Then the functionalSkill earnings are sent to payments
+	Then the functionalSkill earnings event is sent to payments
 	And maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
 	And functionalSkill learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
