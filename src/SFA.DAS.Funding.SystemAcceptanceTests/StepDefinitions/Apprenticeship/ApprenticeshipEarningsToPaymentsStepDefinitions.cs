@@ -164,6 +164,27 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
         periods.Should().BeEmpty("expected no apprenticeship earnings periods to be sent to payments");
     }
 
+    [Then("the EnglishAndMaths and on programme earnings to payments events have different learning key and earning version")]
+    public void ThenEnglishAndMathsAndOnProgrammeEventsHaveDifferentLearningKeyAndEarningVersion()
+    {
+        var testData = context.Get<TestData>();
+
+        var onProgrammeEvent = testData.ApprenticeshipGrowthAndSkillsPaymentsEvent
+            ?? throw new InvalidOperationException("On programme payments event has not been captured. Call 'the apprenticeship earnings event is sent to payments' first.");
+
+        var englishAndMathsEvent = testData.MathsAndEnglishGrowthAndSkillsPaymentsEvent
+            ?? throw new InvalidOperationException("EnglishAndMaths payments event has not been captured. Call 'the functionalSkill earnings event is sent to payments' first.");
+
+
+        englishAndMathsEvent.Command.Training.LearningKey
+            .Should().NotBe(onProgrammeEvent.Command.Training.LearningKey,
+                "EnglishAndMaths and on programme events should have different LearningKey values");
+
+        englishAndMathsEvent.Command.EarningsId
+            .Should().NotBe(onProgrammeEvent.Command.EarningsId,
+                "EnglishAndMaths and on programme events should have different EarningsId'svalues");
+    }
+
     private static string GetCellValue(DataTableRow row, params string[] columnNames)
     {
         var matchedKey = row.Keys.FirstOrDefault(key => columnNames.Any(name => key.Equals(name, StringComparison.OrdinalIgnoreCase)));
