@@ -63,7 +63,9 @@ public class TestData
     internal LearningReinstatedEvent LearningReinstatedEvent { get; set; }
     internal PersonalDetailsChangedEvent PersonalDetailsChangedEvent { get; set; }
     internal HttpResponseMessage? Fm36HttpResponseMessage { get; set; }
-    internal GrowthAndSkillsPaymentsRecalculatedEvent? CalculateGrowthAndSkillsPaymentsEvent { get; set; }
+    internal GrowthAndSkillsPaymentsRecalculatedEvent? ApprenticeshipGrowthAndSkillsPaymentsEvent { get; set; }
+    internal GrowthAndSkillsPaymentsRecalculatedEvent? MathsAndEnglishGrowthAndSkillsPaymentsEvent { get; set; }
+    internal GrowthAndSkillsPaymentsRecalculatedEvent? ShortCourseGrowthAndSkillsPaymentsEvent { get; set; }
 
     internal Dictionary<long, LearnerDataOuterApiClient.ShortCourseRequest> ShortCourseCreateUpdateRequests { get; set; }
     internal string? ProgressionCourseCode { get; set; }

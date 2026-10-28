@@ -499,10 +499,10 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
             var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.Learner.Key;
 
             GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
-            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+            testData.ShortCourseGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.ShortCourseGrowthAndSkillsPaymentsEvent;
 
-            return testData.CalculateGrowthAndSkillsPaymentsEvent != null &&
-                   testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Training.TrainingStatus.ToString() == "Withdrawn";
+            return testData.ShortCourseGrowthAndSkillsPaymentsEvent != null &&
+                   testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Training.TrainingStatus.ToString() == "Withdrawn";
         }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command.");
     }
 
@@ -516,10 +516,10 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
             var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.Learner.Key;
 
             GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
-            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+            testData.ShortCourseGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.ShortCourseGrowthAndSkillsPaymentsEvent;
 
-            return testData.CalculateGrowthAndSkillsPaymentsEvent != null &&
-                   testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.First().PricePeriods.First().Periods.First().Employer.FundingAccountId == 824;
+            return testData.ShortCourseGrowthAndSkillsPaymentsEvent != null &&
+                   testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Earnings.First().PricePeriods.First().Periods.First().Employer.FundingAccountId == 824;
         }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command.");
     }
 
@@ -534,10 +534,10 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
             var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.Learner.Key;
 
             GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
-            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+            testData.ShortCourseGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.ShortCourseGrowthAndSkillsPaymentsEvent;
 
-            return testData.CalculateGrowthAndSkillsPaymentsEvent != null &&
-                   !testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Any();
+            return testData.ShortCourseGrowthAndSkillsPaymentsEvent != null &&
+                   !testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Earnings.Any();
         }, "Failed to find the withdrawn training status in the growth and skills payments recalculated event command or Earnings are not empty!.");
     }
 
@@ -551,10 +551,10 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
             var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.LearnerKey;
 
             GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
-            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+            testData.ShortCourseGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.ShortCourseGrowthAndSkillsPaymentsEvent;
 
-            return testData.CalculateGrowthAndSkillsPaymentsEvent != null &&
-                   testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Single()
+            return testData.ShortCourseGrowthAndSkillsPaymentsEvent != null &&
+                   testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Earnings.Single()
                    .PricePeriods.Single()
                    .Periods.Single()
                    .EarningType == EarningType.Milestone1;
@@ -571,12 +571,12 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
             var learnerKey = learningSqlClient.GetShortCourseLearning(testData.Uln)?.FirstOrDefault()?.LearnerKey;
 
             GrowthAndSkillsPaymentsRecalculatedEvent growthAndSkillsPayments = GrowthAndSkillsPaymentsRecalculatedEventHandler.GetMessage(x => x.Command.Learner.LearnerKey == learnerKey);
-            testData.CalculateGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.CalculateGrowthAndSkillsPaymentsEvent;
+            testData.ShortCourseGrowthAndSkillsPaymentsEvent = growthAndSkillsPayments ?? testData.ShortCourseGrowthAndSkillsPaymentsEvent;
 
-            return testData.CalculateGrowthAndSkillsPaymentsEvent != null &&
-                   testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Single().PricePeriods.Single().Periods.Count() == 2 &&
-                   testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Single().PricePeriods.Single().Periods.Any(x => x.EarningType == EarningType.Milestone1) &&
-                   testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.Single().PricePeriods.Single().Periods.Any(x=> x.EarningType == EarningType.Completion);
+            return testData.ShortCourseGrowthAndSkillsPaymentsEvent != null &&
+                   testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Earnings.Single().PricePeriods.Single().Periods.Count() == 2 &&
+                   testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Earnings.Single().PricePeriods.Single().Periods.Any(x => x.EarningType == EarningType.Milestone1) &&
+                   testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Earnings.Single().PricePeriods.Single().Periods.Any(x=> x.EarningType == EarningType.Completion);
         }, "Failed to find the milestone1 and/or completion earnings in the growth and skills payments event.");
     }
 
@@ -592,9 +592,9 @@ public class ShortCourseAssertionSteps(ScenarioContext context, LearnerDataOuter
 
         Assert.Multiple(() =>
         {
-            Assert.AreEqual(learningKey, testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Training.LearningKey, "Learning Key does not match");
+            Assert.AreEqual(learningKey, testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Training.LearningKey, "Learning Key does not match");
             Assert.AreEqual(testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId, 
-                testData.CalculateGrowthAndSkillsPaymentsEvent.Command.Earnings.FirstOrDefault()?
+                testData.ShortCourseGrowthAndSkillsPaymentsEvent.Command.Earnings.FirstOrDefault()?
                 .PricePeriods.FirstOrDefault()?
                 .Periods.FirstOrDefault()?.LearningId, "ApprenticeshipId does not match");
         });

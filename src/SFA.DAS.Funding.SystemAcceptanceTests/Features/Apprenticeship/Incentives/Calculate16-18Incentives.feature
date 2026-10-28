@@ -14,7 +14,8 @@ Scenario: 16-18 Incentive Earnings
 	And the age at the start of the apprenticeship is <age>
 	When a draft apprenticeship learning is created
 	And the apprenticeship learning is approved
-	Then the first incentive earning is generated for provider & employer
+	Then the apprenticeship earnings are sent to payments
+	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 	And the first incentive earning is sent to payments for provider & employer
 	And the second incentive earning is sent to payments for provider & employer
@@ -32,7 +33,8 @@ Scenario: 16-18 Incentive Earnings (duration only long enough for first earning 
 	And the age at the start of the apprenticeship is <age>
 	When a draft apprenticeship learning is created
 	And the apprenticeship learning is approved
-	Then the first incentive earning is generated for provider & employer
+	Then the apprenticeship earnings are sent to payments
+	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
 	And the first incentive earning is sent to payments for provider & employer
 	And the second incentive earning is_not sent to payments for provider & employer
@@ -49,7 +51,8 @@ Scenario: 16-18 Incentive Earnings (duration too short)
 	And the age at the start of the apprenticeship is <age>
 	When a draft apprenticeship learning is created
 	And the apprenticeship learning is approved
-	Then the first incentive earning is_not generated for provider & employer
+	Then the apprenticeship earnings are sent to payments
+	And the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
 	And the first incentive earning is_not sent to payments for provider & employer
 	And the second incentive earning is_not sent to payments for provider & employer
@@ -68,7 +71,8 @@ Scenario: No Incentives for 16-18 learner completing before threshold date
 	And SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
 	And Learning Completion is recorded on <completion_date>
 	And SLD submit updated learners details
-	Then the first incentive earning <first_earnings_generated> generated for provider & employer
+	Then the apprenticeship earnings are sent to payments
+	And the first incentive earning <first_earnings_generated> generated for provider & employer
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
 	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
 	And the second incentive earning <second_earnings_generated> sent to payments for provider & employer
@@ -86,12 +90,14 @@ Scenario: No Incentives for 16-18 learner withdrawn before 90 day threshold date
 	And the age at the start of the apprenticeship is 17
 	And a draft apprenticeship learning is created
 	And the apprenticeship learning is approved
+	Then the apprenticeship earnings are sent to payments
 	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 	When SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
 	And Learning withdrawal date is recorded on <withdrawal_date>
 	And SLD submit updated learners details
-	Then the first incentive earning <first_earnings_generated> generated for provider & employer
+	Then the apprenticeship earnings are sent to payments
+	And the first incentive earning <first_earnings_generated> generated for provider & employer
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
 	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
 	And the second incentive earning <second_earnings_generated> sent to payments for provider & employer

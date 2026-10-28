@@ -20,13 +20,32 @@ Scenario: Apprentice removed from the ILR
 	And SLD submit updated learners details
 	When sld inform us that the learner is to removed
 	Then earnings are recalculated
+	And the apprenticeship earnings are sent to payments 
+	And the functionalSkill earnings are sent to payments
 	And Maths and English earnings for learnAimRef 60075880 are removed
 	And there are 0 on-programme earnings instalments
 	And the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
 	And no learning support earnings are generated
+	And no apprenticeship earnings are sent to payments
+	And no functionalSkill earnings are sent to payments
 	And Break in Learning record is removed from earnings db
 	And a learning removed event is published to approvals
+
+# FLP-2005 AC5
+@regression @ignoreInPREPRODandPP
+Scenario: Functional skill learning support earnings are removed from payments when apprenticeship is removed
+	Given a Maths and English learning is recorded from nextAY-08-01 to currentAYPlusTwo-04-15 with learnAimRef 60075880 and learning support from currentAYPlusTwo-01-12 to currentAYPlusTwo-04-15
+	And SLD submit updated learners details
+	Then maths and english learning support earnings are generated from periods currentAYPlusTwo-R06 to currentAYPlusTwo-R08
+	And the functionalSkill earnings are sent to payments
+	And functionalSkill learning support earnings are sent to payments from periods currentAYPlusTwo-R06 to currentAYPlusTwo-R08
+	When sld inform us that the learner is to removed
+	Then earnings are recalculated
+	And no learning support earnings are generated
+	And the functionalSkill earnings are sent to payments
+	And no functionalSkill learning support earnings are sent to payments
+	And no functionalSkill earnings are sent to payments
 
 # FLP-1781 AC1
 @regression @ignoreInPREPRODandPP

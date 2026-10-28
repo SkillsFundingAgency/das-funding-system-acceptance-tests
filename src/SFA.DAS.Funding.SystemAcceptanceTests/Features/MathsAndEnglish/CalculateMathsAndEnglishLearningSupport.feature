@@ -15,8 +15,9 @@ Scenario: Learning support added for Maths and English course
 	When a Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60075880 and learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	Then maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
-	And learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
+	Then the functionalSkill earnings are sent to payments
+	And maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	And functionalSkill learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
@@ -30,8 +31,9 @@ Scenario: Learning support added for Maths and English course - paid until compl
 	When an English and Maths learning is recorded from <start_date> to <end_date> with learnAimRef 60075880, completion date as <completion_date>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	Then maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
-	And learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
+	Then the functionalSkill earnings are sent to payments
+	And maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	And functionalSkill learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | completion_date | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
@@ -45,8 +47,9 @@ Scenario: No LSF earnings when learner Withdraws from E&M
 	When English and Maths learning is recorded from <start_date> to <end_date> with learnAimRef 60075880, withdrawal date <withdrawal_date>, learning support from <ls_start_date> to <ls_end_date>
 	And SLD record on-programme cost as total price 12000 from date <start_date> to date <end_date>
 	And SLD submit updated learners details
-	Then maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
-	And learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
+	Then the functionalSkill earnings are sent to payments
+	And maths and english learning support earnings are generated from periods <expected_first_ls_period> to <expected_last_ls_period>
+	And functionalSkill learning support earnings are sent to payments from periods <expected_first_ls_period> to <expected_last_ls_period>
 
 Examples:
 	| start_date      | end_date        | withdrawal_date | ls_start_date   | ls_end_date     | expected_first_ls_period | expected_last_ls_period |
