@@ -22,6 +22,7 @@ Scenario: Apprentice removed from the ILR
 	Then earnings are recalculated
 	And the apprenticeship earnings event is sent to payments 
 	And the functionalSkill earnings event is sent to payments
+	And the EnglishAndMaths and on programme earnings to payments events have different learning key and earning version
 	And Maths and English earnings for learnAimRef 60075880 are removed
 	And there are 0 on-programme earnings instalments
 	And the first incentive earning is_not generated for provider & employer
