@@ -26,4 +26,4 @@ Scenario: Send the apprenticeship learning type to payments
 	Given there is an apprenticeship
 	And a draft apprenticeship learning is created
 	When the apprenticeship learning is approved
-	Then the apprenticeship earnings are sent to payments
+	Then the apprenticeship earnings event is sent to payments

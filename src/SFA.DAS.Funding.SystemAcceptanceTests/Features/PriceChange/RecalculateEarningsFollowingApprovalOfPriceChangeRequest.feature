@@ -80,6 +80,8 @@ Scenario: Price change; Empty Costs array
 	And SLD record an empty on-programme costs array
 	And SLD submit updated learners details
 	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
+	And the apprenticeship earnings event is sent to payments
+	And the apprenticeship earnings to payments event has no instalments
 	And the AgreedPrice on the earnings entity is updated to <new_total_price>
 Examples:
 	| start_date      | end_date               | agreed_price | training_code | new_total_price | new_inst_amount | academic_year_string | delivery_period |

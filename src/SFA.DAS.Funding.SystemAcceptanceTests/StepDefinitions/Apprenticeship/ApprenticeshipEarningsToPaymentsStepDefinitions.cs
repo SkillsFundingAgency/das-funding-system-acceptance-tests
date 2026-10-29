@@ -8,7 +8,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Apprenticeship;
 [Binding]
 public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext context, LearningSqlClient learningSqlClient)
 {
-    [Then("the (.*) earnings are sent to payments")]
+    [Then("the {word} earnings event is sent to payments")]
     public async Task ThenSendTheApprovedEarningsToPayments(string learningType)
     {
         var testData = context.Get<TestData>();
@@ -153,7 +153,7 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
             .Should().BeFalse("no learning support payment earnings should be present");
     }
 
-    [Then("no {word} earnings are sent to payments")]
+    [Then("the {word} earnings to payments event has no instalments")]
     public async Task ThenNoEarningsAreSentToPayments(string learningType)
     {
         var testData = context.Get<TestData>();

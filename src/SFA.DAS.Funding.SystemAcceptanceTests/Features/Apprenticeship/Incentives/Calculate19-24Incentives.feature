@@ -17,7 +17,7 @@ Scenario: 19-24 Incentive Earnings - Learner is a Care Leaver with Employer cons
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
-	Then the apprenticeship earnings are sent to payments
+	Then the apprenticeship earnings event is sent to payments
 	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 	And the first incentive earning is sent to payments for provider & employer
@@ -38,7 +38,7 @@ Scenario: 19-24 Incentive Earnings - Learner is a Care Leaver without Employer C
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And the apprentice is marked as a care leaver without employer consent
 	And SLD submit updated learners details
-	Then the apprenticeship earnings are sent to payments
+	Then the apprenticeship earnings event is sent to payments
 	And the first incentive earning is_not generated for employer
 	And the second incentive earning is_not generated for employer
 	And the first incentive earning is_not sent to payments for employer
@@ -57,7 +57,7 @@ Scenario: 19-24 Incentive Earnings - Learner has EHCP
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And the apprentice is on a EHCP plan
 	And SLD submit updated learners details
-	Then the apprenticeship earnings are sent to payments
+	Then the apprenticeship earnings event is sent to payments
 	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 	And the first incentive earning is sent to payments for provider & employer
@@ -77,7 +77,7 @@ Scenario: 19-24 Incentive Earnings (duration only long enough for first earning 
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
-	Then the apprenticeship earnings are sent to payments
+	Then the apprenticeship earnings event is sent to payments
 	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
 	And the first incentive earning is sent to payments for provider & employer
@@ -98,7 +98,7 @@ Scenario: 19-24 Incentive Earnings (duration too short)
 	And SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <planned_end_date>
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
-	Then the apprenticeship earnings are sent to payments
+	Then the apprenticeship earnings event is sent to payments
 	And no incentive earning is generated for provider & employer
 	And no incentive earning is sent to payments for provider & employer
 
@@ -117,7 +117,7 @@ Scenario: No Incentives for 19-24 learner completing before threshold date
 	And the apprentice is marked as a care leaver
 	And Learning Completion is recorded on <completion_date>
 	And SLD submit updated learners details
-	Then the apprenticeship earnings are sent to payments
+	Then the apprenticeship earnings event is sent to payments
 	And the first incentive earning <first_earnings_generated> generated for provider & employer
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
 	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
@@ -140,7 +140,7 @@ Scenario: No Incentives for 19+ learner withdrawn before 90-365 day threshold da
 	And the apprentice is marked as a care leaver
 	And Learning withdrawal date is recorded on <withdrawal_date>
 	And SLD submit updated learners details
-	Then the apprenticeship earnings are sent to payments
+	Then the apprenticeship earnings event is sent to payments
 	And the first incentive earning <first_earnings_generated> generated for provider & employer
 	And the second incentive earning <second_earnings_generated> generated for provider & employer
 	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
@@ -163,7 +163,7 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And Learner's date of birth is updated to 2001-08-01
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
-	Then the apprenticeship earnings are sent to payments
+	Then the apprenticeship earnings event is sent to payments
 	And the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
 	And the first incentive earning is_not sent to payments for provider & employer
@@ -171,7 +171,7 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	# Change dob to a day less then 25 years and validate incentives are generated
 	When Learner's date of birth is updated to 2001-08-02
 	And SLD submit updated learners details
-	Then the apprenticeship earnings are sent to payments
+	Then the apprenticeship earnings event is sent to payments
 	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 	And the first incentive earning is sent to payments for provider & employer
@@ -182,7 +182,7 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And Learner's date of birth is updated to 2001-08-02
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
-	Then the apprenticeship earnings are sent to payments
+	Then the apprenticeship earnings event is sent to payments
 	And the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
 	And the first incentive earning is_not sent to payments for provider & employer
@@ -193,7 +193,7 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And Learner's date of birth is updated to 2001-08-02
 	And the apprentice is marked as a care leaver
 	And SLD submit updated learners details
-	Then the apprenticeship earnings are sent to payments
+	Then the apprenticeship earnings event is sent to payments
 	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 	And the first incentive earning is sent to payments for provider & employer
