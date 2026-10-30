@@ -50,6 +50,8 @@ Scenario: Withdrawal is recorded again; with a different date
 	And the apprenticeship is marked as withdrawn
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are <initial_num_of_instalments>
+	And the apprenticeship earnings event is sent to payments
+	And the apprenticeship earnings to payments event has no instalments after the delivery period <initial_delivery_period_string> and academic year <academic_year_string>
 	And the earnings after the delivery period <initial_delivery_period_string> and academic year <academic_year_string> are soft deleted
 	And a learning withdrawn event is published to approvals with last day of learning as <initial_last_day_of_delivery>
 	And a withdrawal reason <initial_withdrawal_reason_code> is sent to approvals in the learning withdrawn event
@@ -61,6 +63,8 @@ Scenario: Withdrawal is recorded again; with a different date
 	And the apprenticeship is marked as withdrawn
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are <revised_num_of_instalments>
+	And the apprenticeship earnings event is sent to payments
+	And the apprenticeship earnings to payments event has no instalments after the delivery period <revised_delivery_period_string> and academic year <academic_year_string>
 	And the earnings after the delivery period <revised_delivery_period_string> and academic year <academic_year_string> are soft deleted
 	And a learning withdrawn event is published to approvals with last day of learning as <revised_last_day_of_delivery>
 	And a withdrawal reason <revised_withdrawal_reason_code> is sent to approvals in the learning withdrawn event
