@@ -24,6 +24,7 @@ Examples:
 	| currentAY-08-31 | currentAY-09-13 |        15000 |             2 | currentAY-09-13      | true               |                               14 |             14 |
 	| currentAY-08-31 | currentAY-09-13 |        15000 |             2 | currentAY-09-12      | false              |                               13 |             14 |
 	| currentAY-08-01 | currentAY-01-14 |        15000 |             2 | currentAY-12-15      | true               |                              137 |             14 |
+	| currentAY-08-01 | currentAY-10-31 |        15000 |             2 | currentAY-08-01      | false              |                                1 |             14 |
 	#| currentAY-08-31 | currentAY-09-12 | 15000        | 2             | currentAY-08-31     | true               | 1                                | 1              |
 	
 	# commented out test until we know how to deal with short courses (<14 days) with QP of 1 day. Learner is withdrawn back to start vs DELETE. so whether they appear in the FM36 or not. 
