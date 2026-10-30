@@ -79,6 +79,7 @@ Scenario: Withdrawal is removed; with date set to null
 	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And a draft apprenticeship learning is created
 	And the apprenticeship learning is approved
+	And learning support is recorded from 2026-08-01 to 2027-07-31
 	When SLD record on-programme cost as total price 15000 from date 2026-08-01 to date 2027-07-31
 	And Learning withdrawal date is recorded on 2026-12-15
 	And SLD submit updated learners details
@@ -90,7 +91,9 @@ Scenario: Withdrawal is removed; with date set to null
 	And SLD record on-programme cost as total price 15000 from date 2026-08-01 to date 2027-07-31
 	And SLD submit updated learners details
 	And earnings are recalculated
+	And the apprenticeship earnings event is sent to payments
 	And the expected number of earnings instalments after withdrawal are 12
+	And apprenticeship learning support earnings are sent to payments from periods currentAY-R01 to currentAY-R12
 	And a withdrawal reverted event is published to approvals
 
 @regression @ignoreInPREPRODandPP
