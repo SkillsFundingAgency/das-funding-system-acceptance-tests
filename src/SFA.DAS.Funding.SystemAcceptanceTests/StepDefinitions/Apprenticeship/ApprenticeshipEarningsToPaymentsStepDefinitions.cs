@@ -164,6 +164,28 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
         periods.Should().BeEmpty("expected no apprenticeship earnings periods to be sent to payments");
     }
 
+    [Then("the {word} earnings to payments event has no instalments after the delivery period (.*) and academic year (.*)")]
+    public async Task ThenEarningsToPaymentsEventHasNoInstalmentsAfterPeriod(string learningType, string deliveryPeriod, string academicYear)
+    {
+        var testData = context.Get<TestData>();
+        var growthAndSkillsPaymentsEvent = GetCapturedGrowthAndSkillsPaymentsEvent(learningType, testData);
+        var periods = GetPaymentsPeriods(growthAndSkillsPaymentsEvent);
+
+        if (deliveryPeriod.Equals("null", StringComparison.OrdinalIgnoreCase))
+        {
+            periods.Should().BeEmpty("expected no instalments in payments event when withdrawal happens from the start of learning");
+            return;
+        }
+
+        var expectedDeliveryPeriod = Convert.ToByte(deliveryPeriod, CultureInfo.InvariantCulture);
+        var expectedAcademicYear = Convert.ToInt16(academicYear, CultureInfo.InvariantCulture);
+
+        periods.Should().OnlyContain(period =>
+                period.AcademicYear < expectedAcademicYear ||
+                (period.AcademicYear == expectedAcademicYear && period.DeliveryPeriod <= expectedDeliveryPeriod),
+            $"expected no earnings periods after delivery period {expectedDeliveryPeriod} in academic year {expectedAcademicYear} in the payments event");
+    }
+
     [Then("the EnglishAndMaths and on programme earnings to payments events have different learning key and earning version")]
     public void ThenEnglishAndMathsAndOnProgrammeEventsHaveDifferentLearningKeyAndEarningVersion()
     {

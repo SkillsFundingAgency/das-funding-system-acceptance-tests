@@ -42,11 +42,12 @@ Examples:
 	| currentAY-09-25 | currentAY-04-15 | currentAY-11-15 | currentAY-03-10 |
 
 @regression @ignoreInPREPRODandPP
+# LS end date intentionally extends beyond withdrawal date to verify payments are clipped at withdrawal.
 Scenario: No LSF earnings after learner withdraws from the programme aim
 	Given an apprenticeship has a start date of currentAY-09-25, a planned end date of currentAY-04-15, an agreed price of 12000, and a training code 1
 	And a draft apprenticeship learning is created
 	And the apprenticeship learning is approved
-	When learning support is recorded from currentAY-11-15 to currentAY-03-10
+	When learning support is recorded from currentAY-11-15 to currentAY-04-15
 	And SLD record on-programme cost as total price 12000 from date currentAY-09-25 to date currentAY-04-15
 	And Learning withdrawal date is recorded on currentAY-01-15
 	And SLD submit updated learners details

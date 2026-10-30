@@ -94,15 +94,24 @@ Scenario: No Incentives for 16-18 learner withdrawn before 90 day threshold date
 	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer
 	When SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
-	And Learning withdrawal date is recorded on <withdrawal_date>
+	And Learning withdrawal date is recorded on <initial_withdrawal_date>
 	And SLD submit updated learners details
 	Then the apprenticeship earnings event is sent to payments
-	And the first incentive earning <first_earnings_generated> generated for provider & employer
-	And the second incentive earning <second_earnings_generated> generated for provider & employer
-	And the first incentive earning <first_earnings_generated> sent to payments for provider & employer
-	And the second incentive earning <second_earnings_generated> sent to payments for provider & employer
+	And the first incentive earning <initial_first_earnings_generated> generated for provider & employer
+	And the second incentive earning <initial_second_earnings_generated> generated for provider & employer
+	And the first incentive earning <initial_first_earnings_generated> sent to payments for provider & employer
+	And the second incentive earning <initial_second_earnings_generated> sent to payments for provider & employer
+	When SLD resubmits ILR
+	And SLD record on-programme training price 12000 with epao as 3000 from date currentAY-08-01 to date currentAY-07-31
+	And Learning withdrawal date is recorded on <revised_withdrawal_date>
+	And SLD submit updated learners details
+	Then the apprenticeship earnings event is sent to payments
+	And the first incentive earning <revised_first_earnings_generated> generated for provider & employer
+	And the second incentive earning <revised_second_earnings_generated> generated for provider & employer
+	And the first incentive earning <revised_first_earnings_generated> sent to payments for provider & employer
+	And the second incentive earning <revised_second_earnings_generated> sent to payments for provider & employer
 
 Examples:
-	| withdrawal_date | first_earnings_generated | second_earnings_generated |
-	| currentAY-10-28    | is_not                   | is_not                    |
-	| currentAY-07-30    | is                       | is_not                    |
+	| initial_withdrawal_date | initial_first_earnings_generated | initial_second_earnings_generated | revised_withdrawal_date | revised_first_earnings_generated | revised_second_earnings_generated |
+	| currentAY-10-28         | is_not                           | is_not                            | currentAY-07-30         | is                               | is_not                             |
+	| currentAY-07-30         | is                               | is_not                            | currentAY-10-28         | is_not                           | is_not                             |
