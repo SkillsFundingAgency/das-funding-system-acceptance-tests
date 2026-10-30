@@ -22,7 +22,9 @@ Scenario: Withdrawal is recorded; recalc earnings
 	And SLD submit updated learners details
 	Then the apprenticeship is marked as withdrawn
 	And earnings are recalculated
+	And the apprenticeship earnings event is sent to payments
 	And the expected number of earnings instalments after withdrawal are <new_num_of_instalments>
+	And the apprenticeship earnings to payments event has no instalments after the delivery period <delivery_period_string> and academic year <academic_year_string>
 	And the earnings after the delivery period <delivery_period_string> and academic year <academic_year_string> are soft deleted
 	And a learning withdrawn event is published to approvals with last day of learning as <last_day_of_delivery>
 	And a withdrawal reason <withdrawal_reason_code> is sent to approvals in the learning withdrawn event
