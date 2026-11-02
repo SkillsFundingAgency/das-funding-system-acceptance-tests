@@ -14,14 +14,9 @@ public static class EarningsFM36Constants
     public const int CombinedAdjProp = 1;
     public const bool Completed = false;
     public const bool FundStart = true;
-    public const int LDApplic1618FrameworkUpliftTotalActEarnings = 0;
     public const string LearnAimRef = "ZPROG001";
-    public const int LearnDelApplicDisadvAmount = 0;
     public const int LearnDelApplicEmp1618Incentive = 0;
-    public const int LearnDelApplicProv1618FrameworkUplift = 0;
     public const int LearnDelApplicProv1618Incentive = 0;
-    public const int LearnDelDisadAmount = 0;
-    public const bool LearnDelEligDisadvPayment = false;
     public static int? LearnDelEmpIdFirstAdditionalPaymentThreshold = null;
     public static int? LearnDelEmpIdSecondAdditionalPaymentThreshold = null;
     public const bool LearnDelMathEng = false;
@@ -30,7 +25,6 @@ public static class EarningsFM36Constants
     public const decimal MathEngAimValue = 0;
     public static int? OutstandNumOnProgInstalm = null;
     public const int ProgType = 25;
-    public static int? PwayCode = null;
     public static DateTime? SecondIncentiveThresholdDate = null;
     public const int ThresholdDays = 42;
     public const decimal LearnDelApplicCareLeaverIncentive = 0;
@@ -39,7 +33,7 @@ public static class EarningsFM36Constants
     public const int LearnDelPrevAccDaysILCareLeavers = 0;
     public static DateTime? LearnDelLearnerAddPayThresholdDate = null;
     public const int LearnDelRedCode = 0;
-    public static DateTime? LearnDelRedStartDate = new DateTime(9999, 9, 9);
+    public static DateOnly? LearnDelRedStartDate = new DateOnly(9999, 9, 9);
 
     //LearningDeliveryPeriodisedTextValues
     public const string LearnDelContType = "Contract for services with the employer";
@@ -52,23 +46,12 @@ public static class EarningsFM36Constants
     public const decimal TNP3 = 0;
     public const decimal TNP4 = 0;
     public static DateTime? PriceEpisodeActualEndDateIncEPA = null;
-    public const decimal PriceEpisode1618FUBalValue = 0;
-    public const decimal PriceEpisodeApplic1618FrameworkUpliftCompElement = 0;
-    public const decimal PriceEpisode1618FrameworkUpliftTotPrevEarnings = 0;
-    public const decimal PriceEpisode1618FrameworkUpliftRemainingAmount = 0;
-    public const decimal PriceEpisode1618FUMonthInstValue = 0;
-    public const decimal PriceEpisode1618FUTotEarnings = 0;
     public const decimal PriceEpisodeUpperLimitAdjustment = 0;
     public const decimal PriceEpisodePreviousEarnings = 0;
     public const decimal PriceEpisodeOnProgPayment = 0;
     public const decimal PriceEpisodeBalanceValue = 0;
     public const decimal PriceEpisodeBalancePayment = 0;
     public const decimal PriceEpisodeCompletionPayment = 0;
-    public const decimal PriceEpisodeFirstDisadvantagePayment = 0;
-    public const decimal PriceEpisodeSecondDisadvantagePayment = 0;
-    public const decimal PriceEpisodeApplic1618FrameworkUpliftBalancing = 0;
-    public const decimal PriceEpisodeApplic1618FrameworkUpliftCompletionPayment = 0;
-    public const decimal PriceEpisodeApplic1618FrameworkUpliftOnProgPayment = 0;
     public const decimal PriceEpisodeSecondProv1618Pay = 0;
     public const decimal PriceEpisodeFirstEmp1618Pay = 0;
     public const decimal PriceEpisodeSecondEmp1618Pay = 0;

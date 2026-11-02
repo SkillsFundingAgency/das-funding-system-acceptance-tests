@@ -1,5 +1,4 @@
-﻿using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Net;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
