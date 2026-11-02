@@ -10,7 +10,7 @@ public static class EarningsFM36Constants
 
     //LearningDeliveryValues
     public const int ActualDaysIL = 0;
-    public static DateTime ApplicCompDate = new DateTime(9999, 9, 9);
+    public static DateOnly ApplicCompDate = new DateOnly(9999, 9, 9);
     public const int CombinedAdjProp = 1;
     public const bool Completed = false;
     public const bool FundStart = true;
