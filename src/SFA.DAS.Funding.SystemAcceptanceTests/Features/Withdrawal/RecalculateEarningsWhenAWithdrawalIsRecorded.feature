@@ -22,7 +22,9 @@ Scenario: Withdrawal is recorded; recalc earnings
 	And SLD submit updated learners details
 	Then the apprenticeship is marked as withdrawn
 	And earnings are recalculated
+	And the apprenticeship earnings event is sent to payments
 	And the expected number of earnings instalments after withdrawal are <new_num_of_instalments>
+	And the apprenticeship earnings to payments event has no instalments after the delivery period <delivery_period_string> and academic year <academic_year_string>
 	And the earnings after the delivery period <delivery_period_string> and academic year <academic_year_string> are soft deleted
 	And a learning withdrawn event is published to approvals with last day of learning as <last_day_of_delivery>
 	And a withdrawal reason <withdrawal_reason_code> is sent to approvals in the learning withdrawn event
@@ -48,6 +50,8 @@ Scenario: Withdrawal is recorded again; with a different date
 	And the apprenticeship is marked as withdrawn
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are <initial_num_of_instalments>
+	And the apprenticeship earnings event is sent to payments
+	And the apprenticeship earnings to payments event has no instalments after the delivery period <initial_delivery_period_string> and academic year <academic_year_string>
 	And the earnings after the delivery period <initial_delivery_period_string> and academic year <academic_year_string> are soft deleted
 	And a learning withdrawn event is published to approvals with last day of learning as <initial_last_day_of_delivery>
 	And a withdrawal reason <initial_withdrawal_reason_code> is sent to approvals in the learning withdrawn event
@@ -59,6 +63,8 @@ Scenario: Withdrawal is recorded again; with a different date
 	And the apprenticeship is marked as withdrawn
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are <revised_num_of_instalments>
+	And the apprenticeship earnings event is sent to payments
+	And the apprenticeship earnings to payments event has no instalments after the delivery period <revised_delivery_period_string> and academic year <academic_year_string>
 	And the earnings after the delivery period <revised_delivery_period_string> and academic year <academic_year_string> are soft deleted
 	And a learning withdrawn event is published to approvals with last day of learning as <revised_last_day_of_delivery>
 	And a withdrawal reason <revised_withdrawal_reason_code> is sent to approvals in the learning withdrawn event
@@ -73,6 +79,7 @@ Scenario: Withdrawal is removed; with date set to null
 	Given an apprenticeship has a start date of 2026-08-01, a planned end date of 2027-07-31, an agreed price of 15000, and a training code 2
 	And a draft apprenticeship learning is created
 	And the apprenticeship learning is approved
+	And learning support is recorded from 2026-08-01 to 2027-07-31
 	When SLD record on-programme cost as total price 15000 from date 2026-08-01 to date 2027-07-31
 	And Learning withdrawal date is recorded on 2026-12-15
 	And SLD submit updated learners details
@@ -84,7 +91,9 @@ Scenario: Withdrawal is removed; with date set to null
 	And SLD record on-programme cost as total price 15000 from date 2026-08-01 to date 2027-07-31
 	And SLD submit updated learners details
 	And earnings are recalculated
+	And the apprenticeship earnings event is sent to payments
 	And the expected number of earnings instalments after withdrawal are 12
+	And apprenticeship learning support earnings are sent to payments from periods currentAY-R01 to currentAY-R12
 	And a withdrawal reverted event is published to approvals
 
 @regression @ignoreInPREPRODandPP
