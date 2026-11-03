@@ -46,6 +46,27 @@ public class ApprovalsStubClient
         _learningKeysSetUp.Add(learningKey);
     }
 
+    public async Task SetUpAutoApproval(Guid learningKey, params ApprovalsChange[] changes)
+    {
+        if (changes == null || changes.Length == 0)
+        {
+            throw new ArgumentException("At least one approvals change is required.", nameof(changes));
+        }
+
+        var response = new ApprovalsResponse
+        {
+            Changes = changes.Select(change => new ApprovalsChange
+            {
+                ChangeType = change.ChangeType,
+                ApprovalStatus = string.IsNullOrWhiteSpace(change.ApprovalStatus) ? AutoApprovedStatus : change.ApprovalStatus,
+                Data = change.Data
+            }).ToList()
+        };
+
+        await _wireMockClient.CreateMockResponse(ApprovalsUrl(learningKey), response, ApprovalsVerb, HttpStatusCode.Created);
+        _learningKeysSetUp.Add(learningKey);
+    }
+
     public async Task RemoveApprovalSetUp(Guid learningKey)
     {
         await _wireMockClient.DeleteMockResponse(ApprovalsUrl(learningKey), ApprovalsVerb);

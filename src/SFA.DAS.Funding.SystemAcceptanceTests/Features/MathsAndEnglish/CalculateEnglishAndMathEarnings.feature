@@ -19,7 +19,7 @@ Scenario: Calculate Single Math and English earnings
 	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date nextAY-08-23
 	And Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef <learnAimRef>
-	And SLD submit updated learners details
+	And SLD submit updated learners details (with autoapprove)
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for learnAimRef <learnAimRef>
 
 Examples:
@@ -72,7 +72,7 @@ Scenario: Maths and English instalments removed if maths and english courses rem
 	And the apprenticeship learning is approved
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date <end_date>
 	And Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef <learnAimRef>
-	And SLD submit updated learners details
+	And SLD submit updated learners details (with autoapprove)
 	Then Maths and English earnings are generated from periods <expected_first_earning_period> to <expected_last_period> with instalment amount <instalment> for learnAimRef <learnAimRef>
 	When SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date <end_date>

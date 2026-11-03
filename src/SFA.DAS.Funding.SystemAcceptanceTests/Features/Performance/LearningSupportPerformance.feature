@@ -17,7 +17,7 @@ Scenario: Learning Support for Maths and English Earnings over 5 years
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date nextAY-08-23
 	And Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60075880
 	And learning support is recorded from <start_date> to <end_date>
-	And SLD submit updated learners details
+	And SLD submit updated learners details (with autoapprove)
 	And SLD resubmits ILR
 	And SLD record on-programme cost as total price 15000 from date <start_date> to date nextAY-08-23
 	And Maths and English learning is recorded from <start_date> to <end_date> with learnAimRef 60075880
