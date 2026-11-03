@@ -92,7 +92,7 @@ Scenario: Withdrawal is removed; with date set to null
 	Then earnings are recalculated
 	And the apprenticeship earnings event is sent to payments
 	And the expected number of earnings instalments after withdrawal are 12
-	And apprenticeship learning support earnings are sent to payments from periods currentAY-R01 to currentAY-R12
+	And apprenticeship learning support earnings are sent to payments from periods 2627-R01 to 2627-R12
 	And a withdrawal reverted event is published to approvals
 
 @regression @ignoreInPREPRODandPP
