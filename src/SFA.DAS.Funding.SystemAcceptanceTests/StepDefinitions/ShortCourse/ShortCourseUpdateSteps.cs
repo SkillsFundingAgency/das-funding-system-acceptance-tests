@@ -1,7 +1,7 @@
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Builders;
-using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.ShortCourse;
 

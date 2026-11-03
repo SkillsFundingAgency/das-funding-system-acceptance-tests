@@ -2,6 +2,14 @@
 
 internal static class TestDataExtensions
 {
+    internal static string GetLearnerRef(this TestData testData)
+    {
+        // Try both request models because different tests are set up via different learner data flows.
+        return testData.LearnerData?.Learner?.LearnerRef
+               ?? testData.UpdateLearnerData?.Learner?.LearnerRef
+               ?? throw new InvalidOperationException("Cannot determine LearnerRef from TestData. Neither LearnerData nor UpdateLearnerData contains a learner reference.");
+    }
+
     internal static DateTime ApprenticeshipStartDate(this TestData testData)
     {
         if (testData.CommitmentsApprenticeshipCreatedEvent != null)
