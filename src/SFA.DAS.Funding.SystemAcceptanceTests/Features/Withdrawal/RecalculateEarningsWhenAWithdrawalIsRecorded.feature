@@ -87,10 +87,9 @@ Scenario: Withdrawal is removed; with date set to null
 	And earnings are recalculated
 	And the expected number of earnings instalments after withdrawal are 4
 	And the earnings after the delivery period 4 and academic year 2627 are soft deleted
-	And SLD resubmits ILR
-	And SLD record on-programme cost as total price 15000 from date 2026-08-01 to date 2027-07-31
+	When Learning withdrawal date is removed
 	And SLD submit updated learners details
-	And earnings are recalculated
+	Then earnings are recalculated
 	And the apprenticeship earnings event is sent to payments
 	And the expected number of earnings instalments after withdrawal are 12
 	And apprenticeship learning support earnings are sent to payments from periods currentAY-R01 to currentAY-R12

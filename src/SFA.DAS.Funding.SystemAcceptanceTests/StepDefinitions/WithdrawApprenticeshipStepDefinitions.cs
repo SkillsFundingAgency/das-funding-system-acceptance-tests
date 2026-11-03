@@ -113,6 +113,17 @@ internal class WithdrawApprenticeshipStepDefinitions
         testData.LastDayOfLearning = withdrawalDate.Value;
     }
 
+    [Given("Learning withdrawal date is removed")]
+    [When("Learning withdrawal date is removed")]
+    public void LearningWithdrawalDateIsRemoved()
+    {
+        var testData = _context.Get<TestData>();
+        var learnerDataBuilder = testData.GetLearnerDataBuilder();
+        learnerDataBuilder.WithWithdrawalDate(null);
+
+        testData.LastDayOfLearning = null;
+    }
+
     [Given("Learning withdrawal reason is recorded as (.*)")]
     [When("Learning withdrawal reason is recorded as (.*)")]
     public void LearningWithdrawalReasonIsRecordedAs(string withdrawalReasonCode)
