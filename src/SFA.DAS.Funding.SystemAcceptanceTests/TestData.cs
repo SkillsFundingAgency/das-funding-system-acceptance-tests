@@ -40,8 +40,6 @@ public class TestData
     internal DateTime? OriginalStartDate { get; set; }
     internal List<TestSupport.Payments> PaymentDbRecords { get; set; }
     internal List<FM36Learner> FM36Learners { get; set; }
-    internal EarningsApprenticeshipModel? EarningsApprenticeshipModel { get; set; }
-    internal PaymentsApprenticeshipModel? PaymentsApprenticeshipModel { get; set; }
     internal ApprenticeshipEarningsRecalculatedEvent? ApprenticeshipEarningsRecalculatedEvent { get; set; }
     internal CommitmentsMessages.ApprenticeshipCreatedEvent CommitmentsApprenticeshipCreatedEvent { get; set; }
     internal EarningsGeneratedEvent EarningsGeneratedEvent { get; set; }
