@@ -9,6 +9,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions.Apprenticeship;
 public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext context, LearningSqlClient learningSqlClient)
 {
     [Then("the {word} earnings event is sent to payments")]
+    [When("the {word} earnings event is sent to payments")]
     public async Task ThenSendTheApprovedEarningsToPayments(string learningType)
     {
         var testData = context.Get<TestData>();
@@ -106,6 +107,7 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
     }
 
     [Then("(.*) learning support earnings are sent to payments from periods (.*) to (.*)")]
+    [When("(.*) learning support earnings are sent to payments from periods (.*) to (.*)")]
     public async Task ThenLearningSupportEarningsAreSentToPaymentsFromPeriods(string learningType, TokenisablePeriod learningSupportStart, TokenisablePeriod learningSupportEnd)
     {
         var testData = context.Get<TestData>();
@@ -164,7 +166,8 @@ public class ApprenticeshipEarningsToPaymentsStepDefinitions(ScenarioContext con
         periods.Should().BeEmpty("expected no apprenticeship earnings periods to be sent to payments");
     }
 
-    [Then("the {word} earnings to payments event has no instalments after the delivery period (.*) and academic year (.*)")]
+    [Then("the {word} earnings to payments event has no instalments after the delivery period {word} and academic year {word}")]
+    [When("the {word} earnings to payments event has no instalments after the delivery period {word} and academic year {word}")]
     public async Task ThenEarningsToPaymentsEventHasNoInstalmentsAfterPeriod(string learningType, string deliveryPeriod, string academicYear)
     {
         var testData = context.Get<TestData>();

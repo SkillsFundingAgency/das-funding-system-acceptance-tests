@@ -24,4 +24,16 @@ public class UpdateStepDefinitions(ScenarioContext context, LearnerDataOuterApiH
         testData.UpdateLearnerData = await learnerDataOuterApiHelper.UpdateLearning(testData.LearnerKey, learnerData);
     }
 
+    [Given(@"SLD submit updated learners details \(with autoapprove\)")]
+    [When(@"SLD submit updated learners details \(with autoapprove\)")]
+    public async Task WhenSLDSubmitUpdatedLearnersDetailsWithAutoapprove()
+    {
+        await MockAutoApproveResponses();
+        await WhenSLDSubmitUpdatedLearnersDetails();
+    }
+
+    private async Task MockAutoApproveResponses()
+    {
+
+    }
 }
