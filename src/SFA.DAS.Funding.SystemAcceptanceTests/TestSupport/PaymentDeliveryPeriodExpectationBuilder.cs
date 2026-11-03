@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
+﻿using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 

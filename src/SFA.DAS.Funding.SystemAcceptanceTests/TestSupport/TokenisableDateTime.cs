@@ -14,7 +14,9 @@ public class TokenisableDateTime
 
 	public DateTime Value { get; }
 
-	public static TokenisableDateTime FromString(string value)
+    public DateOnly DateOnly => DateOnly.FromDateTime(Value);
+
+    public static TokenisableDateTime FromString(string value)
 	{
         if (value == "null")
         {

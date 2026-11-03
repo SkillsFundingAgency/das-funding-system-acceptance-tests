@@ -1,11 +1,9 @@
-using ESFA.DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
-using Microsoft.AspNetCore.Http.Features;
+using DC.ILR.FundingService.FM36.FundingOutput.Model.Output;
 using Newtonsoft.Json;
+using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using System.Net;
-using System.Text.Json.Schema;
-using static SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql.LearnerDataSqlClient;
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 {
