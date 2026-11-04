@@ -38,22 +38,26 @@ Examples:
 	| 2026-10-05 | 2028-06-10 | 18000        | 91            | 20                       | 2026-10-05           | OtherPersonalReasons   | 0                      | null                   | null                 |
 
 @regression @ignoreInPREPRODandPP
-Scenario: Withdrawal is recorded; recalc earnings for training code 254 with qualifying-period behaviour
-	Given an apprenticeship has a start date of 2026-11-15, a planned end date of 2027-11-20, an agreed price of 24000, and a training code 254
+Scenario: Withdrawal is recorded; recalc earnings where qualifying period is met
+	Given an apprenticeship has a start date of <start_date>, a planned end date of <end_date>, an agreed price of <agreed_price>, and a training code <training_code>
 	And a draft apprenticeship learning is created
 	And the apprenticeship learning is approved
-	And the planned number of months must be the number of months from the start date to the planned end date 12
-	When SLD record on-programme cost as total price 24000 from date 2026-11-15 to date 2027-11-20
-	And Learning withdrawal date is recorded on 2026-12-25
-	And Learning withdrawal reason is recorded as OtherPersonalReasons
+	And the planned number of months must be the number of months from the start date to the planned end date <planned_number_of_months>
+	When SLD record on-programme cost as total price <agreed_price> from date <start_date> to date <end_date>
+	And Learning withdrawal date is recorded on <last_day_of_delivery>
+	And Learning withdrawal reason is recorded as <withdrawal_reason_code>
 	And SLD submit updated learners details
 	Then the apprenticeship is marked as withdrawn
 	And earnings are recalculated
-	And the apprenticeship earnings event is sent to payments
-	And the expected number of earnings instalments after withdrawal are 0
-	And the earnings after the delivery period 4 and academic year 2627 are soft deleted
-	And a learning withdrawn event is published to approvals with last day of learning as 2026-12-25
-	And a withdrawal reason OtherPersonalReasons is sent to approvals in the learning withdrawn event
+	And the expected number of earnings instalments after withdrawal are <new_num_of_instalments>
+	And the earnings after the delivery period <delivery_period_string> and academic year <academic_year_string> are soft deleted
+	And a learning withdrawn event is published to approvals with last day of learning as <last_day_of_delivery>
+	And a withdrawal reason <withdrawal_reason_code> is sent to approvals in the learning withdrawn event
+
+Examples:
+	| start_date | end_date   | agreed_price | training_code | planned_number_of_months | last_day_of_delivery | withdrawal_reason_code | new_num_of_instalments | delivery_period_string | academic_year_string |
+	| 2026-11-15 | 2027-11-20 | 24000        | 254           | 12                       | 2026-12-25           | OtherPersonalReasons   | 0                      | 4                      | 2627                 |
+	
 
 @regression @ignoreInPREPRODandPP
 Scenario: Withdrawal is recorded again; with a different date
