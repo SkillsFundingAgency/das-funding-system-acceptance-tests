@@ -15,7 +15,7 @@ public class ApprovalsStubClient
     private const string StartDateChangeType = "StartDate";
 
     private readonly WireMockClient _wireMockClient = new();
-    private readonly HashSet<Guid> _learningKeysSetUp = [];
+    private static readonly HashSet<Guid> _learningKeysSetUp = new();
 
     public IReadOnlyCollection<Guid> LearningKeysSetUp => _learningKeysSetUp;
 

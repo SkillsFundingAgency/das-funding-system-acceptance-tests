@@ -234,14 +234,33 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
             return JsonConvert.DeserializeObject<List<FM36Learner>>(await response.Content.ReadAsStringAsync())!;
         }
 
-        public async Task<HttpResponseMessage> GetFm36BlockHttpResponseMessage(long ukprn, int collectionYear, byte collectionPeriod, int? pageSize = null, int? pageNumber = null)
+        public async Task<HttpResponseMessage> GetFm36BlockHttpResponseMessage(
+            long ukprn, 
+            int collectionYear, 
+            byte collectionPeriod, 
+            int? pageSize = null, 
+            int? pageNumber = null)
         {
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+
             var url = _urlProvider.GetFm36Block(ukprn, collectionYear, collectionPeriod, pageSize, pageNumber);
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
             request.Headers.Add("Cache-Control", "no-cache");
             request.Headers.Add("X-Version", "1");
-            var response = await _apiClient.SendAsync(request);
+
+            var sendTask = _apiClient.SendAsync(request, cancellationTokenSource.Token);
+            var timeoutTask = Task.Delay(TimeSpan.FromMinutes(1));
+            var completedTask = await Task.WhenAny(sendTask, timeoutTask);
+
+            if (completedTask != sendTask)
+            {
+                cancellationTokenSource.Cancel();
+                throw new TimeoutException(
+                    $"GetFm36Block request timed out after 60 seconds. Ukprn={ukprn}, CollectionYear={collectionYear}, CollectionPeriod={collectionPeriod}, Url={url}");
+            }
+
+            var response = await sendTask;
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"Expected HTTP 200 OK response from GetFm36Block request, but got {response.StatusCode}");
 
