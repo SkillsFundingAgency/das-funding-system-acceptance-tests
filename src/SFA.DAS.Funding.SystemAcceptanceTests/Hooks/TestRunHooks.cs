@@ -76,10 +76,6 @@ public class TestRunHooks
     public static async Task GenerateSharedTestData()
     {
         var ulns = TestIdentifierProvider.Initialise(GetTestCount(), Configurator.GetConfiguration().LearningDbConnectionString);// automatically generate the number of ULNs & approvals apprenticeship ids needed for a test run
-        var testLearners = ulns.Select(uln => DcLearnerDataHelper.GetLearner(uln)).ToList();
-        var wireMockClient = new WireMockClient();
-        var currentAcademicYear = Convert.ToInt32(TableExtensions.CalculateAcademicYear("CurrentMonth+0"));
-        await wireMockClient.CreateMockResponse($"learners/{currentAcademicYear}?ukprn={Constants.UkPrn}&fundModel=36&progType=-1&standardCode=-1&pageNumber=1&pageSize=1000", testLearners);
     }
 
     [BeforeTestRun(Order = 5)]
@@ -130,6 +126,24 @@ public class TestRunHooks
     public static void ResetEmployerMaxLevyCapForShortCourses()
     {
         StaticObjects.CoursesSqlClient!.ResetEmployerMaxLevyCap();
+    }
+
+    [AfterTestRun(Order = 6)]
+    public static async Task RemoveApprovalSetUps()
+    {
+        var approvalsStubClient = new ApprovalsStubClient();
+
+        foreach (var learningKey in approvalsStubClient.LearningKeysSetUp.ToList())
+        {
+            try
+            {
+                await approvalsStubClient.RemoveApprovalSetUp(learningKey);
+            }
+            catch (Exception ex)
+            {
+                LoggerHelper.WriteLog($"Could not remove the Approvals stub mapping for learning {learningKey}: {ex.Message}");
+            }
+        }
     }
 
     private static int GetTestCount()

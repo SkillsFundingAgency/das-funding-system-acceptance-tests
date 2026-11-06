@@ -108,6 +108,7 @@ namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions
         }
 
         [When("a withdrawal reverted event is published to approvals")]
+        [Then("a withdrawal reverted event is published to approvals")]
         public async Task WithdrawalRevertedEventIsPublishedToApprovals()
         {
             var testData = context.Get<TestData>();

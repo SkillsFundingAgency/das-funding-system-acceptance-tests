@@ -276,6 +276,7 @@ public class CreateDraftStepDefinitions(
             return true;
         }, "Failed to find draft apprenticeship in Learning DB");
 
+        testData.LearnerData = draftLearnerData;
     }
 
     private static LearnerDataRequest CreateBasicDraftLearner(ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)

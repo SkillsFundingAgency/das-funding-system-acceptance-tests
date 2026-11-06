@@ -6,7 +6,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 namespace SFA.DAS.Funding.SystemAcceptanceTests.StepDefinitions;
 
 [Binding]
-public class BreakInLearningStepDefinitions(ScenarioContext context)
+public class BreakInLearningStepDefinitions(ScenarioContext context, EarningsSqlClient earningsSqlClient)
 {
     [Given("SLD inform us of a break in learning with pause date (.*)")]
     [When("SLD inform us of a break in learning with pause date (.*)")]
@@ -66,9 +66,9 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
         {
             var testData = context.Get<TestData>();
 
-            testData.EarningsApprenticeshipModel = new EarningsSqlClient().GetApprenticeshipEarningsEntityModel(context);
+            var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
 
-             var instalments = testData.EarningsApprenticeshipModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments
+            var instalments = earnings?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments
                 ?.OrderBy(x => x.AcademicYear).ThenBy(x => x.DeliveryPeriod).ToList();
 
             
@@ -99,8 +99,9 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
         }
 
         var testData = context.Get<TestData>();
+        var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
 
-        var periodsInLearning = testData.EarningsApprenticeshipModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EpisodePeriodInLearning
+        var periodsInLearning = earnings?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent).EpisodePeriodInLearning
             ?.OrderBy(x => x.StartDate).ToList();
 
         var index = normalisedPeriod == "first" ? 0 : 1;
@@ -118,7 +119,8 @@ public class BreakInLearningStepDefinitions(ScenarioContext context)
     {
         var testData = context.Get<TestData>();
 
-        var breakInLearnings = testData.EarningsApprenticeshipModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EpisodePeriodInLearning;
+        var earnings = earningsSqlClient.GetApprenticeshipEarningsEntityModel(context);
+        var breakInLearnings = earnings?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EpisodePeriodInLearning;
 
         Assert.IsTrue(breakInLearnings?.Count == 0, "Unexpected Break in Learnings records found for the apprenticeship");
     }

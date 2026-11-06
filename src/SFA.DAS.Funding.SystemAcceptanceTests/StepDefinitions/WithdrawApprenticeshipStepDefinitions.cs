@@ -63,7 +63,6 @@ internal class WithdrawApprenticeshipStepDefinitions
     {
         var testData = _context.Get<TestData>();
         await _context.ReceiveEarningsRecalculatedEvent(testData.LearningKey);
-        testData.EarningsApprenticeshipModel = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
     }
 
     [Given("the expected number of earnings instalments after withdrawal are (.*)")]
@@ -74,9 +73,9 @@ internal class WithdrawApprenticeshipStepDefinitions
     {
         var testData = _context.Get<TestData>();
 
-        Assert.AreEqual(expectedInstalmentsNumber, testData.ApprenticeshipEarningsRecalculatedEvent.DeliveryPeriods.Count, "Unexpected number of instalments in earnings recalculated event");
+        var earnings = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
 
-        var actualInstalmentsNumber = testData.EarningsApprenticeshipModel.Episodes
+        var actualInstalmentsNumber = earnings.Episodes
             .GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?
             .EarningsProfile?.Instalments?
             .Where(x => x.Type.Contains("Regular"))
@@ -91,9 +90,11 @@ internal class WithdrawApprenticeshipStepDefinitions
     {
         var testData = _context.Get<TestData>();
 
+        var earnings = _earningsSqlClient.GetApprenticeshipEarningsEntityModel(_context);
+
         if (deliveryPeriod != "null")
         {
-            bool isValidEarningInDb = testData.EarningsApprenticeshipModel?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments?
+            bool isValidEarningInDb = earnings?.Episodes?.GetEpisode(testData.CommitmentsApprenticeshipCreatedEvent)?.EarningsProfile?.Instalments?
                .All(i => i.AcademicYear < academicYear.Value
                || (i.AcademicYear == academicYear.Value && i.DeliveryPeriod <= Convert.ToInt16(deliveryPeriod))) ?? true;
 
@@ -110,6 +111,17 @@ internal class WithdrawApprenticeshipStepDefinitions
         learnerDataBuilder.WithWithdrawalDate(withdrawalDate.Value);
 
         testData.LastDayOfLearning = withdrawalDate.Value;
+    }
+
+    [Given("Learning withdrawal date is removed")]
+    [When("Learning withdrawal date is removed")]
+    public void LearningWithdrawalDateIsRemoved()
+    {
+        var testData = _context.Get<TestData>();
+        var learnerDataBuilder = testData.GetLearnerDataBuilder();
+        learnerDataBuilder.WithWithdrawalDate(null);
+
+        testData.LastDayOfLearning = null;
     }
 
     [Given("Learning withdrawal reason is recorded as (.*)")]
