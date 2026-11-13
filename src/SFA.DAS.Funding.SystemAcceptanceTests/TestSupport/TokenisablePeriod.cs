@@ -14,8 +14,14 @@ public class TokenisablePeriod
 
     public static TokenisablePeriod FromString(string value)
     {
-        var yearPortion = value.Split('-')[0];
-        var periodPortion = value.Split('-')[1];
+        var parts = value.Split('-');
+        if (parts.Length != 2)
+        {
+            throw new ArgumentException("Invalid period string format for TokenisablePeriod.");
+        }
+
+        var yearPortion = parts[0];
+        var periodPortion = parts[1];
         if (periodPortion.StartsWith('R'))
             periodPortion = periodPortion[1..];
 
@@ -46,6 +52,11 @@ public class TokenisablePeriod
         if (yearPortion.ToLower() == TokenisableYearConstants.TwoYearsAgoAYToken.ToLower())
         {
             return new TokenisablePeriod(new Period(TokenisableAcademicYear.GetAcademicYear(-2), period));
+        }
+
+        if (short.TryParse(yearPortion, out var academicYear))
+        {
+            return new TokenisablePeriod(new Period(academicYear, period));
         }
 
         throw new ArgumentException("Invalid string format for TokenisablePeriod.");

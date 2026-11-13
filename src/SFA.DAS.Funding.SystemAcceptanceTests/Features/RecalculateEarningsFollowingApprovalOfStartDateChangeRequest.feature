@@ -18,6 +18,7 @@ Scenario: Start Date change approved; recalc earnings
 	And a draft apprenticeship learning is created
 	And the apprenticeship learning is approved
 	When SLD record on-programme cost as total price <agreed_price> from date <new_start_date> to date <end_date>
+	And Approvals will auto-approve a start date change from <start_date> to <new_start_date> for the learning
 	And SLD submit updated learners details
 	Then the earnings are recalculated based on the new expected earnings <new_expected_earnings>
 	And the history of old earnings is maintained with <old_inst_amount>

@@ -30,7 +30,7 @@ Scenario: Start date change approved
 	And the fm36 data is retrieved for currentDate
 	When SLD resubmits ILR
 	And SLD record on-programme cost as total price <agreed_price> from date <new_start_date> to date <end_date>
-	And SLD submit updated learners details
+	And SLD submit updated learners details (with autoapprove)
 	And the fm36 data is retrieved for currentAY-07-31
 	Then the fm36 PriceEpisodeInstalmentValue is <new_expected_earnings>
 	And Incentive periods and dates are updated in the fm36 response

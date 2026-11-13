@@ -181,7 +181,7 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And SLD record on-programme training price 12000 with epao as 3000 from date 2026-08-02 to date 2027-07-31
 	And Learner's date of birth is updated to 2001-08-02
 	And the apprentice is marked as a care leaver
-	And SLD submit updated learners details
+	And SLD submit updated learners details (with autoapprove)
 	Then the apprenticeship earnings event is sent to payments
 	And the first incentive earning is_not generated for provider & employer
 	And the second incentive earning is_not generated for provider & employer
@@ -192,7 +192,7 @@ Scenario: Validation of incentive earnings generation and clearance across diffe
 	And SLD record on-programme training price 12000 with epao as 3000 from date 2026-08-01 to date 2027-07-31
 	And Learner's date of birth is updated to 2001-08-02
 	And the apprentice is marked as a care leaver
-	And SLD submit updated learners details
+	And SLD submit updated learners details (with autoapprove)
 	Then the apprenticeship earnings event is sent to payments
 	And the first incentive earning is generated for provider & employer
 	And the second incentive earning is generated for provider & employer

@@ -95,7 +95,7 @@ Scenario: Price change; Both total price and start date changed
 	And the total price is above or below or at the funding band maximum
 	When SLD record on-programme cost as total price <agreed_price> from date <new_start_date> to date <end_date>
 	And SLD record on-programme cost as total price <new_total_price> from date <pc_from_date> to date <end_date>
-	And SLD submit updated learners details
+	And SLD submit updated learners details (with autoapprove)
 	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
 	And earnings prior to <delivery_period> and <academic_year_string> are frozen with <old_inst_amount>
 	And the AgreedPrice on the earnings entity is updated to <new_total_price>
