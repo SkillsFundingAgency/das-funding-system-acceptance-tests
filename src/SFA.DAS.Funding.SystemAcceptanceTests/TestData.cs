@@ -42,7 +42,6 @@ public class TestData
     internal List<FM36Learner> FM36Learners { get; set; }
     internal ApprenticeshipEarningsRecalculatedEvent? ApprenticeshipEarningsRecalculatedEvent { get; set; }
     internal CommitmentsMessages.ApprenticeshipCreatedEvent CommitmentsApprenticeshipCreatedEvent { get; set; }
-    internal EarningsGeneratedEvent EarningsGeneratedEvent { get; set; }
     internal List<FinalisedOnProgammeLearningPaymentEvent> FinalisedPaymentsList { get; set; }
     internal List<CalculateOnProgrammePayment> CalculatedOnProgrammePaymentList { get; set; }
     internal LearnerDataOuterApiClient.LearnerDataRequest? LearnerData { get; set; }

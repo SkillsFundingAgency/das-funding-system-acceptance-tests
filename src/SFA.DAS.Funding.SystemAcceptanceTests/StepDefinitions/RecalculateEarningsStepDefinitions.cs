@@ -3,6 +3,7 @@ using SFA.DAS.Funding.SystemAcceptanceTests.Helpers;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Events;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Sql;
 using SFA.DAS.Funding.SystemAcceptanceTests.Hooks;
+using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Messages;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
 using SFA.DAS.Learning.Types;
 
@@ -254,6 +255,23 @@ public class RecalculateEarningsStepDefinitions
 
         Assert.AreEqual(amount, instalments.First().Amount,
             $"Expected first unapproved earning amount to be {amount} but found {instalments.First().Amount}");
+    }
+
+    [Then("a withhold payments for learning event is published")]
+    public async Task ThenAWithholdPaymentsForLearningEventIsPublished()
+    {
+        var testData = _context.Get<TestData>();
+
+        await WaitHelper.WaitForIt(() =>
+        {
+            var matchingEvent = MultipleEndpointSafeMessageHandler<WithholdPaymentsForLearningEvent>.GetMessage(
+                x => x.LearningKey == testData.LearningKey
+                     && x.UKPRN == testData.CommitmentsApprenticeshipCreatedEvent.ProviderId
+                     && x.ULN == long.Parse(testData.Uln)
+                     && x.CourseCode == testData.CommitmentsApprenticeshipCreatedEvent.TrainingCode);
+
+            return matchingEvent != null;
+        }, "Failed to find published Withhold Payments For Learning Event");
     }
 
     [Then("no earnings are calculated for the apprenticeship with training code (.*)")]
