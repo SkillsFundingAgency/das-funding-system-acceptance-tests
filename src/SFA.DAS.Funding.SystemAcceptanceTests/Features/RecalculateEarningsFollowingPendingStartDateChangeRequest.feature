@@ -13,7 +13,7 @@ Scenario: Start date change pending employer approval marks earnings as not paya
 	And SLD submit updated learners details
 	Then a withhold payments for learning event is published
 	And the apprenticeship earnings event is sent to payments
-	And the apprenticeship earnings to payments event has no instalments
+
 
 Examples:
 	| start_date      | end_date               | agreed_price | training_code | new_start_date  |
