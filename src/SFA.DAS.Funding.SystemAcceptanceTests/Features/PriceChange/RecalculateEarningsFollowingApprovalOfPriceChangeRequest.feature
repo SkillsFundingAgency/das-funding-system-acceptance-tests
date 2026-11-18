@@ -78,7 +78,7 @@ Scenario: Price change; Empty Costs array
 	And SLD record expected end date <end_date>
 	And SLD record standard code as <training_code>
 	And SLD record an empty on-programme costs array
-	And SLD submit updated learners details
+	And SLD submit updated learners details (with autoapprove)
 	Then the earnings are recalculated based on the new instalment amount of <new_inst_amount> from <delivery_period> and <academic_year_string>
 	And the apprenticeship earnings event is sent to payments
 	And the apprenticeship earnings to payments event has no instalments
