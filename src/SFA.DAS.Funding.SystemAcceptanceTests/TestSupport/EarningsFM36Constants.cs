@@ -124,4 +124,7 @@ public static class EarningsFM36Constants
         public const string PriceEpisodeTotProgFunding = "PriceEpisodeTotProgFunding";
         public const string PriceEpisodeESFAContribPct = "PriceEpisodeESFAContribPct";
     }
+
+    // Misc
+    public const decimal CompletionElementMultiplier = 0.2m;
 }

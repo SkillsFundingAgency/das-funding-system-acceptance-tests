@@ -267,6 +267,12 @@ public class Fm36StepDefinitions
 
         var expectedActualEndDate = apprenticeshipCreatedEvent.ActualStartDate.ToDateOnly();
 
+        var cappedRemainingTNPAmount = Math.Min(totalPrice!.Value, fundingBandMax);
+        var completionElement = Math.Max(0,
+            Math.Min(
+                (totalPrice!.Value - GetUpperLimitAdjustment(totalPrice.Value, fundingBandMax)) * EarningsFM36Constants.CompletionElementMultiplier,
+                cappedRemainingTNPAmount));
+
         Assert.Multiple(() =>
         {
             Assert.AreEqual(testData.GetLearnerRef(), fm36Learner.LearnRefNumber,
@@ -298,10 +304,10 @@ public class Fm36StepDefinitions
             Assert.AreEqual(EarningsFM36Constants.PriceEpisodeBalancePayment, firstPriceEpisode.PriceEpisodeValues.PriceEpisodeBalancePayment, "Unexpected PriceEpisodeBalancePayment value found!");
             Assert.AreEqual(false, firstPriceEpisode.PriceEpisodeValues.PriceEpisodeCompleted, "Unexpected PriceEpisodeCompleted value found!");
             Assert.AreEqual(EarningsFM36Constants.PriceEpisodeCompletionPayment, firstPriceEpisode.PriceEpisodeValues.PriceEpisodeCompletionPayment, "Unexpected PriceEpisodeCompletionPayment value found!");
-            Assert.AreEqual(fundingBandMax - (instalmentAmount * (currentPeriod - 1)), firstPriceEpisode.PriceEpisodeValues.PriceEpisodeRemainingTNPAmount, "Unexpected PriceEpisodeRemainingTNPAmount value found!");
-            Assert.AreEqual(fundingBandMax - (instalmentAmount * (currentPeriod - 1)), firstPriceEpisode.PriceEpisodeValues.PriceEpisodeRemainingAmountWithinUpperLimit, "Unexpected PriceEpisodeRemainingAmountWithinUpperLimit value found!");
-            Assert.AreEqual(fundingBandMax - (instalmentAmount * (currentPeriod - 1)), firstPriceEpisode.PriceEpisodeValues.PriceEpisodeCappedRemainingTNPAmount, "Unexpected PriceEpisodeCappedRemainingTNPAmount value found!");
-            Assert.AreEqual(fundingBandMax - (instalmentAmount * (currentPeriod - 1)) - completionPayment, firstPriceEpisode.PriceEpisodeValues.PriceEpisodeExpectedTotalMonthlyValue, "Unexpected PriceEpisodeExpectedTotalMonthlyValue value found!");
+            Assert.AreEqual(totalPrice, firstPriceEpisode.PriceEpisodeValues.PriceEpisodeRemainingTNPAmount, "Unexpected PriceEpisodeRemainingTNPAmount value found!");
+            Assert.AreEqual(fundingBandMax, firstPriceEpisode.PriceEpisodeValues.PriceEpisodeRemainingAmountWithinUpperLimit, "Unexpected PriceEpisodeRemainingAmountWithinUpperLimit value found!");
+            Assert.AreEqual(cappedRemainingTNPAmount, firstPriceEpisode.PriceEpisodeValues.PriceEpisodeCappedRemainingTNPAmount, "Unexpected PriceEpisodeCappedRemainingTNPAmount value found!");
+            Assert.AreEqual(cappedRemainingTNPAmount - completionElement, firstPriceEpisode.PriceEpisodeValues.PriceEpisodeExpectedTotalMonthlyValue, "Unexpected PriceEpisodeExpectedTotalMonthlyValue value found!");
             Assert.AreEqual(EarningsFM36Constants.AimSeqNumber, firstPriceEpisode.PriceEpisodeValues.PriceEpisodeAimSeqNumber, "Unexpected PriceEpisodeAimSeqNumber value found!");
             Assert.AreEqual(EarningsFM36Constants.PriceEpisodeSecondProv1618Pay, firstPriceEpisode.PriceEpisodeValues.PriceEpisodeSecondProv1618Pay, "Unexpected PriceEpisodeSecondProv1618Pay value found!");
             Assert.AreEqual(EarningsFM36Constants.PriceEpisodeFirstEmp1618Pay, firstPriceEpisode.PriceEpisodeValues.PriceEpisodeFirstEmp1618Pay, "Unexpected PriceEpisodeFirstEmp1618Pay value found!");
@@ -1024,5 +1030,12 @@ public class Fm36StepDefinitions
             return 0;
 
         return (end - start).Days + 1; // inclusive
+    }
+
+    private static decimal GetUpperLimitAdjustment(decimal totalPrice, decimal fundingBandMax)
+    {
+        return totalPrice > fundingBandMax
+            ? totalPrice - fundingBandMax
+            : 0;
     }
 }
