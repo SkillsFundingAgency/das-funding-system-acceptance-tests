@@ -54,12 +54,6 @@ internal class AfterScenario
                 writer.WriteLine($"ApprenticeshipId: {testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId}");
             }
 
-            if (hasError)
-            {
-                writer.WriteLine("EarningsGeneratedEvent");
-                writer.WriteLine(JsonSerializer.Serialize(testData.EarningsGeneratedEvent, new JsonSerializerOptions { WriteIndented = true }));
-            }
-
             foreach (KeyValuePair<string, string> kvp in testLogs)
             {
                 writer.WriteLine($"{kvp.Key}: {kvp.Value}");
