@@ -1,8 +1,5 @@
-trigger:
-  batch: true
-  branches:
-    include:
-      - "main"
+trigger: none
+pr: none
 
 variables:
 - name: SolutionBaseName
