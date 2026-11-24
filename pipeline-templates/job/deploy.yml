@@ -120,8 +120,8 @@ jobs:
             runInParallel: false
             maxCpuCount: 1
             rerunFailedTests: true
-            rerunType: basedontestfailurepercentage
-            rerunFailedTestsMaxPercent: 50
+            rerunType: basedOnTestFailurePercentage
+            rerunFailedTestsMaxPercentage: 20
             rerunMaxAttempts: 2
 
         # Extract failed tests from TRX
