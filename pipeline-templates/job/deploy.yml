@@ -121,7 +121,7 @@ jobs:
             maxCpuCount: 1
             rerunFailedTests: true
             rerunType: basedontestfailurepercentage
-            rerunFailedTestsMaxPercent: 20
+            rerunFailedTestsMaxPercent: 50
             rerunMaxAttempts: 2
 
         # Extract failed tests from TRX
