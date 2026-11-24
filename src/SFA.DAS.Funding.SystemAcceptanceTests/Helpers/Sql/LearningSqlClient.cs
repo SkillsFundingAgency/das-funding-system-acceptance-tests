@@ -344,8 +344,6 @@ public class Episode
     public bool IsDeleted { get; set; }
     public long Ukprn { get; set; }
     public long EmployerAccountId { get; set; }
-    public DAS.Learning.Types.FundingType FundingType { get; set; }
-    public DAS.Learning.Types.FundingPlatform? FundingPlatform { get; set; }
     public long? FundingEmployerAccountId { get; set; }
     public string LegalEntityName { get; set; }
     public long? AccountLegalEntityId { get; set; }

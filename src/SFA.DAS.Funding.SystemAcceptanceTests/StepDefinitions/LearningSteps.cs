@@ -143,16 +143,4 @@ public class LearningSteps (ScenarioContext context, LearningSqlClient learningS
         });
     }
 
-    [Then("learning FundingPlatformType is set to (.*)")]
-    public void LearningFundingPlatformTypeIsSetTo(int expectedFundingPlatformType)
-    {
-        var testData = context.Get<TestData>();
-
-        var episode = learningSqlClient
-            .GetApprenticeshipByUln(testData.Uln)
-            .Episodes.GetEpisode(Constants.UkPrn, testData.LearningKey);
-
-        Assert.IsNotNull(episode.FundingPlatform, "Expected FundingPlatform to be present in ApprenticeshipEpisode");
-        Assert.AreEqual(expectedFundingPlatformType, (int)episode.FundingPlatform.Value, "FundingPlatformType does not match expected value.");
-    }
 }

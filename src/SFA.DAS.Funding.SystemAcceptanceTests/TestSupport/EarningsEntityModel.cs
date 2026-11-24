@@ -17,7 +17,6 @@ public class EpisodeModel
     public Guid Key { get; set; }
     public long Ukprn { get; set; }
     public long EmployerAccountId { get; set; }
-    public FundingType FundingType { get; set; }
     public long? FundingEmployerAccountId { get; set; }
     public string LegalEntityName { get; set; }
     public string TrainingCode { get; set; } = null!;

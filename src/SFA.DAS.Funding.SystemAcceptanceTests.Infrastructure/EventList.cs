@@ -7,7 +7,6 @@ public static class EventList
         var events = new List<string>
         {
             "SFA.DAS.Approvals.EventHandlers.Messages.ApprovalCreatedEvent",
-            typeof(Learning.Types.LearningCreatedEvent).FullName!,
             typeof(ApprenticeshipEarnings.Types.ApprenticeshipEarningsRecalculatedEvent).FullName!,
             typeof(Learning.Types.EndDateChangedEvent).FullName!,
             typeof(Learning.Types.LearningWithdrawnEvent).FullName!,
@@ -15,6 +14,7 @@ public static class EventList
             typeof(Learning.Types.LearningRemovedEvent).FullName!,
             typeof(Learning.Types.LearningReinstatedEvent).FullName!,
             typeof(Learning.Types.PersonalDetailsChangedEvent).FullName!,
+            typeof(Learning.Types.ApprovedLearningUpdatedEvent).FullName!,
             typeof(SFA.DAS.LearnerData.Events.LearnerDataEvent).FullName!,
             typeof(ApprenticeshipEarnings.Types.GrowthAndSkillsPaymentsRecalculatedEvent).FullName!,
             typeof(ApprenticeshipEarnings.Types.WithholdPaymentsForLearningEvent).FullName!
