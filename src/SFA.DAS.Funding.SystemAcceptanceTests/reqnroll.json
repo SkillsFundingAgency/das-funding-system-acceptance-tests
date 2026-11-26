@@ -1,5 +1,14 @@
 {
-  "bindingCulture": {
-    "name": "en-GB"
+  "$schema": "https://schemas.reqnroll.net/reqnroll-config-latest.json",
+
+  "trace": {
+    "stepDefinitionSkeletonStyle": "RegexAttribute"
+  },
+
+"language": {
+    "feature": "en-GB"
+  },
+  "generator": {
+    "allowRowTests": false
   }
 }

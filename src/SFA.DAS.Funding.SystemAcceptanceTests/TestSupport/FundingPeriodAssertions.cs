@@ -17,11 +17,9 @@ public class FundingPeriodAssertions : GenericCollectionAssertions<DeliveryPerio
         var subjArray = Subject.ToArray();
         for (var i = 0; i < subjArray.Length; i++)
         {
-            Execute.Assertion
-                .Given(() => subjArray[i])
-                .ForCondition(v => v.LearningAmount == targetValue)
-                .FailWith(
-                    $"Expected value {subjArray[i].LearningAmount} in Period[{i+1}] should be {targetValue}");
+            AssertionChain.GetOrCreate().Given(() => subjArray[i])
+            .ForCondition(v => v.LearningAmount == targetValue)
+            .FailWith($"Expected value {subjArray[i].LearningAmount} in Period[{i + 1}] should be {targetValue}");
         }
 
         return new AndConstraint<GenericCollectionAssertions<DeliveryPeriod>>(this);
@@ -29,7 +27,7 @@ public class FundingPeriodAssertions : GenericCollectionAssertions<DeliveryPerio
 
     protected override string Identifier => "agreed price";
 
-    public FundingPeriodAssertions(IEnumerable<DeliveryPeriod> actualValue) : base(actualValue)
+    public FundingPeriodAssertions(IEnumerable<DeliveryPeriod> actualValue) : base(actualValue, AssertionChain.GetOrCreate())
     {
     }
 }

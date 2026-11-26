@@ -921,7 +921,7 @@ public class Fm36StepDefinitions
         var pagedLearners = JsonConvert.DeserializeObject<PagedQueryResult<FM36Learner>>(responseContent);
 
         Assert.IsNotNull(pagedLearners, "Paged FM36 learners response is null");
-        pagedLearners!.Items.Count.Should().BeGreaterThan(0).And.BeLessOrEqualTo(numberOfRecords, $"Expected between 1 and {numberOfRecords} learners on page {pageNumber}");
+        pagedLearners!.Items.Count.Should().BeGreaterThan(0).And.BeLessThanOrEqualTo(numberOfRecords, $"Expected between 1 and {numberOfRecords} learners on page {pageNumber}");
         pagedLearners.Page.Should().Be(pageNumber, $"Expected page number to be {pageNumber}");
         pagedLearners.TotalItems.Should().BeGreaterThan(14, "Expected total items to be greater than 14");
         pagedLearners.TotalPages.Should().BeGreaterThan(2, "Expected total pages to be greater than 2");

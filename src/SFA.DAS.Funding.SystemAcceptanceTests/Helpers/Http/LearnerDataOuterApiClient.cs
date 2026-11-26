@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Extensions;
 using SFA.DAS.Funding.SystemAcceptanceTests.Infrastructure.Configuration;
 using SFA.DAS.Funding.SystemAcceptanceTests.TestSupport;
-using System.Net;
+
 
 namespace SFA.DAS.Funding.SystemAcceptanceTests.Helpers.Http
 {
