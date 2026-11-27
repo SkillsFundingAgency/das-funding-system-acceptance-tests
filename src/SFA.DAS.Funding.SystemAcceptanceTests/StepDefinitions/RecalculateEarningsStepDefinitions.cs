@@ -190,38 +190,6 @@ public class RecalculateEarningsStepDefinitions
         }, "Failed to find installments in Earnings Profile History");
     }
 
-    [Given(@"a price change event is approved")]
-    public async Task GivenAPriceChangeEventIsApproved(Table table)
-    {
-        var testData = _context.Get<TestData>();
-        var fixture = new Fixture();
-
-        var apprenticeshipPriceChangedEvent = fixture.Build<LearningPriceChangedEvent>()
-        .With(_ => _.LearningKey, Guid.Parse(table.Rows[0]["apprenticeship_key"]))
-        .With(_ => _.ApprovalsApprenticeshipId, long.Parse(table.Rows[0]["apprenticeship_id"]))
-        .With(_ => _.Episode, new LearningEpisode
-        {
-            Prices = new List<LearningEpisodePrice>
-            {
-                new LearningEpisodePrice
-                {
-                    EndPointAssessmentPrice = decimal.Parse(table.Rows[0]["assessment_price"]),
-                    StartDate = testData.OriginalStartDate.GetValueOrDefault(),
-                    EndDate = testData.PlannedEndDate.GetValueOrDefault(),
-                    TrainingPrice = decimal.Parse(table.Rows[0]["training_price"]),
-                    Key = Guid.NewGuid()
-                }
-            },
-            EmployerAccountId = long.Parse(table.Rows[0]["employer_account_id"]),
-            Ukprn = long.Parse(table.Rows[0]["provider_id"]),
-            Key = _context.Get<Learning.Types.LearningCreatedEvent>().Episode.Key
-        })
-        .With(_ => _.EffectiveFromDate, DateTime.Parse(table.Rows[0]["effective_from_date"]))
-        .With(_ => _.ApprovedDate, DateTime.Parse(table.Rows[0]["approved_date"]))
-        .Create();
-
-        await TestServiceBus.Das.SendPriceChangeApprovedMessage(apprenticeshipPriceChangedEvent);
-    }
 
     [Then("an end date changed event is published to approvals with end date (.*)")]
     public async Task EndDateChangedEventIsPublishedToApprovals(TokenisableDateTime endDate)
@@ -232,6 +200,18 @@ public class RecalculateEarningsStepDefinitions
 
         Assert.AreEqual(testData.EndDateChangedEvent.PlannedEndDate.Date, endDate.Value, "Unexpected planned end found!");
         Assert.AreEqual(testData.EndDateChangedEvent.ApprovalsApprenticeshipId, testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId, "Unexpected ApprenticeshipId found!" );
+    }
+
+    [Then("an approved learning updated event is published to approvals")]
+    public async Task ThenAnApprovedLearningUpdatedEventIsPublishedToApprovals()
+    {
+        var testData = _context.Get<TestData>();
+
+        await _context.ReceiveApprovedLearningUpdatedEvent(testData.LearningKey);
+
+        testData.ApprovedLearningUpdatedEvent.Should().NotBeNull();
+        testData.ApprovedLearningUpdatedEvent.LearningKey.Should().Be(testData.LearningKey);
+        testData.ApprovedLearningUpdatedEvent.ApprenticeshipId.Should().Be(testData.CommitmentsApprenticeshipCreatedEvent.ApprenticeshipId);
     }
 
     [Then("calculate {int} unapproved earnings for programme aim with amount {decimal}")]
